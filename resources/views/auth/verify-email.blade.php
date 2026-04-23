@@ -1,36 +1,25 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
 
-@section('title', 'Verify Email - Resumify')
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email | Resumify</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
 
-@section('content')
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h2 class="card-title text-center mb-3">Verify Your Email</h2>
-
-                    <p class="text-center text-muted">
-                        Thanks for signing up! Before getting started, please verify your email address
-                        by clicking the link we just sent to you.
-                    </p>
-
-                    @if (session('status') == 'verification-link-sent')
-                        <div class="alert alert-success">
-                            A new verification link has been sent to your email address.
-                        </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('verification.send') }}">
-                        @csrf
-                        <button type="submit" class="btn btn-primary w-100">Resend Verification Email</button>
-                    </form>
-
-                    <form method="POST" action="{{ route('logout') }}" class="mt-2">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-secondary w-100">Logout</button>
-                    </form>
-                </div>
-            </div>
+<body class='min-h-screen bg-surface flex items-center justify-center p-6'>
+    <div
+        class="w-full max-w-md bg-surface-container-lowest rounded-3xl border border-outline-variant/30 p-8 md:p-12 shadow-2xl shadow-primary/5 transition-auth-card">
+        {{-- Brand Anchor --}}
+        <div class="text-center mb-10">
+            <h2 class="text-4xl font-headline font-bold text-primary tracking-tighter">Resumify</h2>
+            <div class="h-1 w-8 bg-secondary mx-auto mt-1 rounded-full"></div>
         </div>
+
+        {{-- The Verify Box Component --}}
+        <x-auth.verify-box />
     </div>
-@endsection
+</body>
+
+</html>
