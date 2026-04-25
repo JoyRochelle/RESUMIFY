@@ -19,17 +19,14 @@
         
         <header class="h-16 flex justify-between items-center px-8 w-full border-b border-primary/10 bg-surface shrink-0 z-30">
             <div class="flex items-center gap-4">
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 text-primary/60 hover:text-primary transition-colors cursor-pointer">
+                <a href="#" class="flex items-center gap-2 text-primary/60 hover:text-primary transition-colors cursor-pointer">
                     <span class="material-symbols-outlined text-primary">arrow_back</span>
                     <h1 class="font-headline text-xl font-bold text-primary tracking-tight">Editor: Senior Product Designer</h1>
                 </a>
             </div>
             <div class="flex items-center gap-3">
-                <button class="px-5 py-2 text-sm font-bold text-primary hover:bg-primary/5 transition-colors rounded-lg">Preview Full Screen</button>
-                <button class="px-5 py-2 text-sm font-bold bg-primary text-tertiary rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[18px]">download</span>
-                    Download PDF
-                </button>
+                <x-button variant="ghost">Preview Full Screen</x-button>
+                <x-button variant="primary" icon="download" iconClass="text-[18px]">Download PDF</x-button>
             </div>
         </header>
 
@@ -38,81 +35,34 @@
             <aside class="w-[40%] bg-surface-container-low flex flex-col border-r border-primary/10 z-20">
                 <div class="p-6 overflow-y-auto custom-scrollbar space-y-6">
                     
-                    <div class="bg-tertiary rounded-lg p-5 border border-primary/10 shadow-sm">
-                        <div class="flex justify-between items-center cursor-pointer group">
-                            <div class="flex items-center gap-3">
-                                <span class="material-symbols-outlined text-primary/60 group-hover:text-primary transition-colors">person</span>
-                                <h3 class="font-bold text-primary">Personal Info</h3>
-                            </div>
-                            <span class="material-symbols-outlined text-primary/60 group-hover:text-primary transition-colors">expand_more</span>
-                        </div>
-                    </div>
+                    <x-editor-accordion title="Personal Info" icon="person" />
                     
-                    <div class="bg-tertiary rounded-lg border border-primary/10 shadow-sm">
-                        <div class="p-5 flex justify-between items-center bg-surface-container-low rounded-t-lg border-b border-primary/10 cursor-pointer">
-                            <div class="flex items-center gap-3">
-                                <span class="material-symbols-outlined text-primary">work</span>
-                                <h3 class="font-bold text-primary">Work Experience</h3>
-                            </div>
-                            <span class="material-symbols-outlined text-primary">expand_less</span>
+                    <x-editor-accordion title="Work Experience" icon="work" :isOpen="true">
+                        
+                        <div class="grid grid-cols-2 gap-6">
+                            <x-form-input label="Title" name="title" value="Senior Product Designer" />
+                            <x-form-input label="Company" name="company" value="Linear" />
                         </div>
-                        <div class="p-6 space-y-8">
-                            <div class="grid grid-cols-2 gap-6">
-                                <div class="relative">
-                                    <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-1 block">Title</label>
-                                    <input class="w-full border-b border-primary/20 focus:border-primary bg-transparent py-2 px-0 outline-none transition-all focus:ring-0 text-primary" type="text" value="Senior Product Designer" />
-                                </div>
-                                <div class="relative">
-                                    <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-1 block">Company</label>
-                                    <input class="w-full border-b border-primary/20 focus:border-primary bg-transparent py-2 px-0 outline-none transition-all focus:ring-0 text-primary" type="text" value="Linear" />
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-6">
-                                <div class="relative">
-                                    <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-1 block">Start Date</label>
-                                    <input class="w-full border-b border-primary/20 focus:border-primary bg-transparent py-2 px-0 outline-none transition-all focus:ring-0 text-primary" type="text" value="Jan 2021" />
-                                </div>
-                                <div class="relative">
-                                    <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-1 block">End Date</label>
-                                    <input class="w-full border-b border-primary/20 focus:border-primary bg-transparent py-2 px-0 outline-none transition-all focus:ring-0 text-primary" type="text" value="Present" />
-                                </div>
-                            </div>
-                            <div class="relative group">
-                                <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
-                                <div class="relative">
-                                    <textarea class="w-full bg-surface-container-low rounded-lg border-none focus:ring-1 focus:ring-primary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none" rows="5">Leading design systems for the world's most productive software teams. Crafting high-fidelity components and maintaining visual consistency across mobile and desktop platforms.</textarea>
-                                    <button class="absolute bottom-3 right-3 flex items-center gap-2 bg-secondary text-tertiary px-3 py-1.5 rounded-full text-xs font-bold hover:brightness-110 transition-all shadow-md">
-                                        <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
-                                        ✨ Enhance with AI
-                                    </button>
-                                </div>
-                            </div>
-                            <button class="w-full py-4 border-2 border-dashed border-primary/20 rounded-lg text-primary/60 font-bold hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all flex items-center justify-center gap-2">
-                                <span class="material-symbols-outlined">add_circle</span>
-                                Add New Experience
-                            </button>
+                        <div class="grid grid-cols-2 gap-6">
+                            <x-form-input label="Start Date" name="start_date" value="Jan 2021" />
+                            <x-form-input label="End Date" name="end_date" value="Present" />
                         </div>
-                    </div>
+                        
+                        <div class="relative group">
+                            <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
+                            <div class="relative">
+                                <textarea name="description" class="w-full bg-surface-container-low rounded-lg border-none focus:ring-1 focus:ring-primary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none" rows="5">Leading design systems for the world's most productive software teams. Crafting high-fidelity components and maintaining visual consistency across mobile and desktop platforms.</textarea>
+                                <x-button variant="pill" icon="auto_awesome" iconClass="text-sm" iconStyle="font-variation-settings: 'FILL' 1;" class="absolute bottom-3 right-3">
+                                    ✨ Enhance with AI
+                                </x-button>
+                            </div>
+                        </div>
+                        <x-button variant="dashed" icon="add_circle">Add New Experience</x-button>
+
+                    </x-editor-accordion>
                     
-                    <div class="bg-tertiary rounded-lg p-5 border border-primary/10 shadow-sm">
-                        <div class="flex justify-between items-center cursor-pointer group">
-                            <div class="flex items-center gap-3">
-                                <span class="material-symbols-outlined text-primary/60 group-hover:text-primary transition-colors">school</span>
-                                <h3 class="font-bold text-primary">Education</h3>
-                            </div>
-                            <span class="material-symbols-outlined text-primary/60 group-hover:text-primary transition-colors">expand_more</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-tertiary rounded-lg p-5 border border-primary/10 shadow-sm">
-                        <div class="flex justify-between items-center cursor-pointer group">
-                            <div class="flex items-center gap-3">
-                                <span class="material-symbols-outlined text-primary/60 group-hover:text-primary transition-colors">bolt</span>
-                                <h3 class="font-bold text-primary">Skills</h3>
-                            </div>
-                            <span class="material-symbols-outlined text-primary/60 group-hover:text-primary transition-colors">expand_more</span>
-                        </div>
-                    </div>
+                    <x-editor-accordion title="Education" icon="school" />
+                    <x-editor-accordion title="Skills" icon="bolt" />
                     
                 </div>
             </aside>
@@ -203,20 +153,17 @@
                 </div>
 
                 <div class="absolute bottom-10 left-1/2 -translate-x-1/2 bg-tertiary/80 backdrop-blur-md border border-primary/10 px-6 py-3 rounded-full shadow-lg flex items-center gap-6">
-                    <button class="flex items-center gap-2 text-primary/60 hover:text-primary transition-colors">
-                        <span class="material-symbols-outlined">zoom_in</span>
-                        <span class="text-xs font-bold uppercase tracking-widest">Zoom</span>
-                    </button>
+                    <x-button variant="text" icon="zoom_in">
+                        <span class="text-xs uppercase tracking-widest">Zoom</span>
+                    </x-button>
                     <div class="w-px h-4 bg-primary/20"></div>
-                    <button class="flex items-center gap-2 text-primary/60 hover:text-primary transition-colors">
-                        <span class="material-symbols-outlined">layers</span>
-                        <span class="text-xs font-bold uppercase tracking-widest">Layout</span>
-                    </button>
+                    <x-button variant="text" icon="layers">
+                        <span class="text-xs uppercase tracking-widest">Layout</span>
+                    </x-button>
                     <div class="w-px h-4 bg-primary/20"></div>
-                    <button class="flex items-center gap-2 text-primary/60 hover:text-primary transition-colors">
-                        <span class="material-symbols-outlined">history</span>
-                        <span class="text-xs font-bold uppercase tracking-widest">History</span>
-                    </button>
+                    <x-button variant="text" icon="history">
+                        <span class="text-xs uppercase tracking-widest">History</span>
+                    </x-button>
                 </div>
                 
             </main>

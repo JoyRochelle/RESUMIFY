@@ -12,15 +12,13 @@
     </div>
 
     <nav class="flex-1 flex flex-col space-y-2">
-        <a href="{{ route('dashboard') }}" 
-           class="flex items-center space-x-3 p-3 transition-all duration-300 {{ request()->routeIs('dashboard') ? 'text-primary font-bold bg-tertiary rounded-lg shadow-sm' : 'text-primary/60 hover:text-primary hover:translate-x-1' }}">
-            <span class="material-symbols-outlined" {!! request()->routeIs('dashboard') ? 'style="font-variation-settings: \'FILL\' 1;"' : '' !!}>dashboard</span>
+        <a href="#" class="flex items-center space-x-3 p-3 transition-all duration-300 text-primary font-bold bg-tertiary rounded-lg shadow-sm">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
             <span class="font-label tracking-wide">Dashboard</span>
         </a>
         
-        <a href="{{ route('manuscript') }}" 
-           class="flex items-center space-x-3 p-3 transition-all duration-300 {{ request()->routeIs('manuscript') ? 'text-primary font-bold bg-tertiary rounded-lg shadow-sm' : 'text-primary/60 hover:text-primary hover:translate-x-1' }}">
-            <span class="material-symbols-outlined" {!! request()->routeIs('manuscript') ? 'style="font-variation-settings: \'FILL\' 1;"' : '' !!}>description</span>
+        <a href="#" class="flex items-center space-x-3 p-3 transition-all duration-300 text-primary/60 hover:text-primary hover:translate-x-1">
+            <span class="material-symbols-outlined">description</span>
             <span class="font-label tracking-wide">Manuscripts</span>
         </a>
         

@@ -11,7 +11,6 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 
 Route::get('/manuscript', function () {
-    // Tambahkan 'user_dashboard.' di depannya
     return view('user_dashboard.manuscript'); 
 })->name('manuscript');
 
