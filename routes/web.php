@@ -1,9 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SocialAuthController;
+
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+
+// Google OAuth Routes
+Route::middleware('guest')->group(function ()  {
+    Route::get('/auth/google', [SocialAuthController::class, 'redirect'])->name('social.redirect');
+    Route::get('/auth/google/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
 });
 
 // Authenticated Routes
