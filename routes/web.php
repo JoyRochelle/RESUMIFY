@@ -7,7 +7,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('user_dashboard.dashboard');
 })->name('dashboard');
 
 Route::get('/manuscript', function () {

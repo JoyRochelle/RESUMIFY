@@ -26,7 +26,7 @@
                 </div>
             </div>
             
-            <x-btn-create />
+            <x-user_dashboard.btn-create />
         </header>
 
         <section>
@@ -37,8 +37,8 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 
-                <x-resume-card title="Senior Product Designer" date="2 days ago" url="#" />
-                <x-resume-card title="UX Research Lead" date="1 week ago" url="#" />
+                <x-user_dashboard.resume-card title="Senior Product Designer" date="2 days ago" url="#" />
+                <x-user_dashboard.resume-card title="UX Research Lead" date="1 week ago" url="#" />
 
                 <a href="#" class="group relative bg-surface-container-low/50 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/50 hover:bg-surface-container-low transition-all duration-500 overflow-hidden flex flex-col items-center justify-center min-h-[400px] cursor-pointer block">
                     <div class="flex flex-col items-center text-center p-8">
@@ -54,13 +54,13 @@
 
         <section class="mt-24 grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-primary/10 pt-12">
             
-            <x-insight-block number="01" label="DAILY TIP">
+            <x-user_dashboard.insight-block number="01" label="DAILY TIP">
                 "Use strong action verbs to give weight to your professional narrative."
-            </x-insight-block>
+            </x-user_dashboard.insight-block>
 
-            <x-insight-block number="02" label="AI Insight">
+            <x-user_dashboard.insight-block number="02" label="AI Insight">
                 Your 'Senior Product Designer' resume has a <span class="text-secondary font-bold">92%</span> match for 2024 tech industry standards.
-            </x-insight-block>
+            </x-user_dashboard.insight-block>
 
         </section>
     </main>

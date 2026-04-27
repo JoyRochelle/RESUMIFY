@@ -25,8 +25,8 @@
                 </a>
             </div>
             <div class="flex items-center gap-3">
-                <x-button variant="ghost">Preview Full Screen</x-button>
-                <x-button variant="primary" icon="download" iconClass="text-[18px]">Download PDF</x-button>
+                <x-user_dashboard.button variant="ghost">Preview Full Screen</x-user_dashboard.button>
+                <x-user_dashboard.button variant="primary" icon="download" iconClass="text-[18px]">Download PDF</x-user_dashboard.button>
             </div>
         </header>
 
@@ -35,34 +35,34 @@
             <aside class="w-[40%] bg-surface-container-low flex flex-col border-r border-primary/10 z-20">
                 <div class="p-6 overflow-y-auto custom-scrollbar space-y-6">
                     
-                    <x-editor-accordion title="Personal Info" icon="person" />
+                    <x-user_dashboard.editor-accordion title="Personal Info" icon="person" />
                     
-                    <x-editor-accordion title="Work Experience" icon="work" :isOpen="true">
+                    <x-user_dashboard.editor-accordion title="Work Experience" icon="work" :isOpen="true">
                         
                         <div class="grid grid-cols-2 gap-6">
-                            <x-form-input label="Title" name="title" value="Senior Product Designer" />
-                            <x-form-input label="Company" name="company" value="Linear" />
+                            <x-user_dashboard.form-input label="Title" name="title" value="Senior Product Designer" />
+                            <x-user_dashboard.form-input label="Company" name="company" value="Linear" />
                         </div>
                         <div class="grid grid-cols-2 gap-6">
-                            <x-form-input label="Start Date" name="start_date" value="Jan 2021" />
-                            <x-form-input label="End Date" name="end_date" value="Present" />
+                            <x-user_dashboard.form-input label="Start Date" name="start_date" value="Jan 2021" />
+                            <x-user_dashboard.form-input label="End Date" name="end_date" value="Present" />
                         </div>
                         
                         <div class="relative group">
                             <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
                             <div class="relative">
                                 <textarea name="description" class="w-full bg-surface-container-low rounded-lg border-none focus:ring-1 focus:ring-primary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none" rows="5">Leading design systems for the world's most productive software teams. Crafting high-fidelity components and maintaining visual consistency across mobile and desktop platforms.</textarea>
-                                <x-button variant="pill" icon="auto_awesome" iconClass="text-sm" iconStyle="font-variation-settings: 'FILL' 1;" class="absolute bottom-3 right-3">
+                                <x-user_dashboard.button variant="pill" icon="auto_awesome" iconClass="text-sm" iconStyle="font-variation-settings: 'FILL' 1;" class="absolute bottom-3 right-3">
                                     ✨ Enhance with AI
-                                </x-button>
+                                </x-user_dashboard.button>
                             </div>
                         </div>
-                        <x-button variant="dashed" icon="add_circle">Add New Experience</x-button>
+                        <x-user_dashboard.button variant="dashed" icon="add_circle">Add New Experience</x-user_dashboard.button>
 
-                    </x-editor-accordion>
+                    </x-user_dashboard.editor-accordion>
                     
-                    <x-editor-accordion title="Education" icon="school" />
-                    <x-editor-accordion title="Skills" icon="bolt" />
+                    <x-user_dashboard.editor-accordion title="Education" icon="school" />
+                    <x-user_dashboard.editor-accordion title="Skills" icon="bolt" />
                     
                 </div>
             </aside>
@@ -153,17 +153,17 @@
                 </div>
 
                 <div class="absolute bottom-10 left-1/2 -translate-x-1/2 bg-tertiary/80 backdrop-blur-md border border-primary/10 px-6 py-3 rounded-full shadow-lg flex items-center gap-6">
-                    <x-button variant="text" icon="zoom_in">
+                    <x-user_dashboard.button variant="text" icon="zoom_in">
                         <span class="text-xs uppercase tracking-widest">Zoom</span>
-                    </x-button>
+                    </x-user_dashboard.button>
                     <div class="w-px h-4 bg-primary/20"></div>
-                    <x-button variant="text" icon="layers">
+                    <x-user_dashboard.button variant="text" icon="layers">
                         <span class="text-xs uppercase tracking-widest">Layout</span>
-                    </x-button>
+                    </x-user_dashboard.button>
                     <div class="w-px h-4 bg-primary/20"></div>
-                    <x-button variant="text" icon="history">
+                    <x-user_dashboard.button variant="text" icon="history">
                         <span class="text-xs uppercase tracking-widest">History</span>
-                    </x-button>
+                    </x-user_dashboard.button>
                 </div>
                 
             </main>
