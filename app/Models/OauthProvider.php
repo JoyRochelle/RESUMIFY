@@ -11,9 +11,9 @@ class OauthProvider extends Model
     use HasUlids;
 
     public $incrementing = false;
-    public $timestamp = false;
+    public $timestamps = false;
 
-    protected $keytype = 'string';
+    protected $keyType = 'string';
 
     protected $fillable = [
         'user_id',
