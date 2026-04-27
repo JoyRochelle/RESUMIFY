@@ -1,48 +1,56 @@
-@extends('layouts.app')
+<x-layouts.auth title="Login | Resumify" x-data="{ showForgotModal: {{ old('from_forgot_password') || session('status') ? 'true' : 'false' }} }">
+    <main class="flex min-h-screen md:h-screen flex-col md:flex-row">
+        {{-- bagian kiri --}}
+        <x-auth.left-section />
 
-@section('title', 'Login - Resumify')
+        {{-- bagian kanan --}}
+        <x-auth.right-section>
+            <x-auth.error-list />
 
-@section('content')
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h2 class="card-title text-center mb-4">Login</h2>
+            <form class="space-y-5" action="{{ route('login') }}" method="POST" x-data="{ loading: false }"
+                @submit="loading = true">
+                @csrf
+                <x-auth.input name="email" label="EMAIL" type="email" placeholder="name@email.com" required />
 
-                    @if (session('status'))
-                        <div class="alert alert-success">{{ session('status') }}</div>
-                    @endif
+                <x-auth.input name="password" label="PASSWORD" type="password" placeholder="••••••••" required>
+                    <x-slot name="extraLabel">
+                        <a @click.prevent="showForgotModal = true"
+                            class="text-xs font-bold text-secondary hover:underline" href="#">
+                            Forgot Password?
+                        </a>
+                    </x-slot>
+                </x-auth.input>
 
-                    @error('email')
-                        <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
-
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
-
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email"
-                                name="email" value="{{ old('email') }}" required autofocus>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-
-                        <div class="d-flex justify-content-end mb-3">
-                            <a href="{{ route('password.request') }}" class="text-decoration-none small">Forgot Password?</a>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100">Login</button>
-                    </form>
-
-                    <p class="text-center mt-3 mb-0">
-                        Don't have an account? <a href="{{ route('register') }}">Register</a>
-                    </p>
+                <div class="flex items-center gap-3">
+                    <input class="w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary"
+                        id="remember" name="remember" type="checkbox" />
+                    <label class="text-sm text-on-surface-variant" for="remember">Remember me for 30
+                        days</label>
                 </div>
-            </div>
+
+                <x-auth.button>Login</x-auth.button>
+            </form>
+
+            <x-slot name="footer">
+                <p class="text-sm text-on-surface-variant">
+                    Don't have an account?
+                    <a class="text-secondary font-bold hover:underline" href="{{ route('register') }}">Sign Up
+                        Free</a>
+                </p>
+            </x-slot>
+        </x-auth.right-section>
+    </main>
+
+    {{-- Forgot Password Modal --}}
+    <div x-show="showForgotModal" x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+        style="display: none;">
+
+        <div @click.away="showForgotModal = false" class="w-full max-w-md">
+            <x-auth.forgot-password />
         </div>
     </div>
-@endsection
+</x-layouts.auth>

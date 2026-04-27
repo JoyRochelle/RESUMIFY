@@ -6,16 +6,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('user_dashboard.dashboard');
-})->name('dashboard');
-
-Route::get('/manuscript', function () {
-    return view('user_dashboard.manuscript'); 
-})->name('manuscript');
-
-
+// Authenticated Routes
 Route::middleware(['auth'])->group(function () {
+
+    // Customer Routes (verified email required)
+    Route::middleware(['role:basic,premium', 'verified'])->group(function () {
+        Route::get('/dashboard', function () {
+            return view('dashboard');
+        })->name('dashboard');
+    });
+
     // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {
         Route::get('/dashboard', function () {
