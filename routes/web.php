@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\ResumeController;
 
 
 Route::get('/', function () {
@@ -23,6 +24,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', function () {
             return view('dashboard');
         })->name('dashboard');
+
+        // Resume CRUD
+        Route::resource('resumes', ResumeController::class)->parameters(['resumes' => 'cv']);
+
+        Route::post('/resumes/{cv}/duplicate', [ResumeController::class, 'duplicate'])
+            ->name('resumes.duplicate');
+        Route::put('/resumes/{cv}/sections/{section}', [ResumeController::class, 'updateSection'])
+            ->name('resumes.sections.update');
     });
 
     // Admin Routes
@@ -32,3 +41,6 @@ Route::middleware(['auth'])->group(function () {
         })->name('admin.dashboard');
     });
 });
+
+
+

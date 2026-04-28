@@ -103,4 +103,13 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(OauthProvider::class);
     }
+
+
+    /**
+     * Get the resumes (CVs) owned by this user.
+     */
+    public function cvs(): HasMany
+    {
+        return $this->hasMany(Cv::class);
+    }
 }
