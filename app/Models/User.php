@@ -2,28 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasUlids, Notifiable;
-
-    /**
-     * Indicates that the IDs are not auto-incrementing.
-     */
-    public $incrementing = false;
-
-    /**
-     * The data type of the primary key.
-     */
-    protected $keyType = 'string';
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -34,8 +22,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'role',
-        'avatar_url',
     ];
 
     /**
@@ -45,6 +31,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $hidden = [
         'password',
+        'remember_token',
     ];
 
     /**
@@ -58,49 +45,5 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    /**
-     * Check if the user is an admin.
-     */
-    public function isAdmin(): bool
-    {
-        return $this->role === 'admin';
-    }
-
-    /**
-     * Check if the user is a customer (basic or premium).
-     */
-    public function isCustomer(): bool
-    {
-        return in_array($this->role, ['basic', 'premium']);
-    }
-
-    /**
-     * Check if the user has a premium subscription.
-     */
-    public function isPremium(): bool
-    {
-        return $this->role === 'premium';
-    }
-
-    /**
-     * Prevent admin from receiving password reset emails.
-     */
-    public function sendPasswordResetNotification($token)
-    {
-        if ($this->role === 'admin') {
-            return;
-        }
-
-        parent::sendPasswordResetNotification($token);
-    }
-
-    /**
-     * Get the OAuth providers linked to this user.
-     */
-    public function oauthProviders(): HasMany
-    {
-        return $this->hasMany(OauthProvider::class);
     }
 }
