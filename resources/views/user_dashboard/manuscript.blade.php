@@ -13,16 +13,17 @@
 
 <body class="bg-surface font-body text-primary overflow-hidden h-screen flex flex-row">
 
-    @include('layouts.sidenavbar')
+    @include('layouts.user_dashboard.sidenavbar')
 
     <div class="flex-1 flex flex-col min-w-0">
         
         <header class="h-16 flex justify-between items-center px-8 w-full border-b border-primary/10 bg-surface shrink-0 z-30">
             <div class="flex items-center gap-4">
-                <a href="#" class="flex items-center gap-2 text-primary/60 hover:text-primary transition-colors cursor-pointer">
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 text-primary/60 hover:text-primary transition-colors cursor-pointer">
                     <span class="material-symbols-outlined text-primary">arrow_back</span>
                     <h1 class="font-headline text-xl font-bold text-primary tracking-tight">Editor: Senior Product Designer</h1>
                 </a>
+
             </div>
             <div class="flex items-center gap-3">
                 <x-user_dashboard.button variant="ghost">Preview Full Screen</x-user_dashboard.button>

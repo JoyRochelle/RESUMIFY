@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.user_dashboard.app')
 
 @section('title', 'Dashboard - Resumify')
 

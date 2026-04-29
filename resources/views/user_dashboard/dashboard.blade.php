@@ -12,7 +12,7 @@
 </head>
 <body class="bg-surface text-primary font-body antialiased min-h-screen flex">
     
-    @include('layouts.sidenavbar')
+    @include('layouts.user_dashboard.sidenavbar')
 
     <main class="flex-1 p-8 md:p-12 max-w-7xl mx-auto w-full">
         <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
@@ -40,7 +40,7 @@
                 <x-user_dashboard.resume-card title="Senior Product Designer" date="2 days ago" url="#" />
                 <x-user_dashboard.resume-card title="UX Research Lead" date="1 week ago" url="#" />
 
-                <a href="#" class="group relative bg-surface-container-low/50 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/50 hover:bg-surface-container-low transition-all duration-500 overflow-hidden flex flex-col items-center justify-center min-h-[400px] cursor-pointer block">
+                <a href="{{ route('manuscript') }}" class="group relative bg-surface-container-low/50 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/50 hover:bg-surface-container-low transition-all duration-500 overflow-hidden flex flex-col items-center justify-center min-h-[400px] cursor-pointer">
                     <div class="flex flex-col items-center text-center p-8">
                         <div class="w-16 h-16 rounded-full bg-tertiary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-sm">
                             <span class="material-symbols-outlined text-primary text-3xl" data-icon="add">add</span>
@@ -49,6 +49,7 @@
                         <p class="text-sm text-primary/60 font-label max-w-[200px]">Create your professional career narrative in minutes.</p>
                     </div>
                 </a>
+
             </div>
         </section>
 
@@ -65,7 +66,7 @@
         </section>
     </main>
 
-    @include('layouts.mobilenavbar')
+    @include('layouts.user_dashboard.mobilenavbar')
 
 </body>
 </html>
