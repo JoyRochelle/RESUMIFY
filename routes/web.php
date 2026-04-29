@@ -20,6 +20,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Customer Routes (verified email required)
     Route::middleware(['role:basic,premium', 'verified'])->group(function () {
+        
         Route::get('/dashboard', function () {
             return view('user_dashboard/dashboard');
         })->name('dashboard');
