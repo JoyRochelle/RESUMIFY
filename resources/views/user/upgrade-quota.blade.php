@@ -13,7 +13,7 @@
 
 <body class="bg-surface font-body text-primary overflow-hidden h-screen flex flex-row">
     
-    @include('layouts.sidenavbar')
+    @include('layouts.user.sidenavbar')
 
     <main class="flex-1 overflow-y-auto custom-scrollbar bg-primary/5">
         
@@ -30,7 +30,7 @@
             {{-- Pricing Cards --}}
             <section class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-24 max-w-5xl mx-auto">
                 
-                <x-user_dashboard.pricing-card
+                <x-user.pricing-card
                     plan="Starter"
                     price="Rp 0"
                     period="forever"
@@ -39,7 +39,7 @@
                     :isCurrentPlan="true"
                 />
 
-                <x-user_dashboard.pricing-card
+                <x-user.pricing-card
                     plan="Premium PRO"
                     price="Rp 99.000"
                     period="month"
@@ -60,9 +60,9 @@
             <section class="max-w-4xl mx-auto px-8 py-16 mb-24 bg-tertiary rounded-3xl text-center border border-primary/10 shadow-sm">
                 <h2 class="font-headline text-3xl font-bold text-primary mb-10">Secure Payment Methods</h2>
                 <div class="flex flex-wrap justify-center items-center gap-10 mb-12 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-                    <x-user_dashboard.payment-method icon="credit_card" label="Credit Card" />
-                    <x-user_dashboard.payment-method icon="account_balance" label="Bank Transfer" />
-                    <x-user_dashboard.payment-method icon="account_balance_wallet" label="Gopay / OVO" />
+                    <x-user.payment-method icon="credit_card" label="Credit Card" />
+                    <x-user.payment-method icon="account_balance" label="Bank Transfer" />
+                    <x-user.payment-method icon="account_balance_wallet" label="Gopay / OVO" />
                 </div>
                 <div class="inline-flex items-center gap-3 py-3 px-8 bg-surface rounded-full border border-primary/10 shadow-sm">
                     <span class="material-symbols-outlined text-secondary icon-filled">verified_user</span>
@@ -76,7 +76,7 @@
             {{-- Testimonial & Stats --}}
             <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
                 
-                <x-user_dashboard.testimonial-card
+                <x-user.testimonial-card
                     quote="Resumify Premium is not just a tool, it's an investment for the future. With the AI bullet optimizer, I received interview calls within 3 days."
                     name="Andreas Calvin Hartono"
                     role="Senior Product Manager"
@@ -103,7 +103,7 @@
         </footer>
     </main>
 
-    @include('layouts.mobilenavbar')
+    @include('layouts.user.mobilenavbar')
     
 </body>
 </html>

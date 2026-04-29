@@ -118,11 +118,11 @@
                     href="#">Pricing</a>
             </div>
             <div class="flex items-center gap-6 font-sans text-sm">
-                <button class="text-[#4f3b2f] font-semibold hover:text-[#10b981] transition-colors">Login</button>
-                <button
+                <a class="text-[#4f3b2f] font-semibold hover:text-[#10b981] transition-colors" href="{{ route('login') }}">Login</a>
+                <a href="{{ route('register') }}"
                     class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-bold shadow-sm active:opacity-80 active:scale-95 transition-all">
                     Create Free Resume ✨
-                </button>
+                </a>
             </div>
         </div>
     </nav>
@@ -138,12 +138,12 @@
                     <p class="text-xl text-outline mb-10 leading-relaxed font-sans">
                         Adapt your resume to job openings with artificial intelligence.
                     </p>
-                    <button
-                        class="group flex items-center gap-3 bg-primary text-on-primary px-8 py-4 rounded-lg text-lg font-bold transition-all hover:pr-10">
+                    <a href="{{ route('register') }}"
+                        class="group inline-flex items-center gap-3 bg-primary text-on-primary px-8 py-4 rounded-lg text-lg font-bold transition-all hover:pr-10">
                         Upgrade Your Resume
                         <span
                             class="material-symbols-outlined transition-transform group-hover:translate-x-2">arrow_forward</span>
-                    </button>
+                    </a>
                 </div>
             </div>
             <!-- Right Side: Interactive Area -->
@@ -288,10 +288,10 @@
                     <p class="text-lg text-on-primary-container mb-10 leading-relaxed font-sans opacity-90">
                         Join thousands of professionals who have accelerated their career with Resumify.
                     </p>
-                    <button
-                        class="bg-surface-container-lowest text-primary px-10 py-4 rounded-lg font-bold text-lg shadow-xl hover:bg-surface-container-low transition-all active:scale-95">
+                    <a href="{{ route('register') }}"
+                        class="inline-block bg-surface-container-lowest text-primary px-10 py-4 rounded-lg font-bold text-lg shadow-xl hover:bg-surface-container-low transition-all active:scale-95">
                         Start for Free Now
-                    </button>
+                    </a>
                 </div>
             </div>
         </section>

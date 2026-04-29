@@ -12,34 +12,34 @@
     </div>
 
     <nav class="flex-1 flex flex-col space-y-2">
-        <a href="#" class="flex items-center space-x-3 p-3 transition-all duration-300 text-primary font-bold bg-tertiary rounded-lg shadow-sm">
-            <span class="material-symbols-outlined icon-filled">dashboard</span>
+        <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 p-3 transition-all duration-300 {{ request()->routeIs('dashboard') ? 'text-primary font-bold bg-tertiary rounded-lg shadow-sm' : 'text-primary/60 hover:text-primary hover:translate-x-1' }}">
+            <span class="material-symbols-outlined {{ request()->routeIs('dashboard') ? 'icon-filled' : '' }}">dashboard</span>
             <span class="font-label tracking-wide">Dashboard</span>
         </a>
         
-        <a href="#" class="flex items-center space-x-3 p-3 transition-all duration-300 text-primary/60 hover:text-primary hover:translate-x-1">
-            <span class="material-symbols-outlined">description</span>
+        <a href="{{ route('user.manuscript') }}" class="flex items-center space-x-3 p-3 transition-all duration-300 {{ request()->routeIs('user.manuscript') ? 'text-primary font-bold bg-tertiary rounded-lg shadow-sm' : 'text-primary/60 hover:text-primary hover:translate-x-1' }}">
+            <span class="material-symbols-outlined {{ request()->routeIs('user.manuscript') ? 'icon-filled' : '' }}">description</span>
             <span class="font-label tracking-wide">Manuscripts</span>
         </a>
         
-        <a href="#" class="flex items-center space-x-3 p-3 text-primary/60 hover:text-primary hover:translate-x-1 transition-all duration-300">
-            <span class="material-symbols-outlined" data-icon="auto_fix_high">auto_fix_high</span>
+        <a href="{{ route('user.ai-assistant') }}" class="flex items-center space-x-3 p-3 transition-all duration-300 {{ request()->routeIs('user.ai-assistant') ? 'text-primary font-bold bg-tertiary rounded-lg shadow-sm' : 'text-primary/60 hover:text-primary hover:translate-x-1' }}">
+            <span class="material-symbols-outlined {{ request()->routeIs('user.ai-assistant') ? 'icon-filled' : '' }}" data-icon="auto_fix_high">auto_fix_high</span>
             <span class="font-label tracking-wide">AI Assistant</span>
         </a>
-        <a href="#" class="flex items-center space-x-3 p-3 text-primary/60 hover:text-primary hover:translate-x-1 transition-all duration-300">
-            <span class="material-symbols-outlined" data-icon="settings">settings</span>
+        <a href="{{ route('user.settings') }}" class="flex items-center space-x-3 p-3 transition-all duration-300 {{ request()->routeIs('user.settings') ? 'text-primary font-bold bg-tertiary rounded-lg shadow-sm' : 'text-primary/60 hover:text-primary hover:translate-x-1' }}">
+            <span class="material-symbols-outlined {{ request()->routeIs('user.settings') ? 'icon-filled' : '' }}" data-icon="settings">settings</span>
             <span class="font-label tracking-wide">Settings</span>
         </a>
-        <a href="#" class="flex items-center space-x-3 p-3 text-primary/60 hover:text-primary hover:translate-x-1 transition-all duration-300">
-            <span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+        <a href="{{ route('user.help') }}" class="flex items-center space-x-3 p-3 transition-all duration-300 {{ request()->routeIs('user.help') ? 'text-primary font-bold bg-tertiary rounded-lg shadow-sm' : 'text-primary/60 hover:text-primary hover:translate-x-1' }}">
+            <span class="material-symbols-outlined {{ request()->routeIs('user.help') ? 'icon-filled' : '' }}" data-icon="help_outline">help_outline</span>
             <span class="font-label tracking-wide">Help</span>
         </a>
     </nav>
 
     <div class="pt-6 border-t border-primary/10">
-        <button class="w-full py-2 px-4 rounded-lg text-sm font-label font-bold text-secondary bg-secondary/10 hover:bg-secondary/20 transition-all duration-300">
+        <a href="{{ route('user.upgrade-quota') }}" class="block w-full py-2 px-4 rounded-lg text-sm font-label font-bold text-secondary bg-secondary/10 hover:bg-secondary/20 transition-all duration-300 text-center">
             Upgrade Quota
-        </button>
+        </a>
         <form method="POST" action="{{ route('logout') }}" class="w-full mt-4">
             @csrf
             <button type="submit" class="flex items-center space-x-3 p-3 text-primary/60 hover:text-red-500 transition-colors w-full">
