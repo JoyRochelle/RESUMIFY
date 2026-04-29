@@ -13,7 +13,7 @@
 
 <body class="bg-surface font-body text-primary overflow-hidden h-screen flex">
     
-    @include('layouts.sidenavbar')
+    @include('layouts.user.sidenavbar')
 
     <main class="flex-1 overflow-y-auto custom-scrollbar bg-primary/5 pb-20 md:pb-0">
         
@@ -35,18 +35,18 @@
 
             {{-- Help Category Cards --}}
             <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-                <x-user_dashboard.help-card icon="person" title="Account & Subscription" description="Manage your profile, payment settings, and premium subscription plans." />
-                <x-user_dashboard.help-card icon="auto_fix_high" title="Editor & AI Assistant" description="Guides on using our smart features to polish your career narrative." variant="accent" :iconFilled="true" />
-                <x-user_dashboard.help-card icon="shield" title="Security & PDF" description="Information about data encryption and technical high-quality document export." />
+                <x-user.help-card icon="person" title="Account & Subscription" description="Manage your profile, payment settings, and premium subscription plans." />
+                <x-user.help-card icon="auto_fix_high" title="Editor & AI Assistant" description="Guides on using our smart features to polish your career narrative." variant="accent" :iconFilled="true" />
+                <x-user.help-card icon="shield" title="Security & PDF" description="Information about data encryption and technical high-quality document export." />
             </section>
 
             {{-- FAQ Section --}}
             <section class="mb-24">
                 <h3 class="font-headline text-3xl text-primary mb-10 text-center">Popular Questions</h3>
                 <div class="space-y-4 max-w-3xl mx-auto">
-                    <x-user_dashboard.faq-item question="How do I improve my ATS score?" />
-                    <x-user_dashboard.faq-item question="How many times can I use AI Polish?" />
-                    <x-user_dashboard.faq-item question="Is my data secure?" />
+                    <x-user.faq-item question="How do I improve my ATS score?" />
+                    <x-user.faq-item question="How many times can I use AI Polish?" />
+                    <x-user.faq-item question="Is my data secure?" />
                 </div>
             </section>
 
@@ -59,7 +59,7 @@
                     <h3 class="font-headline text-3xl md:text-4xl text-primary mb-4 italic">✨ Still need help?</h3>
                     <p class="text-primary/60 mb-10 max-w-lg mx-auto">Our team (and our smart assistants) are ready to answer your questions anytime.</p>
                     <div class="flex flex-col md:flex-row items-center justify-center gap-6">
-                        <x-user_dashboard.button variant="pill" icon="forum" iconClass="text-xl icon-filled" class="px-8 py-4 rounded-xl text-sm">Chat with Admin</x-user_dashboard.button>
+                        <x-user.button variant="pill" icon="forum" iconClass="text-xl icon-filled" class="px-8 py-4 rounded-xl text-sm">Chat with Admin</x-user.button>
                     </div>
                 </div>
             </section>
@@ -70,7 +70,7 @@
         </footer>
     </main>
 
-    @include('layouts.mobilenavbar')
+    @include('layouts.user.mobilenavbar')
     
 </body>
 </html>

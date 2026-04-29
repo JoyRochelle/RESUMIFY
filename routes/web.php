@@ -22,7 +22,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:basic,premium', 'verified'])->group(function () {
         
         Route::get('/dashboard', function () {
-            return view('user_dashboard/dashboard');
+            return view('user.dashboard');
         })->name('dashboard');
     });
 
@@ -37,23 +37,23 @@ Route::middleware(['auth'])->group(function () {
 // User Routes
 Route::middleware(['auth', 'role:basic,premium', 'verified'])->group(function () {
     Route::get('/user/manuscripts', function () {
-        return view('user_dashboard.manuscript');
+        return view('user.manuscript');
     })->name('user.manuscript');
 
     Route::get('/user/ai-assistant', function () {
-        return view('user_dashboard.ai-assistant');
+        return view('user.ai-assistant');
     })->name('user.ai-assistant');
 
     Route::get('/user/settings', function () {
-        return view('user_dashboard.settings');
+        return view('user.settings');
     })->name('user.settings');
 
     Route::get('/user/help', function () {
-        return view('user_dashboard.help');
+        return view('user.help');
     })->name('user.help');
 
     Route::get('/user/upgrade-quota', function () {
-        return view('user_dashboard.upgrade-quota');
+        return view('user.upgrade-quota');
     })->name('user.upgrade-quota');
 
     // Resumes routes

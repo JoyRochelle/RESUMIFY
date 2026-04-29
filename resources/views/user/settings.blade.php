@@ -14,12 +14,12 @@
 
 <body class="bg-surface font-body text-primary overflow-hidden h-screen flex">
     
-    @include('layouts.sidenavbar')
+    @include('layouts.user.sidenavbar')
 
     <div class="flex-1 flex flex-col min-w-0">
         
         {{-- Page Header --}}
-        <x-user_dashboard.page-header title="Account Settings">
+        <x-user.page-header title="Account Settings">
             <div class="flex items-center space-x-6 hidden md:flex">
                 <button class="text-primary/60 hover:text-primary transition-colors">
                     <span class="material-symbols-outlined">notifications</span>
@@ -32,7 +32,7 @@
                     <img alt="User Profile" class="w-8 h-8 rounded-full border border-primary/10 object-cover" src="{{ asset('images/nion.jpg') }}"/>
                 </div>
             </div>
-        </x-user_dashboard.page-header>
+        </x-user.page-header>
 
         <main class="flex-1 bg-primary/5 overflow-y-auto custom-scrollbar p-4 lg:p-10 pb-24 md:pb-10">
             <div class="max-w-4xl mx-auto space-y-8">
@@ -64,11 +64,11 @@
                         </div>
                         <div class="flex-1 space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <x-user_dashboard.settings-input label="Full Name" value="Julian Casablancas" />
-                                <x-user_dashboard.settings-input label="Email Address" type="email" value="julian@resumify.art" />
+                                <x-user.settings-input label="Full Name" value="Julian Casablancas" />
+                                <x-user.settings-input label="Email Address" type="email" value="julian@resumify.art" />
                             </div>
                             <div class="pt-4 flex justify-end">
-                                <x-user_dashboard.button variant="primary">Save Changes</x-user_dashboard.button>
+                                <x-user.button variant="primary">Save Changes</x-user.button>
                             </div>
                         </div>
                     </div>
@@ -88,7 +88,10 @@
                                 </div>
                                 <p class="text-tertiary/80 font-body">Your subscription will automatically renew on October 12, 2026.</p>
                             </div>
-                            <x-user_dashboard.button variant="pill" icon="bolt" iconClass="icon-filled" class="px-6 py-3 rounded-xl text-sm">Upgrade Quota</x-user_dashboard.button>
+                            <a href="{{ route('user.upgrade-quota') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-label font-bold bg-secondary/10 text-secondary hover:bg-secondary/20 transition-all duration-300">
+                                <span class="material-symbols-outlined text-sm icon-filled">bolt</span>
+                                Upgrade Quota
+                            </a>
                         </div>
                         <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-12">
                             <div>
@@ -112,17 +115,17 @@
                 <section class="bg-tertiary rounded-2xl p-8 border border-primary/10 shadow-sm">
                     <h3 class="font-headline text-2xl text-primary mb-8">Security & Password</h3>
                     <div class="max-w-2xl space-y-8">
-                        <x-user_dashboard.settings-input label="Current Password" type="password" placeholder="••••••••" :showToggle="true" />
+                        <x-user.settings-input label="Current Password" type="password" placeholder="••••••••" :showToggle="true" />
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <x-user_dashboard.settings-input label="New Password" type="password" />
-                            <x-user_dashboard.settings-input label="Confirm New Password" type="password" />
+                            <x-user.settings-input label="New Password" type="password" />
+                            <x-user.settings-input label="Confirm New Password" type="password" />
                         </div>
                         <div class="bg-primary/5 p-4 rounded-xl flex items-start gap-3">
                             <span class="material-symbols-outlined text-secondary text-lg">info</span>
                             <p class="text-xs text-primary/80 font-body leading-relaxed">Use at least 8 characters with a combination of numbers and symbols.</p>
                         </div>
                         <div class="flex justify-start">
-                            <x-user_dashboard.button variant="outline">Update Password</x-user_dashboard.button>
+                            <x-user.button variant="outline">Update Password</x-user.button>
                         </div>
                     </div>
                 </section>
@@ -134,7 +137,7 @@
                             <h3 class="font-headline text-2xl text-red-600 mb-1">Danger Zone</h3>
                             <p class="text-sm text-red-800/70">This action cannot be undone. All your data will be permanently deleted from our servers.</p>
                         </div>
-                        <x-user_dashboard.button variant="danger" icon="delete_forever" iconClass="text-lg">Delete Account</x-user_dashboard.button>
+                        <x-user.button variant="danger" icon="delete_forever" iconClass="text-lg">Delete Account</x-user.button>
                     </div>
                 </section>
                 
@@ -143,7 +146,7 @@
         </main>
     </div>
 
-    @include('layouts.mobilenavbar')
+    @include('layouts.user.mobilenavbar')
     
 </body>
 </html>

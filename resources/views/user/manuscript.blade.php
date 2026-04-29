@@ -13,49 +13,49 @@
 
 <body class="bg-surface font-body text-primary overflow-hidden h-screen flex">
 
-    @include('layouts.sidenavbar')
+    @include('layouts.user.sidenavbar')
 
     <div class="flex-1 flex flex-col min-w-0">
         
         {{-- Page Header --}}
-        <x-user_dashboard.page-header title="Editor: Senior Product Designer">
-            <x-user_dashboard.button variant="ghost" class="text-sm px-3 hidden sm:flex">Preview</x-user_dashboard.button>
-            <x-user_dashboard.button variant="primary" icon="download" iconClass="text-[18px]" class="text-sm px-3 w-full sm:w-auto justify-center">Download PDF</x-user_dashboard.button>
-        </x-user_dashboard.page-header>
+        <x-user.page-header title="Editor: Senior Product Designer">
+            <x-user.button variant="ghost" class="text-sm px-3 hidden sm:flex">Preview</x-user.button>
+            <x-user.button variant="primary" icon="download" iconClass="text-[18px]" class="text-sm px-3 w-full sm:w-auto justify-center">Download PDF</x-user.button>
+        </x-user.page-header>
 
         <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden pb-20 lg:pb-0">
             
             <aside class="w-full lg:w-[40%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
                 <div class="p-4 lg:p-6 lg:overflow-y-auto custom-scrollbar space-y-6 lg:h-full">
                     
-                    <x-user_dashboard.editor-accordion title="Personal Info" icon="person" />
+                    <x-user.editor-accordion title="Personal Info" icon="person" />
                     
-                    <x-user_dashboard.editor-accordion title="Work Experience" icon="work" :isOpen="true">
+                    <x-user.editor-accordion title="Work Experience" icon="work" :isOpen="true">
                         
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <x-user_dashboard.form-input label="Title" name="title" value="Senior Product Designer" />
-                            <x-user_dashboard.form-input label="Company" name="company" value="Linear" />
+                            <x-user.form-input label="Title" name="title" value="Senior Product Designer" />
+                            <x-user.form-input label="Company" name="company" value="Linear" />
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <x-user_dashboard.form-input label="Start Date" name="start_date" value="Jan 2021" />
-                            <x-user_dashboard.form-input label="End Date" name="end_date" value="Present" />
+                            <x-user.form-input label="Start Date" name="start_date" value="Jan 2021" />
+                            <x-user.form-input label="End Date" name="end_date" value="Present" />
                         </div>
                         
                         <div class="relative group">
                             <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
                             <div class="relative">
                                 <textarea name="description" class="w-full bg-surface-container-low rounded-lg border-none focus:ring-1 focus:ring-primary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none" rows="5">Leading design systems for the world's most productive software teams. Crafting high-fidelity components and maintaining visual consistency across mobile and desktop platforms.</textarea>
-                                <x-user_dashboard.button variant="pill" icon="auto_awesome" iconClass="text-sm icon-filled" class="absolute bottom-3 right-3">
+                                <x-user.button variant="pill" icon="auto_awesome" iconClass="text-sm icon-filled" class="absolute bottom-3 right-3">
                                     ✨ Enhance with AI
-                                </x-user_dashboard.button>
+                                </x-user.button>
                             </div>
                         </div>
-                        <x-user_dashboard.button variant="dashed" icon="add_circle">Add New Experience</x-user_dashboard.button>
+                        <x-user.button variant="dashed" icon="add_circle">Add New Experience</x-user.button>
 
-                    </x-user_dashboard.editor-accordion>
+                    </x-user.editor-accordion>
                     
-                    <x-user_dashboard.editor-accordion title="Education" icon="school" />
-                    <x-user_dashboard.editor-accordion title="Skills" icon="bolt" />
+                    <x-user.editor-accordion title="Education" icon="school" />
+                    <x-user.editor-accordion title="Skills" icon="bolt" />
                     
                 </div>
             </aside>
@@ -66,7 +66,7 @@
                     
                     <div class="absolute -top-4 -right-4 bg-tertiary/90 backdrop-blur-xl p-4 rounded-2xl shadow-xl border border-primary/10 z-10 flex flex-col items-center">
                         <div class="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">ATS Score</div>
-                        <x-user_dashboard.score-circle :score="78" size="sm" :showPercent="false"/>
+                        <x-user.score-circle :score="78" size="sm" :showPercent="false"/>
                     </div>
                     
                     <header class="text-center mb-12">
@@ -125,11 +125,11 @@
                         <section>
                             <h3 class="font-headline text-lg font-bold text-primary border-b border-primary/20 pb-1 mb-4">Expertise</h3>
                             <div class="flex flex-wrap gap-2">
-                                <x-user_dashboard.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Design Systems</x-user_dashboard.keyword-tag>
-                                <x-user_dashboard.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Figma</x-user_dashboard.keyword-tag>
-                                <x-user_dashboard.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">React & Tailwind</x-user_dashboard.keyword-tag>
-                                <x-user_dashboard.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Accessibility</x-user_dashboard.keyword-tag>
-                                <x-user_dashboard.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Prototyping</x-user_dashboard.keyword-tag>
+                                <x-user.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Design Systems</x-user.keyword-tag>
+                                <x-user.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Figma</x-user.keyword-tag>
+                                <x-user.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">React & Tailwind</x-user.keyword-tag>
+                                <x-user.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Accessibility</x-user.keyword-tag>
+                                <x-user.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Prototyping</x-user.keyword-tag>
                             </div>
                         </section>
                     </div>
@@ -140,22 +140,22 @@
                 </div>
 
                 <div class="sticky bottom-24 lg:bottom-10 z-40 bg-tertiary/80 backdrop-blur-md border border-primary/10 px-6 py-3 rounded-full shadow-lg flex items-center gap-6 shrink-0 mx-auto">
-                    <x-user_dashboard.button variant="text" icon="zoom_in" class="hidden sm:flex">
+                    <x-user.button variant="text" icon="zoom_in" class="hidden sm:flex">
                         <span class="text-xs uppercase tracking-widest">Zoom</span>
-                    </x-user_dashboard.button>
+                    </x-user.button>
                     <div class="w-px h-4 bg-primary/20 hidden sm:block"></div>
-                    <x-user_dashboard.button variant="text" icon="layers">
+                    <x-user.button variant="text" icon="layers">
                         <span class="text-xs uppercase tracking-widest">Layout</span>
-                    </x-user_dashboard.button>
+                    </x-user.button>
                     <div class="w-px h-4 bg-primary/20"></div>
-                    <x-user_dashboard.button variant="text" icon="history">
+                    <x-user.button variant="text" icon="history">
                         <span class="text-xs uppercase tracking-widest">History</span>
-                    </x-user_dashboard.button>
+                    </x-user.button>
                 </div>
                 
             </main>
         </div>
     </div>
-    @include('layouts.mobilenavbar')
+    @include('layouts.user.mobilenavbar')
 </body>
 </html>

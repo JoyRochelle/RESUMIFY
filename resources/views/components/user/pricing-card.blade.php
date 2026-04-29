@@ -65,12 +65,12 @@
     </ul>
 
     @if($isCurrentPlan)
-    <x-user_dashboard.button variant="ghost" class="w-full py-4 rounded-xl cursor-not-allowed opacity-60 border border-primary/10" disabled>
+    <x-user.button variant="ghost" class="w-full py-4 rounded-xl cursor-not-allowed opacity-60 border border-primary/10" disabled>
         Current Plan
-    </x-user_dashboard.button>
+    </x-user.button>
     @else
-    <x-user_dashboard.button variant="primary" class="w-full py-4 rounded-xl shadow-lg {{ $isPremium ? '!bg-secondary hover:opacity-90' : '' }}">
+    <x-user.button variant="primary" class="w-full py-4 rounded-xl shadow-lg {{ $isPremium ? '!bg-secondary hover:opacity-90' : '' }}">
         {{ $buttonText }}
-    </x-user_dashboard.button>
+    </x-user.button>
     @endif
 </div>

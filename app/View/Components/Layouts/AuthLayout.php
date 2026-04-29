@@ -13,6 +13,6 @@ class AuthLayout extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('layouts.auth');
+        return view('layouts.auth.master');
     }
 }
