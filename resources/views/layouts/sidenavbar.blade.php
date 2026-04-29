@@ -40,9 +40,12 @@
         <button class="w-full py-2 px-4 rounded-lg text-sm font-label font-bold text-secondary bg-secondary/10 hover:bg-secondary/20 transition-all duration-300">
             Upgrade Quota
         </button>
-        <button class="flex items-center space-x-3 p-3 mt-4 text-primary/60 hover:text-red-500 transition-colors w-full">
-            <span class="material-symbols-outlined" data-icon="logout">logout</span>
-            <span class="font-label tracking-wide">Log Out</span>
-        </button>
+        <form method="POST" action="{{ route('logout') }}" class="w-full mt-4">
+            @csrf
+            <button type="submit" class="flex items-center space-x-3 p-3 text-primary/60 hover:text-red-500 transition-colors w-full">
+                <span class="material-symbols-outlined" data-icon="logout">logout</span>
+                <span class="font-label tracking-wide">Log Out</span>
+            </button>
+        </form>
     </div>
 </aside>
