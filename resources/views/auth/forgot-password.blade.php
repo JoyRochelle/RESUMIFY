@@ -1,41 +1,35 @@
-@extends('layouts.app')
+@extends('layouts.auth.centered')
 
-@section('title', 'Forgot Password - Resumify')
+@section('title', 'Forgot Password | Resumify')
 
-@section('content')
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h2 class="card-title text-center mb-2">Forgot Password</h2>
-                    <p class="text-center text-muted mb-4">
-                        Enter your email and we'll send you a link to reset your password.
-                    </p>
+@section('auth-content')
+    <div class="text-center mb-8">
+        <h2 class="text-2xl font-headline font-bold text-on-surface">Forgot Password</h2>
+        <p class="text-sm text-on-surface-variant mt-2">
+            Enter your email and we'll send you a link to reset your password.
+        </p>
+    </div>
 
-                    @if (session('status'))
-                        <div class="alert alert-success">{{ session('status') }}</div>
-                    @endif
+    @if (session('status'))
+        <x-auth.alert type="success">
+            {{ session('status') }}
+        </x-auth.alert>
+    @endif
 
-                    <form method="POST" action="{{ route('password.email') }}">
-                        @csrf
 
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email"
-                                name="email" value="{{ old('email') }}" required autofocus>
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+    <x-auth.error-list />
 
-                        <button type="submit" class="btn btn-primary w-100">Send Password Reset Link</button>
-                    </form>
+    <form method="POST" action="{{ route('password.email') }}" class="space-y-6" x-data="{ loading: false }"
+        @submit="loading = true">
+        @csrf
+        <x-auth.input name="email" label="EMAIL ADDRESS" type="email" placeholder="name@email.com" required autofocus />
 
-                    <p class="text-center mt-3 mb-0">
-                        <a href="{{ route('login') }}" class="text-decoration-none">Back to Login</a>
-                    </p>
-                </div>
-            </div>
-        </div>
+        <x-auth.button>Send Password Reset Link</x-auth.button>
+    </form>
+
+    <div class="text-center mt-8">
+        <a href="{{ route('login') }}" class="text-sm font-bold text-secondary hover:underline">
+            Back to Login
+        </a>
     </div>
 @endsection
