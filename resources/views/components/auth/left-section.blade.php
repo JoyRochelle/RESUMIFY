@@ -57,7 +57,7 @@
                         <div class="h-full bg-secondary w-[94%] shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
                     </div>
                     <div class="mt-3 flex items-center gap-2">
-                        <x-heroicon-s-sparkles class="w-6 h-6 text-emerald-500" />
+                        <span class="material-symbols-outlined w-6 h-6 text-emerald-500" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
                         <span class="text-[10px] text-on-surface-variant font-medium">AI Optimization Active</span>
                     </div>
                 </div>

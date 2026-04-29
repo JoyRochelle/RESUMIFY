@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;600;700&display=swap");
+@import "tailwindcss";
 
 @theme {
     /* Colors from Guidelines */
@@ -18,7 +18,8 @@
 
     /* Surfaces & Backgrounds */
     --color-surface: #fdf8f4;
-    --color-surface-container-low: #f7f2ee; /* Estimated for alternating lists */
+    --color-surface-container-low: #f7f2ee;
+    /* Estimated for alternating lists */
 
     /* Typography */
     --font-headline: "Newsreader", serif;
@@ -34,7 +35,10 @@
         @apply bg-surface text-primary font-body;
     }
 
-    h1, h2, h3, h4 {
+    h1,
+    h2,
+    h3,
+    h4 {
         @apply font-headline;
     }
 }
@@ -48,18 +52,34 @@
 .custom-scrollbar::-webkit-scrollbar {
     width: 4px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
     background: var(--color-primary);
     opacity: 0.2;
     border-radius: 10px;
 }
+
 @utility glass-panel {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(210, 196, 188, 0.2);
+}
+
+@utility glass-effect {
+    background: rgba(108, 248, 187, 0.1);
+    backdrop-filter: blur(12px);
+}
+
+@utility icon-filled {
+    font-variation-settings: 'FILL' 1;
+}
+
+@utility premium-glow {
+    box-shadow: 0 0 20px rgba(0, 108, 73, 0.15);
 }
 
 @utility animate-bounce-subtle {
@@ -67,10 +87,12 @@
 }
 
 @keyframes bounce-subtle {
+
     0%,
     100% {
         transform: translateY(0) rotate(0);
     }
+
     50% {
         transform: translateY(-10px) rotate(1deg);
     }
