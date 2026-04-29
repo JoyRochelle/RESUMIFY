@@ -1,6 +1,6 @@
 <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-tertiary border-t border-primary/10 flex justify-around items-center py-3 px-6 z-50">
     <a href="#" class="flex flex-col items-center text-primary transition-colors">
-        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+        <span class="material-symbols-outlined icon-filled">dashboard</span>
         <span class="text-[10px] font-label font-medium mt-1">Dashboard</span>
     </a>
     <a href="#" class="flex flex-col items-center text-primary/50 hover:text-primary transition-colors">

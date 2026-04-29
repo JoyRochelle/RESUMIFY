@@ -11,39 +11,32 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-surface font-body text-primary overflow-hidden h-screen flex flex-row">
+<body class="bg-surface font-body text-primary overflow-hidden h-screen flex">
 
     @include('layouts.sidenavbar')
 
     <div class="flex-1 flex flex-col min-w-0">
         
-        <header class="h-16 flex justify-between items-center px-8 w-full border-b border-primary/10 bg-surface shrink-0 z-30">
-            <div class="flex items-center gap-4">
-                <a href="#" class="flex items-center gap-2 text-primary/60 hover:text-primary transition-colors cursor-pointer">
-                    <span class="material-symbols-outlined text-primary">arrow_back</span>
-                    <h1 class="font-headline text-xl font-bold text-primary tracking-tight">Editor: Senior Product Designer</h1>
-                </a>
-            </div>
-            <div class="flex items-center gap-3">
-                <x-user_dashboard.button variant="ghost">Preview Full Screen</x-user_dashboard.button>
-                <x-user_dashboard.button variant="primary" icon="download" iconClass="text-[18px]">Download PDF</x-user_dashboard.button>
-            </div>
-        </header>
+        {{-- Page Header --}}
+        <x-user_dashboard.page-header title="Editor: Senior Product Designer">
+            <x-user_dashboard.button variant="ghost" class="text-sm px-3 hidden sm:flex">Preview</x-user_dashboard.button>
+            <x-user_dashboard.button variant="primary" icon="download" iconClass="text-[18px]" class="text-sm px-3 w-full sm:w-auto justify-center">Download PDF</x-user_dashboard.button>
+        </x-user_dashboard.page-header>
 
-        <div class="flex-1 flex overflow-hidden">
+        <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden pb-20 lg:pb-0">
             
-            <aside class="w-[40%] bg-surface-container-low flex flex-col border-r border-primary/10 z-20">
-                <div class="p-6 overflow-y-auto custom-scrollbar space-y-6">
+            <aside class="w-full lg:w-[40%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
+                <div class="p-4 lg:p-6 lg:overflow-y-auto custom-scrollbar space-y-6 lg:h-full">
                     
                     <x-user_dashboard.editor-accordion title="Personal Info" icon="person" />
                     
                     <x-user_dashboard.editor-accordion title="Work Experience" icon="work" :isOpen="true">
                         
-                        <div class="grid grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <x-user_dashboard.form-input label="Title" name="title" value="Senior Product Designer" />
                             <x-user_dashboard.form-input label="Company" name="company" value="Linear" />
                         </div>
-                        <div class="grid grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <x-user_dashboard.form-input label="Start Date" name="start_date" value="Jan 2021" />
                             <x-user_dashboard.form-input label="End Date" name="end_date" value="Present" />
                         </div>
@@ -52,7 +45,7 @@
                             <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
                             <div class="relative">
                                 <textarea name="description" class="w-full bg-surface-container-low rounded-lg border-none focus:ring-1 focus:ring-primary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none" rows="5">Leading design systems for the world's most productive software teams. Crafting high-fidelity components and maintaining visual consistency across mobile and desktop platforms.</textarea>
-                                <x-user_dashboard.button variant="pill" icon="auto_awesome" iconClass="text-sm" iconStyle="font-variation-settings: 'FILL' 1;" class="absolute bottom-3 right-3">
+                                <x-user_dashboard.button variant="pill" icon="auto_awesome" iconClass="text-sm icon-filled" class="absolute bottom-3 right-3">
                                     ✨ Enhance with AI
                                 </x-user_dashboard.button>
                             </div>
@@ -67,23 +60,17 @@
                 </div>
             </aside>
 
-            <main class="w-[60%] bg-primary/5 flex items-center justify-center p-12 overflow-y-auto relative custom-scrollbar">
+            <main class="w-full lg:w-[60%] lg:h-full bg-primary/5 flex flex-col items-center p-4 lg:p-12 lg:overflow-y-auto relative custom-scrollbar">
                 
-                <div class="bg-tertiary w-[595px] min-h-[842px] shadow-xl rounded-sm p-16 relative flex flex-col">
+                <div class="bg-tertiary w-full max-w-[595px] lg:min-h-[842px] shadow-xl rounded-sm p-6 lg:p-16 relative flex flex-col lg:my-auto shrink-0 mb-10 lg:mb-0">
                     
                     <div class="absolute -top-4 -right-4 bg-tertiary/90 backdrop-blur-xl p-4 rounded-2xl shadow-xl border border-primary/10 z-10 flex flex-col items-center">
                         <div class="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">ATS Score</div>
-                        <div class="relative w-16 h-16 flex items-center justify-center">
-                            <svg class="w-full h-full transform -rotate-90">
-                                <circle class="text-primary/10" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-width="4"></circle>
-                                <circle class="text-secondary" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-dasharray="176" stroke-dashoffset="35.2" stroke-width="4"></circle>
-                            </svg>
-                            <span class="absolute font-headline font-bold text-primary">82</span>
-                        </div>
+                        <x-user_dashboard.score-circle :score="78" size="sm" :showPercent="false"/>
                     </div>
                     
                     <header class="text-center mb-12">
-                        <h2 class="font-headline text-5xl font-bold text-primary tracking-tight mb-2">Eleanor Vance</h2>
+                        <h2 class="font-headline text-3xl md:text-4xl font-bold text-primary tracking-tight mb-2">Eleanor Vance</h2>
                         <p class="text-sm font-body text-primary/60 tracking-widest uppercase">Senior Product Designer • San Francisco, CA</p>
                         <div class="mt-4 flex justify-center gap-6 text-xs font-medium text-primary/80">
                             <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">mail</span> eleanor@vance.design</span>
@@ -138,11 +125,11 @@
                         <section>
                             <h3 class="font-headline text-lg font-bold text-primary border-b border-primary/20 pb-1 mb-4">Expertise</h3>
                             <div class="flex flex-wrap gap-2">
-                                <span class="px-3 py-1 bg-surface-container-low rounded-full text-[11px] font-bold text-primary uppercase border border-primary/5">Design Systems</span>
-                                <span class="px-3 py-1 bg-surface-container-low rounded-full text-[11px] font-bold text-primary uppercase border border-primary/5">Figma</span>
-                                <span class="px-3 py-1 bg-surface-container-low rounded-full text-[11px] font-bold text-primary uppercase border border-primary/5">React & Tailwind</span>
-                                <span class="px-3 py-1 bg-surface-container-low rounded-full text-[11px] font-bold text-primary uppercase border border-primary/5">Accessibility</span>
-                                <span class="px-3 py-1 bg-surface-container-low rounded-full text-[11px] font-bold text-primary uppercase border border-primary/5">Prototyping</span>
+                                <x-user_dashboard.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Design Systems</x-user_dashboard.keyword-tag>
+                                <x-user_dashboard.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Figma</x-user_dashboard.keyword-tag>
+                                <x-user_dashboard.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">React & Tailwind</x-user_dashboard.keyword-tag>
+                                <x-user_dashboard.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Accessibility</x-user_dashboard.keyword-tag>
+                                <x-user_dashboard.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Prototyping</x-user_dashboard.keyword-tag>
                             </div>
                         </section>
                     </div>
@@ -152,11 +139,11 @@
                     </footer>
                 </div>
 
-                <div class="absolute bottom-10 left-1/2 -translate-x-1/2 bg-tertiary/80 backdrop-blur-md border border-primary/10 px-6 py-3 rounded-full shadow-lg flex items-center gap-6">
-                    <x-user_dashboard.button variant="text" icon="zoom_in">
+                <div class="sticky bottom-24 lg:bottom-10 z-40 bg-tertiary/80 backdrop-blur-md border border-primary/10 px-6 py-3 rounded-full shadow-lg flex items-center gap-6 shrink-0 mx-auto">
+                    <x-user_dashboard.button variant="text" icon="zoom_in" class="hidden sm:flex">
                         <span class="text-xs uppercase tracking-widest">Zoom</span>
                     </x-user_dashboard.button>
-                    <div class="w-px h-4 bg-primary/20"></div>
+                    <div class="w-px h-4 bg-primary/20 hidden sm:block"></div>
                     <x-user_dashboard.button variant="text" icon="layers">
                         <span class="text-xs uppercase tracking-widest">Layout</span>
                     </x-user_dashboard.button>
@@ -169,5 +156,6 @@
             </main>
         </div>
     </div>
+    @include('layouts.mobilenavbar')
 </body>
 </html>

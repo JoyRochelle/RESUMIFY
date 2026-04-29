@@ -3,7 +3,7 @@
     
     <div class="flex items-center space-x-3 mb-4">
         <div class="w-10 h-10 rounded-full overflow-hidden bg-primary/10">
-            <img alt="Premium Member Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALyEV1iT5QV2llTssWHAc73MzToXoYF6MsXJYlPgXpmO5tLXm4FjbMQDRImnPZWyxaPttXsipsYZRPPCBnWjgU6MRRFiN5lQiyvRY1AOOtBhXrPojS407cO8hb2bpiT2BM7XgM65-y0v2X7N5AMVwiZY5Lx3z3s9S9yZ3VZgkQVpXfxne0hVBxIOhXdeteZCQTto6LpifE-s3Rx4eEX263JmTjd75d3Sjj9cxX-kZ4fuB7A2NinJ5dDfACHQfH2NbCqpYXEm_PCyaY"/>
+            <img alt="Premium Member Avatar" class="w-full h-full object-cover" src="{{ asset('images/nion.jpg') }}"/>
         </div>
         <div>
             <p class="text-sm font-headline font-bold text-primary">The Architect</p>
@@ -13,7 +13,7 @@
 
     <nav class="flex-1 flex flex-col space-y-2">
         <a href="#" class="flex items-center space-x-3 p-3 transition-all duration-300 text-primary font-bold bg-tertiary rounded-lg shadow-sm">
-            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+            <span class="material-symbols-outlined icon-filled">dashboard</span>
             <span class="font-label tracking-wide">Dashboard</span>
         </a>
         
