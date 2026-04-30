@@ -1,7 +1,6 @@
 @extends('layouts.user.app')
 
 @section('title', 'Resumify - Settings')
-@section('body_class', 'overflow-hidden h-screen')
 
 @section('content')
     <div class="flex-1 flex flex-col min-w-0">

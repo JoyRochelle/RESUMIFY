@@ -1,7 +1,6 @@
 @extends('layouts.user.app')
 
 @section('title', 'Pricing Plans - Resumify')
-@section('body_class', 'overflow-hidden h-screen flex flex-row')
 
 @section('content')
     <main class="flex-1 overflow-y-auto custom-scrollbar bg-primary/5">

@@ -1,7 +1,6 @@
 @extends('layouts.user.app')
 
 @section('title', 'Help Center - Resumify')
-@section('body_class', 'overflow-hidden h-screen')
 
 @section('content')
     <main class="flex-1 overflow-y-auto custom-scrollbar bg-primary/5 pb-20 md:pb-0">
