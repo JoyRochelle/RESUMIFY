@@ -1,21 +1,7 @@
-<!DOCTYPE html>
-<html class="light" lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Resumify AI Assistant | Optimization</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+@extends('layouts.user.app')
 
-</head>
-
-<body class="bg-surface font-body text-primary overflow-hidden h-screen flex">
-    
-    @include('layouts.user.sidenavbar')
-
+@section('title', 'Resumify AI Assistant | Optimization')
+@section('content')
     <div class="flex-1 flex flex-col min-w-0">
         
         {{-- Page Header --}}
@@ -123,8 +109,4 @@
             </main>
         </div>
     </div>
-
-    @include('layouts.user.mobilenavbar')
-    
-</body>
-</html>
+@endsection

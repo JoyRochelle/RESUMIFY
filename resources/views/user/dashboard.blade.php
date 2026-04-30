@@ -1,19 +1,8 @@
-<!DOCTYPE html>
-<html class="light" lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Resumify - Dashboard</title>
+@extends('layouts.user.app')
 
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Manrope:wght@200..800&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+@section('title', 'Resumify - Dashboard')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="bg-surface text-primary font-body antialiased min-h-screen flex">
-    
-    @include('layouts.user.sidenavbar')
-
+@section('content')
     <main class="flex-1 p-8 md:p-12 max-w-7xl mx-auto w-full">
         <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
             <div>
@@ -64,8 +53,4 @@
 
         </section>
     </main>
-
-    @include('layouts.user.mobilenavbar')
-
-</body>
-</html>
+@endsection

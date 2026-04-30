@@ -1,20 +1,8 @@
-<!DOCTYPE html>
-<html class="light" lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Pricing Plans - Resumify</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@extends('layouts.user.app')
 
-<body class="bg-surface font-body text-primary overflow-hidden h-screen flex flex-row">
-    
-    @include('layouts.user.sidenavbar')
+@section('title', 'Pricing Plans - Resumify')
 
+@section('content')
     <main class="flex-1 overflow-y-auto custom-scrollbar bg-primary/5">
         
         <div class="max-w-6xl mx-auto px-6 md:px-12 py-16">
@@ -102,8 +90,4 @@
             <p>© 2026 Resumify - Curated with Integrity</p>
         </footer>
     </main>
-
-    @include('layouts.user.mobilenavbar')
-    
-</body>
-</html>
+@endsection
