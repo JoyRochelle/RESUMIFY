@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;600;700&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -7,9 +8,18 @@
     --color-tertiary: #ffffff;
     --color-neutral: #fdf8f4;
 
+    /* Extended Palette for Template Support */
+    --color-primary-fixed: #fcdccb;
+    --color-on-surface: #1d1b19;
+    --color-on-surface-variant: #4f453f;
+    --color-surface-container-low: #f8f3ef;
+    --color-surface-container-lowest: #ffffff;
+    --color-outline-variant: #d2c4bc;
+
     /* Surfaces & Backgrounds */
     --color-surface: #fdf8f4;
-    --color-surface-container-low: #f7f2ee; /* Estimated for alternating lists */
+    --color-surface-container-low: #f7f2ee;
+    /* Estimated for alternating lists */
 
     /* Typography */
     --font-headline: "Newsreader", serif;
@@ -31,4 +41,71 @@
     h4 {
         @apply font-headline;
     }
+}
+
+/* Material Symbols Adjustments */
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Custom Scrollbar styled with primary color */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    opacity: 0.2;
+    border-radius: 10px;
+}
+
+@utility glass-panel {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(210, 196, 188, 0.2);
+}
+
+@utility glass-effect {
+    background: rgba(108, 248, 187, 0.1);
+    backdrop-filter: blur(12px);
+}
+
+@utility icon-filled {
+    font-variation-settings: 'FILL' 1;
+}
+
+@utility premium-glow {
+    box-shadow: 0 0 20px rgba(0, 108, 73, 0.15);
+}
+
+@utility animate-bounce-subtle {
+    animation: bounce-subtle 4s ease-in-out infinite;
+}
+
+@keyframes bounce-subtle {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(1deg);
+    }
+}
+
+@utility transition-auth-left {
+    view-transition-name: auth-left;
+}
+
+@utility transition-auth-card {
+    view-transition-name: auth-card;
+}
+
+@utility transition-auth-brand {
+    view-transition-name: auth-brand;
 }

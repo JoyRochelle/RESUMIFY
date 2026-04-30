@@ -1,48 +1,52 @@
-@extends('layouts.app')
+@extends('layouts.auth.split')
 
-@section('title', 'Login - Resumify')
+@section('title', 'Login | Resumify')
 
-@section('content')
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h2 class="card-title text-center mb-4">Login</h2>
 
-                    @if (session('status'))
-                        <div class="alert alert-success">{{ session('status') }}</div>
-                    @endif
+{{-- Alpine.js state for the forgot password modal --}}
+@section('body-attributes')
+    x-data="{ showForgotModal: {{ old('from_forgot_password') || session('status') ? 'true' : 'false' }} }"
+@endsection
 
-                    @error('email')
-                        <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
+@section('auth-title', 'Login to Your Account')
+@section('auth-subtitle', 'Welcome back to your career journey.')
 
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
+@section('auth-form')
+    <x-auth.error-list />
 
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email"
-                                name="email" value="{{ old('email') }}" required autofocus>
-                        </div>
+    <form class="space-y-5" action="{{ route('login') }}" method="POST" x-data="{ loading: false }" @submit="loading = true">
+        @csrf
+        <x-auth.input name="email" label="EMAIL" type="email" placeholder="name@email.com" required />
 
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
+        <x-auth.input name="password" label="PASSWORD" type="password" placeholder="••••••••" required>
+            <x-slot name="extraLabel">
+                <a @click.prevent="showForgotModal = true" class="text-xs font-bold text-secondary hover:underline"
+                    href="#">
+                    Forgot Password?
+                </a>
+            </x-slot>
+        </x-auth.input>
 
-                        <div class="d-flex justify-content-end mb-3">
-                            <a href="{{ route('password.request') }}" class="text-decoration-none small">Forgot Password?</a>
-                        </div>
+        <div class="flex items-center gap-3">
+            <input class="w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary" id="remember"
+                name="remember" type="checkbox" />
+            <label class="text-sm text-on-surface-variant" for="remember">Remember me for 30
+                days</label>
+        </div>
 
-                        <button type="submit" class="btn btn-primary w-100">Login</button>
-                    </form>
+        <x-auth.button>Login</x-auth.button>
+    </form>
+@endsection
 
-                    <p class="text-center mt-3 mb-0">
-                        Don't have an account? <a href="{{ route('register') }}">Register</a>
-                    </p>
-                </div>
-            </div>
+@section('auth-footer')
+    {{-- Forgot Password Modal --}}
+    <div x-show="showForgotModal" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" style="display: none;">
+
+        <div @click.away="showForgotModal = false" class="w-full max-w-md">
+            <x-auth.forgot-password />
         </div>
     </div>
 @endsection

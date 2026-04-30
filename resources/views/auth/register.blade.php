@@ -1,58 +1,41 @@
-@extends('layouts.app')
+@extends('layouts.auth.split')
 
-@section('title', 'Register - Resumify')
+@section('title', 'Register | Resumify')
 
-@section('content')
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h2 class="card-title text-center mb-4">Register</h2>
+@section('auth-title', 'Create Your Account')
+@section('auth-subtitle', 'Start your professional journey in minutes.')
 
-                    <form method="POST" action="{{ route('register') }}">
-                        @csrf
+@section('auth-form')
+    <x-auth.error-list />
 
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Full Name</label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
-                                name="name" value="{{ old('name') }}" required autofocus>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+    <form class="space-y-4" action="{{ route('register') }}" method="POST" x-data="{ loading: false }" @submit="loading = true">
+        @csrf
+        <x-auth.input name="name" label="FULL NAME" placeholder="John Doe" required autofocus />
 
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email"
-                                name="email" value="{{ old('email') }}" required>
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+        <x-auth.input name="email" label="EMAIL" type="email" placeholder="name@email.com" required />
 
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                id="password" name="password" required>
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password_confirmation" class="form-label">Confirm Password</label>
-                            <input type="password" class="form-control" id="password_confirmation"
-                                name="password_confirmation" required>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100">Register</button>
-                    </form>
-
-                    <p class="text-center mt-3 mb-0">
-                        Already have an account? <a href="{{ route('login') }}">Login</a>
-                    </p>
-                </div>
-            </div>
+        <div class="grid grid-cols-2 gap-4">
+            <x-auth.input name="password" label="PASSWORD" type="password" placeholder="••••••••" required />
+            <x-auth.input name="password_confirmation" label="CONFIRM" type="password" placeholder="••••••••" required />
         </div>
-    </div>
+
+        <div class="flex items-start gap-3 py-2">
+            <input class="mt-1 w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary" id="terms"
+                name="terms" type="checkbox" required />
+            <label class="text-xs text-on-surface-variant leading-relaxed" for="terms">
+                I agree to the <a href="#" class="text-secondary font-bold hover:underline">Terms of
+                    Service</a> and <a href="#" class="text-secondary font-bold hover:underline">Privacy
+                    Policy</a>.
+            </label>
+        </div>
+
+        <x-auth.button>Sign Up</x-auth.button>
+    </form>
+@endsection
+
+@section('auth-footer')
+    <p class="text-sm text-on-surface-variant">
+        Already have an account?
+        <a class="text-secondary font-bold hover:underline" href="{{ route('login') }}">Sign In</a>
+    </p>
 @endsection
