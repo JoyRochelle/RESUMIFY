@@ -4,9 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SocialAuthController;
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Public Routes
+Route::get('/', function () { return view('landing_page.welcome'); })->name('home');
+Route::get('/templates', function () { return view('landing_page.templates'); })->name('templates');
+Route::get('/pricing', function () { return view('landing_page.pricing'); })->name('pricing');
 
 
 // Google OAuth Routes
@@ -16,7 +17,7 @@ Route::middleware('guest')->group(function ()  {
 });
 
 // Authenticated Routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
     // Customer Routes (verified email required)
     Route::middleware(['role:basic,premium', 'verified'])->group(function () {
@@ -27,10 +28,10 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Admin Routes
-    Route::middleware(['role:admin'])->prefix('admin')->group(function () {
+    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
-        })->name('admin.dashboard');
+        })->name('dashboard');
     });
 });
 
