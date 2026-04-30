@@ -1,1 +1,34 @@
 @import "tailwindcss";
+
+@theme {
+    /* Colors from Guidelines */
+    --color-primary: #4f3b2f;
+    --color-secondary: #10b981;
+    --color-tertiary: #ffffff;
+    --color-neutral: #fdf8f4;
+
+    /* Surfaces & Backgrounds */
+    --color-surface: #fdf8f4;
+    --color-surface-container-low: #f7f2ee; /* Estimated for alternating lists */
+
+    /* Typography */
+    --font-headline: "Newsreader", serif;
+    --font-body: "Manrope", sans-serif;
+    --font-label: "Manrope", sans-serif;
+
+    /* Border Radius - Soft Minimalist */
+    --radius-lg: 0.5rem;
+}
+
+@layer base {
+    body {
+        @apply bg-surface text-primary font-body;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        @apply font-headline;
+    }
+}

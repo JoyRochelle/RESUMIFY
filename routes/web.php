@@ -2,24 +2,25 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Public Routes
+Route::get('/', function () { return view('landing_page.welcome'); })->name('home');
+Route::get('/templates', function () { return view('landing_page.templates'); })->name('templates');
+Route::get('/pricing', function () { return view('landing_page.pricing'); })->name('pricing');
 
 // Authenticated Routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Customer Routes (verified email required)
-    Route::middleware(['role:basic,premium', 'verified'])->group(function () {
+    // Customer Routes (Basic & Premium)
+    Route::middleware(['role:basic,premium'])->group(function () {
         Route::get('/dashboard', function () {
             return view('dashboard');
         })->name('dashboard');
     });
 
     // Admin Routes
-    Route::middleware(['role:admin'])->prefix('admin')->group(function () {
+    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
-        })->name('admin.dashboard');
+        })->name('dashboard');
     });
 });
