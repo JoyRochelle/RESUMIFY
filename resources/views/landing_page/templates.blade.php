@@ -1,4 +1,4 @@
-@extends('landing_page.app')
+@extends('layouts.landing_page.app')
 
 @section('title', 'Templates | Choose a Template that Fits Your Career')
 
