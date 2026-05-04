@@ -1,4 +1,4 @@
-@extends('landing_page.app')
+@extends('layouts.landing_page.app')
 
 @section('title', 'Pricing | Unlock Your Potential with Resumify')
 
