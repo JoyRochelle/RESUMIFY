@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\ResumeController;
+use App\Http\Controllers\ProfileController;
 
 // Public Routes
 Route::get('/', function () { return view('landing_page.welcome'); })->name('home');
@@ -24,25 +25,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('user.dashboard');
         })->name('dashboard');
 
-        Route::get('/user/manuscripts', function () {
+        Route::get('/manuscripts', function () {
             return view('user.manuscript');
         })->name('user.manuscript');
 
-        Route::get('/user/ai-assistant', function () {
+        Route::get('/ai-assistant', function () {
             return view('user.ai-assistant');
         })->name('user.ai-assistant');
 
-        Route::get('/user/settings', function () {
+        Route::get('/settings', function () {
             return view('user.settings');
         })->name('user.settings');
 
-        Route::get('/user/help', function () {
+        Route::get('/help', function () {
             return view('user.help');
         })->name('user.help');
 
-        Route::get('/user/upgrade-quota', function () {
+        Route::get('/upgrade-quota', function () {
             return view('user.upgrade-quota');
         })->name('user.upgrade-quota');
+
+        // Profile management routes
+        Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
+        Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
         // Resumes routes
         Route::resource('resumes',ResumeController::class)->parameters([
