@@ -36,6 +36,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'role',
         'avatar_url',
+        'ai_quota_used',
+        'ai_quota_reset_at',
     ];
 
     /**
@@ -55,8 +57,9 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'email_verified_at'  => 'datetime',
+            'ai_quota_reset_at'  => 'datetime',
+            'password'           => 'hashed',
         ];
     }
 
@@ -112,4 +115,32 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Cv::class);
     }
+
+    /**
+     * Get the full URL for the user's avatar.
+     */
+    public function getAvatarUrlAttribute($value)
+    {
+        return $value ? asset('storage/' . $value) : 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+    }
+
+    // Returns the max quota for this user based on their role
+    public function getQuotaLimit(): int
+    {
+        return config('quota.' . $this->role, config('quota.basic'));
+    }
+
+    // Returns remaining quota this month
+    public function getQuotaRemaining(): int
+    {
+        return max(0, $this->getQuotaLimit() - $this->ai_quota_used);
+    }
+
+    // Returns percentage used (for progress bar)
+    public function getQuotaPercentage(): float
+    {
+        $limit = $this->getQuotaLimit();
+        return $limit > 0 ? round(($this->ai_quota_used / $limit) * 100, 1) : 0;
+    }
+
 }
