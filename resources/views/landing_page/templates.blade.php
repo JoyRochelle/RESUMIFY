@@ -46,160 +46,24 @@
     {{-- Template Grid --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
 
-        {{-- 1. Eleanor Vance - Professional, Executive --}}
-        <div x-show="activeCategory === 'all' || activeCategory === 'professional'"
+        @foreach($templates as $template)
+        <div x-show="activeCategory === 'all' || activeCategory === '{{ $template->category }}'"
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 scale-95"
              x-transition:enter-end="opacity-100 scale-100">
-            <x-landing_page.template-card title="Eleanor Vance" category="PROFESSIONAL, EXECUTIVE" badge="ATS OK" badgeColor="blue">
-                {{-- Resume skeleton: header bar + lines layout --}}
-                <div class="space-y-4">
-                    <div class="h-3 w-2/3 bg-primary/15 rounded-sm"></div>
-                    <div class="h-px w-full bg-primary/10"></div>
-                    <div class="space-y-2">
-                        <div class="h-2 w-full bg-primary/10 rounded-sm"></div>
-                        <div class="h-2 w-5/6 bg-primary/10 rounded-sm"></div>
-                        <div class="h-2 w-4/6 bg-primary/10 rounded-sm"></div>
-                    </div>
-                    <div class="h-px w-full bg-primary/10"></div>
-                    <div class="space-y-2">
-                        <div class="h-2 w-full bg-primary/10 rounded-sm"></div>
-                        <div class="h-2 w-3/4 bg-primary/10 rounded-sm"></div>
-                    </div>
+            <x-landing_page.template-card 
+                title="{{ $template->name }}" 
+                category="{{ strtoupper(str_replace('_', ' ', $template->category)) }}" 
+                badge="{{ $template->badge }}" 
+                badgeColor="{{ $template->badge_color }}">
+                
+                <div class="w-full h-80 bg-[#f4f4f5] flex items-center justify-center rounded-sm overflow-hidden relative group">
+                    <img src="{{ $template->thumbnail }}" alt="{{ $template->name }}" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105">
                 </div>
-            </x-landing_page.template-card>
-        </div>
 
-        {{-- 2. The Creative - Creative, Design & Arts --}}
-        <div x-show="activeCategory === 'all' || activeCategory === 'creative'"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 scale-95"
-             x-transition:enter-end="opacity-100 scale-100">
-            <x-landing_page.template-card title="The Creative" category="DESIGN & ARTS" badge="BEST SELLER" badgeColor="secondary">
-                {{-- Resume skeleton: circle + right aligned lines --}}
-                <div class="flex gap-4 mb-4">
-                    <div class="w-10 h-10 rounded-full bg-primary/10 shrink-0"></div>
-                    <div class="flex-1 space-y-2 pt-1">
-                        <div class="h-2.5 w-full bg-primary/10 rounded-sm"></div>
-                        <div class="h-2 w-3/4 bg-primary/8 rounded-sm"></div>
-                    </div>
-                </div>
-                <div class="space-y-2 mt-4">
-                    <div class="h-2 w-full bg-primary/8 rounded-sm"></div>
-                    <div class="h-2 w-5/6 bg-primary/8 rounded-sm"></div>
-                    <div class="h-2 w-full bg-primary/8 rounded-sm"></div>
-                    <div class="h-2 w-2/3 bg-primary/8 rounded-sm"></div>
-                </div>
-                <div class="mt-4 space-y-2">
-                    <div class="h-2 w-full bg-primary/8 rounded-sm"></div>
-                    <div class="h-2 w-4/5 bg-primary/8 rounded-sm"></div>
-                </div>
             </x-landing_page.template-card>
         </div>
-
-        {{-- 3. The Architect - Technology, Tech & Engineering --}}
-        <div x-show="activeCategory === 'all' || activeCategory === 'technology'"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 scale-95"
-             x-transition:enter-end="opacity-100 scale-100">
-            <x-landing_page.template-card title="The Architect" category="TECH & ENGINEERING">
-                {{-- Resume skeleton: photo placeholder + sidebar layout --}}
-                <div class="flex gap-3 mb-4">
-                    <div class="w-14 h-10 bg-primary/8 rounded-sm flex items-center justify-center">
-                        <span class="text-[8px] text-primary/30 font-body italic">Photo</span>
-                    </div>
-                    <div class="flex-1 space-y-2 pt-1">
-                        <div class="h-2.5 w-full bg-primary/12 rounded-sm"></div>
-                        <div class="h-2 w-1/2 bg-primary/8 rounded-sm"></div>
-                    </div>
-                </div>
-                <div class="space-y-2 mt-4">
-                    <div class="h-2 w-full bg-primary/8 rounded-sm"></div>
-                    <div class="h-2 w-5/6 bg-primary/8 rounded-sm"></div>
-                    <div class="h-2 w-full bg-primary/8 rounded-sm"></div>
-                </div>
-            </x-landing_page.template-card>
-        </div>
-
-        {{-- 4. Standard Ivory - Professional, Academic & Legal --}}
-        <div x-show="activeCategory === 'all' || activeCategory === 'professional'"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 scale-95"
-             x-transition:enter-end="opacity-100 scale-100">
-            <x-landing_page.template-card title="Standard Ivory" category="ACADEMIC & LEGAL">
-                {{-- Resume skeleton: clean lines layout --}}
-                <div class="space-y-3">
-                    <div class="h-2.5 w-3/4 bg-primary/12 rounded-sm"></div>
-                    <div class="h-px w-full bg-primary/10"></div>
-                    <div class="space-y-2">
-                        <div class="h-2 w-full bg-primary/8 rounded-sm"></div>
-                        <div class="h-2 w-full bg-primary/8 rounded-sm"></div>
-                        <div class="h-2 w-4/5 bg-primary/8 rounded-sm"></div>
-                    </div>
-                    <div class="h-px w-full bg-primary/10 mt-2"></div>
-                    <div class="space-y-2">
-                        <div class="h-2 w-full bg-primary/8 rounded-sm"></div>
-                        <div class="h-2 w-3/4 bg-primary/8 rounded-sm"></div>
-                        <div class="h-2 w-5/6 bg-primary/8 rounded-sm"></div>
-                    </div>
-                </div>
-            </x-landing_page.template-card>
-        </div>
-
-        {{-- 5. Modern Visual - Creative, Marketing & Sales --}}
-        <div x-show="activeCategory === 'all' || activeCategory === 'creative'"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 scale-95"
-             x-transition:enter-end="opacity-100 scale-100">
-            <x-landing_page.template-card title="Modern Visual" category="MARKETING & SALES" badge="AI ENHANCED" badgeColor="purple">
-                {{-- Resume skeleton: two column layout with photo --}}
-                <div class="flex gap-3 mb-4">
-                    <div class="w-12 h-14 bg-primary/8 rounded-sm flex items-center justify-center">
-                        <span class="text-[7px] text-primary/30 font-body italic">Photo</span>
-                    </div>
-                    <div class="flex-1 space-y-2 pt-2">
-                        <div class="h-2.5 w-full bg-primary/12 rounded-sm"></div>
-                        <div class="h-2 w-2/3 bg-primary/8 rounded-sm"></div>
-                    </div>
-                </div>
-                <div class="space-y-2 mt-3">
-                    <div class="h-2 w-full bg-primary/8 rounded-sm"></div>
-                    <div class="h-2 w-5/6 bg-primary/8 rounded-sm"></div>
-                    <div class="h-2 w-full bg-primary/8 rounded-sm"></div>
-                    <div class="h-2 w-2/3 bg-primary/8 rounded-sm"></div>
-                </div>
-            </x-landing_page.template-card>
-        </div>
-
-        {{-- 6. Sidebar Minimal - Managerial --}}
-        <div x-show="activeCategory === 'all' || activeCategory === 'managerial'"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 scale-95"
-             x-transition:enter-end="opacity-100 scale-100">
-            <x-landing_page.template-card title="Sidebar Minimal" category="MANAGERIAL">
-                {{-- Resume skeleton: sidebar + content layout --}}
-                <div class="flex gap-3">
-                    <div class="w-1/3 space-y-3">
-                        <div class="h-2 w-full bg-primary/10 rounded-sm"></div>
-                        <div class="h-2 w-3/4 bg-primary/8 rounded-sm"></div>
-                        <div class="h-2 w-full bg-primary/8 rounded-sm"></div>
-                        <div class="h-6 bg-primary/5 rounded-sm mt-2"></div>
-                    </div>
-                    <div class="flex-1 space-y-3">
-                        <div class="h-3 w-2/3 bg-primary/12 rounded-sm"></div>
-                        <div class="space-y-2">
-                            <div class="h-2 w-full bg-primary/8 rounded-sm"></div>
-                            <div class="h-2 w-full bg-primary/8 rounded-sm"></div>
-                            <div class="h-2 w-4/5 bg-primary/8 rounded-sm"></div>
-                        </div>
-                        <div class="space-y-2 mt-2">
-                            <div class="h-2 w-full bg-primary/8 rounded-sm"></div>
-                            <div class="h-2 w-3/4 bg-primary/8 rounded-sm"></div>
-                        </div>
-                    </div>
-                </div>
-            </x-landing_page.template-card>
-        </div>
+        @endforeach
 
     </div>
 </section>

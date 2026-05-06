@@ -29,10 +29,10 @@
             @endif
         </a>
 
-        <a href="{{ route('admin.templates') }}" class="flex items-center space-x-3 px-6 py-3 transition-all duration-300 relative group {{ request()->routeIs('admin.templates') ? 'text-primary font-bold bg-primary/5' : 'text-primary/60 hover:text-primary hover:bg-primary/5' }}">
-            <span class="material-symbols-outlined {{ request()->routeIs('admin.templates') ? 'icon-filled' : '' }} text-[20px]">style</span>
+        <a href="{{ route('admin.templates.index') }}" class="flex items-center space-x-3 px-6 py-3 transition-all duration-300 relative group {{ request()->routeIs('admin.templates.*') ? 'text-primary font-bold bg-primary/5' : 'text-primary/60 hover:text-primary hover:bg-primary/5' }}">
+            <span class="material-symbols-outlined {{ request()->routeIs('admin.templates.*') ? 'icon-filled' : '' }} text-[20px]">style</span>
             <span class="font-label text-sm tracking-wide">Template Catalog</span>
-            @if(request()->routeIs('admin.templates'))
+            @if(request()->routeIs('admin.templates.*'))
                 <div class="absolute right-0 top-0 bottom-0 w-1 bg-secondary"></div>
             @endif
         </a>

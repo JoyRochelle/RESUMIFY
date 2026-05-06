@@ -11,9 +11,9 @@ class LoginResponse implements LoginResponseContract
     {
         // checking admin
         if (Auth::user()->isAdmin()) {
-            return redirect()->intended('/admin/dashboard');
+            return redirect('/admin/dashboard');
         }
 
-        return redirect()->intended('/dashboard');
+        return redirect('/dashboard');
     }
 }
