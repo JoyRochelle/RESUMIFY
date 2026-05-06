@@ -59,5 +59,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('dashboard'); 
+        
+        Route::get('/users', function () {
+            return view('admin.users');
+        })->name('users');
+        
+        Route::get('/support', function () {
+            return view('admin.support');
+        })->name('support');
+        
+        Route::get('/templates', function () {
+            return view('admin.templates');
+        })->name('templates');
+        
+        Route::get('/logs', function () {
+            return view('admin.logs');
+        })->name('logs');
+        
+        Route::get('/settings', function () {
+            return view('admin.settings');
+        })->name('settings');
     });
 });
