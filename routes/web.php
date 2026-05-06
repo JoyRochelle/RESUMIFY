@@ -9,7 +9,10 @@ use App\Http\Controllers\ResumeExportController;
 
 // Public Routes
 Route::get('/', function () { return view('landing_page.welcome'); })->name('home');
-Route::get('/templates', function () { return view('landing_page.templates'); })->name('templates');
+Route::get('/templates', function () {
+    $templates = \App\Models\CvTemplate::where('is_active', true)->orderBy('sort_order')->get();
+    return view('landing_page.templates', compact('templates'));
+})->name('templates');
 Route::get('/pricing', function () { return view('landing_page.pricing'); })->name('pricing');
 
 
