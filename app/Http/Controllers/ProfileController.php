@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Jobs\CleanupDeletedUserAccount;
 
 class ProfileController extends Controller
 {
@@ -26,7 +27,7 @@ class ProfileController extends Controller
         }
 
         // store new avatar
-        $path = $request->file('avatar')->store('avatar', 'public');
+        $path = $request->file('avatar')->store('avatars', 'public');
 
         $user->update([
             'avatar_url' => $path
@@ -64,9 +65,8 @@ class ProfileController extends Controller
         $user = auth()->user();
 
         $rawAvatar = $user->getRawOriginal('avatar_url');
-        if ($rawAvatar) {
-            Storage::disk('public')->delete($rawAvatar);
-        }
+        
+        CleanupDeletedUserAccount::dispatch($user->id, $rawAvatar);
 
         auth()->logout();
         $user->delete();
