@@ -3,11 +3,13 @@
     
     <div class="flex items-center space-x-3 mb-4">
         <div class="w-10 h-10 rounded-full overflow-hidden bg-primary/10">
-            <img alt="Premium Member Avatar" class="w-full h-full object-cover" src="{{ asset('images/nion.jpg') }}"/>
+            <img alt="User Avatar" class="w-full h-full object-cover" src="{{ auth()->user()->avatar_url }}"/>
         </div>
         <div>
-            <p class="text-sm font-headline font-bold text-primary">The Architect</p>
-            <p class="text-xs font-label text-primary/60 uppercase tracking-wider">Premium Member</p>
+            <p class="text-sm font-headline font-bold text-primary">{{ auth()->user()->name }}</p>
+            <p class="text-xs font-label text-primary/60 uppercase tracking-wider">
+                @if(auth()->user()->isPremium()) Premium Member @else Basic Member @endif
+            </p>
         </div>
     </div>
 

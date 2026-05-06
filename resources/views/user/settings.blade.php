@@ -12,11 +12,13 @@
                 </button>
                 <div class="flex items-center space-x-3 group cursor-pointer">
                     <div class="text-right">
-                        <p class="text-xs font-bold text-primary">Julian Casablancas</p>
-                        <p class="text-[10px] text-primary/60">Editorial Lead</p>
+                        <p class="text-xs font-bold text-primary">{{ auth()->user()->name }}</p>
+                        <p class="text-[10px] text-primary/60">
+                            @if(auth()->user()->isPremium()) Premium Member @else Basic Member @endif
+                        </p>
                     </div>
                     <img alt="User Profile" class="w-8 h-8 rounded-full border border-primary/10 object-cover"
-                        src="{{ asset('images/nion.jpg') }}" />
+                        src="{{ auth()->user()->avatar_url }}" />
                 </div>
             </div>
         </x-user.page-header>
@@ -217,22 +219,32 @@
                 </section>
 
                 {{-- Danger Zone --}}
-                <section class="bg-red-50 border border-red-200 rounded-2xl p-8 shadow-sm">
+                <section class="bg-red-50 border border-red-200 rounded-2xl p-8 shadow-sm"
+                    x-data="{ confirmText: '', password: '' }">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div>
                             <h3 class="font-headline text-2xl text-red-600 mb-1">Danger Zone</h3>
-                            <p class="text-sm text-red-800/70">This action cannot be undone. All your data will be
-                                permanently deleted from our servers.</p>
+                            <p class="text-sm text-red-800/70">This action is permanent. Type <strong class="font-mono">DELETE</strong> to confirm.</p>
                         </div>
                         <form action="{{ route('profile.destroy') }}" method="POST"
-                            onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.')">
+                            @submit.prevent="if (confirmText === 'DELETE') $el.submit()">
                             @csrf
                             @method('DELETE')
-                            <div class="flex flex-col gap-3">
-                                <input type="password" name="password" required placeholder="Confirm your password"
-                                    class="border-b border-red-300 bg-transparent outline-none text-red-800 placeholder-red-400 py-2 text-sm w-full" />
+                            <div class="flex flex-col gap-3 min-w-[260px]">
+                                <input type="password" name="password" x-model="password" required
+                                    placeholder="Your current password"
+                                    class="border-b border-red-300 bg-transparent outline-none text-red-800 
+                                           placeholder-red-400 py-2 text-sm w-full" />
+                                <input type="text" x-model="confirmText"
+                                    placeholder='Type "DELETE" to confirm'
+                                    class="border-b border-red-300 bg-transparent outline-none text-red-800 
+                                           placeholder-red-400 py-2 text-sm w-full font-mono" />
                                 <x-user.button type="submit" variant="danger" icon="delete_forever"
-                                    iconClass="text-lg">Delete Account</x-user.button>
+                                    iconClass="text-lg"
+                                    x-bind:disabled="confirmText !== 'DELETE' || password === ''"
+                                    class="disabled:opacity-40 disabled:cursor-not-allowed">
+                                    Delete Account
+                                </x-user.button>
                             </div>
                         </form>
                     </div>

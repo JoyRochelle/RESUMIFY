@@ -3,15 +3,40 @@
 @section('title', 'Resumify - Dashboard')
 
 @section('content')
+    @if (!auth()->user()->hasVerifiedEmail())
+        <div class="bg-amber-50 border-b border-amber-200 px-6 py-3 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-amber-500 text-lg">mark_email_unread</span>
+                <p class="text-sm text-amber-800 font-body">
+                    Your email is not verified. Please check your inbox.
+                </p>
+            </div>
+            <form method="POST" action="{{ route('verification.send') }}" x-data="{ sent: false }" @submit.prevent="
+                sent = true;
+                $el.submit();
+            ">
+                @csrf
+                <button type="submit" :disabled="sent"
+                    class="text-xs font-bold text-amber-700 underline underline-offset-2 hover:text-amber-900 disabled:opacity-50"
+                    x-text="sent ? 'Email sent!' : 'Resend Verification Email'">
+                </button>
+            </form>
+        </div>
+    @endif
+
     <main class="flex-1 p-8 md:p-12 max-w-7xl mx-auto w-full">
         <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
             <div>
-                <h1 class="text-5xl md:text-6xl font-headline text-primary tracking-tight leading-tight mb-4">Welcome, <br/>Eleanor Vance</h1>
+                <h1 class="text-5xl md:text-6xl font-headline text-primary tracking-tight leading-tight mb-4">Welcome, <br/>{{ auth()->user()->name }}</h1>
                 <div class="flex flex-wrap items-center gap-4">
                     <span class="inline-flex items-center px-4 py-1.5 rounded-full bg-secondary text-tertiary text-sm font-label font-semibold">
-                        Premium Member
+                        @if (auth()->user()->isPremium())
+                            Premium Member
+                        @else
+                            Basic Member
+                        @endif
                     </span>
-                    <span class="text-primary/60 font-label text-sm">AI Quota Remaining: <span class="serif-number font-bold text-primary">45</span>/50</span>
+                    <span class="text-primary/60 font-label text-sm">AI Quota Remaining: <span class="serif-number font-bold text-primary">{{ auth()->user()->getQuotaRemaining() }}</span>/{{ auth()->user()->getQuotaLimit() }}</span>
                 </div>
             </div>
             
