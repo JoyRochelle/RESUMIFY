@@ -13,6 +13,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\LoginResponse;
 use Laravel\Fortify\Contracts\LogoutResponse;
+use Laravel\Fortify\Contracts\LockoutResponse;
 use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -76,5 +77,15 @@ class FortifyServiceProvider extends ServiceProvider
             LogoutResponse::class,
             \App\Http\Responses\LogoutResponse::class
         );
+
+        $this->app->singleton(LockoutResponse::class, function () {
+            return new class implements \Laravel\Fortify\Contracts\LockoutResponse {
+                public function toResponse($request)
+                {
+                    return redirect()->route('login')
+                        ->withErrors(['email' => 'Too many login attempts. Please wait 60 seconds before trying again.']);
+                }
+            };
+        });
     }
 }

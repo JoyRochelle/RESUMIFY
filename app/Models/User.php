@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Subscription;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -143,4 +145,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return $limit > 0 ? round(($this->ai_quota_used / $limit) * 100, 1) : 0;
     }
 
-}
+    // relation 
+    public function subscription():HasOne
+    {
+        return $this->hasOne(Subscription::class);
+    }
+}   
