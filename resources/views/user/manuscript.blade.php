@@ -58,10 +58,10 @@
                     </div>
                     
                     <header class="text-center mb-12">
-                        <h2 class="font-headline text-3xl md:text-4xl font-bold text-primary tracking-tight mb-2">Eleanor Vance</h2>
+                        <h2 class="font-headline text-3xl md:text-4xl font-bold text-primary tracking-tight mb-2">{{ auth()->user()->name }}</h2>
                         <p class="text-sm font-body text-primary/60 tracking-widest uppercase">Senior Product Designer • San Francisco, CA</p>
                         <div class="mt-4 flex justify-center gap-6 text-xs font-medium text-primary/80">
-                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">mail</span> eleanor@vance.design</span>
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">mail</span> {{ auth()->user()->email }}</span>
                             <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">public</span> vance.design</span>
                             <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">call</span> +1 (555) 000-1111</span>
                         </div>

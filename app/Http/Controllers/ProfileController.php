@@ -63,10 +63,8 @@ class ProfileController extends Controller
 
         $user = auth()->user();
 
-        $rawAvatar = $user->getRawOriginal('avatar_url');
-        if ($rawAvatar) {
-            Storage::disk('public')->delete($rawAvatar);
-        }
+        // Skip deleting avatar file to allow full account restoration later
+        // via a cleanup job if permanent deletion is requested.
 
         auth()->logout();
         $user->delete();

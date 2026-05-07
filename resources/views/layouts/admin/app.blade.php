@@ -39,11 +39,11 @@
 
                 <div class="flex items-center space-x-3">
                     <div class="text-right">
-                        <p class="text-sm font-headline font-bold text-primary">Super Admin</p>
+                        <p class="text-sm font-headline font-bold text-primary">{{ auth()->user()->name }}</p>
                         <p class="text-[10px] font-label text-primary/50 uppercase tracking-widest">RESUMIFY HQ</p>
                     </div>
                     <div class="w-9 h-9 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center text-sm font-bold">
-                        <img alt="Admin Avatar" class="w-full h-full object-cover" src="{{ asset('images/nion.jpg') }}" onerror="this.outerHTML='SA'"/>
+                        <img alt="Admin Avatar" class="w-full h-full object-cover" src="{{ auth()->user()->avatar_url }}" onerror="this.outerHTML='{{ substr(auth()->user()->name, 0, 2) }}'"/>
                     </div>
                 </div>
             </div>

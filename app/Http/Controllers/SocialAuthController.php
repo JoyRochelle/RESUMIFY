@@ -10,27 +10,30 @@ use Laravel\Socialite\Facades\Socialite;
 class SocialAuthController extends Controller
 {
     /**
-     * Redirect to Google OAuth.
+     * Redirect to OAuth.
      */
-    public function redirect()
+    public function redirect($provider)
     {
-        return Socialite::driver('google')->redirect();
+        abort_unless(in_array($provider, ['google', 'linkedin-openid']), 404);
+        return Socialite::driver($provider)->redirect();
     }
 
     /**
-     * Handle the Google OAuth callback.
+     * Handle the OAuth callback.
      */
-    public function callback()
+    public function callback($provider)
     {
+        abort_unless(in_array($provider, ['google', 'linkedin-openid']), 404);
+
         try {
-            $socialUser = Socialite::driver('google')->user();
+            $socialUser = Socialite::driver($provider)->user();
         } catch (\Exception $e) {
             return redirect()->route('login')
-                ->withErrors(['oauth' => 'Unable to authenticate with Google. Please try again.']);
+                ->withErrors(['oauth' => "Unable to authenticate with {$provider}. Please try again."]);
         }
 
         // Find existing OAuth link
-        $oauthProvider = OauthProvider::where('provider', 'google')
+        $oauthProvider = OauthProvider::where('provider', $provider)
             ->where('provider_id', $socialUser->getId())
             ->first();
 
@@ -54,9 +57,9 @@ class SocialAuthController extends Controller
                 $user->markEmailAsVerified();
             }
 
-            // Link Google to the user
+            // Link provider to the user
             $user->oauthProviders()->create([
-                'provider' => 'google',
+                'provider' => $provider,
                 'provider_id' => $socialUser->getId(),
                 'token' => $socialUser->token,
             ]);

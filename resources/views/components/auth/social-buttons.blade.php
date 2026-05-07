@@ -8,8 +8,8 @@
         </div>
     </div>
 
-    <div class="grid grid-cols gap-4">
-        <a href="{{ route('social.redirect') }}"
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a href="{{ route('social.redirect', ['provider' => 'google']) }}"
             class="flex items-center justify-center gap-2 py-3 px-4 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors group">
             <svg class="w-4 h-4" viewBox="0 0 24 24">
                 <path
@@ -27,7 +27,7 @@
             </svg>
             <span class="text-sm font-medium text-primary">Google</span>
         </a>
-        {{-- <button
+        <a href="{{ route('social.redirect', ['provider' => 'linkedin-openid']) }}"
             class="flex items-center justify-center gap-2 py-3 px-4 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors">
             <svg class="w-4 h-4 fill-[#0077b5]" viewBox="0 0 24 24">
                 <path
@@ -35,6 +35,6 @@
                 </path>
             </svg>
             <span class="text-sm font-medium text-primary">LinkedIn</span>
-        </button> --}}
+        </a>
     </div>
 </div>
