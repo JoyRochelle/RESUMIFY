@@ -46,7 +46,7 @@ class ResumeController extends Controller
             ['type' => 'skills',          'title' => 'Skills',          'content' => null, 'order' => 4],
         ]);
 
-        return redirect()->route('resumes.edit', $cv)->with('success', 'Resume Created Successfully!');
+        return redirect()->route('user.manuscript')->with('success', 'Resume Created Successfully!');
     }
 
     /**

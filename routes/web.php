@@ -27,12 +27,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Customer Routes (verified email required)
     Route::middleware(['role:basic,premium'])->group(function () {
         Route::get('/dashboard', function () {
-            return view('user.dashboard');
+            $templates = \App\Models\CvTemplate::where('is_active', true)->orderBy('sort_order')->get();
+            return view('user.dashboard', compact('templates'));
         })->name('dashboard');
 
         Route::get('/manuscripts', function () {
-            $templates = \App\Models\CvTemplate::where('is_active', true)->orderBy('sort_order')->get();
             $cv = auth()->user()->cvs()->latest()->first();
+            
+            // If they have no CVs at all, force them to the dashboard to pick a template
+            if (!$cv) {
+                return redirect()->route('dashboard', ['create' => 'true']);
+            }
+            
+            $templates = \App\Models\CvTemplate::where('is_active', true)->orderBy('sort_order')->get();
             return view('user.manuscript', compact('templates', 'cv'));
         })->name('user.manuscript');
 
@@ -56,6 +63,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
         Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        // Public Template Preview
+        Route::get('/templates/{template}/preview', [\App\Http\Controllers\Admin\TemplateController::class, 'preview'])->name('templates.preview');
 
         // Resumes routes
         Route::resource('resumes',ResumeController::class)->parameters([

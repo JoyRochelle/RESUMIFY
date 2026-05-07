@@ -299,37 +299,60 @@
                 <h3 class="text-xl font-headline font-bold text-primary flex items-center gap-2">
                     <span class="material-symbols-outlined text-secondary">layers</span> Select Template
                 </h3>
-                <button onclick="closeTemplateModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
+                <button id="close-modal-btn" onclick="closeTemplateModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
             </div>
             <div class="p-6 overflow-y-auto custom-scrollbar bg-surface flex-1">
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     @foreach($templates as $template)
-                    <div id="template-card-{{ $template->id }}" onclick="selectTemplate('{{ $template->id }}')" onmouseenter="previewTemplate('{{ $template->id }}')" onmouseleave="resetPreview()" class="template-card cursor-pointer group relative border @if($cv && $cv->template_id === $template->id) border-secondary bg-secondary/5 @else border-primary/10 @endif rounded-xl overflow-hidden hover:border-secondary transition-all hover:shadow-lg hover:-translate-y-1">
-                        <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
-                            @if($cv)
-                            <iframe src="{{ route('resumes.preview', $cv) }}?template_id={{ $template->id }}" 
-                                    style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
-                                    class="template-thumbnail-iframe pointer-events-none transition-transform duration-500 origin-top-left"
-                                    loading="lazy" tabindex="-1">
-                            </iframe>
-                            <div class="absolute inset-0 bg-transparent z-10"></div>
-                            @else
-                            <img src="{{ $template->thumbnail }}" alt="{{ $template->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            @endif
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
-                                <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
+                    @if($cv)
+                        <div id="template-card-{{ $template->id }}" onclick="selectTemplate('{{ $template->id }}')" onmouseenter="previewTemplate('{{ $template->id }}')" onmouseleave="resetPreview()" class="template-card cursor-pointer group relative border @if($cv && $cv->template_id === $template->id) border-secondary bg-secondary/5 @else border-primary/10 @endif rounded-xl overflow-hidden hover:border-secondary transition-all hover:shadow-lg hover:-translate-y-1">
+                            <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
+                                <iframe src="{{ route('resumes.preview', $cv) }}?template_id={{ $template->id }}" 
+                                        style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
+                                        class="template-thumbnail-iframe pointer-events-none transition-transform duration-500 origin-top-left"
+                                        loading="lazy" tabindex="-1">
+                                </iframe>
+                                <div class="absolute inset-0 bg-transparent z-10"></div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
+                                    <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
+                                </div>
                             </div>
+                            <div class="p-4">
+                                <h4 class="font-bold text-sm text-primary group-hover:text-secondary transition-colors">{{ $template->name }}</h4>
+                                <p class="text-[11px] text-primary/60 mt-1 line-clamp-2 leading-relaxed">{{ $template->description }}</p>
+                            </div>
+                            @if($cv && $cv->template_id === $template->id)
+                            <div class="absolute top-3 right-3 bg-secondary text-white rounded-full w-6 h-6 shadow-md flex items-center justify-center checkmark">
+                                <span class="material-symbols-outlined text-[14px]">check</span>
+                            </div>
+                            @endif
                         </div>
-                        <div class="p-4">
-                            <h4 class="font-bold text-sm text-primary group-hover:text-secondary transition-colors">{{ $template->name }}</h4>
-                            <p class="text-[11px] text-primary/60 mt-1 line-clamp-2 leading-relaxed">{{ $template->description }}</p>
-                        </div>
-                        @if($cv && $cv->template_id === $template->id)
-                        <div class="absolute top-3 right-3 bg-secondary text-white rounded-full w-6 h-6 shadow-md flex items-center justify-center checkmark">
-                            <span class="material-symbols-outlined text-[14px]">check</span>
-                        </div>
-                        @endif
-                    </div>
+                    @else
+                        <form action="{{ route('resumes.store') }}" method="POST" class="cursor-pointer group relative border border-primary/10 rounded-xl overflow-hidden hover:border-secondary transition-all hover:shadow-lg hover:-translate-y-1 bg-tertiary">
+                            @csrf
+                            <input type="hidden" name="title" value="My Professional Resume">
+                            <input type="hidden" name="template_id" value="{{ $template->id }}">
+                            
+                            <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
+                                <iframe src="{{ route('templates.preview', $template) }}" 
+                                        style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
+                                        class="template-thumbnail-iframe pointer-events-none transition-transform duration-500 origin-top-left"
+                                        loading="lazy" tabindex="-1">
+                                </iframe>
+                                <div class="absolute inset-0 bg-transparent z-10"></div>
+                                
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
+                                    <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-bold text-sm text-primary group-hover:text-secondary transition-colors">{{ $template->name }}</h4>
+                                <p class="text-[11px] text-primary/60 mt-1 line-clamp-2 leading-relaxed">{{ $template->description }}</p>
+                            </div>
+                            
+                            <button type="submit" class="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer"></button>
+                        </form>
+                    @endif
                     @endforeach
                 </div>
             </div>
@@ -640,6 +663,16 @@
                 saveTimeout = setTimeout(() => saveSection(form), 800);
             }
         }
+        @endif
+
+        @if(!$cv)
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(openTemplateModal, 100);
+            
+            // Hide close button so the user MUST pick a template to proceed
+            const closeBtn = document.getElementById('close-modal-btn');
+            if (closeBtn) closeBtn.style.display = 'none';
+        });
         @endif
     </script>
 @endsection
