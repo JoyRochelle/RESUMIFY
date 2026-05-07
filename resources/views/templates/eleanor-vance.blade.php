@@ -14,6 +14,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap');
         
+        @page { margin: 0; }
         body {
             margin: 0; padding: 0;
             font-family: '{{ $style['font_body'] ?? 'Inter' }}', sans-serif;
@@ -21,8 +22,9 @@
             color: #1a1a1a;
         }
         .resume-page {
-            width: 210mm; min-height: 297mm; padding: 24mm;
-            box-sizing: border-box; margin: 0 auto;
+            @if(!isset($isPdf) || !$isPdf) width: 210mm; min-height: 297mm; margin: 0 auto; @endif
+            padding: 24mm;
+            box-sizing: border-box;
         }
         .resume-header {
             text-align: center;

@@ -14,8 +14,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
         
+        @page { margin: 0; }
         body { margin: 0; padding: 0; font-family: '{{ $style['font_body'] ?? 'Poppins' }}', sans-serif; background: {{ $style['background_color'] ?? '#f8fafc' }}; color: #334155; }
-        .resume-page { width: 210mm; min-height: 297mm; padding: 0; box-sizing: border-box; margin: 0 auto; background: #ffffff; }
+        .resume-page { @if(!isset($isPdf) || !$isPdf) width: 210mm; min-height: 297mm; margin: 0 auto; @endif padding: 0; box-sizing: border-box; background: #ffffff; }
         .accent-bar { height: 12px; background: {{ $style['primary_color'] ?? '#f43f5e' }}; width: 100%; }
         .header-container { padding: 30px 40px; display: table; width: 100%; box-sizing: border-box; background: {{ $style['secondary_color'] ?? '#ffe4e6' }}; }
         .photo-cell { display: table-cell; width: 120px; vertical-align: middle; }

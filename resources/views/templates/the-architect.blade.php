@@ -14,8 +14,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Roboto:wght@400;500;700&display=swap');
         
+        @page { margin: 0; }
         body { margin: 0; padding: 0; font-family: '{{ $style['font_body'] ?? 'Roboto' }}', sans-serif; background: #ffffff; color: #333333; }
-        .resume-page { width: 210mm; min-height: 297mm; margin: 0; padding: 0; box-sizing: border-box; background: {{ $style['background_color'] ?? '#ffffff' }}; }
+        .resume-page { @if(!isset($isPdf) || !$isPdf) width: 210mm; min-height: 297mm; margin: 0 auto; @endif padding: 0; box-sizing: border-box; background: {{ $style['background_color'] ?? '#ffffff' }}; }
         .layout-table { width: 100%; height: 100%; border-collapse: collapse; }
         .sidebar { width: 30%; background: {{ $style['secondary_color'] ?? '#f1f5f9' }}; vertical-align: top; padding: 30px 20px; }
         .main-content { width: 70%; vertical-align: top; padding: 40px 30px; }

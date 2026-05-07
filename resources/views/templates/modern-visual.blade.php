@@ -14,8 +14,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Lato:wght@400;700&display=swap');
         
+        @page { margin: 0; }
         body { margin: 0; padding: 0; font-family: '{{ $style['font_body'] ?? 'Lato' }}', sans-serif; background: #fff; }
-        .resume-page { width: 210mm; min-height: 297mm; box-sizing: border-box; margin: 0 auto; background: {{ $style['background_color'] ?? '#ffffff' }}; }
+        .resume-page { @if(!isset($isPdf) || !$isPdf) width: 210mm; min-height: 297mm; margin: 0 auto; @endif box-sizing: border-box; background: {{ $style['background_color'] ?? '#ffffff' }}; }
         .layout { width: 100%; height: 100%; border-collapse: collapse; }
         .col-left { width: 35%; background: {{ $style['primary_color'] ?? '#10b981' }}; color: #ffffff; padding: 40px 25px; vertical-align: top; }
         .col-right { width: 65%; padding: 40px 35px; vertical-align: top; color: #333333; }

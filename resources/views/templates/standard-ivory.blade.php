@@ -14,8 +14,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Open+Sans:wght@400;600&display=swap');
         
+        @page { margin: 0; }
         body { margin: 0; padding: 0; font-family: '{{ $style['font_body'] ?? 'Open Sans' }}', sans-serif; background: {{ $style['background_color'] ?? '#faf9f6' }}; color: #2c2c2c; }
-        .resume-page { width: 210mm; min-height: 297mm; padding: 25mm 20mm; box-sizing: border-box; margin: 0 auto; }
+        .resume-page { @if(!isset($isPdf) || !$isPdf) width: 210mm; min-height: 297mm; margin: 0 auto; @endif padding: 25mm 20mm; box-sizing: border-box; }
         header { text-align: center; margin-bottom: 25px; }
         h1 { font-family: '{{ $style['font_heading'] ?? 'Lora' }}', serif; font-size: 26px; margin: 0; font-weight: 600; color: {{ $style['primary_color'] ?? '#111111' }}; }
         .contact { font-size: 13px; margin-top: 8px; color: #555555; }

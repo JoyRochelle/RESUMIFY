@@ -14,8 +14,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap');
         
+        @page { margin: 0; }
         body { margin: 0; padding: 0; font-family: '{{ $style['font_body'] ?? 'Source Sans Pro' }}', sans-serif; }
-        .resume-page { width: 210mm; min-height: 297mm; box-sizing: border-box; margin: 0 auto; background: {{ $style['background_color'] ?? '#ffffff' }}; }
+        .resume-page { @if(!isset($isPdf) || !$isPdf) width: 210mm; min-height: 297mm; margin: 0 auto; @endif box-sizing: border-box; background: {{ $style['background_color'] ?? '#ffffff' }}; }
         .layout { width: 100%; height: 100%; border-collapse: collapse; }
         .sidebar { width: 28%; background: {{ $style['secondary_color'] ?? '#1e293b' }}; color: #f8fafc; padding: 40px 25px; vertical-align: top; }
         .main { width: 72%; padding: 50px 40px; vertical-align: top; color: #334155; }
