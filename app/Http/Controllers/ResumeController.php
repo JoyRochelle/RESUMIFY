@@ -82,11 +82,12 @@ class ResumeController extends Controller
     public function update(UpdateResumeRequest $request, Cv $cv)
     {
         abort_unless($cv->user_id === auth()->id(), 403);
-        // Detect AJAX auto-save (not our job to implement)
         if ($request->ajax()) {
+            $cv->update($request->validated());
             return response()->json([
-                'message' => 'Auto-save not implemented yet.',
-            ], 501);
+                'success' => true,
+                'message' => 'Resume updated successfully.',
+            ]);
         }
         // Regular form update
         $cv->update($request->validated());
@@ -140,18 +141,33 @@ class ResumeController extends Controller
 
         $data = ['title' => $request->input('title', $section->title)];
 
-        // Decode the JSON content string from the textarea
-        if ($request->filled('content')) {
-            $decoded = json_decode($request->input('content'), true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                return back()->withErrors(['content' => 'Invalid JSON format.']);
+        if ($request->has('content')) {
+            $contentInput = $request->input('content');
+            if (is_string($contentInput) && !empty($contentInput)) {
+                $decoded = json_decode($contentInput, true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    if ($request->ajax() || $request->wantsJson()) {
+                        return response()->json(['success' => false, 'message' => 'Invalid JSON format.'], 422);
+                    }
+                    return back()->withErrors(['content' => 'Invalid JSON format.']);
+                }
+                $data['content'] = $decoded;
+            } else {
+                $data['content'] = $contentInput;
             }
-            $data['content'] = $decoded;
-        } else {
-            $data['content'] = null;
         }
 
         $section->update($data);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            $cv->refresh(); // ensure the latest data is loaded
+            $html = $cv->template->renderHtml($cv);
+            return response()->json([
+                'success' => true, 
+                'section' => $section,
+                'html' => $html
+            ]);
+        }
 
         return redirect()->route('resumes.edit', $cv)
                         ->with('success', 'Section updated!');

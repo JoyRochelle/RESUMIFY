@@ -15,23 +15,26 @@
         @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap');
         
         @page { margin: 0; }
-        body { margin: 0; padding: 0; font-family: '{{ $style['font_body'] ?? 'Source Sans Pro' }}', sans-serif; }
-        .resume-page { @if(!isset($isPdf) || !$isPdf) width: 210mm; min-height: 297mm; margin: 0 auto; @endif box-sizing: border-box; background: {{ $style['background_color'] ?? '#ffffff' }}; }
-        .layout { width: 100%; height: 100%; border-collapse: collapse; }
-        .sidebar { width: 28%; background: {{ $style['secondary_color'] ?? '#1e293b' }}; color: #f8fafc; padding: 40px 25px; vertical-align: top; }
-        .main { width: 72%; padding: 50px 40px; vertical-align: top; color: #334155; }
-        .name { font-family: '{{ $style['font_heading'] ?? 'Source Sans Pro' }}', sans-serif; font-size: 38px; font-weight: 700; color: {{ $style['primary_color'] ?? '#3b82f6' }}; margin: 0 0 5px 0; line-height: 1.1; }
-        .title { font-size: 18px; color: #64748b; font-weight: 600; margin-bottom: 40px; }
-        .section-title { font-family: '{{ $style['font_heading'] ?? 'Source Sans Pro' }}', sans-serif; font-size: 20px; color: #0f172a; margin: 0 0 20px 0; font-weight: 700; }
-        .block { margin-bottom: 25px; }
-        .block-header { display: table; width: 100%; }
-        .block-title { display: table-cell; font-weight: 700; font-size: 16px; color: #0f172a; }
-        .block-date { display: table-cell; text-align: right; font-size: 13px; color: #64748b; font-weight: 600; }
-        .block-subtitle { font-size: 15px; color: {{ $style['primary_color'] ?? '#3b82f6' }}; margin: 4px 0 8px 0; font-weight: 600; }
-        .block-desc { font-size: 14px; line-height: 1.5; }
-        .side-title { font-size: 16px; font-weight: 700; border-bottom: 1px solid #334155; padding-bottom: 5px; margin-bottom: 15px; margin-top: 35px; color: #cbd5e1; text-transform: uppercase; }
-        .side-item { font-size: 14px; margin-bottom: 10px; color: #94a3b8; }
-        .side-item strong { color: #f8fafc; display: block; margin-bottom: 2px;}
+        body { margin: 0; padding: 0; font-family: '{{ $style['font_body'] ?? 'Source Sans Pro' }}', sans-serif; background: #e9eaec; }
+        .resume-page { 
+            @if(!isset($isPdf) || !$isPdf) width: 210mm; min-height: 297mm; margin: 0 auto; box-shadow: 0 20px 40px rgba(0,0,0,0.08); @endif 
+            box-sizing: border-box; background: {{ $style['secondary_color'] ?? '#1e293b' }}; 
+        }
+        .layout { width: 100%; height: 100%; min-height: 297mm; border-collapse: collapse; }
+        .sidebar { width: 30%; color: #f8fafc; padding: 50px 30px; vertical-align: top; }
+        .main { width: 70%; padding: 60px 50px; vertical-align: top; color: #334155; background: {{ $style['background_color'] ?? '#ffffff' }}; }
+        .name { font-family: '{{ $style['font_heading'] ?? 'Source Sans Pro' }}', sans-serif; font-size: 42px; font-weight: 700; color: {{ $style['primary_color'] ?? '#3b82f6' }}; margin: 0 0 8px 0; line-height: 1.1; letter-spacing: -0.5px; }
+        .title { font-size: 20px; color: #64748b; font-weight: 600; margin-bottom: 45px; text-transform: uppercase; letter-spacing: 1px; }
+        .section-title { font-family: '{{ $style['font_heading'] ?? 'Source Sans Pro' }}', sans-serif; font-size: 22px; color: #0f172a; margin: 0 0 25px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 8px; }
+        .block { margin-bottom: 30px; }
+        .block-header { display: table; width: 100%; margin-bottom: 5px; }
+        .block-title { display: table-cell; font-weight: 700; font-size: 17px; color: #0f172a; }
+        .block-date { display: table-cell; text-align: right; font-size: 13.5px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .block-subtitle { font-size: 15.5px; color: {{ $style['primary_color'] ?? '#3b82f6' }}; margin: 0 0 10px 0; font-weight: 600; }
+        .block-desc { font-size: 14.5px; line-height: 1.6; color: #475569; }
+        .side-title { font-size: 17px; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 8px; margin-bottom: 20px; margin-top: 40px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1.5px; }
+        .side-item { font-size: 14.5px; margin-bottom: 15px; color: rgba(255,255,255,0.8); line-height: 1.5; }
+        .side-item strong { color: #ffffff; display: block; margin-bottom: 4px; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;}
     </style>
 </head>
 <body>

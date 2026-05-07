@@ -15,11 +15,15 @@
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Lato:wght@400;700&display=swap');
         
         @page { margin: 0; }
-        body { margin: 0; padding: 0; font-family: '{{ $style['font_body'] ?? 'Lato' }}', sans-serif; background: #fff; }
-        .resume-page { @if(!isset($isPdf) || !$isPdf) width: 210mm; min-height: 297mm; margin: 0 auto; @endif box-sizing: border-box; background: {{ $style['background_color'] ?? '#ffffff' }}; }
-        .layout { width: 100%; height: 100%; border-collapse: collapse; }
-        .col-left { width: 35%; background: {{ $style['primary_color'] ?? '#10b981' }}; color: #ffffff; padding: 40px 25px; vertical-align: top; }
-        .col-right { width: 65%; padding: 40px 35px; vertical-align: top; color: #333333; }
+        body { margin: 0; padding: 0; font-family: '{{ $style['font_body'] ?? 'Lato' }}', sans-serif; background: #e9eaec; }
+        .resume-page { 
+            @if(!isset($isPdf) || !$isPdf) width: 210mm; min-height: 297mm; margin: 0 auto; box-shadow: 0 20px 40px rgba(0,0,0,0.08); @endif 
+            box-sizing: border-box; 
+            background: linear-gradient(to right, {{ $style['primary_color'] ?? '#10b981' }} 35%, {{ $style['background_color'] ?? '#ffffff' }} 35%);
+        }
+        .layout { width: 100%; height: 100%; min-height: 297mm; border-collapse: collapse; }
+        .col-left { width: 35%; color: #ffffff; padding: 40px 25px; vertical-align: top; }
+        .col-right { width: 65%; padding: 40px 35px; vertical-align: top; color: #333333; background: {{ $style['background_color'] ?? '#ffffff' }}; }
         .photo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.3); margin: 0 auto 30px auto; display: block; object-fit: cover; }
         .name { font-family: '{{ $style['font_heading'] ?? 'Montserrat' }}', sans-serif; font-size: 32px; font-weight: 700; color: #ffffff; text-align: center; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px; line-height: 1.1; }
         .title { text-align: center; font-size: 16px; font-weight: 600; background: rgba(255,255,255,0.2); padding: 8px 10px; border-radius: 4px; margin-bottom: 30px; }

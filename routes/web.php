@@ -31,7 +31,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('dashboard');
 
         Route::get('/manuscripts', function () {
-            return view('user.manuscript');
+            $templates = \App\Models\CvTemplate::where('is_active', true)->orderBy('sort_order')->get();
+            $cv = auth()->user()->cvs()->latest()->first();
+            return view('user.manuscript', compact('templates', 'cv'));
         })->name('user.manuscript');
 
         Route::get('/ai-assistant', function () {
