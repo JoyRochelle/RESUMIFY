@@ -6,12 +6,12 @@
     <main class="flex-1 p-8 md:p-12 max-w-7xl mx-auto w-full">
         <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
             <div>
-                <h1 class="text-5xl md:text-6xl font-headline text-primary tracking-tight leading-tight mb-4">Welcome, <br/>Eleanor Vance</h1>
+                <h1 class="text-5xl md:text-6xl font-headline text-primary tracking-tight leading-tight mb-4">Welcome, <br/>{{ auth()->user()->name }}</h1>
                 <div class="flex flex-wrap items-center gap-4">
                     <span class="inline-flex items-center px-4 py-1.5 rounded-full bg-secondary text-tertiary text-sm font-label font-semibold">
-                        Premium Member
+                        {{ auth()->user()->isPremium() ? 'Premium Member' : 'Basic Member' }}
                     </span>
-                    <span class="text-primary/60 font-label text-sm">AI Quota Remaining: <span class="serif-number font-bold text-primary">45</span>/50</span>
+                    <span class="text-primary/60 font-label text-sm">AI Quota Remaining: <span class="serif-number font-bold text-primary">{{ auth()->user()->getQuotaRemaining() }}</span>/{{ auth()->user()->getQuotaLimit() }}</span>
                 </div>
             </div>
             

@@ -12,11 +12,11 @@
                 </button>
                 <div class="flex items-center space-x-3 group cursor-pointer">
                     <div class="text-right">
-                        <p class="text-xs font-bold text-primary">Julian Casablancas</p>
-                        <p class="text-[10px] text-primary/60">Editorial Lead</p>
+                        <p class="text-xs font-bold text-primary">{{ auth()->user()->name }}</p>
+                        <p class="text-[10px] text-primary/60">{{ auth()->user()->isPremium() ? 'Premium Member' : 'Basic Member' }}</p>
                     </div>
                     <img alt="User Profile" class="w-8 h-8 rounded-full border border-primary/10 object-cover"
-                        src="{{ asset('images/nion.jpg') }}" />
+                        src="{{ auth()->user()->avatar_url }}" />
                 </div>
             </div>
         </x-user.page-header>

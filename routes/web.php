@@ -16,10 +16,10 @@ Route::get('/templates', function () {
 Route::get('/pricing', function () { return view('landing_page.pricing'); })->name('pricing');
 
 
-// Google OAuth Routes
+// OAuth Routes
 Route::middleware('guest')->group(function ()  {
-    Route::get('/auth/google', [SocialAuthController::class, 'redirect'])->name('social.redirect');
-    Route::get('/auth/google/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
+    Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect'])->name('social.redirect');
+    Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
 });
 
 // Authenticated Routes
