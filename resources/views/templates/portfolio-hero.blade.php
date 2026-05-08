@@ -15,19 +15,23 @@
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600;700&family=Roboto:wght@300;400;500;700&display=swap');
         
         @page { margin: 0; }
-        body { margin: 0; padding: 0; font-family: '{{ $style['font_body'] ?? 'Roboto' }}', sans-serif; background: #e9eaec; color: #334155; }
+        body { margin: 0; padding: 0; font-family: '{{ $style['font_body'] ?? 'Roboto' }}', sans-serif; background: @if(isset($isPdf) && $isPdf) {{ $style['background_color'] ?? '#ffffff' }} @else #e9eaec @endif; color: #334155; }
         
         .resume-page { 
-            @if(!isset($isPdf) || !$isPdf) width: 210mm; min-height: 297mm; margin: 0 auto; box-shadow: 0 20px 40px rgba(0,0,0,0.08); @endif 
+            @if(!isset($isPdf) || !$isPdf) 
+                width: 210mm; min-height: 297mm; margin: 0 auto; box-shadow: 0 20px 40px rgba(0,0,0,0.08); 
+                background: {{ $style['secondary_color'] ?? '#f8fafc' }}; 
+            @else
+                background: transparent;
+            @endif 
             padding: 0; box-sizing: border-box; 
-            background: {{ $style['secondary_color'] ?? '#f8fafc' }}; 
         }
         
         .layout-table { width: 100%; height: 100%; min-height: 297mm; border-collapse: collapse; }
         
         .sidebar { width: 33%; vertical-align: top; padding: 45px 30px; border-right: 1px solid rgba(0,0,0,0.03); }
         
-        .main-content { width: 67%; vertical-align: top; padding: 55px 45px; background: {{ $style['background_color'] ?? '#ffffff' }}; }
+        .main-content { width: 67%; vertical-align: top; padding: 55px 45px; background: @if(isset($isPdf) && $isPdf) transparent @else {{ $style['background_color'] ?? '#ffffff' }} @endif; }
         
         .photo-container { text-align: center; margin-bottom: 30px; }
         .photo { width: 150px; height: 150px; object-fit: cover; border-radius: 12px; border: 3px solid {{ $style['primary_color'] ?? '#0ea5e9' }}; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
@@ -54,6 +58,9 @@
     </style>
 </head>
 <body>
+    @if(isset($isPdf) && $isPdf)
+    <div style="position: fixed; left: 0; top: 0; bottom: 0; width: 33%; background: {{ $style['secondary_color'] ?? '#f8fafc' }}; z-index: -1;"></div>
+    @endif
     <div class="resume-page">
         <table class="layout-table">
             <tr>
