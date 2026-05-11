@@ -11,8 +11,8 @@
         <span class="material-symbols-outlined">add</span>
     </a>
     <a href="{{ route('user.ai-assistant') }}" class="flex flex-col items-center {{ request()->routeIs('user.ai-assistant') ? 'text-primary' : 'text-primary/50 hover:text-primary' }}">
-        <span class="material-symbols-outlined {{ request()->routeIs('user.ai-assistant') ? 'icon-filled' : '' }}">auto_fix_high</span>
-        <span class="text-[10px] font-label font-medium mt-1">AI</span>
+        <span class="material-symbols-outlined {{ request()->routeIs('user.ai-assistant') ? 'icon-filled' : '' }}">analytics</span>
+        <span class="text-[10px] font-label font-medium mt-1">ATS</span>
     </a>
     <a href="{{ route('user.settings') }}" class="flex flex-col items-center {{ request()->routeIs('user.settings') ? 'text-primary' : 'text-primary/50 hover:text-primary' }}">
         <span class="material-symbols-outlined {{ request()->routeIs('user.settings') ? 'icon-filled' : '' }}">settings</span>

@@ -23,8 +23,8 @@
         </a>
         
         <a href="{{ route('user.ai-assistant') }}" class="flex items-center space-x-3 p-3 transition-all duration-300 {{ request()->routeIs('user.ai-assistant') ? 'text-primary font-bold bg-tertiary rounded-lg shadow-sm' : 'text-primary/60 hover:text-primary hover:translate-x-1' }}">
-            <span class="material-symbols-outlined {{ request()->routeIs('user.ai-assistant') ? 'icon-filled' : '' }}" data-icon="auto_fix_high">auto_fix_high</span>
-            <span class="font-label tracking-wide">AI Assistant</span>
+            <span class="material-symbols-outlined {{ request()->routeIs('user.ai-assistant') ? 'icon-filled' : '' }}" data-icon="analytics">analytics</span>
+            <span class="font-label tracking-wide">ATS Analyzer</span>
         </a>
         <a href="{{ route('user.settings') }}" class="flex items-center space-x-3 p-3 transition-all duration-300 {{ request()->routeIs('user.settings') ? 'text-primary font-bold bg-tertiary rounded-lg shadow-sm' : 'text-primary/60 hover:text-primary hover:translate-x-1' }}">
             <span class="material-symbols-outlined {{ request()->routeIs('user.settings') ? 'icon-filled' : '' }}" data-icon="settings">settings</span>

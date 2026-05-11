@@ -47,4 +47,8 @@ return [
         'client_secret' => env('LINKEDIN_CLIENT_SECRET'),
         'redirect' => env('LINKEDIN_REDIRECT_URI'),
     ],
+
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+    ],
 ];

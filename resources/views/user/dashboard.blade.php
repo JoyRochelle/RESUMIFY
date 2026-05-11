@@ -47,8 +47,8 @@
                 "Use strong action verbs to give weight to your professional narrative."
             </x-user.insight-block>
 
-            <x-user.insight-block number="02" label="AI Insight">
-                Your 'Senior Product Designer' resume has a <span class="text-secondary font-bold">92%</span> match for 2024 tech industry standards.
+            <x-user.insight-block number="02" label="ATS Analyzer">
+                Check how well your resume matches a job description with our <a href="{{ route('user.ai-assistant') }}" class="text-secondary font-bold hover:underline">ATS Analyzer</a> — get a keyword score and actionable suggestions in seconds.
             </x-user.insight-block>
 
         </section>

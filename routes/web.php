@@ -6,6 +6,7 @@ use App\Http\Controllers\ResumeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\ResumeExportController;
+use App\Http\Controllers\AtsController;
 
 // Public Routes
 Route::get('/', function () { return view('landing_page.welcome'); })->name('home');
@@ -78,6 +79,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('resumes/{cv}/preview', [ResumeExportController::class, 'preview'])->name('resumes.preview');
         Route::get('resumes/{cv}/pdf', [ResumeExportController::class, 'downloadPdf'])->name('resumes.pdf');
+
+        // ATS Analyzer
+        Route::post('/ats/analyze', [AtsController::class, 'analyze'])->name('ats.analyze');
     });
 
     // Admin Routes
