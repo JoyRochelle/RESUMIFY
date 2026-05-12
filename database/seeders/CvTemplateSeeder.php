@@ -49,7 +49,7 @@ class CvTemplateSeeder extends Seeder
         CvTemplate::create([
             'name'         => 'The Architect',
             'blade_path'   => 'templates.the-architect',
-            'category'     => 'startup_local',
+            'category'     => 'technology',
             'badge'        => null,
             'badge_color'  => null,
             'is_premium'   => false,
@@ -105,7 +105,7 @@ class CvTemplateSeeder extends Seeder
         CvTemplate::create([
             'name'         => 'Sidebar Minimal',
             'blade_path'   => 'templates.sidebar-minimal',
-            'category'     => 'bumn_government',
+            'category'     => 'professional',
             'badge'        => null,
             'badge_color'  => null,
             'is_premium'   => false,
@@ -123,7 +123,7 @@ class CvTemplateSeeder extends Seeder
         CvTemplate::create([
             'name'         => 'BUMN Official',
             'blade_path'   => 'templates.bumn-standard',
-            'category'     => 'bumn_government',
+            'category'     => 'professional',
             'badge'        => 'ATS OK',
             'badge_color'  => 'blue',
             'is_premium'   => false,
@@ -141,7 +141,7 @@ class CvTemplateSeeder extends Seeder
         CvTemplate::create([
             'name'         => 'Government Pro',
             'blade_path'   => 'templates.government-pro',
-            'category'     => 'bumn_government',
+            'category'     => 'professional',
             'badge'        => null,
             'badge_color'  => null,
             'is_premium'   => false,
@@ -159,7 +159,7 @@ class CvTemplateSeeder extends Seeder
         CvTemplate::create([
             'name'         => 'Tech Startup',
             'blade_path'   => 'templates.tech-startup',
-            'category'     => 'startup_local',
+            'category'     => 'technology',
             'badge'        => 'NEW',
             'badge_color'  => 'green',
             'is_premium'   => false,
@@ -177,7 +177,7 @@ class CvTemplateSeeder extends Seeder
         CvTemplate::create([
             'name'         => 'Agile Developer',
             'blade_path'   => 'templates.agile-dev',
-            'category'     => 'startup_local',
+            'category'     => 'technology',
             'badge'        => null,
             'badge_color'  => null,
             'is_premium'   => false,

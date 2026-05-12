@@ -4,7 +4,7 @@
 @theme {
     /* Colors from Guidelines */
     --color-primary: #4f3b2f;
-    --color-secondary: #10b981;
+    --color-secondary: #0F6E56;
     --color-tertiary: #ffffff;
     --color-neutral: #fdf8f4;
 
@@ -27,7 +27,8 @@
     --font-label: "Manrope", sans-serif;
 
     /* Border Radius - Soft Minimalist */
-    --radius-lg: 0.5rem;
+    --radius-lg: 0.5rem; /* 8px — cards */
+    --radius-pill: 1.25rem; /* 20px — pills */
 }
 
 @layer base {
