@@ -78,7 +78,7 @@
                     @if(!empty($info['phone']))
                     <div class="contact-item">
                         <div class="contact-label">Phone</div>
-                        {{ $info['phone'] }}
+                        {{ !empty($info['country_code']) ? $info['country_code'].' ' : '' }}{{ $info['phone'] }}
                     </div>
                     @endif
                     @if(!empty($info['location']))

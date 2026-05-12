@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -13,6 +14,8 @@ class AtsController extends Controller
      */
     public function analyze(Request $request)
     {
+        // Cap execution time so PHP never hangs the request indefinitely
+        set_time_limit(65);
         $request->validate([
             'resume'          => ['required', 'string', 'min:50', 'max:20000'],
             'job_description' => ['required', 'string', 'min:50', 'max:20000'],
@@ -31,9 +34,9 @@ class AtsController extends Controller
         $prompt = $this->buildPrompt($resumeText, $jdText);
 
         try {
-            $response = Http::timeout(60)->withHeaders([
+            $response = Http::timeout(30)->connectTimeout(5)->withHeaders([
                 'Content-Type' => 'application/json',
-            ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key={$apiKey}", [
+            ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={$apiKey}", [
                 'contents' => [
                     [
                         'parts' => [
@@ -69,6 +72,9 @@ class AtsController extends Controller
 
             return response()->json($analysis);
 
+        } catch (ConnectionException $e) {
+            Log::error('ATS Connection Timeout', ['message' => $e->getMessage()]);
+            return response()->json(['message' => 'The AI service did not respond in time. Please try again.'], 504);
         } catch (\Exception $e) {
             Log::error('ATS Analysis Exception', ['message' => $e->getMessage()]);
             return response()->json(['message' => 'An error occurred during analysis.'], 500);

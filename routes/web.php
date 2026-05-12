@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\ResumeExportController;
 use App\Http\Controllers\AtsController;
+use App\Http\Controllers\ManuscriptAtsController;
 
 // Public Routes
 Route::get('/', function () { return view('landing_page.welcome'); })->name('home');
@@ -38,6 +39,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
             // If they have no CVs at all, force them to the dashboard to pick a template
             if (!$cv) {
                 return redirect()->route('dashboard', ['create' => 'true']);
+            }
+
+            // Ensure essential sections exist
+            $required = ['personal_info', 'work_experience', 'education', 'skills', 'target_job'];
+            $existing = $cv->sections()->pluck('type')->toArray();
+            $missing  = array_diff($required, $existing);
+            
+            if (!empty($missing)) {
+                foreach ($missing as $type) {
+                    $cv->sections()->create([
+                        'type' => $type,
+                        'title' => ucwords(str_replace('_', ' ', $type)),
+                        'order' => array_search($type, $required) + 1,
+                        'content' => null
+                    ]);
+                }
+                $cv->load('sections');
             }
             
             $templates = \App\Models\CvTemplate::where('is_active', true)->orderBy('sort_order')->get();
@@ -76,6 +94,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('resumes/{cv}/duplicate', [ResumeController::class, 'duplicate'])->name('resumes.duplicate');
 
         Route::put('resumes/{cv}/section/{section}', [ResumeController::class, 'updateSection'])->name('resumes.updateSection');
+        Route::post('resumes/{cv}/ats-score', [ManuscriptAtsController::class, 'score'])
+            ->middleware('throttle:5,1')
+            ->name('resumes.atsScore');
 
         Route::get('resumes/{cv}/preview', [ResumeExportController::class, 'preview'])->name('resumes.preview');
         Route::get('resumes/{cv}/pdf', [ResumeExportController::class, 'downloadPdf'])->name('resumes.pdf');

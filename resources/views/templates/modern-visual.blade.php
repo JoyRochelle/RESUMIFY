@@ -53,7 +53,7 @@
                     
                     <h2 class="section-left-title">Contact</h2>
                     <div class="contact-row">{{ $info['email'] ?? 'email@example.com' }}</div>
-                    @if(!empty($info['phone']))<div class="contact-row">{{ $info['phone'] }}</div>@endif
+                    @if(!empty($info['phone']))<div class="contact-row">{{ !empty($info['country_code']) ? $info['country_code'].' ' : '' }}{{ $info['phone'] }}</div>@endif
                     @if(!empty($info['location']))<div class="contact-row">{{ $info['location'] }}</div>@endif
                     
                     @if($skills && !empty($skills->content))

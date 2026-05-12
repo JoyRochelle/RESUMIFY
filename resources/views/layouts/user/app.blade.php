@@ -18,6 +18,8 @@
     @yield('content')
 
     @include('layouts.user.mobilenavbar')
+
+    @stack('scripts')
     
 </body>
 </html>

@@ -7,6 +7,7 @@ use App\Models\CvSection;
 use App\Models\CvTemplate;
 use App\Http\Requests\StoreResumeRequest;
 use App\Http\Requests\UpdateResumeRequest;
+use App\Http\Requests\UpdateSectionRequest;
 use Illuminate\Http\Request;
 
 class ResumeController extends Controller
@@ -44,6 +45,7 @@ class ResumeController extends Controller
             ['type' => 'work_experience', 'title' => 'Work Experience', 'content' => null, 'order' => 2],
             ['type' => 'education',       'title' => 'Education',       'content' => null, 'order' => 3],
             ['type' => 'skills',          'title' => 'Skills',          'content' => null, 'order' => 4],
+            ['type' => 'target_job',      'title' => 'Target Job',      'content' => null, 'order' => 5],
         ]);
 
         return redirect()->route('user.manuscript')->with('success', 'Resume Created Successfully!');
@@ -130,7 +132,7 @@ class ResumeController extends Controller
     /**
      * Update a single section's content.
      */
-    public function updateSection(Request $request, Cv $cv, CvSection $section)
+    public function updateSection(UpdateSectionRequest $request, Cv $cv, CvSection $section)
     {
         abort_unless($cv->user_id === auth()->id(), 403);
         abort_unless($section->cv_id === $cv->id, 404);
@@ -143,13 +145,13 @@ class ResumeController extends Controller
 
         if ($request->has('content')) {
             $contentInput = $request->input('content');
+            // Content is already validated & sanitized by UpdateSectionRequest
             if (is_string($contentInput) && !empty($contentInput)) {
                 $decoded = json_decode($contentInput, true);
                 if (json_last_error() !== JSON_ERROR_NONE) {
-                    if ($request->ajax() || $request->wantsJson()) {
-                        return response()->json(['success' => false, 'message' => 'Invalid JSON format.'], 422);
-                    }
-                    return back()->withErrors(['content' => 'Invalid JSON format.']);
+                    return $request->wantsJson()
+                        ? response()->json(['success' => false, 'message' => 'Invalid JSON format.'], 422)
+                        : back()->withErrors(['content' => 'Invalid JSON format.']);
                 }
                 $data['content'] = $decoded;
             } else {

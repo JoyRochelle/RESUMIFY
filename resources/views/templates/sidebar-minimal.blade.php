@@ -45,7 +45,7 @@
                     <div style="margin-top: 20px;">
                         <div class="side-title" style="margin-top: 0;">Contact</div>
                         <div class="side-item"><strong>Email</strong> {{ $info['email'] ?? 'email@example.com' }}</div>
-                        @if(!empty($info['phone']))<div class="side-item"><strong>Phone</strong> {{ $info['phone'] }}</div>@endif
+                        @if(!empty($info['phone']))<div class="side-item"><strong>Phone</strong> {{ !empty($info['country_code']) ? $info['country_code'].' ' : '' }}{{ $info['phone'] }}</div>@endif
                         @if(!empty($info['location']))<div class="side-item"><strong>Location</strong> {{ $info['location'] }}</div>@endif
                     </div>
                     

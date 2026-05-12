@@ -217,7 +217,6 @@
     </style>
 
     <script>
-    // ── Utility ──────────────────────────────────────────────────────────────
 
     function wordCount(text) {
         return text.trim() ? text.trim().split(/\s+/).length : 0;
@@ -239,13 +238,9 @@
             .replace(/>/g, '&gt;');
     }
 
-    // ── Word count live update ────────────────────────────────────────────────
-
     document.getElementById('resume-input').addEventListener('input', function () {
         document.getElementById('resume-word-count').textContent = wordCount(this.value) + ' words';
     });
-
-    // ── Build score circle SVG ────────────────────────────────────────────────
 
     function buildScoreCircle(score) {
         const r           = 56;
@@ -283,8 +278,6 @@
         });
     }
 
-    // ── Render results ────────────────────────────────────────────────────────
-
     function renderResults(data) {
         // Show results panel
         document.getElementById('ats-empty-state').classList.add('hidden');
@@ -318,14 +311,12 @@
                 ? `Adding these terms could increase your ATS visibility by approx. ${pct}%.`
                 : 'Your resume covers all critical keywords from the job description.';
 
-        // ─ Matched keywords
         const matchedContainer = document.getElementById('matched-keywords-container');
         document.getElementById('matched-count-badge').textContent = data.matched.length + ' matched';
         matchedContainer.innerHTML = data.matched.length
             ? data.matched.map(k => makeSuccessTag(k)).join('')
             : `<span class="text-xs text-primary/40">No keywords matched yet.</span>`;
 
-        // ─ Action verbs
         const verbsContainer = document.getElementById('action-verbs-container');
         verbsContainer.innerHTML = data.action_verbs.length
             ? data.action_verbs.map(v => makeSuccessTag(v)).join('')
@@ -361,7 +352,6 @@
         }
         lengthBody.textContent = data.length_tip;
 
-        // ─ Insights
         const insightsContainer = document.getElementById('insights-container');
         insightsContainer.innerHTML = data.insights.map((ins, i) => `
             <div class="animate-fade-in-up" style="animation-delay:${i * 80}ms">
@@ -395,35 +385,52 @@
         clearError();
         setLoading(true);
 
+        // Abort the request automatically after 90 seconds so the spinner never hangs
+        const controller = new AbortController();
+        const timeoutId  = setTimeout(() => controller.abort(), 90_000);
+
         try {
-            const response = await fetch('{{ route("ats.analyze") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({ resume, job_description: jd }),
-            });
+            let response;
+            try {
+                response = await fetch('{{ route("ats.analyze") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ resume, job_description: jd }),
+                    signal: controller.signal,
+                });
+            } catch (fetchErr) {
+                if (fetchErr.name === 'AbortError') {
+                    showError('Request timed out. The AI service took too long — please try again.');
+                } else {
+                    showError('Network error — please check your connection and try again.');
+                }
+                setLoading(false);
+                return;
+            }
 
             let data;
             try {
                 data = await response.json();
             } catch (_) {
                 showError('Unexpected server response. Please try again.');
+                setLoading(false);
                 return;
             }
 
             if (!response.ok) {
                 const msg = data.message ?? (data.errors ? Object.values(data.errors).flat().join(' ') : 'Something went wrong.');
                 showError(msg);
+                setLoading(false);
                 return;
             }
 
             renderResults(data);
-        } catch (e) {
-            showError('Network error — please check your connection and try again.');
         } finally {
+            clearTimeout(timeoutId);
             setLoading(false);
         }
     });
@@ -448,8 +455,6 @@
     function clearError() {
         document.getElementById('ats-error').classList.add('hidden');
     }
-
-    // ── Instructions modal ────────────────────────────────────────────────────
 
     document.getElementById('ats-instructions-btn').addEventListener('click', () => {
         const modal   = document.getElementById('instructions-modal');
