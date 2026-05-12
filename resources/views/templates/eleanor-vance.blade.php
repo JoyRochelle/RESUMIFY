@@ -58,7 +58,7 @@
             <h1>{{ $info['name'] ?? 'Your Name' }}</h1>
             <div class="contact-info">
                 {{ $info['email'] ?? 'email@example.com' }} 
-                @if(!empty($info['phone'])) &bull; {{ $info['phone'] }} @endif
+                @if(!empty($info['phone'])) &bull; {{ !empty($info['country_code']) ? $info['country_code'].' ' : '' }}{{ $info['phone'] }} @endif
                 @if(!empty($info['location'])) &bull; {{ $info['location'] }} @endif
             </div>
         </header>

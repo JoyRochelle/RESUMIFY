@@ -15,7 +15,18 @@ class ResumeExportController extends Controller
     {
         abort_unless($cv->user_id === auth()->id(), 403); // only owner can preview
         $cv->load(['template', 'sections']);
-        return view($cv->template->blade_path, compact('cv'));
+
+        $templateBlade = $cv->template->blade_path;
+        if (request()->has('template_id')) {
+            $previewTemplate = \App\Models\CvTemplate::find(request()->query('template_id'));
+            if ($previewTemplate) {
+                $templateBlade = $previewTemplate->blade_path;
+                // Temporarily override the style config if needed, or just let it use the current CV's style
+                $cv->setRelation('template', $previewTemplate);
+            }
+        }
+
+        return view($templateBlade, compact('cv'));
     }
 
     // PDF download

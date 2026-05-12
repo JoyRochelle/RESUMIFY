@@ -6,6 +6,8 @@ use App\Http\Controllers\ResumeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\ResumeExportController;
+use App\Http\Controllers\AtsController;
+use App\Http\Controllers\ManuscriptAtsController;
 
 // Public Routes
 Route::get('/', function () { return view('landing_page.welcome'); })->name('home');
@@ -27,11 +29,37 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Customer Routes (verified email required)
     Route::middleware(['role:basic,premium'])->group(function () {
         Route::get('/dashboard', function () {
-            return view('user.dashboard');
+            $templates = \App\Models\CvTemplate::where('is_active', true)->orderBy('sort_order')->get();
+            return view('user.dashboard', compact('templates'));
         })->name('dashboard');
 
         Route::get('/manuscripts', function () {
-            return view('user.manuscript');
+            $cv = auth()->user()->cvs()->latest()->first();
+            
+            // If they have no CVs at all, force them to the dashboard to pick a template
+            if (!$cv) {
+                return redirect()->route('dashboard', ['create' => 'true']);
+            }
+
+            // Ensure essential sections exist
+            $required = ['personal_info', 'work_experience', 'education', 'skills', 'target_job'];
+            $existing = $cv->sections()->pluck('type')->toArray();
+            $missing  = array_diff($required, $existing);
+            
+            if (!empty($missing)) {
+                foreach ($missing as $type) {
+                    $cv->sections()->create([
+                        'type' => $type,
+                        'title' => ucwords(str_replace('_', ' ', $type)),
+                        'order' => array_search($type, $required) + 1,
+                        'content' => null
+                    ]);
+                }
+                $cv->load('sections');
+            }
+            
+            $templates = \App\Models\CvTemplate::where('is_active', true)->orderBy('sort_order')->get();
+            return view('user.manuscript', compact('templates', 'cv'));
         })->name('user.manuscript');
 
         Route::get('/ai-assistant', function () {
@@ -55,6 +83,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+        // Public Template Preview
+        Route::get('/templates/{template}/preview', [\App\Http\Controllers\Admin\TemplateController::class, 'preview'])->name('templates.preview');
+
         // Resumes routes
         Route::resource('resumes',ResumeController::class)->parameters([
             'resumes' => 'cv'
@@ -63,9 +94,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('resumes/{cv}/duplicate', [ResumeController::class, 'duplicate'])->name('resumes.duplicate');
 
         Route::put('resumes/{cv}/section/{section}', [ResumeController::class, 'updateSection'])->name('resumes.updateSection');
+        Route::post('resumes/{cv}/ats-score', [ManuscriptAtsController::class, 'score'])
+            ->middleware('throttle:5,1')
+            ->name('resumes.atsScore');
 
         Route::get('resumes/{cv}/preview', [ResumeExportController::class, 'preview'])->name('resumes.preview');
         Route::get('resumes/{cv}/pdf', [ResumeExportController::class, 'downloadPdf'])->name('resumes.pdf');
+
+        // ATS Analyzer
+        Route::post('/ats/analyze', [AtsController::class, 'analyze'])->name('ats.analyze');
     });
 
     // Admin Routes

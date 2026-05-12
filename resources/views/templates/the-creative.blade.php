@@ -52,7 +52,7 @@
                 @if(isset($info['title'])) <div class="role">{{ $info['title'] }}</div> @endif
                 <div class="contact-info">
                     {{ $info['email'] ?? 'email@example.com' }} 
-                    @if(!empty($info['phone'])) | {{ $info['phone'] }} @endif
+                    @if(!empty($info['phone'])) | {{ !empty($info['country_code']) ? $info['country_code'].' ' : '' }}{{ $info['phone'] }} @endif
                     @if(!empty($info['location'])) | {{ $info['location'] }} @endif
                 </div>
             </div>

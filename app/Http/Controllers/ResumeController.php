@@ -7,6 +7,7 @@ use App\Models\CvSection;
 use App\Models\CvTemplate;
 use App\Http\Requests\StoreResumeRequest;
 use App\Http\Requests\UpdateResumeRequest;
+use App\Http\Requests\UpdateSectionRequest;
 use Illuminate\Http\Request;
 
 class ResumeController extends Controller
@@ -44,9 +45,10 @@ class ResumeController extends Controller
             ['type' => 'work_experience', 'title' => 'Work Experience', 'content' => null, 'order' => 2],
             ['type' => 'education',       'title' => 'Education',       'content' => null, 'order' => 3],
             ['type' => 'skills',          'title' => 'Skills',          'content' => null, 'order' => 4],
+            ['type' => 'target_job',      'title' => 'Target Job',      'content' => null, 'order' => 5],
         ]);
 
-        return redirect()->route('resumes.edit', $cv)->with('success', 'Resume Created Successfully!');
+        return redirect()->route('user.manuscript')->with('success', 'Resume Created Successfully!');
     }
 
     /**
@@ -82,11 +84,12 @@ class ResumeController extends Controller
     public function update(UpdateResumeRequest $request, Cv $cv)
     {
         abort_unless($cv->user_id === auth()->id(), 403);
-        // Detect AJAX auto-save (not our job to implement)
         if ($request->ajax()) {
+            $cv->update($request->validated());
             return response()->json([
-                'message' => 'Auto-save not implemented yet.',
-            ], 501);
+                'success' => true,
+                'message' => 'Resume updated successfully.',
+            ]);
         }
         // Regular form update
         $cv->update($request->validated());
@@ -129,7 +132,7 @@ class ResumeController extends Controller
     /**
      * Update a single section's content.
      */
-    public function updateSection(Request $request, Cv $cv, CvSection $section)
+    public function updateSection(UpdateSectionRequest $request, Cv $cv, CvSection $section)
     {
         abort_unless($cv->user_id === auth()->id(), 403);
         abort_unless($section->cv_id === $cv->id, 404);
@@ -140,18 +143,33 @@ class ResumeController extends Controller
 
         $data = ['title' => $request->input('title', $section->title)];
 
-        // Decode the JSON content string from the textarea
-        if ($request->filled('content')) {
-            $decoded = json_decode($request->input('content'), true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                return back()->withErrors(['content' => 'Invalid JSON format.']);
+        if ($request->has('content')) {
+            $contentInput = $request->input('content');
+            // Content is already validated & sanitized by UpdateSectionRequest
+            if (is_string($contentInput) && !empty($contentInput)) {
+                $decoded = json_decode($contentInput, true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    return $request->wantsJson()
+                        ? response()->json(['success' => false, 'message' => 'Invalid JSON format.'], 422)
+                        : back()->withErrors(['content' => 'Invalid JSON format.']);
+                }
+                $data['content'] = $decoded;
+            } else {
+                $data['content'] = $contentInput;
             }
-            $data['content'] = $decoded;
-        } else {
-            $data['content'] = null;
         }
 
         $section->update($data);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            $cv->refresh(); // ensure the latest data is loaded
+            $html = $cv->template->renderHtml($cv);
+            return response()->json([
+                'success' => true, 
+                'section' => $section,
+                'html' => $html
+            ]);
+        }
 
         return redirect()->route('resumes.edit', $cv)
                         ->with('success', 'Section updated!');

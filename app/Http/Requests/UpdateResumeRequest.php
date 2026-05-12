@@ -25,6 +25,7 @@ class UpdateResumeRequest extends FormRequest
         return [
             'title' => ['sometimes', 'required', 'string', 'max:100'],
             'is_public' => ['sometimes', 'boolean'],
+            'template_id' => ['sometimes', 'required', 'exists:cv_templates,id'],
         ];
     }
 }
