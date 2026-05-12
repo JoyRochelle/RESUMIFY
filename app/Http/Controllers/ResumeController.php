@@ -141,7 +141,10 @@ class ResumeController extends Controller
             'title' => ['sometimes', 'string', 'max:100'],
         ]);
 
-        $data = ['title' => $request->input('title', $section->title)];
+        $data = [
+            'title' => $request->input('title', $section->title),
+            'last_saved_at' => now(),
+        ];
 
         if ($request->has('content')) {
             $contentInput = $request->input('content');
