@@ -13,34 +13,16 @@
     </p>
 </section>
 
-{{-- Category Filter Tabs --}}
-<section class="max-w-7xl mx-auto px-8 pb-16" x-data="{ activeCategory: 'all' }">
+{{-- Category Filter Tabs + Template Grid + Preview Overlay --}}
+<section class="max-w-7xl mx-auto px-8 pb-16" x-data="templateLibrary()">
     <div class="flex flex-wrap justify-center gap-3 mb-16">
-        <button @click="activeCategory = 'all'"
-                :class="activeCategory === 'all' ? 'bg-secondary text-white border-secondary' : 'bg-transparent text-primary border-primary/20 hover:border-primary/40'"
-                class="px-6 py-2 rounded-full text-sm font-bold font-body border transition-all duration-300">
-            All
-        </button>
-        <button @click="activeCategory = 'professional'"
-                :class="activeCategory === 'professional' ? 'bg-secondary text-white border-secondary' : 'bg-transparent text-primary border-primary/20 hover:border-primary/40'"
-                class="px-6 py-2 rounded-full text-sm font-bold font-body border transition-all duration-300">
-            Professional
-        </button>
-        <button @click="activeCategory = 'creative'"
-                :class="activeCategory === 'creative' ? 'bg-secondary text-white border-secondary' : 'bg-transparent text-primary border-primary/20 hover:border-primary/40'"
-                class="px-6 py-2 rounded-full text-sm font-bold font-body border transition-all duration-300">
-            Creative
-        </button>
-        <button @click="activeCategory = 'technology'"
-                :class="activeCategory === 'technology' ? 'bg-secondary text-white border-secondary' : 'bg-transparent text-primary border-primary/20 hover:border-primary/40'"
-                class="px-6 py-2 rounded-full text-sm font-bold font-body border transition-all duration-300">
-            Technology
-        </button>
-        <button @click="activeCategory = 'managerial'"
-                :class="activeCategory === 'managerial' ? 'bg-secondary text-white border-secondary' : 'bg-transparent text-primary border-primary/20 hover:border-primary/40'"
-                class="px-6 py-2 rounded-full text-sm font-bold font-body border transition-all duration-300">
-            Managerial
-        </button>
+        <template x-for="tab in tabs" :key="tab.key">
+            <button @click="activeCategory = tab.key"
+                    :class="activeCategory === tab.key ? 'bg-secondary text-white border-secondary shadow-md' : 'bg-transparent text-primary border-primary/20 hover:border-primary/40 hover:bg-primary/5'"
+                    class="px-6 py-2 rounded-full text-sm font-bold font-body border transition-all duration-300"
+                    x-text="tab.label">
+            </button>
+        </template>
     </div>
 
     {{-- Template Grid --}}
@@ -57,14 +39,69 @@
                 badge="{{ $template->badge }}" 
                 badgeColor="{{ $template->badge_color }}">
                 
-                <div class="w-full h-80 bg-[#f4f4f5] flex items-center justify-center rounded-sm overflow-hidden relative group">
-                    <img src="{{ $template->thumbnail }}" alt="{{ $template->name }}" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105">
+                <div class="w-full h-80 bg-[#f4f4f5] flex items-center justify-center rounded-sm overflow-hidden relative group/img cursor-pointer"
+                     @click="openPreview('{{ $template->id }}', '{{ $template->name }}', '{{ addslashes($template->description) }}', '{{ route('templates.preview', $template) }}')">
+                    <img src="{{ $template->thumbnail }}" alt="{{ $template->name }}" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover/img:scale-105">
                 </div>
 
             </x-landing_page.template-card>
         </div>
         @endforeach
 
+    </div>
+
+    {{-- Full-Page Preview Overlay --}}
+    <div x-show="previewOpen" x-cloak
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center overflow-y-auto"
+         @click.self="closePreview()" @keydown.escape.window="closePreview()">
+
+        <div x-show="previewOpen"
+             x-transition:enter="transition ease-out duration-300 delay-100"
+             x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+             x-transition:leave-end="opacity-0 translate-y-8 scale-95"
+             class="bg-surface w-full max-w-4xl my-8 mx-4 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+
+            {{-- Modal Header --}}
+            <div class="px-6 py-4 border-b border-primary/10 bg-surface-container-low flex items-center justify-between shrink-0">
+                <div>
+                    <h3 class="text-xl font-headline font-bold text-primary" x-text="previewName"></h3>
+                    <p class="text-xs text-primary/60 mt-1 font-body" x-text="previewDescription"></p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a :href="'{{ route('register') }}'" class="inline-flex items-center gap-2 bg-secondary text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-secondary/90 transition-all shadow-sm hover:shadow-md">
+                        <span class="material-symbols-outlined text-[16px]">edit_document</span>
+                        Use This Template
+                    </a>
+                    <button @click="closePreview()" class="text-primary/60 hover:text-primary transition-colors p-1.5 rounded-full hover:bg-primary/5">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+            </div>
+
+            {{-- Rendered Template Preview (iframe) --}}
+            <div class="flex-1 bg-primary/5 p-6 overflow-y-auto custom-scrollbar">
+                <div class="w-full max-w-[794px] mx-auto bg-white shadow-xl rounded-sm border border-primary/10 overflow-hidden" style="aspect-ratio: 210/297;">
+                    <iframe x-ref="previewFrame" :src="previewUrl"
+                            style="width: 794px; height: 1123px; transform-origin: 0 0; border: none;"
+                            class="pointer-events-none"
+                            x-effect="if (previewOpen && $refs.previewFrame) { 
+                                const container = $refs.previewFrame.parentElement;
+                                const scale = container.offsetWidth / 794;
+                                $refs.previewFrame.style.transform = `scale(${scale})`;
+                            }">
+                    </iframe>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -89,4 +126,43 @@
         </div>
     </div>
 </section>
+
+<script>
+function templateLibrary() {
+    return {
+        activeCategory: 'all',
+        previewOpen: false,
+        previewName: '',
+        previewDescription: '',
+        previewUrl: '',
+        tabs: [
+            { key: 'all', label: 'All' },
+            { key: 'professional', label: 'Professional' },
+            { key: 'creative', label: 'Creative' },
+            { key: 'technology', label: 'Technology' },
+            { key: 'managerial', label: 'Managerial' },
+        ],
+        openPreview(id, name, description, url) {
+            this.previewName = name;
+            this.previewDescription = description;
+            this.previewUrl = url;
+            this.previewOpen = true;
+            document.body.style.overflow = 'hidden';
+            this.$nextTick(() => {
+                const frame = this.$refs.previewFrame;
+                if (frame) {
+                    const container = frame.parentElement;
+                    const scale = container.offsetWidth / 794;
+                    frame.style.transform = `scale(${scale})`;
+                }
+            });
+        },
+        closePreview() {
+            this.previewOpen = false;
+            this.previewUrl = '';
+            document.body.style.overflow = '';
+        }
+    }
+}
+</script>
 @endsection

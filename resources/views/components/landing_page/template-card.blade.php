@@ -11,10 +11,11 @@
         </div>
 
         {{-- Overlay menggunakan backdrop-blur 12px sesuai aturan Glassmorphism --}}
-        <div class="absolute inset-0 bg-primary/60 backdrop-blur-[12px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center text-white">
-            <x-landing_page.button variant="secondary">
-                Use Template
-            </x-landing_page.button>
+        <div class="absolute inset-0 bg-primary/60 backdrop-blur-[12px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center text-white cursor-pointer">
+            <span class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-6 py-2.5 rounded-full text-sm font-bold border border-white/30 hover:bg-white/30 transition-all">
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
+                Preview Template
+            </span>
         </div>
     </div>
 
