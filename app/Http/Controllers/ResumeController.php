@@ -161,11 +161,21 @@ class ResumeController extends Controller
 
         $section->update($data);
 
+        // Also update cvs.job_target if the section being saved is target_job
+        if ($section->type === 'target_job' && isset($data['content']['job_title'])) {
+            $cv->update(['job_target' => $data['content']['job_title']]);
+        }
+
+        $atsScore = \App\Services\AtsScoreService::calculate($cv);
+        $cv->update(['ats_score' => $atsScore]);
+
         if ($request->ajax() || $request->wantsJson()) {
             $cv->refresh(); // ensure the latest data is loaded
             $html = $cv->template->renderHtml($cv);
             return response()->json([
                 'success' => true, 
+                'saved_at' => now()->format('H:i:s'),
+                'ats_score' => $atsScore,
                 'section' => $section,
                 'html' => $html
             ]);

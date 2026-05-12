@@ -716,8 +716,10 @@
                         }
                     }
                     if (iframe) iframe.style.opacity = '1';
-                    showToast('Changes saved!', 'success');
-                    if (typeof scheduleAtsScore === 'function') scheduleAtsScore();
+                    showToast(result.saved_at ? `✓ Saved · ${result.saved_at}` : 'Changes saved!', 'success');
+                    if (result.ats_score !== undefined) {
+                        updateAtsUi(result.ats_score, 'Keyword Match', result.ats_score === 0 ? 'Add a target job to get an ATS keyword match score.' : '', []);
+                    }
                 } else {
                     console.error('Failed to save section');
                     const iframe = document.getElementById('resume-preview-iframe');
@@ -834,48 +836,13 @@
             }
         }
 
-        async function fetchAtsScore() {
-            const loader = document.getElementById('ats-loading');
-            const lbl    = document.getElementById('ats-label');
-            if (loader) loader.classList.remove('hidden');
-            if (lbl) lbl.textContent = 'Scoring…';
-
-            try {
-                const resp = await fetch(`/resumes/{{ $cv->id }}/ats-score`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: '{}'
-                });
-                if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                const data = await resp.json();
-                if (data.error) throw new Error(data.error);
-                updateAtsUi(
-                    data.score ?? 0,
-                    data.label ?? '—',
-                    data.tip ?? '',
-                    data.improvements ?? []
-                );
-            } catch (err) {
-                console.warn('ATS score fetch failed:', err.message);
-                const lbl = document.getElementById('ats-label');
-                const loader = document.getElementById('ats-loading');
-                if (loader) loader.classList.add('hidden');
-                if (lbl) lbl.textContent = 'Retry later';
-            }
-        }
-
-        // Trigger after a successful section save (debounced 3 s so we don't spam)
-        function scheduleAtsScore() {
-            clearTimeout(atsDebounce);
-            atsDebounce = setTimeout(fetchAtsScore, 3000);
-        }
-
         // Initial score on page load
-        document.addEventListener('DOMContentLoaded', () => setTimeout(fetchAtsScore, 800));
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const initialScore = {{ $cv->ats_score ?? 0 }};
+                updateAtsUi(initialScore, 'Keyword Match', initialScore === 0 ? 'Add a target job to get an ATS keyword match score.' : '', []);
+            }, 800);
+        });
         @endif
 
         // ── Client-side validation before save ────────────────────────
