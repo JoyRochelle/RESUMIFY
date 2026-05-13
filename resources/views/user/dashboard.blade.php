@@ -25,9 +25,18 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                @php
+                    $cvs = auth()->user()->cvs()->latest('updated_at')->get();
+                @endphp
                 
-                <x-user.resume-card title="Senior Product Designer" date="2 days ago" url="{{ route('user.manuscript') }}" />
-                <x-user.resume-card title="UX Research Lead" date="1 week ago" url="{{ route('user.manuscript') }}" />
+                @foreach($cvs as $cv)
+                <x-user.resume-card 
+                    title="{{ $cv->title ?: 'Untitled Resume' }}" 
+                    date="{{ $cv->updated_at->diffForHumans() }}" 
+                    url="{{ route('user.manuscript', ['cv_id' => $cv->id]) }}" 
+                    cvId="{{ $cv->id }}" 
+                />
+                @endforeach
 
                 <button type="button" onclick="openCreateModal()" class="w-full h-full group relative bg-surface-container-low/50 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/50 hover:bg-surface-container-low transition-all duration-500 overflow-hidden flex flex-col items-center justify-center min-h-[400px] cursor-pointer">
                     <div class="flex flex-col items-center text-center p-8">
@@ -98,6 +107,29 @@
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="delete-modal-content" class="bg-tertiary w-full max-w-md rounded-2xl shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
+                <h3 class="font-headline text-xl font-bold text-red-600 flex items-center gap-2">
+                    <span class="material-symbols-outlined">warning</span> Delete Resume
+                </h3>
+                <button onclick="closeDeleteModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
+            </div>
+            <div class="p-6 bg-surface">
+                <p class="text-primary/80 mb-6">Are you sure you want to delete this resume? This action cannot be undone.</p>
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 rounded-lg font-bold text-primary/70 hover:bg-primary/5 transition-colors">Cancel</button>
+                    <form id="delete-form" method="POST" action="">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="px-4 py-2 rounded-lg font-bold bg-red-600 text-white hover:bg-red-700 transition-colors shadow-md">Yes, Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function openCreateModal() {
             const modal = document.getElementById('create-modal');
@@ -144,5 +176,32 @@
                 setTimeout(openCreateModal, 100);
             @endif
         });
+
+        // Delete Modal Logic
+        function openDeleteModal(cvId) {
+            const modal = document.getElementById('delete-modal');
+            const modalContent = document.getElementById('delete-modal-content');
+            const deleteForm = document.getElementById('delete-form');
+            
+            // Set form action dynamically
+            deleteForm.action = `/resumes/${cvId}`;
+            
+            modal.classList.remove('hidden');
+            void modal.offsetWidth; // Trigger reflow
+            modal.style.opacity = '1';
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('delete-modal');
+            const modalContent = document.getElementById('delete-modal-content');
+            modal.style.opacity = '0';
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
     </script>
 @endsection

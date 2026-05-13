@@ -17,7 +17,7 @@ class ManuscriptAtsController extends Controller
      */
     public function score(Request $request, Cv $cv): JsonResponse
     {
-        abort_unless($cv->user_id === auth()->id(), 403);
+        \Illuminate\Support\Facades\Gate::authorize('view', $cv);
 
         $apiKey = config('services.gemini.key');
         if (!$apiKey) {

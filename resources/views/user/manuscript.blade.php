@@ -24,11 +24,17 @@
                         $education  = $cv ? $cv->sections->where('type', 'education')->first() : null;
                         $skills     = $cv ? $cv->sections->where('type', 'skills')->first() : null;
                         $targetJob  = $cv ? $cv->sections->where('type', 'target_job')->first() : null;
+                        $certifications = $cv ? $cv->sections->where('type', 'certifications')->first() : null;
+                        $projects     = $cv ? $cv->sections->where('type', 'projects')->first() : null;
+                        $languages    = $cv ? $cv->sections->where('type', 'languages')->first() : null;
                         $personalContent = $personal ? ($personal->content ?? []) : [];
                         $expContent = $experience ? ($experience->content ?? []) : [];
                         $eduContent = $education ? ($education->content ?? []) : [];
                         $skillsContent = $skills ? ($skills->content ?? []) : [];
                         $targetJobContent = $targetJob ? ($targetJob->content ?? []) : [];
+                        $certsContent = $certifications ? ($certifications->content ?? []) : [];
+                        $projectsContent = $projects ? ($projects->content ?? []) : [];
+                        $langsContent = $languages ? ($languages->content ?? []) : [];
                     @endphp
 
                     <!-- Personal Info -->
@@ -247,7 +253,185 @@
                             </div>
                         </form>
                     </x-user.editor-accordion>
-                    
+                    <!-- Certifications -->
+                    @if($certifications)
+                    <x-user.editor-accordion title="Certifications" icon="workspace_premium" id="section-certifications">
+                        <form class="section-form" data-section-id="{{ $certifications->id }}">
+                            <div class="space-y-6" id="certifications-list">
+                                @forelse($certsContent as $index => $cert)
+                                <div class="list-item group relative pl-4 border-l-2 border-primary/10 hover:border-secondary transition-colors">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <x-user.form-input label="Certification Name" name="name" value="{{ $cert['name'] ?? '' }}" class="auto-save" />
+                                        <x-user.form-input label="Issuer" name="issuer" value="{{ $cert['issuer'] ?? '' }}" class="auto-save" />
+                                        <x-user.form-input label="Date" name="date" value="{{ $cert['date'] ?? '' }}" class="auto-save" type="month" />
+                                    </div>
+                                    <button type="button" onclick="removeListItem(this)" class="absolute -left-3 top-0 bg-surface rounded-full text-primary/30 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
+                                        <span class="material-symbols-outlined text-[20px]">remove_circle</span>
+                                    </button>
+                                </div>
+                                @empty
+                                <div class="list-item group relative pl-4 border-l-2 border-primary/10 hover:border-secondary transition-colors">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <x-user.form-input label="Certification Name" name="name" value="" class="auto-save" />
+                                        <x-user.form-input label="Issuer" name="issuer" value="" class="auto-save" />
+                                        <x-user.form-input label="Date" name="date" value="" class="auto-save" type="month" />
+                                    </div>
+                                    <button type="button" onclick="removeListItem(this)" class="absolute -left-3 top-0 bg-surface rounded-full text-primary/30 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
+                                        <span class="material-symbols-outlined text-[20px]">remove_circle</span>
+                                    </button>
+                                </div>
+                                @endforelse
+                            </div>
+                            <div class="mt-4 flex gap-2">
+                                <button type="button" onclick="addListItem('certifications-list', this)" class="flex-1 py-3 rounded-xl border border-dashed border-primary/30 text-primary/70 hover:bg-primary/5 hover:text-primary transition-colors flex items-center justify-center gap-2 font-bold text-sm">
+                                    <span class="material-symbols-outlined text-[20px]">add_circle</span> Add Certification
+                                </button>
+                                <button type="button" onclick="deleteSection('{{ $certifications->id }}')" class="py-3 px-4 rounded-xl border border-red-200 text-red-500 hover:bg-red-50 transition-colors flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                </button>
+                            </div>
+                        </form>
+                    </x-user.editor-accordion>
+                    @endif
+
+                    <!-- Projects -->
+                    @if($projects)
+                    <x-user.editor-accordion title="Projects" icon="rocket_launch" id="section-projects">
+                        <form class="section-form" data-section-id="{{ $projects->id }}">
+                            <div class="space-y-6" id="projects-list">
+                                @forelse($projectsContent as $index => $project)
+                                <div class="list-item group relative pl-4 border-l-2 border-primary/10 hover:border-secondary transition-colors">
+                                    <div class="grid grid-cols-1 gap-4">
+                                        <x-user.form-input label="Project Name" name="name" value="{{ $project['name'] ?? '' }}" class="auto-save" />
+                                        <x-user.form-input label="Project URL (Optional)" name="url" value="{{ $project['url'] ?? '' }}" class="auto-save" />
+                                        <div class="relative group mt-2">
+                                            <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
+                                            <textarea name="description" class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="3">{{ $project['description'] ?? '' }}</textarea>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="removeListItem(this)" class="absolute -left-3 top-0 bg-surface rounded-full text-primary/30 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
+                                        <span class="material-symbols-outlined text-[20px]">remove_circle</span>
+                                    </button>
+                                </div>
+                                @empty
+                                <div class="list-item group relative pl-4 border-l-2 border-primary/10 hover:border-secondary transition-colors">
+                                    <div class="grid grid-cols-1 gap-4">
+                                        <x-user.form-input label="Project Name" name="name" value="" class="auto-save" />
+                                        <x-user.form-input label="Project URL (Optional)" name="url" value="" class="auto-save" />
+                                        <div class="relative group mt-2">
+                                            <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
+                                            <textarea name="description" class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="removeListItem(this)" class="absolute -left-3 top-0 bg-surface rounded-full text-primary/30 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
+                                        <span class="material-symbols-outlined text-[20px]">remove_circle</span>
+                                    </button>
+                                </div>
+                                @endforelse
+                            </div>
+                            <div class="mt-4 flex gap-2">
+                                <button type="button" onclick="addListItem('projects-list', this)" class="flex-1 py-3 rounded-xl border border-dashed border-primary/30 text-primary/70 hover:bg-primary/5 hover:text-primary transition-colors flex items-center justify-center gap-2 font-bold text-sm">
+                                    <span class="material-symbols-outlined text-[20px]">add_circle</span> Add Project
+                                </button>
+                                <button type="button" onclick="deleteSection('{{ $projects->id }}')" class="py-3 px-4 rounded-xl border border-red-200 text-red-500 hover:bg-red-50 transition-colors flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                </button>
+                            </div>
+                        </form>
+                    </x-user.editor-accordion>
+                    @endif
+
+                    <!-- Languages -->
+                    @if($languages)
+                    <x-user.editor-accordion title="Languages" icon="translate" id="section-languages">
+                        <form class="section-form" data-section-id="{{ $languages->id }}">
+                            <div class="grid grid-cols-1 gap-4" id="languages-list">
+                                @forelse($langsContent as $index => $lang)
+                                <div class="list-item flex gap-4 items-center group">
+                                    <div class="flex-1">
+                                        <x-user.form-input label="Language" name="name" value="{{ $lang['name'] ?? '' }}" class="auto-save" />
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="relative">
+                                        <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-1 block">Proficiency</label>
+                                        <select name="level" class="auto-save w-full border-b-2 border-primary/15 focus:border-secondary bg-transparent py-2 px-0 outline-none transition-all duration-200 text-primary text-sm appearance-none cursor-pointer">
+                                            <option value="">Select level</option>
+                                            @foreach(['Beginner','Conversational','Fluent','Native'] as $lvl)
+                                                <option value="{{ $lvl }}" {{ ($lang['level'] ?? '') === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    </div>
+                                    <button type="button" onclick="removeListItem(this)" class="text-primary/30 hover:text-red-500 transition-colors mt-6 opacity-0 group-hover:opacity-100">
+                                        <span class="material-symbols-outlined text-[24px]">delete</span>
+                                    </button>
+                                </div>
+                                @empty
+                                <div class="list-item flex gap-4 items-center group">
+                                    <div class="flex-1">
+                                        <x-user.form-input label="Language" name="name" value="" class="auto-save" />
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="relative">
+                                        <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-1 block">Proficiency</label>
+                                        <select name="level" class="auto-save w-full border-b-2 border-primary/15 focus:border-secondary bg-transparent py-2 px-0 outline-none transition-all duration-200 text-primary text-sm appearance-none cursor-pointer">
+                                            <option value="">Select level</option>
+                                            @foreach(['Beginner','Conversational','Fluent','Native'] as $lvl)
+                                                <option value="{{ $lvl }}">{{ $lvl }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    </div>
+                                    <button type="button" onclick="removeListItem(this)" class="text-primary/30 hover:text-red-500 transition-colors mt-6 opacity-0 group-hover:opacity-100">
+                                        <span class="material-symbols-outlined text-[24px]">delete</span>
+                                    </button>
+                                </div>
+                                @endforelse
+                            </div>
+                            <div class="mt-4 flex gap-2">
+                                <button type="button" onclick="addListItem('languages-list', this)" class="flex-1 py-3 rounded-xl border border-dashed border-primary/30 text-primary/70 hover:bg-primary/5 hover:text-primary transition-colors flex items-center justify-center gap-2 font-bold text-sm">
+                                    <span class="material-symbols-outlined text-[20px]">add_circle</span> Add Language
+                                </button>
+                                <button type="button" onclick="deleteSection('{{ $languages->id }}')" class="py-3 px-4 rounded-xl border border-red-200 text-red-500 hover:bg-red-50 transition-colors flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                </button>
+                            </div>
+                        </form>
+                    </x-user.editor-accordion>
+                    @endif
+
+                    <!-- Optional Sections Toggles -->
+                    @if($cv && (!$certifications || !$projects || !$languages))
+                    <div class="mt-8 border-t border-primary/10 pt-6 px-4">
+                        <h4 class="text-sm font-bold text-primary tracking-wide mb-4 flex items-center gap-2"><span class="material-symbols-outlined">add_box</span> Add Optional Section</h4>
+                        <div class="flex flex-wrap gap-3">
+                            @if(!$certifications)
+                            <form action="{{ route('resumes.sections.store', $cv->id) }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="type" value="certifications">
+                                <input type="hidden" name="title" value="Certifications">
+                                <button type="submit" class="px-4 py-2 rounded-full border border-primary/20 text-xs font-bold text-primary/70 hover:bg-secondary hover:text-white hover:border-secondary transition-all">+ Certifications</button>
+                            </form>
+                            @endif
+                            @if(!$projects)
+                            <form action="{{ route('resumes.sections.store', $cv->id) }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="type" value="projects">
+                                <input type="hidden" name="title" value="Projects">
+                                <button type="submit" class="px-4 py-2 rounded-full border border-primary/20 text-xs font-bold text-primary/70 hover:bg-secondary hover:text-white hover:border-secondary transition-all">+ Projects</button>
+                            </form>
+                            @endif
+                            @if(!$languages)
+                            <form action="{{ route('resumes.sections.store', $cv->id) }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="type" value="languages">
+                                <input type="hidden" name="title" value="Languages">
+                                <button type="submit" class="px-4 py-2 rounded-full border border-primary/20 text-xs font-bold text-primary/70 hover:bg-secondary hover:text-white hover:border-secondary transition-all">+ Languages</button>
+                            </form>
+                            @endif
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </aside>
 
@@ -716,8 +900,10 @@
                         }
                     }
                     if (iframe) iframe.style.opacity = '1';
-                    showToast('Changes saved!', 'success');
-                    if (typeof scheduleAtsScore === 'function') scheduleAtsScore();
+                    showToast(result.saved_at ? `✓ Saved · ${result.saved_at}` : 'Changes saved!', 'success');
+                    if (result.ats_score !== undefined) {
+                        updateAtsUi(result.ats_score, 'Keyword Match', result.ats_score === 0 ? 'Add a target job to get an ATS keyword match score.' : '', []);
+                    }
                 } else {
                     console.error('Failed to save section');
                     const iframe = document.getElementById('resume-preview-iframe');
@@ -778,6 +964,27 @@
                 saveTimeout = setTimeout(() => saveSection(form), 800);
             }
         }
+
+        async function deleteSection(sectionId) {
+            if (!confirm('Are you sure you want to completely remove this section?')) return;
+            
+            try {
+                const response = await fetch(`/resumes/{{ $cv->id ?? 0 }}/section/${sectionId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    showToast('Failed to delete section.', 'error');
+                }
+            } catch (e) {
+                showToast('Network error.', 'error');
+            }
+        }
         @endif
 
         @if(!$cv)
@@ -834,48 +1041,13 @@
             }
         }
 
-        async function fetchAtsScore() {
-            const loader = document.getElementById('ats-loading');
-            const lbl    = document.getElementById('ats-label');
-            if (loader) loader.classList.remove('hidden');
-            if (lbl) lbl.textContent = 'Scoring…';
-
-            try {
-                const resp = await fetch(`/resumes/{{ $cv->id }}/ats-score`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: '{}'
-                });
-                if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                const data = await resp.json();
-                if (data.error) throw new Error(data.error);
-                updateAtsUi(
-                    data.score ?? 0,
-                    data.label ?? '—',
-                    data.tip ?? '',
-                    data.improvements ?? []
-                );
-            } catch (err) {
-                console.warn('ATS score fetch failed:', err.message);
-                const lbl = document.getElementById('ats-label');
-                const loader = document.getElementById('ats-loading');
-                if (loader) loader.classList.add('hidden');
-                if (lbl) lbl.textContent = 'Retry later';
-            }
-        }
-
-        // Trigger after a successful section save (debounced 3 s so we don't spam)
-        function scheduleAtsScore() {
-            clearTimeout(atsDebounce);
-            atsDebounce = setTimeout(fetchAtsScore, 3000);
-        }
-
         // Initial score on page load
-        document.addEventListener('DOMContentLoaded', () => setTimeout(fetchAtsScore, 800));
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const initialScore = {{ $cv->ats_score ?? 0 }};
+                updateAtsUi(initialScore, 'Keyword Match', initialScore === 0 ? 'Add a target job to get an ATS keyword match score.' : '', []);
+            }, 800);
+        });
         @endif
 
         // ── Client-side validation before save ────────────────────────

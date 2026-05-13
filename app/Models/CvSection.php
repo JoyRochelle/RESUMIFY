@@ -20,6 +20,7 @@ class CvSection extends Model
         'title',
         'content',
         'order',
+        'last_saved_at',
     ];
 
     protected function casts(): array

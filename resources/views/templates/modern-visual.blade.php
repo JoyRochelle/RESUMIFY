@@ -3,6 +3,10 @@
     $experience = $cv->sections->where('type', 'work_experience')->first();
     $education  = $cv->sections->where('type', 'education')->first();
     $skills     = $cv->sections->where('type', 'skills')->first();
+    $certifications = $cv->sections->where('type', 'certifications')->first();
+    $projects       = $cv->sections->where('type', 'projects')->first();
+    $languages      = $cv->sections->where('type', 'languages')->first();
+
     $info       = $personal?->content ?? [];
     $style      = $cv->template->style_config ?? [];
 @endphp
@@ -65,6 +69,16 @@
                         </div>
                     @endforeach
                     @endif
+
+@if($languages && !empty($languages->content))
+                    <h2 class="section-left-title">Languages</h2>
+                    @foreach($languages->content as $lang)
+                        <div style="font-size: 14px; font-weight: 600;">{{ $lang['name'] ?? '' }} @if(!empty($lang['level'])) ({{ $lang['level'] }}) @endif</div>
+                        <div class="skill-bar-container">
+                            <div class="skill-bar" style="width: 80%;"></div>
+                        </div>
+                    @endforeach
+                    @endif
                 </td>
                 <td class="col-right">
                     @if(!empty($info['summary']))
@@ -95,6 +109,34 @@
                         <div class="timeline-date">{{ $edu['start_date'] ?? '' }} – {{ $edu['end_date'] ?? 'Present' }}</div>
                         @if(!empty($edu['description']))
                         <div class="timeline-desc">{!! nl2br(e($edu['description'])) !!}</div>
+                        @endif
+                    </div>
+                    @endforeach
+                    @endif
+
+@if($certifications && !empty($certifications->content))
+                    <h2 class="section-right-title" style="margin-top: 30px;">Certifications</h2>
+                    @foreach($certifications->content as $cert)
+                    <div class="timeline-item">
+                        <div class="timeline-title">{{ $cert['name'] ?? 'Certificate Name' }}</div>
+                        <div class="timeline-subtitle">{{ $cert['issuer'] ?? 'Issuer' }}</div>
+                        <div class="timeline-date">{{ $cert['date'] ?? '' }}  </div>
+                        @if(!empty($cert['url']))
+                        <div class="timeline-desc">{!! nl2br(e($cert['url'])) !!}</div>
+                        @endif
+                    </div>
+                    @endforeach
+                    @endif
+
+@if($projects && !empty($projects->content))
+                    <h2 class="section-right-title" style="margin-top: 30px;">Projects</h2>
+                    @foreach($projects->content as $proj)
+                    <div class="timeline-item">
+                        <div class="timeline-title">{{ $proj['name'] ?? 'Project Name' }}</div>
+                        <div class="timeline-subtitle">{{ $proj['url'] ?? '' }}</div>
+                        <div class="timeline-date">{{ $proj['date'] ?? '' }}  </div>
+                        @if(!empty($proj['description']))
+                        <div class="timeline-desc">{!! nl2br(e($proj['description'])) !!}</div>
                         @endif
                     </div>
                     @endforeach

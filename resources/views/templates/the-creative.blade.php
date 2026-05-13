@@ -3,6 +3,10 @@
     $experience = $cv->sections->where('type', 'work_experience')->first();
     $education  = $cv->sections->where('type', 'education')->first();
     $skills     = $cv->sections->where('type', 'skills')->first();
+    $certifications = $cv->sections->where('type', 'certifications')->first();
+    $projects       = $cv->sections->where('type', 'projects')->first();
+    $languages      = $cv->sections->where('type', 'languages')->first();
+
     $info       = $personal?->content ?? [];
     $style      = $cv->template->style_config ?? [];
 @endphp
@@ -103,12 +107,63 @@
             </div>
             @endif
 
+@if($certifications && !empty($certifications->content))
+            <div class="section-mb">
+                <h2>Certifications</h2>
+                @foreach($certifications->content as $cert)
+                <div class="entry-grid">
+                    <div class="dates-cell">
+                        {{ $cert['date'] ?? '' }} 
+                    </div>
+                    <div class="details-cell">
+                        <div class="entry-title">{{ $cert['name'] ?? 'Certificate Name' }}</div>
+                        <div class="entry-subtitle">{{ $cert['issuer'] ?? 'Issuer' }}</div>
+                        @if(!empty($cert['url']))
+                        <div class="entry-desc">{!! nl2br(e($cert['url'])) !!}</div>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @endif
+
+@if($projects && !empty($projects->content))
+            <div class="section-mb">
+                <h2>Projects</h2>
+                @foreach($projects->content as $proj)
+                <div class="entry-grid">
+                    <div class="dates-cell">
+                        {{ $proj['date'] ?? '' }} 
+                    </div>
+                    <div class="details-cell">
+                        <div class="entry-title">{{ $proj['name'] ?? 'Project Name' }}</div>
+                        <div class="entry-subtitle">{{ $proj['url'] ?? '' }}</div>
+                        @if(!empty($proj['description']))
+                        <div class="entry-desc">{!! nl2br(e($proj['description'])) !!}</div>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @endif
+
             @if($skills && !empty($skills->content))
             <div class="section-mb">
                 <h2>Skills & Expertise</h2>
                 <div>
                 @foreach($skills->content as $skill)
                     <span class="skill-item">{{ $skill['name'] ?? '' }}</span>
+                @endforeach
+                </div>
+            </div>
+            @endif
+
+@if($languages && !empty($languages->content))
+            <div class="section-mb">
+                <h2>Languages</h2>
+                <div>
+                @foreach($languages->content as $lang)
+                    <span class="skill-item">{{ $lang['name'] ?? '' }} @if(!empty($lang['level'])) ({{ $lang['level'] }}) @endif</span>
                 @endforeach
                 </div>
             </div>

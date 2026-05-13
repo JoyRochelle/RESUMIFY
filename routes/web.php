@@ -33,8 +33,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('user.dashboard', compact('templates'));
         })->name('dashboard');
 
-        Route::get('/manuscripts', function () {
-            $cv = auth()->user()->cvs()->latest()->first();
+        Route::get('/manuscripts', function (\Illuminate\Http\Request $request) {
+            if ($request->has('cv_id')) {
+                $cv = auth()->user()->cvs()->findOrFail($request->cv_id);
+            } else {
+                $cv = auth()->user()->cvs()->latest()->first();
+            }
             
             // If they have no CVs at all, force them to the dashboard to pick a template
             if (!$cv) {
@@ -94,6 +98,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('resumes/{cv}/duplicate', [ResumeController::class, 'duplicate'])->name('resumes.duplicate');
 
         Route::put('resumes/{cv}/section/{section}', [ResumeController::class, 'updateSection'])->name('resumes.updateSection');
+        Route::post('resumes/{cv}/section', [ResumeController::class, 'storeSection'])->name('resumes.sections.store');
+        Route::delete('resumes/{cv}/section/{section}', [ResumeController::class, 'destroySection'])->name('resumes.sections.destroy');
         Route::post('resumes/{cv}/ats-score', [ManuscriptAtsController::class, 'score'])
             ->middleware('throttle:5,1')
             ->name('resumes.atsScore');
