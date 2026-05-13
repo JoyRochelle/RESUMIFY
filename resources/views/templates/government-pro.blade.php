@@ -3,6 +3,10 @@
     $experience = $cv->sections->where('type', 'work_experience')->first();
     $education  = $cv->sections->where('type', 'education')->first();
     $skills     = $cv->sections->where('type', 'skills')->first();
+    $certifications = $cv->sections->where('type', 'certifications')->first();
+    $projects       = $cv->sections->where('type', 'projects')->first();
+    $languages      = $cv->sections->where('type', 'languages')->first();
+
     $info       = $personal?->content ?? [];
     $style      = $cv->template->style_config ?? [];
 @endphp
@@ -91,6 +95,17 @@
                         </ul>
                     </div>
                     @endif
+
+@if($languages && !empty($languages->content))
+                    <div style="margin-top: 40px;">
+                        <h2>Languages</h2>
+                        <ul class="skill-list">
+                        @foreach($languages->content as $lang)
+                            <li>{{ $lang['name'] ?? '' }} @if(!empty($lang['level'])) ({{ $lang['level'] }}) @endif @if(!empty($lang['level'])) ({{ $lang['level'] }}) @endif</li>
+                        @endforeach
+                        </ul>
+                    </div>
+                    @endif
                 </td>
                 <td class="main-content">
                     <header style="margin-bottom: 40px;">
@@ -129,6 +144,38 @@
                         <div class="entry-date">{{ $edu['start_date'] ?? '' }} – {{ $edu['end_date'] ?? 'Present' }}</div>
                         @if(!empty($edu['description']))
                         <div class="entry-desc">{!! nl2br(e($edu['description'])) !!}</div>
+                        @endif
+                    </div>
+                    @endforeach
+                    @endif
+
+@if($certifications && !empty($certifications->content))
+                    <h2 style="margin-top: 30px;">Certifications</h2>
+                    @foreach($certifications->content as $cert)
+                    <div class="entry">
+                        <div class="entry-header">
+                            <span class="entry-title">{{ $cert['name'] ?? 'Certificate Name' }}</span> <span style="margin: 0 6px; color:#cbd5e1;">|</span>
+                            <span class="entry-company">{{ $cert['issuer'] ?? 'Issuer' }}</span>
+                        </div>
+                        <div class="entry-date">{{ $cert['date'] ?? '' }}  </div>
+                        @if(!empty($cert['url']))
+                        <div class="entry-desc">{!! nl2br(e($cert['url'])) !!}</div>
+                        @endif
+                    </div>
+                    @endforeach
+                    @endif
+
+@if($projects && !empty($projects->content))
+                    <h2 style="margin-top: 30px;">Projects</h2>
+                    @foreach($projects->content as $proj)
+                    <div class="entry">
+                        <div class="entry-header">
+                            <span class="entry-title">{{ $proj['name'] ?? 'Project Name' }}</span> <span style="margin: 0 6px; color:#cbd5e1;">|</span>
+                            <span class="entry-company">{{ $proj['url'] ?? '' }}</span>
+                        </div>
+                        <div class="entry-date">{{ $proj['date'] ?? '' }}  </div>
+                        @if(!empty($proj['description']))
+                        <div class="entry-desc">{!! nl2br(e($proj['description'])) !!}</div>
                         @endif
                     </div>
                     @endforeach

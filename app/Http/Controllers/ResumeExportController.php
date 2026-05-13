@@ -13,7 +13,7 @@ class ResumeExportController extends Controller
     // Browser preview
     public function preview(Cv $cv)
     {
-        abort_unless($cv->user_id === auth()->id(), 403); // only owner can preview
+        \Illuminate\Support\Facades\Gate::authorize('view', $cv); // only owner can preview
         $cv->load(['template', 'sections']);
 
         $templateBlade = $cv->template->blade_path;
@@ -32,7 +32,7 @@ class ResumeExportController extends Controller
     // PDF download
     public function downloadPdf(Cv $cv)
     {
-        abort_unless($cv->user_id === auth()->id(), 403);
+        \Illuminate\Support\Facades\Gate::authorize('view', $cv);
         $cv->load(['template', 'sections']);
 
         $isPdf = true;

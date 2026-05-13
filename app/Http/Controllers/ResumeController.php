@@ -9,6 +9,7 @@ use App\Http\Requests\StoreResumeRequest;
 use App\Http\Requests\UpdateResumeRequest;
 use App\Http\Requests\UpdateSectionRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ResumeController extends Controller
 {
@@ -19,7 +20,7 @@ class ResumeController extends Controller
     {
         $resumes = auth()->user()->cvs()->latest('updated_at')->get();
 
-        return view('resumes.index', compact('resumes'));
+        return redirect()->route('dashboard');
     }
 
     /**
@@ -57,7 +58,7 @@ class ResumeController extends Controller
     public function show(Cv $cv)
     {
         //ownership check
-        abort_unless($cv->user_id === auth()->id(), 403);
+        Gate::authorize('view', $cv);
 
         $cv->load('sections', 'template');
 
@@ -69,13 +70,13 @@ class ResumeController extends Controller
      */
     public function edit(Cv $cv)
     {
-        abort_unless($cv->user_id === auth()->id(), 403);
+        Gate::authorize('update', $cv);
 
         $cv->load('sections', 'template');
 
         $templates = CvTemplate::where('is_active', true)->get();
 
-        return view('resumes.edit', compact('cv', 'templates'));
+        return redirect()->route('user.manuscript', ['cv_id' => $cv->id]);
     }
 
     /**
@@ -83,7 +84,7 @@ class ResumeController extends Controller
      */
     public function update(UpdateResumeRequest $request, Cv $cv)
     {
-        abort_unless($cv->user_id === auth()->id(), 403);
+        Gate::authorize('update', $cv);
         if ($request->ajax()) {
             $cv->update($request->validated());
             return response()->json([
@@ -93,7 +94,7 @@ class ResumeController extends Controller
         }
         // Regular form update
         $cv->update($request->validated());
-        return redirect()->route('resumes.edit', $cv)
+        return redirect()->route('user.manuscript', ['cv_id' => $cv->id])
                          ->with('success', 'Resume updated successfully!');
 
     }
@@ -103,9 +104,9 @@ class ResumeController extends Controller
      */
     public function destroy(Cv $cv)
     {
-        abort_unless($cv->user_id === auth()->id(), 403);
+        Gate::authorize('delete', $cv);
         $cv->delete();
-        return redirect()->route('resumes.index')
+        return redirect()->route('dashboard')
                          ->with('success', 'Resume deleted successfully!');
     }
 
@@ -114,7 +115,7 @@ class ResumeController extends Controller
      */
     public function duplicate(Cv $cv)
     {
-        abort_unless($cv->user_id === auth()->id(), 403);
+        Gate::authorize('view', $cv);
         // Clone the resume
         $newCv = $cv->replicate();
         $newCv->title = $cv->title . ' (Copy)';
@@ -125,7 +126,7 @@ class ResumeController extends Controller
             $newSection->cv_id = $newCv->id;
             $newSection->save();
         }
-        return redirect()->route('resumes.edit', $newCv)
+        return redirect()->route('user.manuscript', ['cv_id' => $newCv->id])
                          ->with('success', 'Resume duplicated successfully!');
     }
 
@@ -134,7 +135,7 @@ class ResumeController extends Controller
      */
     public function updateSection(UpdateSectionRequest $request, Cv $cv, CvSection $section)
     {
-        abort_unless($cv->user_id === auth()->id(), 403);
+        Gate::authorize('update', $cv);
         abort_unless($section->cv_id === $cv->id, 404);
 
         $request->validate([
@@ -184,8 +185,51 @@ class ResumeController extends Controller
             ]);
         }
 
-        return redirect()->route('resumes.edit', $cv)
+        return redirect()->route('user.manuscript', ['cv_id' => $cv->id])
                         ->with('success', 'Section updated!');
+    }
+
+    /**
+     * Add a new section to the resume.
+     */
+    public function storeSection(Request $request, Cv $cv)
+    {
+        Gate::authorize('update', $cv);
+
+        $request->validate([
+            'type' => ['required', 'string', 'in:certifications,projects,languages'],
+            'title' => ['required', 'string', 'max:100'],
+        ]);
+
+        $cv->sections()->create([
+            'type' => $request->type,
+            'title' => $request->title,
+            'content' => [],
+            'order' => $cv->sections()->max('order') + 1,
+        ]);
+
+        return back()->with('success', 'Section added successfully!');
+    }
+
+    /**
+     * Delete an optional section from the resume.
+     */
+    public function destroySection(Request $request, Cv $cv, CvSection $section)
+    {
+        Gate::authorize('update', $cv);
+        abort_unless($section->cv_id === $cv->id, 404);
+
+        $section->delete();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            $cv->refresh();
+            return response()->json([
+                'success' => true,
+                'html' => $cv->template->renderHtml($cv)
+            ]);
+        }
+
+        return back()->with('success', 'Section removed successfully!');
     }
 
 }
