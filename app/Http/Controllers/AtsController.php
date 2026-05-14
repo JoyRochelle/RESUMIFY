@@ -12,9 +12,7 @@ class AtsController extends Controller
     /**
      * Analyze resume against job description using Gemini AI.
      */
-    public function analyze(Request $request)
-    {
-        // Cap execution time so PHP never hangs the request indefinitely
+    public function analyze(Request $request) {
         set_time_limit(65);
         $request->validate([
             'resume'          => ['required', 'string', 'min:50', 'max:20000'],
@@ -103,7 +101,19 @@ Return a JSON object with exactly this structure:
   },
   "keyword_score": (integer 0-100),
   "matched": (array of strings: top 15 matching keywords/skills),
-  "missing": (array of strings: top 10 missing critical keywords from JD),
+  "missing": [
+    {
+      "keyword": (string: the missing keyword),
+      "context": (string: short context on why this keyword matters for this role)
+    }
+  ],
+  "section_breakdown": [
+    {
+      "section": (string: e.g. "Summary", "Experience", "Education", "Skills"),
+      "strength": (string: "Strong", "Adequate", or "Weak"),
+      "feedback": (string: short actionable feedback for this section)
+    }
+  ],
   "action_verbs": (array of strings: strong verbs found in resume),
   "missing_verbs": (array of strings: 4-6 recommended action verbs to add),
   "has_numbers": (boolean: true if resume contains metrics/numbers),

@@ -93,15 +93,17 @@
                         </div>
 
                         {{-- Missing keywords card --}}
-                        <div class="bg-tertiary rounded-2xl p-5 border border-primary/10 shadow-sm md:col-span-2">
-                            <div class="flex items-center gap-2 mb-4 text-red-500">
+                        <div class="bg-tertiary rounded-2xl p-5 border border-primary/10 shadow-sm md:col-span-2 flex flex-col max-h-[320px]">
+                            <div class="flex items-center gap-2 mb-4 text-red-500 shrink-0">
                                 <span class="material-symbols-outlined text-[18px]">error_outline</span>
                                 <h4 class="font-bold tracking-tight text-xs uppercase">Missing Keywords</h4>
                                 <span id="missing-count-badge"
                                       class="ml-auto text-[10px] font-bold bg-red-500/10 text-red-500 px-2 py-0.5 rounded-full"></span>
                             </div>
-                            <div id="missing-keywords-container" class="flex flex-wrap gap-2 mb-3 min-h-[2rem]"></div>
-                            <p id="missing-keywords-tip" class="text-xs text-primary/60 leading-relaxed italic"></p>
+                            <div class="overflow-y-auto custom-scrollbar flex-1 pr-2">
+                                <div id="missing-keywords-container" class="flex flex-col gap-2 min-h-[2rem]"></div>
+                            </div>
+                            <p id="missing-keywords-tip" class="text-xs text-primary/60 leading-relaxed italic mt-3 shrink-0"></p>
                         </div>
                     </div>
 
@@ -137,6 +139,15 @@
                             <p id="length-tip-body"  class="text-sm text-primary/70 leading-relaxed"></p>
                         </div>
                     </div>
+
+                    {{-- Section Breakdown --}}
+                    <section class="rounded-2xl p-7 border border-primary/10 bg-tertiary">
+                        <div class="flex items-center gap-2 mb-5 text-primary">
+                            <span class="material-symbols-outlined text-[20px] icon-filled">grading</span>
+                            <h4 class="font-bold tracking-tight text-sm uppercase">Section Breakdown</h4>
+                        </div>
+                        <div id="section-breakdown-container" class="grid grid-cols-1 gap-3"></div>
+                    </section>
 
                     {{-- Strategic Insights --}}
                     <section class="rounded-2xl p-7 border border-secondary/20 bg-secondary/[0.04] relative overflow-hidden">
@@ -269,7 +280,7 @@
         const circle = container.querySelector('.progress-ring');
         if (!circle) return;
         const target = parseFloat(circle.dataset.target);
-        // trigger reflow then set final value
+
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 circle.style.transition = 'stroke-dashoffset 1.1s cubic-bezier(.4,0,.2,1)';
@@ -284,12 +295,12 @@
         const resultsEl = document.getElementById('ats-results');
         resultsEl.classList.remove('hidden');
 
-        // ─ Score circle
+        // Score circle
         const scoreContainer = document.getElementById('score-circle-container');
         scoreContainer.innerHTML = buildScoreCircle(data.score);
         animateCircle(scoreContainer);
 
-        // ─ Rating
+        // Rating
         const ratingColorMap = { success: 'text-secondary', warning: 'text-yellow-500', danger: 'text-red-500' };
         document.getElementById('score-rating-label').textContent   = data.rating.label;
         document.getElementById('score-rating-label').className     = `font-bold text-lg ${ratingColorMap[data.rating.color] ?? 'text-secondary'}`;
@@ -301,7 +312,12 @@
         if (data.missing.length === 0) {
             missingContainer.innerHTML = `<span class="text-xs text-secondary font-semibold">🎉 No critical keywords missing!</span>`;
         } else {
-            missingContainer.innerHTML = data.missing.map(k => makeDangerTag(k)).join('');
+            missingContainer.innerHTML = data.missing.map(m => `
+                <div class="flex flex-col p-3 bg-red-500/5 rounded-xl border border-red-500/10 hover:bg-red-500/10 transition-colors">
+                    <span class="text-xs font-bold text-red-600 mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">cancel</span> ${escHtml(m.keyword)}</span>
+                    <span class="text-[11px] text-primary/70 leading-relaxed">${escHtml(m.context)}</span>
+                </div>
+            `).join('');
         }
         const pct = data.missing.length > 0
             ? Math.round((data.missing.length / (data.missing.length + data.matched.length)) * 100)
@@ -331,7 +347,7 @@
             missingVerbsRow.classList.add('hidden');
         }
 
-        // ─ Length tip
+        // Length tip
         const lengthCard  = document.getElementById('length-tip-card');
         const lengthIcon  = document.getElementById('length-tip-icon');
         const lengthTitle = document.getElementById('length-tip-title');
@@ -343,7 +359,8 @@
             lengthIcon.className   = 'material-symbols-outlined text-[22px] shrink-0 mt-0.5 text-secondary icon-filled';
             lengthTitle.textContent = 'Resume Length';
             lengthTitle.className   = 'text-xs font-bold uppercase tracking-wider mb-1 text-secondary';
-        } else {
+        } 
+        else {
             lengthCard.className = 'flex items-start gap-4 rounded-2xl p-5 border border-yellow-500/20 bg-yellow-500/5';
             lengthIcon.textContent = 'warning';
             lengthIcon.className   = 'material-symbols-outlined text-[22px] shrink-0 mt-0.5 text-yellow-500';
@@ -351,6 +368,34 @@
             lengthTitle.className   = 'text-xs font-bold uppercase tracking-wider mb-1 text-yellow-600';
         }
         lengthBody.textContent = data.length_tip;
+
+        const breakdownContainer = document.getElementById('section-breakdown-container');
+        if (data.section_breakdown && data.section_breakdown.length > 0) {
+            breakdownContainer.innerHTML = data.section_breakdown.map((sec, i) => {
+                let colorClass = 'text-secondary bg-secondary/10 border-secondary/20';
+                let icon = 'check_circle';
+                if (sec.strength === 'Weak') {
+                    colorClass = 'text-red-500 bg-red-500/10 border-red-500/20';
+                    icon = 'error';
+                } else if (sec.strength === 'Adequate') {
+                    colorClass = 'text-yellow-600 bg-yellow-500/10 border-yellow-500/20';
+                    icon = 'warning';
+                }
+                return `
+                <div class="flex items-start gap-4 p-4 rounded-xl border border-primary/5 bg-primary/[0.02] hover:bg-primary/5 transition-colors animate-fade-in-up" style="animation-delay:${i * 80}ms">
+                    <div class="flex flex-col items-center justify-center shrink-0 w-[72px] py-2 rounded-lg border ${colorClass}">
+                        <span class="material-symbols-outlined text-[20px] mb-1 icon-filled">${icon}</span>
+                        <span class="text-[9px] font-bold uppercase tracking-wider">${escHtml(sec.strength)}</span>
+                    </div>
+                    <div>
+                        <h5 class="text-sm font-bold text-primary mb-1">${escHtml(sec.section)}</h5>
+                        <p class="text-xs text-primary/70 leading-relaxed">${escHtml(sec.feedback)}</p>
+                    </div>
+                </div>`;
+            }).join('');
+        } else {
+            breakdownContainer.innerHTML = `<p class="text-sm text-primary/50">No section breakdown available.</p>`;
+        }
 
         const insightsContainer = document.getElementById('insights-container');
         insightsContainer.innerHTML = data.insights.map((ins, i) => `
@@ -360,19 +405,15 @@
             </div>
         `).join('');
 
-        // Fade-in animation for whole results
+
         resultsEl.querySelectorAll(':scope > div, :scope > section, :scope > p').forEach((el, i) => {
             el.style.animation = `fadeInUp 0.4s ease ${i * 60}ms both`;
         });
     }
 
-    // ── Analyze button ────────────────────────────────────────────────────────
-
     document.getElementById('analyze-btn').addEventListener('click', async function () {
         const resume = document.getElementById('resume-input').value.trim();
-        const jd     = document.getElementById('jd-input').value.trim();
-
-        // Client-side quick check
+        const jd = document.getElementById('jd-input').value.trim();
         if (resume.length < 50) {
             showError('Please paste a more detailed resume (at least 50 characters).');
             return;
@@ -381,11 +422,8 @@
             showError('Please paste a more detailed job description (at least 50 characters).');
             return;
         }
-
         clearError();
         setLoading(true);
-
-        // Abort the request automatically after 90 seconds so the spinner never hangs
         const controller = new AbortController();
         const timeoutId  = setTimeout(() => controller.abort(), 90_000);
 
@@ -473,7 +511,8 @@
         setTimeout(() => modal.classList.add('hidden'), 300);
     }
 
-    // Close modal on outside click
+
+
     document.getElementById('instructions-modal').addEventListener('click', function (e) {
         if (e.target === this) closeInstructions();
     });
