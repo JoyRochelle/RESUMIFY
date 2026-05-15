@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\ResumeExportController;
 use App\Http\Controllers\AtsController;
 use App\Http\Controllers\ManuscriptAtsController;
+use App\Http\Controllers\AiResumeController;
 
 // Public Routes
 Route::get('/', function () { return view('landing_page.welcome'); })->name('home');
@@ -109,6 +110,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // ATS Analyzer
         Route::post('/ats/analyze', [AtsController::class, 'analyze'])->name('ats.analyze');
+        
+        // AI Features
+        Route::post('resumes/{cv}/ai/refine-bullet', [AiResumeController::class, 'refineBullet'])->name('resumes.ai.refineBullet');
+        Route::post('resumes/{cv}/ai/generate-versions', [AiResumeController::class, 'generateVersions'])->name('resumes.ai.generateVersions');
     });
 
     // Admin Routes

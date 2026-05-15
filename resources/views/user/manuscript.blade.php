@@ -9,6 +9,7 @@
         
         {{-- Page Header --}}
         <x-user.page-header title="Editor: Senior Product Designer">
+            <x-user.button type="button" onclick="openCvVersionsModal()" variant="outline" icon="auto_awesome" class="text-sm px-3 hidden sm:flex text-secondary border-secondary hover:bg-secondary/10">Tailor CV</x-user.button>
             <x-user.button onclick="previewPdf('{{ auth()->user()->cvs()->latest()->first()->id ?? 1 }}')" variant="ghost" class="text-sm px-3 hidden sm:flex">Preview</x-user.button>
             <x-user.button id="download-btn" onclick="downloadPdf('{{ auth()->user()->cvs()->latest()->first()->id ?? 1 }}')" variant="primary" icon="download" iconClass="text-[18px]" class="text-sm px-3 w-full sm:w-auto justify-center">Download PDF</x-user.button>
         </x-user.page-header>
@@ -82,6 +83,7 @@
                                 <div class="relative group mt-2">
                                     <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Professional Summary</label>
                                     <textarea name="summary" placeholder="Write 2–4 sentences about your background, key skills, and career goals..." class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="5">{{ $personalContent['summary'] ?? '' }}</textarea>
+                                    <button type="button" onclick="openRefineModal(this)" class="absolute bottom-3 right-3 text-[10px] font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-2 py-1 rounded transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[12px]">auto_awesome</span>Refine</button>
                                 </div>
                             </div>
                         </form>
@@ -120,6 +122,7 @@
                                     <div class="relative mt-2">
                                         <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
                                         <textarea name="description" placeholder="Describe your key responsibilities and achievements..." class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="4">{{ $job['description'] ?? '' }}</textarea>
+                                        <button type="button" onclick="openRefineModal(this)" class="absolute bottom-3 right-3 text-[10px] font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-2 py-1 rounded transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[12px]">auto_awesome</span>Refine</button>
                                     </div>
                                 </div>
                                 @empty
@@ -138,6 +141,7 @@
                                     <div class="relative mt-2">
                                         <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
                                         <textarea name="description" placeholder="Describe your key responsibilities and achievements..." class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="4"></textarea>
+                                        <button type="button" onclick="openRefineModal(this)" class="absolute bottom-3 right-3 text-[10px] font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-2 py-1 rounded transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[12px]">auto_awesome</span>Refine</button>
                                     </div>
                                 </div>
                                 @endforelse
@@ -307,6 +311,7 @@
                                         <div class="relative group mt-2">
                                             <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
                                             <textarea name="description" class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="3">{{ $project['description'] ?? '' }}</textarea>
+                                            <button type="button" onclick="openRefineModal(this)" class="absolute bottom-3 right-3 text-[10px] font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-2 py-1 rounded transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[12px]">auto_awesome</span>Refine</button>
                                         </div>
                                     </div>
                                     <button type="button" onclick="removeListItem(this)" class="absolute -left-3 top-0 bg-surface rounded-full text-primary/30 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
@@ -321,6 +326,7 @@
                                         <div class="relative group mt-2">
                                             <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
                                             <textarea name="description" class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="3"></textarea>
+                                            <button type="button" onclick="openRefineModal(this)" class="absolute bottom-3 right-3 text-[10px] font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-2 py-1 rounded transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[12px]">auto_awesome</span>Refine</button>
                                         </div>
                                     </div>
                                     <button type="button" onclick="removeListItem(this)" class="absolute -left-3 top-0 bg-surface rounded-full text-primary/30 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
@@ -625,6 +631,51 @@
                     @endif
                     @endforeach
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Refine Modal --}}
+    <div id="refine-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;">
+        <div class="bg-surface w-full max-w-lg rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300" id="refine-modal-content">
+            <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
+                <h3 class="text-xl font-headline font-bold text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary">auto_awesome</span> Refine with AI
+                </h3>
+                <button onclick="closeRefineModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
+            </div>
+            <div class="p-6 bg-surface">
+                <div id="refine-loading" class="flex flex-col items-center justify-center py-8">
+                    <span class="material-symbols-outlined text-[32px] text-secondary animate-spin mb-4">progress_activity</span>
+                    <p class="text-sm text-primary/60">Generating optimized bullet points...</p>
+                </div>
+                <div id="refine-results" class="hidden flex flex-col gap-3"></div>
+            </div>
+        </div>
+    </div>
+
+    {{-- CV Versions Modal --}}
+    <div id="cv-versions-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;">
+        <div class="bg-surface w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300 overflow-hidden" id="cv-versions-modal-content">
+            <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
+                <h3 class="text-xl font-headline font-bold text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary">auto_awesome</span> Tailored CV Versions
+                </h3>
+                <button onclick="closeCvVersionsModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scrollbar bg-surface flex-1">
+                <div id="cv-versions-setup" class="flex flex-col gap-4 max-w-2xl mx-auto py-8 text-center">
+                    <span class="material-symbols-outlined text-[48px] text-secondary mb-2">content_copy</span>
+                    <h4 class="text-xl font-bold text-primary">Generate Tailored Versions</h4>
+                    <p class="text-sm text-primary/70">We will generate 3 distinct CV versions tailored to your target job: Leadership, Technical, and Ownership angles. This uses 3 AI credits.</p>
+                    <button onclick="generateCvVersions()" class="mt-4 mx-auto bg-secondary hover:bg-secondary/90 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition-all w-fit">Generate Versions</button>
+                </div>
+                <div id="cv-versions-loading" class="hidden flex-col items-center justify-center py-20">
+                    <span class="material-symbols-outlined text-[48px] text-secondary animate-spin mb-6">progress_activity</span>
+                    <p class="text-lg font-bold text-primary">Crafting tailored CV versions...</p>
+                    <p class="text-sm text-primary/60 mt-2">This usually takes about 10-20 seconds.</p>
+                </div>
+                <div id="cv-versions-results" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6"></div>
             </div>
         </div>
     </div>
@@ -1082,6 +1133,184 @@
                 }
             });
             return valid;
+        }
+
+        // ── AI Refine Bullet ─────────────────────────────────────────
+        let currentRefineTextarea = null;
+
+        function openRefineModal(btn) {
+            currentRefineTextarea = btn.parentElement.querySelector('textarea');
+            const text = currentRefineTextarea.value.trim();
+            if (!text || text.length < 10) {
+                alert('Please write at least a few words before refining.');
+                return;
+            }
+
+            const modal = document.getElementById('refine-modal');
+            const content = document.getElementById('refine-modal-content');
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+            content.classList.replace('scale-95', 'scale-100');
+
+            document.getElementById('refine-loading').classList.remove('hidden');
+            document.getElementById('refine-results').classList.add('hidden');
+            document.getElementById('refine-results').innerHTML = '';
+
+            const jobContext = document.querySelector('[name="job_description"]')?.value || '';
+
+            fetch(`/resumes/{{ $cv->id ?? '' }}/ai/refine-bullet`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ text, job_context: jobContext })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('refine-loading').classList.add('hidden');
+                if (data.success && data.options) {
+                    const resultsContainer = document.getElementById('refine-results');
+                    resultsContainer.classList.remove('hidden');
+                    data.options.forEach(opt => {
+                        const div = document.createElement('div');
+                        div.className = 'p-4 rounded-xl border border-primary/10 hover:border-secondary cursor-pointer transition-colors bg-surface-container-low text-sm text-primary/80 leading-relaxed';
+                        div.textContent = opt;
+                        div.onclick = () => {
+                            currentRefineTextarea.value = opt;
+                            // Trigger input event to save if auto-save is bound
+                            currentRefineTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+                            closeRefineModal();
+                        };
+                        resultsContainer.appendChild(div);
+                    });
+                } else {
+                    document.getElementById('refine-loading').classList.add('hidden');
+                    const resultsContainer = document.getElementById('refine-results');
+                    resultsContainer.classList.remove('hidden');
+                    resultsContainer.innerHTML = `<div class="p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">${data.message || 'Failed to refine bullet.'}</div>`;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('refine-loading').classList.add('hidden');
+                const resultsContainer = document.getElementById('refine-results');
+                resultsContainer.classList.remove('hidden');
+                resultsContainer.innerHTML = `<div class="p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">An error occurred while connecting to the server.</div>`;
+            });
+        }
+
+        function closeRefineModal() {
+            const modal = document.getElementById('refine-modal');
+            const content = document.getElementById('refine-modal-content');
+            modal.style.opacity = '0';
+            modal.style.pointerEvents = 'none';
+            content.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+            currentRefineTextarea = null;
+        }
+
+        // ── Parallel CV Versions ───────────────────────────────────────
+        function openCvVersionsModal() {
+            const modal = document.getElementById('cv-versions-modal');
+            const content = document.getElementById('cv-versions-modal-content');
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+            content.classList.replace('scale-95', 'scale-100');
+
+            document.getElementById('cv-versions-setup').classList.remove('hidden');
+            document.getElementById('cv-versions-loading').classList.add('hidden');
+            document.getElementById('cv-versions-results').classList.add('hidden');
+            document.getElementById('cv-versions-results').innerHTML = '';
+        }
+
+        function closeCvVersionsModal() {
+            const modal = document.getElementById('cv-versions-modal');
+            const content = document.getElementById('cv-versions-modal-content');
+            modal.style.opacity = '0';
+            modal.style.pointerEvents = 'none';
+            content.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function generateCvVersions() {
+            const jobDescription = document.querySelector('[name="job_description"]')?.value || '';
+            if (!jobDescription || jobDescription.length < 50) {
+                alert('Please provide a detailed Target Job Description (at least 50 characters) in the Target Job section first.');
+                closeCvVersionsModal();
+                return;
+            }
+
+            document.getElementById('cv-versions-setup').classList.add('hidden');
+            document.getElementById('cv-versions-loading').style.display = 'flex';
+
+            fetch(`/resumes/{{ $cv->id ?? '' }}/ai/generate-versions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ job_description: jobDescription })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('cv-versions-loading').style.display = 'none';
+                if (data.success && data.versions) {
+                    const resultsContainer = document.getElementById('cv-versions-results');
+                    resultsContainer.classList.remove('hidden');
+                    
+                    const angleIcons = {
+                        leadership: 'groups',
+                        technical: 'code',
+                        ownership: 'verified_user'
+                    };
+
+                    data.versions.forEach(v => {
+                        const div = document.createElement('div');
+                        div.className = 'p-6 rounded-2xl border border-primary/10 bg-surface-container-low flex flex-col gap-4 h-full';
+                        div.innerHTML = `
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+                                    <span class="material-symbols-outlined">${angleIcons[v.angle] || 'description'}</span>
+                                </div>
+                                <h4 class="font-bold text-primary capitalize text-lg">${v.angle} Angle</h4>
+                            </div>
+                            <p class="text-sm text-primary/70 leading-relaxed flex-1">This version emphasizes ${v.angle} aspects of your experience, perfectly tailored for the provided job description.</p>
+                            <div class="flex flex-col gap-2 w-full mt-auto">
+                                <button onclick="previewCvVersion('${v.id}')" class="w-full py-2.5 bg-secondary/10 hover:bg-secondary text-secondary hover:text-white font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">visibility</span> Preview</button>
+                                <button onclick="downloadCvVersion('${v.id}')" class="w-full py-2.5 border border-primary/20 hover:bg-primary/5 text-primary font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">download</span> Download PDF</button>
+                            </div>
+                        `;
+                        resultsContainer.appendChild(div);
+                    });
+                } else {
+                    document.getElementById('cv-versions-loading').style.display = 'none';
+                    const resultsContainer = document.getElementById('cv-versions-results');
+                    resultsContainer.classList.remove('hidden');
+                    resultsContainer.innerHTML = `<div class="col-span-full p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-center">${data.message || 'Failed to generate versions.'}</div>`;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('cv-versions-loading').style.display = 'none';
+                const resultsContainer = document.getElementById('cv-versions-results');
+                resultsContainer.classList.remove('hidden');
+                resultsContainer.innerHTML = `<div class="col-span-full p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-center">An error occurred while connecting to the server.</div>`;
+            });
+        }
+
+        function previewCvVersion(id) {
+            window.open(`/resumes/{{ $cv->id ?? '' }}/preview?adaptation_id=${id}`, '_blank');
+        }
+
+        function downloadCvVersion(id) {
+            window.open(`/resumes/{{ $cv->id ?? '' }}/pdf?adaptation_id=${id}`, '_blank');
         }
     </script>
 @endsection
