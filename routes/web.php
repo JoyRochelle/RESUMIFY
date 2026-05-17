@@ -68,7 +68,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('user.manuscript');
 
         Route::get('/ai-assistant', function () {
-            return view('user.ai-assistant');
+            $cvs = auth()->user()->cvs()->with('sections')->latest()->get();
+            return view('user.ai-assistant', compact('cvs'));
         })->name('user.ai-assistant');
 
         Route::get('/settings', function () {

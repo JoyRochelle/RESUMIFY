@@ -19,6 +19,24 @@
             <aside class="w-full lg:w-[42%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
                 <div class="p-4 lg:p-6 lg:overflow-y-auto custom-scrollbar space-y-5 lg:h-full">
 
+                    {{-- Select CV --}}
+                    @if(isset($cvs) && $cvs->isNotEmpty())
+                    <div class="bg-tertiary rounded-xl p-5 border border-primary/10 shadow-sm flex flex-col gap-3">
+                        <label for="cv-selector" class="font-bold text-primary flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-primary/60 text-[18px]">folder_open</span>
+                            Select from your Resumes
+                        </label>
+                        <select id="cv-selector" class="w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none p-3 text-sm transition-all duration-200">
+                            <option value="">-- Choose a Resume --</option>
+                            @foreach($cvs as $cv)
+                                <option value="{{ $cv->id }}" data-sections="{{ json_encode($cv->sections) }}">
+                                    {{ $cv->title }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
+
                     {{-- Resume input --}}
                     <div class="bg-tertiary rounded-xl p-5 border border-primary/10 shadow-sm flex flex-col gap-3">
                         <div class="flex justify-between items-center">
@@ -247,6 +265,53 @@
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
+    }
+
+    const cvSelector = document.getElementById('cv-selector');
+    if (cvSelector) {
+        cvSelector.addEventListener('change', function() {
+            if (!this.value) return;
+            const selectedOption = this.options[this.selectedIndex];
+            const sectionsRaw = selectedOption.getAttribute('data-sections');
+            if (!sectionsRaw) return;
+            try {
+                const sections = JSON.parse(sectionsRaw);
+                let resumeText = '';
+                let jobDesc = '';
+
+                function extractTextFromContent(content) {
+                    if (!content) return '';
+                    if (typeof content === 'string') return content;
+                    if (Array.isArray(content)) {
+                        return content.map(extractTextFromContent).filter(Boolean).join('\n');
+                    }
+                    if (typeof content === 'object') {
+                        return Object.values(content).map(extractTextFromContent).filter(Boolean).join(' | ');
+                    }
+                    return String(content);
+                }
+                
+                sections.forEach(sec => {
+                    if (sec.type === 'target_job') {
+                        const title = sec.content?.job_title || '';
+                        const desc = sec.content?.job_description || '';
+                        jobDesc = (title + '\n\n' + desc).trim();
+                    } else {
+                        if (sec.content) {
+                            resumeText += extractTextFromContent(sec.content) + '\n\n';
+                        }
+                    }
+                });
+
+                document.getElementById('resume-input').value = resumeText.trim();
+                document.getElementById('resume-input').dispatchEvent(new Event('input'));
+                
+                document.getElementById('jd-input').value = jobDesc;
+                document.getElementById('jd-input').dispatchEvent(new Event('input'));
+            } catch (e) {
+                console.error("Failed to parse sections", e);
+            }
+        });
     }
 
     document.getElementById('resume-input').addEventListener('input', function () {

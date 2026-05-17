@@ -1160,6 +1160,8 @@
 
             const jobContext = document.querySelector('[name="job_description"]')?.value || '';
 
+            console.log(`[AI Refine] Sending request for refinement...`);
+            
             fetch(`/resumes/{{ $cv->id ?? '' }}/ai/refine-bullet`, {
                 method: 'POST',
                 headers: {
@@ -1169,8 +1171,12 @@
                 },
                 body: JSON.stringify({ text, job_context: jobContext })
             })
-            .then(res => res.json())
+            .then(res => {
+                console.log(`[AI Refine] Received response with status: ${res.status} ${res.statusText}`);
+                return res.json();
+            })
             .then(data => {
+                console.log('[AI Refine] Response payload:', data);
                 document.getElementById('refine-loading').classList.add('hidden');
                 if (data.success && data.options) {
                     const resultsContainer = document.getElementById('refine-results');
@@ -1249,6 +1255,8 @@
             document.getElementById('cv-versions-setup').classList.add('hidden');
             document.getElementById('cv-versions-loading').style.display = 'flex';
 
+            console.log(`[AI Versions] Sending parallel requests to generate 3 CV versions...`);
+            
             fetch(`/resumes/{{ $cv->id ?? '' }}/ai/generate-versions`, {
                 method: 'POST',
                 headers: {
@@ -1258,8 +1266,12 @@
                 },
                 body: JSON.stringify({ job_description: jobDescription })
             })
-            .then(res => res.json())
+            .then(res => {
+                console.log(`[AI Versions] Received response with status: ${res.status} ${res.statusText}`);
+                return res.json();
+            })
             .then(data => {
+                console.log('[AI Versions] Response payload:', data);
                 document.getElementById('cv-versions-loading').style.display = 'none';
                 if (data.success && data.versions) {
                     const resultsContainer = document.getElementById('cv-versions-results');
