@@ -20,6 +20,7 @@
 
     @include('layouts.user.mobilenavbar')
 
+    <x-user.toast />
     @stack('scripts')
     
 </body>

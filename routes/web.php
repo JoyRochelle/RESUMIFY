@@ -72,8 +72,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('user.manuscript');
 
         Route::get('/ai-assistant', function () {
-            $cvs = auth()->user()->cvs()->with('sections')->latest()->get();
-            return view('user.ai-assistant', compact('cvs'));
+            $user = auth()->user();
+            $cvs = $user->cvs()->with('sections')->latest()->get();
+            
+            $quota = [
+                'remaining'  => $user->getQuotaRemaining(),
+                'limit'      => $user->getQuotaLimit(),
+                'percentage' => $user->getQuotaPercentage(),
+            ];
+            
+            return view('user.ai-assistant', compact('cvs', 'quota'));
         })->name('user.ai-assistant');
 
         Route::get('/settings', function () {
