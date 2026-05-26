@@ -27,7 +27,7 @@ class AiResumeController extends Controller
         Gate::authorize('update', $cv);
         
         $request->validate([
-            'text' => 'required|string|max:1000',
+            'text' => 'required|string|min:10|max:1000',
             'job_context' => 'nullable|string|max:2000'
         ]);
 
@@ -62,6 +62,17 @@ class AiResumeController extends Controller
                 'content' => $s->content
             ];
         })->toArray();
+
+        $contentLength = 0;
+        array_walk_recursive($sections, function($item, $key) use (&$contentLength) {
+            if ($key !== 'type' && $key !== 'title' && is_string($item)) {
+                $contentLength += strlen(trim($item));
+            }
+        });
+
+        if ($contentLength < 200) {
+            return response()->json(['success' => false, 'message' => 'Your CV does not have enough content to tailor. Please fill in your resume sections with more details first (at least 200 characters).'], 422);
+        }
 
         try {
             $versions = $this->aiService->generateCvVersions($sections, $request->job_description);
