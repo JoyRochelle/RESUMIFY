@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -18,3 +19,7 @@ Artisan::command('resumify:setup', function () {
 
     $this->info('Project setup complete! You can now log in with admin@resumify.com / password.');
 })->purpose('Setup the project for a new developer (links storage, migrates, and seeds)');
+
+// ── Scheduled Commands ──────────────────────────────────────
+Schedule::command('quota:reset')->daily();
+
