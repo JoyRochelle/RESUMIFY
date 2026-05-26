@@ -7,6 +7,7 @@ use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Midtrans\Config;
@@ -84,31 +85,33 @@ class PaymentController extends Controller
 
         if ($transactionStatus == 'settlement' || $transactionStatus == 'capture') {
             if ($transaction->status !== 'success') {
-                $transaction->update([
-                    'status' => 'success',
-                    'midtrans_transaction_id' => $transactionId,
-                    'payment_method' => $paymentType,
-                    'paid_at' => now(),
-                ]);
+                DB::transaction(function () use ($transaction, $transactionId, $paymentType) {
+                    $transaction->update([
+                        'status' => 'success',
+                        'midtrans_transaction_id' => $transactionId,
+                        'payment_method' => $paymentType,
+                        'paid_at' => now(),
+                    ]);
 
-                $user = $transaction->user;
-                $user->update([
-                    'role' => 'premium',
-                    'ai_quota_used' => 0,
-                    'ai_quota_reset_at' => now(),
-                ]);
+                    $user = $transaction->user;
+                    $user->role = 'premium';
+                    $user->ai_quota_used = 0;
+                    $user->ai_quota_reset_at = now();
+                    $user->save();
 
-                Subscription::updateOrCreate(
-                    ['user_id' => $user->id],
-                    [
-                        'plan' => 'premium',
-                        'status' => 'active',
-                        'starts_at' => now(),
-                        'ends_at' => now()->addMonth(),
-                    ]
-                );
+                    Subscription::updateOrCreate(
+                        ['user_id' => $user->id],
+                        [
+                            'plan' => 'premium',
+                            'status' => 'active',
+                            'starts_at' => now(),
+                            'ends_at' => now()->addMonth(),
+                        ]
+                    );
+                });
 
-                SendPaymentConfirmationJob::dispatch($user, $transaction);
+                // Dispatch email job outside transaction — only fires on successful commit
+                SendPaymentConfirmationJob::dispatch($transaction->user, $transaction);
             }
         } elseif ($transactionStatus == 'cancel' || $transactionStatus == 'deny' || $transactionStatus == 'expire') {
             $transaction->update(['status' => 'failed']);

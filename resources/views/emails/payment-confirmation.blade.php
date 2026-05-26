@@ -24,7 +24,7 @@
             </tr>
             <tr>
                 <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Date:</strong></td>
-                <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">{{ $transaction->paid_at->format('d M Y, H:i') }}</td>
+                <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">{{ $transaction->paid_at?->format('d M Y, H:i') ?? 'Processing' }}</td>
             </tr>
         </table>
         
