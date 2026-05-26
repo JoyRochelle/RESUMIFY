@@ -144,4 +144,20 @@ class User extends Authenticatable implements MustVerifyEmail
         return $limit > 0 ? round(($this->ai_quota_used / $limit) * 100, 1) : 0;
     }
 
+    /**
+     * Check if the user has enough AI credits remaining.
+     */
+    public function hasQuotaRemaining(int $credits = 1): bool
+    {
+        return $this->getQuotaRemaining() >= $credits;
+    }
+
+    /**
+     * Get the AI usage logs for this user.
+     */
+    public function aiUsageLogs(): HasMany
+    {
+        return $this->hasMany(AiUsageLog::class);
+    }
+
 }
