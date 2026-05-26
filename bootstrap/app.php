@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\QuotaMiddleware;
+use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -11,7 +13,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'role'     => RoleMiddleware::class,
+            'ai.quota' => QuotaMiddleware::class,
+        ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'payment/callback',
+        ]);
+
+        $middleware->redirectUsersTo(function () {
+            if (auth()->check() && auth()->user()->isAdmin()) {
+                return '/admin/dashboard';
+            }
+            return '/dashboard';
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

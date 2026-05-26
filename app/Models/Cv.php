@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+
+class Cv extends Model
+{
+    use HasUlids, SoftDeletes;
+
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+    protected $fillable = [
+        'user_id',
+        'template_id',
+        'title',
+        'job_target',
+        'company_target',
+        'ats_score',
+        'status',
+        'content',
+        'is_public',
+    ];
+
+    protected function casts(): array 
+    {
+        return [
+            'content' => 'array',
+            'is_public' => 'boolean',
+        ];
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function template(): BelongsTo
+    {
+        return $this->belongsTo(CvTemplate::class, 'template_id');
+    }
+
+    public function sections(): HasMany
+    {
+        return $this->hasMany(CvSection::class)->orderBy('order');
+    }
+
+}
