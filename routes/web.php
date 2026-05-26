@@ -115,12 +115,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('resumes/{cv}/preview', [ResumeExportController::class, 'preview'])->name('resumes.preview');
         Route::get('resumes/{cv}/pdf', [ResumeExportController::class, 'downloadPdf'])->name('resumes.pdf');
 
-        // ATS Analyzer
-        Route::post('/ats/analyze', [AtsController::class, 'analyze'])->name('ats.analyze');
-        
-        // AI Features
-        Route::post('resumes/{cv}/ai/refine-bullet', [AiResumeController::class, 'refineBullet'])->name('resumes.ai.refineBullet');
-        Route::post('resumes/{cv}/ai/generate-versions', [AiResumeController::class, 'generateVersions'])->name('resumes.ai.generateVersions');
+        // AI Features — Premium, quota-gated, throttled
+        Route::post('/ats/analyze', [AtsController::class, 'analyze'])
+            ->middleware(['ai.quota:1', 'throttle:5,1'])
+            ->name('ats.analyze');
+
+        Route::post('resumes/{cv}/ai/refine-bullet', [AiResumeController::class, 'refineBullet'])
+            ->middleware(['ai.quota:1', 'throttle:10,1'])
+            ->name('resumes.ai.refineBullet');
+
+        Route::post('resumes/{cv}/ai/generate-versions', [AiResumeController::class, 'generateVersions'])
+            ->middleware(['ai.quota:3', 'throttle:3,1'])
+            ->name('resumes.ai.generateVersions');
     });
 
     // Admin Routes

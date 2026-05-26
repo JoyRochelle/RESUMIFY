@@ -3,26 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cv;
+use App\Services\AiService;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Client\ConnectionException;
 
 class ManuscriptAtsController extends Controller
 {
+    protected AiService $aiService;
+
+    public function __construct(AiService $aiService)
+    {
+        $this->aiService = $aiService;
+    }
+
     /**
      * Score a CV's content using Gemini and return an ATS score (0-100).
      * This is called automatically after each section save in the manuscript editor.
+     * Free feature — no AI credit deducted.
      */
     public function score(Request $request, Cv $cv): JsonResponse
     {
-        \Illuminate\Support\Facades\Gate::authorize('view', $cv);
-
-        $apiKey = config('services.gemini.key');
-        if (!$apiKey) {
-            return response()->json(['error' => 'Gemini API key not configured.'], 500);
-        }
+        Gate::authorize('view', $cv);
 
         // Flatten the CV content into readable text for analysis
         $cv->load('sections');
@@ -36,44 +40,11 @@ class ManuscriptAtsController extends Controller
             return response()->json(['score' => 0, 'tip' => 'Add more content to get your ATS score.']);
         }
 
-        $prompt = $this->buildPrompt($resumeText, $jobTitle, $jobDescription);
-
         try {
-            set_time_limit(60);
-
-            $response = Http::timeout(25)
-                ->connectTimeout(5)
-                ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
-                    'contents' => [[
-                        'parts' => [['text' => $prompt]],
-                    ]],
-                    'generationConfig' => [
-                        'response_mime_type' => 'application/json',
-                    ],
-                ]);
-
-            if ($response->failed()) {
-                Log::error('ManuscriptAts Gemini Error', [
-                    'status'   => $response->status(),
-                    'body'     => $response->body(),
-                ]);
-                return response()->json(['error' => 'AI service unavailable.'], 502);
-            }
-
-            $result  = $response->json();
-            $content = $result['candidates'][0]['content']['parts'][0]['text'] ?? null;
-
-            if (!$content) {
-                return response()->json(['error' => 'Empty response from AI.'], 500);
-            }
-
-            $data = json_decode($content, true);
-            if (json_last_error() !== JSON_ERROR_NONE || !isset($data['score'])) {
-                return response()->json(['error' => 'Could not parse AI response.'], 500);
-            }
+            $data = $this->aiService->scoreResume($resumeText, $jobTitle, $jobDescription);
 
             // Clamp score to 0-100
-            $data['score'] = max(0, min(100, (int) $data['score']));
+            $data['score'] = max(0, min(100, (int) ($data['score'] ?? 0)));
 
             return response()->json($data);
 
@@ -123,38 +94,5 @@ class ManuscriptAtsController extends Controller
         }
 
         return implode("\n", $lines);
-    }
-
-    private function buildPrompt(string $resumeText, ?string $jobTitle = null, ?string $jobDescription = null): string
-    {
-        $jobContext = "";
-        if ($jobTitle || $jobDescription) {
-            $jobContext = "Evaluate this resume against the following job:\n";
-            if ($jobTitle) $jobContext .= "JOB TITLE: $jobTitle\n";
-            if ($jobDescription) $jobContext .= "JOB DESCRIPTION: $jobDescription\n";
-            $jobContext .= "\nFocus on: keyword matching, relevance of experience to this role, and overall fit.";
-        } else {
-            $jobContext = "Evaluate this resume for overall quality WITHOUT a specific job description. Focus on: completeness, quantifiable achievements, formatting, and keyword richness.";
-        }
-
-        return <<<PROMPT
-You are a professional ATS (Applicant Tracking System) expert.
-
-{$jobContext}
-
-RESUME:
-{$resumeText}
-
-Return ONLY a valid JSON object with exactly this structure:
-{
-  "score": (integer 0-100),
-  "label": (string: "Excellent" | "Very Good" | "Fair" | "Weak"),
-  "tip": (string: one actionable sentence to improve the score),
-  "strengths": (array of 2-3 short strings: what the resume does well),
-  "improvements": (array of 2-3 short strings: what needs improvement)
-}
-
-Be critical but fair. Ensure the JSON is valid and complete.
-PROMPT;
     }
 }

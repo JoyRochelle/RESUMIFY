@@ -2,18 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\AiService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class AtsController extends Controller
 {
+    protected AiService $aiService;
+
+    public function __construct(AiService $aiService)
+    {
+        $this->aiService = $aiService;
+    }
+
     /**
      * Analyze resume against job description using Gemini AI.
+     * Premium feature — guarded by ai.quota middleware in routes.
      */
-    public function analyze(Request $request) {
-        set_time_limit(65);
+    public function analyze(Request $request)
+    {
         $request->validate([
             'resume'          => ['required', 'string', 'min:50', 'max:20000'],
             'job_description' => ['required', 'string', 'min:50', 'max:20000'],
@@ -21,112 +29,33 @@ class AtsController extends Controller
 
         $resumeText = $request->input('resume');
         $jdText     = $request->input('job_description');
-        $apiKey     = config('services.gemini.key');
+        $user       = $request->user();
 
-        if (!$apiKey) {
-            return response()->json([
-                'message' => 'Gemini API key is not configured. Please add GEMINI_API_KEY to your .env file.'
-            ], 500);
-        }
-
-        $prompt = $this->buildPrompt($resumeText, $jdText);
+        // Deduct credit BEFORE the AI call
+        $user->increment('ai_quota_used', 1);
 
         try {
-            $response = Http::timeout(30)->connectTimeout(5)->withHeaders([
-                'Content-Type' => 'application/json',
-            ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
-                'contents' => [
-                    [
-                        'parts' => [
-                            ['text' => $prompt]
-                        ]
-                    ]
-                ],
-                'generationConfig' => [
-                    'response_mime_type' => 'application/json',
-                ]
-            ]);
+            $analysis = $this->aiService->analyzeAts($resumeText, $jdText);
 
-            if ($response->failed()) {
-                Log::error('Gemini API Error', [
-                    'status'   => $response->status(),
-                    'response' => $response->body(),
-                ]);
-                $errorBody = $response->json();
-                $apiMsg    = $errorBody['error']['message'] ?? 'Failed to connect to the AI service.';
-                return response()->json(['message' => $apiMsg], 502);
-            }
-
-            $result = $response->json();
-            $content = $result['candidates'][0]['content']['parts'][0]['text'] ?? null;
-
-            if (!$content) {
-                return response()->json(['message' => 'Invalid response from AI service.'], 500);
-            }
-
-            $analysis = json_decode($content, true);
-
+            // Add word count (client-side display)
             $analysis['word_count'] = str_word_count($resumeText);
+
+            // Log usage
+            $this->aiService->logUsage($user->id, 'ats_analyze');
 
             return response()->json($analysis);
 
         } catch (ConnectionException $e) {
+            // Refund the credit on timeout
+            $user->decrement('ai_quota_used', 1);
             Log::error('ATS Connection Timeout', ['message' => $e->getMessage()]);
             return response()->json(['message' => 'The AI service did not respond in time. Please try again.'], 504);
+
         } catch (\Exception $e) {
+            // Refund the credit on failure
+            $user->decrement('ai_quota_used', 1);
             Log::error('ATS Analysis Exception', ['message' => $e->getMessage()]);
             return response()->json(['message' => 'An error occurred during analysis.'], 500);
         }
-    }
-
-    private function buildPrompt(string $resume, string $jd): string
-    {
-        return <<<PROMPT
-You are an expert ATS (Applicant Tracking System) analyzer. 
-Analyze the following RESUME against the JOB DESCRIPTION.
-
-RESUME:
-{$resume}
-
-JOB DESCRIPTION:
-{$jd}
-
-Return a JSON object with exactly this structure:
-{
-  "score": (integer 0-100),
-  "rating": {
-    "label": (string: "Excellent", "Very Good", "Fair", or "Weak"),
-    "sublabel": (string: "ATS-Ready", "Needs Minor Polish", "Room to Improve", or "Needs Rework"),
-    "color": (string: "success" for Excellent/Very Good, "warning" for Fair, "danger" for Weak)
-  },
-  "keyword_score": (integer 0-100),
-  "matched": (array of strings: top 15 matching keywords/skills),
-  "missing": [
-    {
-      "keyword": (string: the missing keyword),
-      "context": (string: short context on why this keyword matters for this role)
-    }
-  ],
-  "section_breakdown": [
-    {
-      "section": (string: e.g. "Summary", "Experience", "Education", "Skills"),
-      "strength": (string: "Strong", "Adequate", or "Weak"),
-      "feedback": (string: short actionable feedback for this section)
-    }
-  ],
-  "action_verbs": (array of strings: strong verbs found in resume),
-  "missing_verbs": (array of strings: 4-6 recommended action verbs to add),
-  "has_numbers": (boolean: true if resume contains metrics/numbers),
-  "length_tip": (string: a short tip about the resume length),
-  "insights": [
-    {
-      "title": (string: short catchy title),
-      "body": (string: actionable advice)
-    }
-  ] (exactly 4 insights)
-}
-
-Be critical and professional. Ensure the JSON is valid.
-PROMPT;
     }
 }
