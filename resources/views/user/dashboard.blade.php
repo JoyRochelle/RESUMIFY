@@ -143,7 +143,7 @@
         }
 
         function scaleThumbnails() {
-            const iframes = document.querySelectorAll('.template-thumbnail-iframe');
+            const iframes = document.querySelectorAll('.template-thumbnail-iframe, .cv-thumbnail-iframe');
             iframes.forEach(iframe => {
                 const parent = iframe.parentElement;
                 if (parent) {
@@ -154,11 +154,7 @@
         }
         
         // Ensure scale is maintained on window resize
-        window.addEventListener('resize', () => {
-            if (!document.getElementById('create-modal').classList.contains('hidden')) {
-                scaleThumbnails();
-            }
-        });
+        window.addEventListener('resize', scaleThumbnails);
 
         function closeCreateModal() {
             const modal = document.getElementById('create-modal');
@@ -172,6 +168,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            scaleThumbnails();
             @if(request('create') === 'true')
                 setTimeout(openCreateModal, 100);
             @endif

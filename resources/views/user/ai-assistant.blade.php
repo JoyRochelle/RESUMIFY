@@ -19,34 +19,40 @@
             <aside class="w-full lg:w-[42%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
                 <div class="p-4 lg:p-6 lg:overflow-y-auto custom-scrollbar space-y-5 lg:h-full">
 
-                    {{-- Resume input --}}
+                    {{-- Select CV --}}
+                    @if(isset($cvs) && $cvs->isNotEmpty())
                     <div class="bg-tertiary rounded-xl p-5 border border-primary/10 shadow-sm flex flex-col gap-3">
-                        <div class="flex justify-between items-center">
-                            <h3 class="font-bold text-primary flex items-center gap-2 text-sm">
-                                <span class="material-symbols-outlined text-primary/60 text-[18px]">description</span>
-                                Your Resume
-                            </h3>
-                            <span id="resume-word-count" class="text-[10px] font-label text-primary/40 uppercase tracking-wider">0 words</span>
-                        </div>
-                        <textarea id="resume-input"
-                                  class="w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none p-4 text-sm leading-relaxed custom-scrollbar resize-none transition-all duration-200"
-                                  placeholder="Paste your full resume text here…"
-                                  rows="10"></textarea>
+                        <label for="cv-selector" class="font-bold text-primary flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-primary/60 text-[18px]">folder_open</span>
+                            Select from your Resumes
+                        </label>
+                        <select id="cv-selector" class="w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none p-3 text-sm transition-all duration-200">
+                            <option value="">-- Choose a Resume --</option>
+                            @foreach($cvs as $cv)
+                                <option value="{{ $cv->id }}" data-sections="{{ json_encode($cv->sections) }}">
+                                    {{ $cv->title }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
+                    @endif
 
-                    {{-- Job Description input --}}
-                    <div class="bg-tertiary rounded-xl p-5 border border-primary/10 shadow-sm flex flex-col gap-3">
+                    {{-- Resume input (Hidden, populated by CV selector) --}}
+                    <input type="hidden" id="resume-input" value="">
+
+                    {{-- Job Description input (Hidden, populated by CV selector) --}}
+                    <input type="hidden" id="jd-input" value="">
+
+                    {{-- Preview Area --}}
+                    <div class="bg-tertiary rounded-xl p-6 border border-primary/10 shadow-sm flex flex-col gap-4">
                         <div class="flex justify-between items-center">
                             <h3 class="font-bold text-primary flex items-center gap-2 text-sm">
-                                <span class="material-symbols-outlined text-primary/60 text-[18px]">target</span>
-                                Job Description
+                                <span class="material-symbols-outlined text-primary/60 text-[18px]">visibility</span>
+                                <span id="preview-header-text">All Resumes Preview</span>
                             </h3>
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-primary/40">Target Role</span>
                         </div>
-                        <textarea id="jd-input"
-                                  class="w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none p-4 text-sm leading-relaxed custom-scrollbar resize-none transition-all duration-200"
-                                  placeholder="Paste the job description here…"
-                                  rows="10"></textarea>
+                        <div id="preview-content-box" class="w-full text-xs leading-relaxed custom-scrollbar overflow-y-auto max-h-[250px] text-primary/80 pr-2">
+                        </div>
                     </div>
 
                     {{-- Analyze Button --}}
@@ -73,9 +79,9 @@
                     <div class="w-24 h-24 rounded-full bg-secondary/10 flex items-center justify-center mb-6 animate-pulse-slow">
                         <span class="material-symbols-outlined text-secondary text-4xl icon-filled">analytics</span>
                     </div>
-                    <h3 class="font-headline text-2xl text-primary mb-2">Paste & Analyze</h3>
+                    <h3 class="font-headline text-2xl text-primary mb-2">Select & Analyze</h3>
                     <p class="text-primary/50 text-sm max-w-xs leading-relaxed">
-                        Add your resume and a job description on the left, then click <strong class="text-primary/70">Analyze Match</strong> to see your ATS score and actionable recommendations.
+                        Select a resume on the left, then click <strong class="text-primary/70">Analyze Match</strong> to see your ATS score and actionable recommendations.
                     </p>
                 </div>
 
@@ -93,15 +99,17 @@
                         </div>
 
                         {{-- Missing keywords card --}}
-                        <div class="bg-tertiary rounded-2xl p-5 border border-primary/10 shadow-sm md:col-span-2">
-                            <div class="flex items-center gap-2 mb-4 text-red-500">
+                        <div class="bg-tertiary rounded-2xl p-5 border border-primary/10 shadow-sm md:col-span-2 flex flex-col max-h-[320px]">
+                            <div class="flex items-center gap-2 mb-4 text-red-500 shrink-0">
                                 <span class="material-symbols-outlined text-[18px]">error_outline</span>
                                 <h4 class="font-bold tracking-tight text-xs uppercase">Missing Keywords</h4>
                                 <span id="missing-count-badge"
                                       class="ml-auto text-[10px] font-bold bg-red-500/10 text-red-500 px-2 py-0.5 rounded-full"></span>
                             </div>
-                            <div id="missing-keywords-container" class="flex flex-wrap gap-2 mb-3 min-h-[2rem]"></div>
-                            <p id="missing-keywords-tip" class="text-xs text-primary/60 leading-relaxed italic"></p>
+                            <div class="overflow-y-auto custom-scrollbar flex-1 pr-2">
+                                <div id="missing-keywords-container" class="flex flex-col gap-2 min-h-[2rem]"></div>
+                            </div>
+                            <p id="missing-keywords-tip" class="text-xs text-primary/60 leading-relaxed italic mt-3 shrink-0"></p>
                         </div>
                     </div>
 
@@ -137,6 +145,15 @@
                             <p id="length-tip-body"  class="text-sm text-primary/70 leading-relaxed"></p>
                         </div>
                     </div>
+
+                    {{-- Section Breakdown --}}
+                    <section class="rounded-2xl p-7 border border-primary/10 bg-tertiary">
+                        <div class="flex items-center gap-2 mb-5 text-primary">
+                            <span class="material-symbols-outlined text-[20px] icon-filled">grading</span>
+                            <h4 class="font-bold tracking-tight text-sm uppercase">Section Breakdown</h4>
+                        </div>
+                        <div id="section-breakdown-container" class="grid grid-cols-1 gap-3"></div>
+                    </section>
 
                     {{-- Strategic Insights --}}
                     <section class="rounded-2xl p-7 border border-secondary/20 bg-secondary/[0.04] relative overflow-hidden">
@@ -238,9 +255,124 @@
             .replace(/>/g, '&gt;');
     }
 
-    document.getElementById('resume-input').addEventListener('input', function () {
-        document.getElementById('resume-word-count').textContent = wordCount(this.value) + ' words';
-    });
+    function parseCvSections(option) {
+        const sectionsRaw = option.getAttribute('data-sections');
+        if (!sectionsRaw) return { text: '', jd: '' };
+        try {
+            const sections = JSON.parse(sectionsRaw);
+            let resumeText = '';
+            let jobDesc = '';
+
+            function extractTextFromContent(content) {
+                if (!content) return '';
+                if (typeof content === 'string') return content;
+                if (Array.isArray(content)) {
+                    return content.map(extractTextFromContent).filter(Boolean).join('\n');
+                }
+                if (typeof content === 'object') {
+                    return Object.values(content).map(extractTextFromContent).filter(Boolean).join(' | ');
+                }
+                return String(content);
+            }
+            
+            sections.forEach(sec => {
+                if (sec.type === 'target_job') {
+                    const title = sec.content?.job_title || '';
+                    const desc = sec.content?.job_description || '';
+                    jobDesc = (title + '\n\n' + desc).trim();
+                } else {
+                    if (sec.content) {
+                        resumeText += extractTextFromContent(sec.content) + '\n\n';
+                    }
+                }
+            });
+            return { text: resumeText.trim(), jd: jobDesc };
+        } catch(e) {
+            console.error("Failed to parse sections", e);
+            return { text: '', jd: '' };
+        }
+    }
+
+    function renderPreviews() {
+        const selector = document.getElementById('cv-selector');
+        const previewHeader = document.getElementById('preview-header-text');
+        const previewBox = document.getElementById('preview-content-box');
+        if (!selector || !previewBox) return;
+
+        let html = '';
+        if (selector.value) {
+            previewHeader.textContent = 'Selected Resume';
+            const option = selector.options[selector.selectedIndex];
+            const data = parseCvSections(option);
+            
+            html = `
+                <div class="bg-surface-container-low rounded-xl border border-primary/10 p-5 mb-4 shadow-sm hover:border-primary/20 transition-colors">
+                    <div class="font-bold text-secondary text-[10px] uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[14px]">description</span> 
+                        Resume Content
+                    </div>
+                    <div class="whitespace-pre-wrap opacity-80 text-[11px]">${escHtml(data.text) || '<i class="opacity-50">No text content</i>'}</div>
+                </div>`;
+            
+            if (data.jd) {
+                html += `
+                <div class="bg-surface-container-low rounded-xl border border-primary/10 p-5 shadow-sm hover:border-primary/20 transition-colors">
+                    <div class="font-bold text-secondary text-[10px] uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[14px]">target</span> 
+                        Target Job Description
+                    </div>
+                    <div class="whitespace-pre-wrap opacity-80 text-[11px]">${escHtml(data.jd)}</div>
+                </div>`;
+            }
+        } else {
+            previewHeader.textContent = 'All Resumes Preview';
+            let hasAny = false;
+            for (let i = 1; i < selector.options.length; i++) {
+                if (!selector.options[i].value) continue;
+                hasAny = true;
+                const option = selector.options[i];
+                const data = parseCvSections(option);
+                html += `
+                <div class="bg-surface-container-low rounded-xl border border-primary/10 p-5 mb-4 last:mb-0 shadow-sm hover:shadow-md hover:border-primary/20 transition-all">
+                    <div class="font-bold text-primary mb-3 flex items-center gap-3 text-sm">
+                        <div class="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary/70 shrink-0">
+                            <span class="material-symbols-outlined text-[16px]">description</span>
+                        </div>
+                        <span class="truncate">${escHtml(option.text.trim())}</span>
+                    </div>
+                    <div class="opacity-70 text-[11px] line-clamp-3 overflow-hidden text-ellipsis whitespace-pre-wrap leading-relaxed">${escHtml(data.text) || '<i class="opacity-50">No text content</i>'}</div>
+                </div>`;
+            }
+            if (!hasAny) {
+                html = `
+                <div class="flex flex-col items-center justify-center py-10 opacity-50">
+                    <span class="material-symbols-outlined text-4xl mb-3">folder_off</span>
+                    <span class="italic text-sm">No resumes found.</span>
+                </div>`;
+            }
+        }
+        previewBox.innerHTML = html;
+    }
+
+    const cvSelector = document.getElementById('cv-selector');
+    if (cvSelector) {
+        cvSelector.addEventListener('change', function() {
+            renderPreviews();
+            if (!this.value) {
+                document.getElementById('resume-input').value = '';
+                document.getElementById('jd-input').value = '';
+                return;
+            }
+            const selectedOption = this.options[this.selectedIndex];
+            const data = parseCvSections(selectedOption);
+            document.getElementById('resume-input').value = data.text;
+            document.getElementById('jd-input').value = data.jd;
+        });
+        
+        // Initial render on page load
+        renderPreviews();
+    }
+
 
     function buildScoreCircle(score) {
         const r           = 56;
@@ -269,7 +401,7 @@
         const circle = container.querySelector('.progress-ring');
         if (!circle) return;
         const target = parseFloat(circle.dataset.target);
-        // trigger reflow then set final value
+
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 circle.style.transition = 'stroke-dashoffset 1.1s cubic-bezier(.4,0,.2,1)';
@@ -284,12 +416,12 @@
         const resultsEl = document.getElementById('ats-results');
         resultsEl.classList.remove('hidden');
 
-        // ─ Score circle
+        // Score circle
         const scoreContainer = document.getElementById('score-circle-container');
         scoreContainer.innerHTML = buildScoreCircle(data.score);
         animateCircle(scoreContainer);
 
-        // ─ Rating
+        // Rating
         const ratingColorMap = { success: 'text-secondary', warning: 'text-yellow-500', danger: 'text-red-500' };
         document.getElementById('score-rating-label').textContent   = data.rating.label;
         document.getElementById('score-rating-label').className     = `font-bold text-lg ${ratingColorMap[data.rating.color] ?? 'text-secondary'}`;
@@ -301,7 +433,12 @@
         if (data.missing.length === 0) {
             missingContainer.innerHTML = `<span class="text-xs text-secondary font-semibold">🎉 No critical keywords missing!</span>`;
         } else {
-            missingContainer.innerHTML = data.missing.map(k => makeDangerTag(k)).join('');
+            missingContainer.innerHTML = data.missing.map(m => `
+                <div class="flex flex-col p-3 bg-red-500/5 rounded-xl border border-red-500/10 hover:bg-red-500/10 transition-colors">
+                    <span class="text-xs font-bold text-red-600 mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">cancel</span> ${escHtml(m.keyword)}</span>
+                    <span class="text-[11px] text-primary/70 leading-relaxed">${escHtml(m.context)}</span>
+                </div>
+            `).join('');
         }
         const pct = data.missing.length > 0
             ? Math.round((data.missing.length / (data.missing.length + data.matched.length)) * 100)
@@ -331,7 +468,7 @@
             missingVerbsRow.classList.add('hidden');
         }
 
-        // ─ Length tip
+        // Length tip
         const lengthCard  = document.getElementById('length-tip-card');
         const lengthIcon  = document.getElementById('length-tip-icon');
         const lengthTitle = document.getElementById('length-tip-title');
@@ -343,7 +480,8 @@
             lengthIcon.className   = 'material-symbols-outlined text-[22px] shrink-0 mt-0.5 text-secondary icon-filled';
             lengthTitle.textContent = 'Resume Length';
             lengthTitle.className   = 'text-xs font-bold uppercase tracking-wider mb-1 text-secondary';
-        } else {
+        } 
+        else {
             lengthCard.className = 'flex items-start gap-4 rounded-2xl p-5 border border-yellow-500/20 bg-yellow-500/5';
             lengthIcon.textContent = 'warning';
             lengthIcon.className   = 'material-symbols-outlined text-[22px] shrink-0 mt-0.5 text-yellow-500';
@@ -351,6 +489,34 @@
             lengthTitle.className   = 'text-xs font-bold uppercase tracking-wider mb-1 text-yellow-600';
         }
         lengthBody.textContent = data.length_tip;
+
+        const breakdownContainer = document.getElementById('section-breakdown-container');
+        if (data.section_breakdown && data.section_breakdown.length > 0) {
+            breakdownContainer.innerHTML = data.section_breakdown.map((sec, i) => {
+                let colorClass = 'text-secondary bg-secondary/10 border-secondary/20';
+                let icon = 'check_circle';
+                if (sec.strength === 'Weak') {
+                    colorClass = 'text-red-500 bg-red-500/10 border-red-500/20';
+                    icon = 'error';
+                } else if (sec.strength === 'Adequate') {
+                    colorClass = 'text-yellow-600 bg-yellow-500/10 border-yellow-500/20';
+                    icon = 'warning';
+                }
+                return `
+                <div class="flex items-start gap-4 p-4 rounded-xl border border-primary/5 bg-primary/[0.02] hover:bg-primary/5 transition-colors animate-fade-in-up" style="animation-delay:${i * 80}ms">
+                    <div class="flex flex-col items-center justify-center shrink-0 w-[72px] py-2 rounded-lg border ${colorClass}">
+                        <span class="material-symbols-outlined text-[20px] mb-1 icon-filled">${icon}</span>
+                        <span class="text-[9px] font-bold uppercase tracking-wider">${escHtml(sec.strength)}</span>
+                    </div>
+                    <div>
+                        <h5 class="text-sm font-bold text-primary mb-1">${escHtml(sec.section)}</h5>
+                        <p class="text-xs text-primary/70 leading-relaxed">${escHtml(sec.feedback)}</p>
+                    </div>
+                </div>`;
+            }).join('');
+        } else {
+            breakdownContainer.innerHTML = `<p class="text-sm text-primary/50">No section breakdown available.</p>`;
+        }
 
         const insightsContainer = document.getElementById('insights-container');
         insightsContainer.innerHTML = data.insights.map((ins, i) => `
@@ -360,32 +526,25 @@
             </div>
         `).join('');
 
-        // Fade-in animation for whole results
+
         resultsEl.querySelectorAll(':scope > div, :scope > section, :scope > p').forEach((el, i) => {
             el.style.animation = `fadeInUp 0.4s ease ${i * 60}ms both`;
         });
     }
 
-    // ── Analyze button ────────────────────────────────────────────────────────
-
     document.getElementById('analyze-btn').addEventListener('click', async function () {
         const resume = document.getElementById('resume-input').value.trim();
-        const jd     = document.getElementById('jd-input').value.trim();
-
-        // Client-side quick check
+        const jd = document.getElementById('jd-input').value.trim();
         if (resume.length < 50) {
-            showError('Please paste a more detailed resume (at least 50 characters).');
+            showError('The selected resume must have more content (at least 50 characters).');
             return;
         }
         if (jd.length < 50) {
-            showError('Please paste a more detailed job description (at least 50 characters).');
+            showError('The selected resume\'s job description must have more content (at least 50 characters).');
             return;
         }
-
         clearError();
         setLoading(true);
-
-        // Abort the request automatically after 90 seconds so the spinner never hangs
         const controller = new AbortController();
         const timeoutId  = setTimeout(() => controller.abort(), 90_000);
 
@@ -473,7 +632,8 @@
         setTimeout(() => modal.classList.add('hidden'), 300);
     }
 
-    // Close modal on outside click
+
+
     document.getElementById('instructions-modal').addEventListener('click', function (e) {
         if (e.target === this) closeInstructions();
     });

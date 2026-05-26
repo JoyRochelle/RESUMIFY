@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\ResumeExportController;
 use App\Http\Controllers\AtsController;
 use App\Http\Controllers\ManuscriptAtsController;
+use App\Http\Controllers\AiResumeController;
 use App\Http\Controllers\PaymentController;
 
 // Public Routes
@@ -71,7 +72,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('user.manuscript');
 
         Route::get('/ai-assistant', function () {
-            return view('user.ai-assistant');
+            $cvs = auth()->user()->cvs()->with('sections')->latest()->get();
+            return view('user.ai-assistant', compact('cvs'));
         })->name('user.ai-assistant');
 
         Route::get('/settings', function () {
@@ -115,6 +117,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // ATS Analyzer
         Route::post('/ats/analyze', [AtsController::class, 'analyze'])->name('ats.analyze');
+        
+        // AI Features
+        Route::post('resumes/{cv}/ai/refine-bullet', [AiResumeController::class, 'refineBullet'])->name('resumes.ai.refineBullet');
+        Route::post('resumes/{cv}/ai/generate-versions', [AiResumeController::class, 'generateVersions'])->name('resumes.ai.generateVersions');
     });
 
     // Admin Routes
