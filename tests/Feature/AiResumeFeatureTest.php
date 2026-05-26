@@ -38,18 +38,52 @@ class AiResumeFeatureTest extends TestCase
         ]);
     }
 
-    public function test_basic_user_cannot_refine_bullet(): void
+    // ────────────────────────────────────────────────
+    // Refine Bullet: Premium Gating via QuotaMiddleware
+    // ────────────────────────────────────────────────
+
+    public function test_basic_user_with_no_credits_cannot_refine_bullet(): void
     {
-        $user = User::factory()->create(['role' => 'basic']);
+        $user = User::factory()->create(['role' => 'basic', 'ai_quota_used' => 5]);
         $cv = $this->createCvForUser($user);
 
         $response = $this->actingAs($user)->postJson("/resumes/{$cv->id}/ai/refine-bullet", [
-            'text' => 'Did some work',
+            'text' => 'Did some work at the company',
             'job_context' => 'Software Engineer'
         ]);
 
-        $response->assertStatus(403)
-                 ->assertJson(['success' => false, 'message' => 'Premium feature only.']);
+        // QuotaMiddleware returns 402 when credits exhausted
+        $response->assertStatus(402)
+                 ->assertJson(['error' => 'quota_exceeded']);
+    }
+
+    public function test_basic_user_with_credits_can_refine_bullet(): void
+    {
+        $user = User::factory()->create(['role' => 'basic', 'ai_quota_used' => 0]);
+        $cv = $this->createCvForUser($user);
+
+        $this->mock(AiService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('refineBullet')
+                 ->once()
+                 ->with('Did some work at the company', 'Software Engineer')
+                 ->andReturn(['Option 1', 'Option 2', 'Option 3']);
+            $mock->shouldReceive('logUsage')
+                 ->once();
+        });
+
+        $response = $this->actingAs($user)->postJson("/resumes/{$cv->id}/ai/refine-bullet", [
+            'text' => 'Did some work at the company',
+            'job_context' => 'Software Engineer'
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJson([
+                     'success' => true,
+                     'options' => ['Option 1', 'Option 2', 'Option 3']
+                 ]);
+
+        // Credit deducted BEFORE the call
+        $this->assertEquals(1, $user->fresh()->ai_quota_used);
     }
 
     public function test_premium_user_can_refine_bullet(): void
@@ -61,12 +95,14 @@ class AiResumeFeatureTest extends TestCase
         $this->mock(AiService::class, function (MockInterface $mock) {
             $mock->shouldReceive('refineBullet')
                  ->once()
-                 ->with('Did some work', 'Software Engineer')
+                 ->with('Did some work at the company', 'Software Engineer')
                  ->andReturn(['Option 1', 'Option 2', 'Option 3']);
+            $mock->shouldReceive('logUsage')
+                 ->once();
         });
 
         $response = $this->actingAs($user)->postJson("/resumes/{$cv->id}/ai/refine-bullet", [
-            'text' => 'Did some work',
+            'text' => 'Did some work at the company',
             'job_context' => 'Software Engineer'
         ]);
 
@@ -79,17 +115,60 @@ class AiResumeFeatureTest extends TestCase
         $this->assertEquals(1, $user->fresh()->ai_quota_used);
     }
 
-    public function test_basic_user_cannot_generate_parallel_versions(): void
+    // ────────────────────────────────────────────────
+    // Refine Bullet: Credit refund on AI failure
+    // ────────────────────────────────────────────────
+
+    public function test_refine_bullet_refunds_credit_on_failure(): void
     {
-        $user = User::factory()->create(['role' => 'basic']);
+        $user = User::factory()->create(['role' => 'premium', 'ai_quota_used' => 0]);
+        $cv = $this->createCvForUser($user);
+
+        $this->mock(AiService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('refineBullet')
+                 ->once()
+                 ->andThrow(new \Exception('AI service failed'));
+        });
+
+        $response = $this->actingAs($user)->postJson("/resumes/{$cv->id}/ai/refine-bullet", [
+            'text' => 'Did some work at the company',
+        ]);
+
+        $response->assertStatus(500);
+
+        // Credit should be refunded
+        $this->assertEquals(0, $user->fresh()->ai_quota_used);
+    }
+
+    // ────────────────────────────────────────────────
+    // Generate Versions: Premium Gating
+    // ────────────────────────────────────────────────
+
+    public function test_basic_user_with_no_credits_cannot_generate_versions(): void
+    {
+        $user = User::factory()->create(['role' => 'basic', 'ai_quota_used' => 5]);
         $cv = $this->createCvForUser($user);
 
         $response = $this->actingAs($user)->postJson("/resumes/{$cv->id}/ai/generate-versions", [
             'job_description' => str_repeat('This is a test job description that meets length. ', 5)
         ]);
 
-        $response->assertStatus(403)
-                 ->assertJson(['success' => false, 'message' => 'Premium feature only.']);
+        $response->assertStatus(402)
+                 ->assertJson(['error' => 'quota_exceeded']);
+    }
+
+    public function test_basic_user_with_insufficient_credits_blocked_for_generate_versions(): void
+    {
+        // Generate versions needs 3 credits, user has only 2 remaining (5 - 3 = 2)
+        $user = User::factory()->create(['role' => 'basic', 'ai_quota_used' => 3]);
+        $cv = $this->createCvForUser($user);
+
+        $response = $this->actingAs($user)->postJson("/resumes/{$cv->id}/ai/generate-versions", [
+            'job_description' => str_repeat('This is a test job description that meets length. ', 5)
+        ]);
+
+        $response->assertStatus(402)
+                 ->assertJson(['error' => 'quota_exceeded']);
     }
 
     public function test_premium_user_can_generate_parallel_versions(): void
@@ -114,6 +193,8 @@ class AiResumeFeatureTest extends TestCase
                      'technical' => [['type' => 'personal_info', 'content' => ['summary' => 'Technical summary']]],
                      'ownership' => [['type' => 'personal_info', 'content' => ['summary' => 'Ownership summary']]],
                  ]);
+            $mock->shouldReceive('logUsage')
+                 ->once();
         });
 
         $response = $this->actingAs($user)->postJson("/resumes/{$cv->id}/ai/generate-versions", [
@@ -138,6 +219,139 @@ class AiResumeFeatureTest extends TestCase
             'tone_style' => 'ownership',
         ]);
 
+        // 3 credits deducted
         $this->assertEquals(3, $user->fresh()->ai_quota_used);
+    }
+
+    // ────────────────────────────────────────────────
+    // Generate Versions: Credit refund on AI failure
+    // ────────────────────────────────────────────────
+
+    public function test_generate_versions_refunds_credits_on_failure(): void
+    {
+        $user = User::factory()->create(['role' => 'premium', 'ai_quota_used' => 0]);
+        $cv = $this->createCvForUser($user);
+
+        $cv->sections()->create([
+            'type' => 'personal_info',
+            'title' => 'Personal Info',
+            'order' => 1,
+            'content' => ['summary' => str_repeat('Long enough content for testing. ', 10)]
+        ]);
+
+        $this->mock(AiService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('generateCvVersions')
+                 ->once()
+                 ->andThrow(new \Exception('AI service failed'));
+        });
+
+        $response = $this->actingAs($user)->postJson("/resumes/{$cv->id}/ai/generate-versions", [
+            'job_description' => str_repeat('This is a test job description that meets length. ', 5)
+        ]);
+
+        $response->assertStatus(500);
+
+        // All 3 credits should be refunded
+        $this->assertEquals(0, $user->fresh()->ai_quota_used);
+    }
+
+    // ────────────────────────────────────────────────
+    // Authorization: User cannot access other's CV
+    // ────────────────────────────────────────────────
+
+    public function test_user_cannot_refine_bullet_on_other_users_cv(): void
+    {
+        $owner = User::factory()->create(['role' => 'premium', 'ai_quota_used' => 0]);
+        $attacker = User::factory()->create(['role' => 'premium', 'ai_quota_used' => 0]);
+        $cv = $this->createCvForUser($owner);
+
+        $response = $this->actingAs($attacker)->postJson("/resumes/{$cv->id}/ai/refine-bullet", [
+            'text' => 'Trying to access someone else CV',
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_user_cannot_generate_versions_on_other_users_cv(): void
+    {
+        $owner = User::factory()->create(['role' => 'premium', 'ai_quota_used' => 0]);
+        $attacker = User::factory()->create(['role' => 'premium', 'ai_quota_used' => 0]);
+        $cv = $this->createCvForUser($owner);
+
+        $response = $this->actingAs($attacker)->postJson("/resumes/{$cv->id}/ai/generate-versions", [
+            'job_description' => str_repeat('This is a test job description that meets length. ', 5)
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    // ────────────────────────────────────────────────
+    // ATS Analyze: Premium Gating
+    // ────────────────────────────────────────────────
+
+    public function test_basic_user_with_no_credits_cannot_ats_analyze(): void
+    {
+        $user = User::factory()->create(['role' => 'basic', 'ai_quota_used' => 5]);
+
+        $response = $this->actingAs($user)->postJson('/ats/analyze', [
+            'resume'          => str_repeat('Experienced developer with skills. ', 10),
+            'job_description' => str_repeat('We need a senior developer with experience. ', 10),
+        ]);
+
+        $response->assertStatus(402)
+                 ->assertJson(['error' => 'quota_exceeded']);
+    }
+
+    public function test_premium_user_can_ats_analyze(): void
+    {
+        $user = User::factory()->create(['role' => 'premium', 'ai_quota_used' => 0]);
+
+        $this->mock(AiService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('analyzeAts')
+                 ->once()
+                 ->andReturn([
+                     'score' => 75,
+                     'rating' => ['label' => 'Very Good', 'sublabel' => 'Needs Minor Polish', 'color' => 'success'],
+                     'matched' => ['PHP', 'Laravel'],
+                     'missing' => [],
+                     'section_breakdown' => [],
+                     'action_verbs' => ['developed'],
+                     'missing_verbs' => [],
+                     'has_numbers' => true,
+                     'length_tip' => 'Good length.',
+                     'insights' => [],
+                 ]);
+            $mock->shouldReceive('logUsage')
+                 ->once();
+        });
+
+        $response = $this->actingAs($user)->postJson('/ats/analyze', [
+            'resume'          => str_repeat('Experienced developer with strong skills in PHP and Laravel. ', 5),
+            'job_description' => str_repeat('We need a senior developer with experience in PHP and Laravel. ', 5),
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJsonStructure(['score', 'rating', 'word_count']);
+
+        $this->assertEquals(1, $user->fresh()->ai_quota_used);
+    }
+
+    public function test_ats_analyze_refunds_credit_on_failure(): void
+    {
+        $user = User::factory()->create(['role' => 'premium', 'ai_quota_used' => 0]);
+
+        $this->mock(AiService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('analyzeAts')
+                 ->once()
+                 ->andThrow(new \Exception('AI service failed'));
+        });
+
+        $response = $this->actingAs($user)->postJson('/ats/analyze', [
+            'resume'          => str_repeat('Experienced developer with skills. ', 10),
+            'job_description' => str_repeat('We need a senior developer with experience. ', 10),
+        ]);
+
+        $response->assertStatus(500);
+        $this->assertEquals(0, $user->fresh()->ai_quota_used);
     }
 }

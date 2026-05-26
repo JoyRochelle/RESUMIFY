@@ -17,13 +17,12 @@ class AiResumeController extends Controller
         $this->aiService = $aiService;
     }
 
+    /**
+     * Refine a single resume bullet point using AI.
+     * Premium gating + quota check handled by 'ai.quota' middleware on the route.
+     */
     public function refineBullet(Request $request, Cv $cv)
     {
-        // For Premium only
-        if (!auth()->user()->isPremium() && !auth()->user()->isAdmin()) {
-            return response()->json(['success' => false, 'message' => 'Premium feature only.'], 403);
-        }
-
         Gate::authorize('update', $cv);
         
         $request->validate([
@@ -31,24 +30,31 @@ class AiResumeController extends Controller
             'job_context' => 'nullable|string|max:2000'
         ]);
 
+        $user = auth()->user();
+
+        // Deduct credit BEFORE the AI call
+        $user->increment('ai_quota_used', 1);
+
         try {
             $options = $this->aiService->refineBullet($request->text, $request->job_context);
-            if (isset(auth()->user()->ai_quota_used)) {
-                auth()->user()->increment('ai_quota_used', 1);
-            }
+
+            // Log usage on success
+            $this->aiService->logUsage($user->id, 'bullet_optimize', $cv->id);
 
             return response()->json(['success' => true, 'options' => $options]);
         } catch (\Exception $e) {
+            // Refund the credit on failure
+            $user->decrement('ai_quota_used', 1);
             return response()->json(['success' => false, 'message' => 'Failed to refine bullet.'], 500);
         }
     }
 
+    /**
+     * Generate 3 CV versions in parallel using different angles.
+     * Premium gating + quota check handled by 'ai.quota:3' middleware on the route.
+     */
     public function generateVersions(Request $request, Cv $cv)
     {
-        if (!auth()->user()->isPremium() && !auth()->user()->isAdmin()) {
-            return response()->json(['success' => false, 'message' => 'Premium feature only.'], 403);
-        }
-
         Gate::authorize('update', $cv);
 
         $request->validate([
@@ -74,6 +80,11 @@ class AiResumeController extends Controller
             return response()->json(['success' => false, 'message' => 'Your CV does not have enough content to tailor. Please fill in your resume sections with more details first (at least 200 characters).'], 422);
         }
 
+        $user = auth()->user();
+
+        // Deduct 3 credits BEFORE the AI call
+        $user->increment('ai_quota_used', 3);
+
         try {
             $versions = $this->aiService->generateCvVersions($sections, $request->job_description);
             
@@ -93,12 +104,13 @@ class AiResumeController extends Controller
                 ];
             }
 
-            if (isset(auth()->user()->ai_quota_used)) {
-                auth()->user()->increment('ai_quota_used', 3);
-            }
+            // Log usage on success
+            $this->aiService->logUsage($user->id, 'generate_versions', $cv->id);
 
             return response()->json(['success' => true, 'versions' => $savedVersions]);
         } catch (\Exception $e) {
+            // Refund 3 credits on failure
+            $user->decrement('ai_quota_used', 3);
             return response()->json(['success' => false, 'message' => 'Failed to generate CV versions.'], 500);
         }
     }
