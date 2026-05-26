@@ -13,6 +13,16 @@ class SendPaymentConfirmationJob implements ShouldQueue
 {
     use Queueable;
 
+    /**
+     * Number of times the job may be attempted.
+     */
+    public $tries = 3;
+
+    /**
+     * Backoff intervals (seconds) between retries.
+     */
+    public $backoff = [10, 60, 300];
+
     public $user;
     public $transaction;
 
@@ -31,5 +41,17 @@ class SendPaymentConfirmationJob implements ShouldQueue
     public function handle(): void
     {
         Mail::to($this->user->email)->send(new PaymentConfirmationMail($this->user, $this->transaction));
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(\Throwable $exception): void
+    {
+        \Illuminate\Support\Facades\Log::error('Payment confirmation email failed', [
+            'user_id' => $this->user->id,
+            'transaction_id' => $this->transaction->id,
+            'error' => $exception->getMessage(),
+        ]);
     }
 }
