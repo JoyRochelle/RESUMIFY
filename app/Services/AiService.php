@@ -26,7 +26,7 @@ class AiService
         $prompt .= "Original Bullet:\n{$text}\n\n";
         $prompt .= "Return ONLY a JSON array of strings containing exactly 3 alternative rewrites.";
 
-        $response = Http::timeout(30)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={$apiKey}", [
+        $response = Http::timeout(30)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
             'contents' => [['parts' => [['text' => $prompt]]]],
             'generationConfig' => ['response_mime_type' => 'application/json'],
         ]);
@@ -71,7 +71,7 @@ class AiService
                 $prompt .= "CURRENT RESUME JSON (Array of sections):\n" . json_encode($currentSections) . "\n\n";
                 $prompt .= "Return ONLY the modified JSON array representing the new resume sections. DO NOT change the structure, just update the text values in descriptions/bullets to fit the angle. MUST return a valid JSON array.";
 
-                $reqs[] = $pool->as($angle)->timeout(60)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={$apiKey}", [
+                $reqs[] = $pool->as($angle)->timeout(60)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
                     'contents' => [['parts' => [['text' => $prompt]]]],
                     'generationConfig' => ['response_mime_type' => 'application/json'],
                 ]);

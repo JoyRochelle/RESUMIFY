@@ -37,34 +37,22 @@
                     </div>
                     @endif
 
-                    {{-- Resume input --}}
-                    <div class="bg-tertiary rounded-xl p-5 border border-primary/10 shadow-sm flex flex-col gap-3">
-                        <div class="flex justify-between items-center">
-                            <h3 class="font-bold text-primary flex items-center gap-2 text-sm">
-                                <span class="material-symbols-outlined text-primary/60 text-[18px]">description</span>
-                                Your Resume
-                            </h3>
-                            <span id="resume-word-count" class="text-[10px] font-label text-primary/40 uppercase tracking-wider">0 words</span>
-                        </div>
-                        <textarea id="resume-input"
-                                  class="w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none p-4 text-sm leading-relaxed custom-scrollbar resize-none transition-all duration-200"
-                                  placeholder="Paste your full resume text here…"
-                                  rows="10"></textarea>
-                    </div>
+                    {{-- Resume input (Hidden, populated by CV selector) --}}
+                    <input type="hidden" id="resume-input" value="">
 
-                    {{-- Job Description input --}}
-                    <div class="bg-tertiary rounded-xl p-5 border border-primary/10 shadow-sm flex flex-col gap-3">
+                    {{-- Job Description input (Hidden, populated by CV selector) --}}
+                    <input type="hidden" id="jd-input" value="">
+
+                    {{-- Preview Area --}}
+                    <div class="bg-tertiary rounded-xl p-6 border border-primary/10 shadow-sm flex flex-col gap-4">
                         <div class="flex justify-between items-center">
                             <h3 class="font-bold text-primary flex items-center gap-2 text-sm">
-                                <span class="material-symbols-outlined text-primary/60 text-[18px]">target</span>
-                                Job Description
+                                <span class="material-symbols-outlined text-primary/60 text-[18px]">visibility</span>
+                                <span id="preview-header-text">All Resumes Preview</span>
                             </h3>
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-primary/40">Target Role</span>
                         </div>
-                        <textarea id="jd-input"
-                                  class="w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none p-4 text-sm leading-relaxed custom-scrollbar resize-none transition-all duration-200"
-                                  placeholder="Paste the job description here…"
-                                  rows="10"></textarea>
+                        <div id="preview-content-box" class="w-full text-xs leading-relaxed custom-scrollbar overflow-y-auto max-h-[250px] text-primary/80 pr-2">
+                        </div>
                     </div>
 
                     {{-- Analyze Button --}}
@@ -91,9 +79,9 @@
                     <div class="w-24 h-24 rounded-full bg-secondary/10 flex items-center justify-center mb-6 animate-pulse-slow">
                         <span class="material-symbols-outlined text-secondary text-4xl icon-filled">analytics</span>
                     </div>
-                    <h3 class="font-headline text-2xl text-primary mb-2">Paste & Analyze</h3>
+                    <h3 class="font-headline text-2xl text-primary mb-2">Select & Analyze</h3>
                     <p class="text-primary/50 text-sm max-w-xs leading-relaxed">
-                        Add your resume and a job description on the left, then click <strong class="text-primary/70">Analyze Match</strong> to see your ATS score and actionable recommendations.
+                        Select a resume on the left, then click <strong class="text-primary/70">Analyze Match</strong> to see your ATS score and actionable recommendations.
                     </p>
                 </div>
 
@@ -267,56 +255,124 @@
             .replace(/>/g, '&gt;');
     }
 
+    function parseCvSections(option) {
+        const sectionsRaw = option.getAttribute('data-sections');
+        if (!sectionsRaw) return { text: '', jd: '' };
+        try {
+            const sections = JSON.parse(sectionsRaw);
+            let resumeText = '';
+            let jobDesc = '';
+
+            function extractTextFromContent(content) {
+                if (!content) return '';
+                if (typeof content === 'string') return content;
+                if (Array.isArray(content)) {
+                    return content.map(extractTextFromContent).filter(Boolean).join('\n');
+                }
+                if (typeof content === 'object') {
+                    return Object.values(content).map(extractTextFromContent).filter(Boolean).join(' | ');
+                }
+                return String(content);
+            }
+            
+            sections.forEach(sec => {
+                if (sec.type === 'target_job') {
+                    const title = sec.content?.job_title || '';
+                    const desc = sec.content?.job_description || '';
+                    jobDesc = (title + '\n\n' + desc).trim();
+                } else {
+                    if (sec.content) {
+                        resumeText += extractTextFromContent(sec.content) + '\n\n';
+                    }
+                }
+            });
+            return { text: resumeText.trim(), jd: jobDesc };
+        } catch(e) {
+            console.error("Failed to parse sections", e);
+            return { text: '', jd: '' };
+        }
+    }
+
+    function renderPreviews() {
+        const selector = document.getElementById('cv-selector');
+        const previewHeader = document.getElementById('preview-header-text');
+        const previewBox = document.getElementById('preview-content-box');
+        if (!selector || !previewBox) return;
+
+        let html = '';
+        if (selector.value) {
+            previewHeader.textContent = 'Selected Resume';
+            const option = selector.options[selector.selectedIndex];
+            const data = parseCvSections(option);
+            
+            html = `
+                <div class="bg-surface-container-low rounded-xl border border-primary/10 p-5 mb-4 shadow-sm hover:border-primary/20 transition-colors">
+                    <div class="font-bold text-secondary text-[10px] uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[14px]">description</span> 
+                        Resume Content
+                    </div>
+                    <div class="whitespace-pre-wrap opacity-80 text-[11px]">${escHtml(data.text) || '<i class="opacity-50">No text content</i>'}</div>
+                </div>`;
+            
+            if (data.jd) {
+                html += `
+                <div class="bg-surface-container-low rounded-xl border border-primary/10 p-5 shadow-sm hover:border-primary/20 transition-colors">
+                    <div class="font-bold text-secondary text-[10px] uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[14px]">target</span> 
+                        Target Job Description
+                    </div>
+                    <div class="whitespace-pre-wrap opacity-80 text-[11px]">${escHtml(data.jd)}</div>
+                </div>`;
+            }
+        } else {
+            previewHeader.textContent = 'All Resumes Preview';
+            let hasAny = false;
+            for (let i = 1; i < selector.options.length; i++) {
+                if (!selector.options[i].value) continue;
+                hasAny = true;
+                const option = selector.options[i];
+                const data = parseCvSections(option);
+                html += `
+                <div class="bg-surface-container-low rounded-xl border border-primary/10 p-5 mb-4 last:mb-0 shadow-sm hover:shadow-md hover:border-primary/20 transition-all">
+                    <div class="font-bold text-primary mb-3 flex items-center gap-3 text-sm">
+                        <div class="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary/70 shrink-0">
+                            <span class="material-symbols-outlined text-[16px]">description</span>
+                        </div>
+                        <span class="truncate">${escHtml(option.text.trim())}</span>
+                    </div>
+                    <div class="opacity-70 text-[11px] line-clamp-3 overflow-hidden text-ellipsis whitespace-pre-wrap leading-relaxed">${escHtml(data.text) || '<i class="opacity-50">No text content</i>'}</div>
+                </div>`;
+            }
+            if (!hasAny) {
+                html = `
+                <div class="flex flex-col items-center justify-center py-10 opacity-50">
+                    <span class="material-symbols-outlined text-4xl mb-3">folder_off</span>
+                    <span class="italic text-sm">No resumes found.</span>
+                </div>`;
+            }
+        }
+        previewBox.innerHTML = html;
+    }
+
     const cvSelector = document.getElementById('cv-selector');
     if (cvSelector) {
         cvSelector.addEventListener('change', function() {
-            if (!this.value) return;
-            const selectedOption = this.options[this.selectedIndex];
-            const sectionsRaw = selectedOption.getAttribute('data-sections');
-            if (!sectionsRaw) return;
-            try {
-                const sections = JSON.parse(sectionsRaw);
-                let resumeText = '';
-                let jobDesc = '';
-
-                function extractTextFromContent(content) {
-                    if (!content) return '';
-                    if (typeof content === 'string') return content;
-                    if (Array.isArray(content)) {
-                        return content.map(extractTextFromContent).filter(Boolean).join('\n');
-                    }
-                    if (typeof content === 'object') {
-                        return Object.values(content).map(extractTextFromContent).filter(Boolean).join(' | ');
-                    }
-                    return String(content);
-                }
-                
-                sections.forEach(sec => {
-                    if (sec.type === 'target_job') {
-                        const title = sec.content?.job_title || '';
-                        const desc = sec.content?.job_description || '';
-                        jobDesc = (title + '\n\n' + desc).trim();
-                    } else {
-                        if (sec.content) {
-                            resumeText += extractTextFromContent(sec.content) + '\n\n';
-                        }
-                    }
-                });
-
-                document.getElementById('resume-input').value = resumeText.trim();
-                document.getElementById('resume-input').dispatchEvent(new Event('input'));
-                
-                document.getElementById('jd-input').value = jobDesc;
-                document.getElementById('jd-input').dispatchEvent(new Event('input'));
-            } catch (e) {
-                console.error("Failed to parse sections", e);
+            renderPreviews();
+            if (!this.value) {
+                document.getElementById('resume-input').value = '';
+                document.getElementById('jd-input').value = '';
+                return;
             }
+            const selectedOption = this.options[this.selectedIndex];
+            const data = parseCvSections(selectedOption);
+            document.getElementById('resume-input').value = data.text;
+            document.getElementById('jd-input').value = data.jd;
         });
+        
+        // Initial render on page load
+        renderPreviews();
     }
 
-    document.getElementById('resume-input').addEventListener('input', function () {
-        document.getElementById('resume-word-count').textContent = wordCount(this.value) + ' words';
-    });
 
     function buildScoreCircle(score) {
         const r           = 56;
@@ -480,11 +536,11 @@
         const resume = document.getElementById('resume-input').value.trim();
         const jd = document.getElementById('jd-input').value.trim();
         if (resume.length < 50) {
-            showError('Please paste a more detailed resume (at least 50 characters).');
+            showError('The selected resume must have more content (at least 50 characters).');
             return;
         }
         if (jd.length < 50) {
-            showError('Please paste a more detailed job description (at least 50 characters).');
+            showError('The selected resume\'s job description must have more content (at least 50 characters).');
             return;
         }
         clearError();
