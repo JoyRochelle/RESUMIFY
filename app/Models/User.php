@@ -36,6 +36,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role',
+        'is_suspended',
         'avatar_url',
         'ai_quota_used',
         'ai_quota_reset_at',
@@ -61,6 +62,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at'  => 'datetime',
             'ai_quota_reset_at'  => 'datetime',
             'password'           => 'hashed',
+            'is_suspended'       => 'boolean',
         ];
     }
 
@@ -158,6 +160,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function aiUsageLogs(): HasMany
     {
         return $this->hasMany(AiUsageLog::class);
+    }
+
+    public function supportTickets(): HasMany
+    {
+        return $this->hasMany(SupportTicket::class);
+    }
+
+    public function adminLogs(): HasMany
+    {
+        return $this->hasMany(AdminLog::class, 'admin_id');
     }
 
 }
