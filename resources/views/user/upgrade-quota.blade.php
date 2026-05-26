@@ -30,7 +30,7 @@
                     'Premium PDF Export',
                     'Priority Support',
                 ]" :isPremium="true"
-                    buttonText="Activate Premium Now" @click="pay()" />
+                    buttonText="Activate Premium Now" @click="pay()" x-bind:disabled="isProcessing" x-text="isProcessing ? 'Processing...' : 'Activate Premium Now'" />
 
             </section>
 
@@ -91,12 +91,18 @@
 @endsection
 
 @push('scripts')
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js"
+    <script src="{{ config('services.midtrans.is_production')
+        ? 'https://app.midtrans.com/snap/snap.js'
+        : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
         data-client-key="{{ config('services.midtrans.client_key') }}"></script>
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('paymentGateway', () => ({
                 isProcessing: false,
+
+                notify(message, type = 'success') {
+                    window.dispatchEvent(new CustomEvent('notify', { detail: { message, type } }));
+                },
 
                 async pay() {
                     if (this.isProcessing) return;
@@ -114,29 +120,28 @@
                         const data = await response.json();
 
                         if (data.snap_token) {
+                            const self = this;
                             window.snap.pay(data.snap_token, {
                                 onSuccess: function(result) {
-                                    alert("Payment success!");
+                                    self.notify("Payment success!");
                                     window.location.href = '{{ route('dashboard') }}';
                                 },
                                 onPending: function(result) {
-                                    alert("Waiting for your payment!");
+                                    self.notify("Waiting for your payment!", "info");
                                 },
                                 onError: function(result) {
-                                    alert("Payment failed!");
+                                    self.notify("Payment failed!", "error");
                                 },
                                 onClose: function() {
-                                    alert(
-                                        "You closed the popup without finishing the payment."
-                                        );
+                                    self.notify("You closed the popup without finishing the payment.", "info");
                                 }
                             });
                         } else {
-                            alert("Failed to initialize payment. Please try again.");
+                            this.notify("Failed to initialize payment. Please try again.", "error");
                         }
                     } catch (error) {
                         console.error("Payment error:", error);
-                        alert("An error occurred. Please try again later.");
+                        this.notify("An error occurred. Please try again later.", "error");
                     } finally {
                         this.isProcessing = false;
                     }

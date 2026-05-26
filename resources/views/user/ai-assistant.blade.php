@@ -13,6 +13,21 @@
             </button>
         </x-user.page-header>
 
+        <div class="px-4 lg:px-6 py-3 bg-surface-container-low border-b border-primary/10">
+            <div class="flex items-center justify-between text-sm">
+                <span class="text-primary/60">AI Credits</span>
+                <div class="flex items-center gap-2">
+                    <div class="w-32 h-2 bg-primary/10 rounded-full overflow-hidden">
+                        <div class="h-full bg-secondary rounded-full transition-all"
+                             style="width: {{ $quota['percentage'] }}%"></div>
+                    </div>
+                    <span class="font-bold text-primary text-xs">
+                        {{ $quota['remaining'] }}/{{ $quota['limit'] }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
         <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden pb-20 lg:pb-0">
 
             {{-- ════════════════ LEFT PANEL — INPUTS ════════════════ --}}
