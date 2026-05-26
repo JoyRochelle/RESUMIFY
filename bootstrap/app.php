@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'payment/callback',
+        ]);
+
         $middleware->redirectUsersTo(function () {
             if (auth()->check() && auth()->user()->isAdmin()) {
                 return '/admin/dashboard';
