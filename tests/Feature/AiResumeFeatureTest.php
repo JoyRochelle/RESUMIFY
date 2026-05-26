@@ -102,7 +102,7 @@ class AiResumeFeatureTest extends TestCase
             'type' => 'personal_info',
             'title' => 'Personal Info',
             'order' => 1,
-            'content' => ['summary' => 'Old summary']
+            'content' => ['summary' => str_repeat('This is a sufficiently long summary for testing purposes that exceeds two hundred characters to satisfy validation. ', 3)]
         ]);
 
         // Mock the AiService
