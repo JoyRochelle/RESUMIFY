@@ -9,6 +9,7 @@ use App\Http\Controllers\ResumeExportController;
 use App\Http\Controllers\AtsController;
 use App\Http\Controllers\ManuscriptAtsController;
 use App\Http\Controllers\AiResumeController;
+use App\Http\Controllers\PaymentController;
 
 // Public Routes
 Route::get('/', function () { return view('landing_page.welcome'); })->name('home');
@@ -17,6 +18,9 @@ Route::get('/templates', function () {
     return view('landing_page.templates', compact('templates'));
 })->name('templates');
 Route::get('/pricing', function () { return view('landing_page.pricing'); })->name('pricing');
+
+// Webhook Route
+Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 
 
 // OAuth Routes
@@ -83,6 +87,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/upgrade-quota', function () {
             return view('user.upgrade-quota');
         })->name('user.upgrade-quota');
+
+        Route::post('/payment/create', [PaymentController::class, 'create'])->name('payment.create');
 
         // Profile management routes
         Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
