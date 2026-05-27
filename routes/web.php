@@ -5,6 +5,7 @@ use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\ResumeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminLogController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\ResumeExportController;
@@ -158,9 +159,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('templates/{template}/toggle', [TemplateController::class, 'toggle'])->name('templates.toggle');
         Route::get('templates/{template}/preview', [TemplateController::class, 'preview'])->name('templates.preview');
         
-        Route::get('/logs', function () {
-            return view('admin.logs');
-        })->name('logs');
+        Route::get('/logs',                  [AdminLogController::class, 'index'])->name('logs');
+        Route::get('/logs/export/ai',        [AdminLogController::class, 'exportAiCsv'])->name('logs.export.ai');
+        Route::get('/logs/export/finance',   [AdminLogController::class, 'exportFinanceCsv'])->name('logs.export.finance');
         
         Route::get('/settings', function () {
             return view('admin.settings');
