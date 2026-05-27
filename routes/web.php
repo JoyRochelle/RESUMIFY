@@ -15,6 +15,7 @@ use App\Http\Controllers\AtsController;
 use App\Http\Controllers\ManuscriptAtsController;
 use App\Http\Controllers\AiResumeController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\HelpController;
 
 // Public Routes
 Route::get('/', function () { return view('landing_page.welcome'); })->name('home');
@@ -93,9 +94,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('user.settings');
         })->name('user.settings');
 
-        Route::get('/help', function () {
-            return view('user.help');
-        })->name('user.help');
+        Route::get('/help', [HelpController::class, 'index'])->name('user.help');
+        Route::post('/help/contact', [HelpController::class, 'contact'])->name('help.contact');
+        Route::get('/help/tickets', [HelpController::class, 'tickets'])->name('help.tickets');
+        Route::get('/help/tickets/{ticket}', [HelpController::class, 'showTicket'])->name('help.tickets.show');
 
         Route::get('/upgrade-quota', function () {
             return view('user.upgrade-quota');

@@ -4,56 +4,208 @@
 
 @section('content')
     <main class="flex-1 overflow-y-auto custom-scrollbar bg-primary/5 pb-20 md:pb-0">
-        
-        <div class="max-w-5xl mx-auto px-6 md:px-12 py-16">
-            
-            {{-- Hero Section --}}
-            <section class="text-center mb-20">
-                <h2 class="font-headline text-4xl md:text-6xl text-primary mb-6 tracking-tight">Help Center</h2>
-                <p class="font-body text-primary/60 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-                    Learn how to optimize your resume with artificial intelligence. We are here to help you tell your story better.
+
+        <div class="max-w-4xl mx-auto px-6 md:px-12 py-16">
+
+            {{-- Hero --}}
+            <section class="text-center mb-16">
+                <h2 class="font-headline text-4xl md:text-5xl text-primary mb-4 tracking-tight">Help Center</h2>
+                <p class="font-body text-primary/60 text-lg max-w-2xl mx-auto leading-relaxed">
+                    Find answers to common questions or reach out to our support team.
                 </p>
-                <div class="relative max-w-2xl mx-auto">
-                    <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none">
-                        <span class="material-symbols-outlined text-primary/60">search</span>
+            </section>
+
+            @if(session('success'))
+                <div class="bg-secondary/10 border border-secondary/20 text-secondary text-sm font-label px-5 py-3 rounded-xl flex items-center space-x-2 mb-8">
+                    <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
+            {{-- My Tickets Link --}}
+            <div class="flex justify-end mb-6">
+                <a href="{{ route('help.tickets') }}"
+                   class="flex items-center space-x-2 text-sm font-label text-primary/60 hover:text-primary bg-white border border-primary/10 px-4 py-2 rounded-xl shadow-sm transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">confirmation_number</span>
+                    <span>My Tickets</span>
+                </a>
+            </div>
+
+            {{-- FAQ --}}
+            <section class="mb-16" x-data="{ open: null }">
+                <h3 class="font-headline text-2xl text-primary mb-8">Frequently Asked Questions</h3>
+
+                {{-- Getting Started --}}
+                <div class="mb-6">
+                    <h4 class="text-[10px] font-label text-primary/40 uppercase tracking-widest mb-3">Getting Started</h4>
+                    <div class="space-y-2">
+                        @php
+                            $gettingStarted = [
+                                ['q' => 'How do I create my first resume?', 'a' => 'Go to your dashboard and click "New Resume". Choose a template, then fill in your personal info, work experience, education, and skills. You can preview and download your resume as a PDF at any time.'],
+                                ['q' => 'What templates are available?', 'a' => 'We offer a variety of professionally designed templates suited for different industries and experience levels. Visit the Templates page to preview all available designs.'],
+                                ['q' => 'Can I create multiple resumes?', 'a' => 'Yes! You can create as many resumes as you need. Each resume can be customized independently for different job applications.'],
+                            ];
+                        @endphp
+                        @foreach($gettingStarted as $i => $faq)
+                        <div class="bg-white rounded-2xl border border-primary/5 shadow-sm overflow-hidden">
+                            <button @click="open = (open === 'gs_{{ $i }}') ? null : 'gs_{{ $i }}'"
+                                    class="w-full flex items-center justify-between px-6 py-4 text-left">
+                                <span class="text-sm font-label font-semibold text-primary">{{ $faq['q'] }}</span>
+                                <span class="material-symbols-outlined text-primary/40 text-[20px] transition-transform"
+                                      :class="open === 'gs_{{ $i }}' ? 'rotate-180' : ''">expand_more</span>
+                            </button>
+                            <div x-show="open === 'gs_{{ $i }}'" x-collapse>
+                                <p class="px-6 pb-4 text-sm font-label text-primary/70 leading-relaxed">{{ $faq['a'] }}</p>
+                            </div>
+                        </div>
+                        @endforeach
                     </div>
-                    <input class="w-full py-5 pl-16 pr-6 bg-tertiary rounded-xl shadow-[0_16px_32px_-12px_rgba(29,27,25,0.05)] border border-primary/10 focus:ring-2 focus:ring-primary/10 text-primary placeholder:text-primary/50 text-lg outline-none" placeholder="Search for solutions or ask a question..." type="text"/>
                 </div>
-            </section>
 
-            {{-- Help Category Cards --}}
-            <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-                <x-user.help-card icon="person" title="Account & Subscription" description="Manage your profile, payment settings, and premium subscription plans." />
-                <x-user.help-card icon="auto_fix_high" title="Editor & AI Assistant" description="Guides on using our smart features to polish your career narrative." variant="accent" :iconFilled="true" />
-                <x-user.help-card icon="shield" title="Security & PDF" description="Information about data encryption and technical high-quality document export." />
-            </section>
-
-            {{-- FAQ Section --}}
-            <section class="mb-24">
-                <h3 class="font-headline text-3xl text-primary mb-10 text-center">Popular Questions</h3>
-                <div class="space-y-4 max-w-3xl mx-auto">
-                    <x-user.faq-item question="How do I improve my ATS score?" />
-                    <x-user.faq-item question="How many times can I use AI Polish?" />
-                    <x-user.faq-item question="Is my data secure?" />
+                {{-- Resume Builder --}}
+                <div class="mb-6">
+                    <h4 class="text-[10px] font-label text-primary/40 uppercase tracking-widest mb-3">Resume Builder</h4>
+                    <div class="space-y-2">
+                        @php
+                            $resumeBuilder = [
+                                ['q' => 'How do I download my resume as a PDF?', 'a' => 'Open your resume in the editor and click the "Export PDF" button in the top right corner. Your resume will be generated and downloaded automatically.'],
+                                ['q' => 'Can I change the template after I\'ve started editing?', 'a' => 'Yes, you can switch templates at any time from the editor. Your content will be preserved, only the visual design will change.'],
+                                ['q' => 'What sections can I add to my resume?', 'a' => 'You can add Personal Info, Work Experience, Education, Skills, and Target Job sections. Each section can be customized to fit your background.'],
+                            ];
+                        @endphp
+                        @foreach($resumeBuilder as $i => $faq)
+                        <div class="bg-white rounded-2xl border border-primary/5 shadow-sm overflow-hidden">
+                            <button @click="open = (open === 'rb_{{ $i }}') ? null : 'rb_{{ $i }}'"
+                                    class="w-full flex items-center justify-between px-6 py-4 text-left">
+                                <span class="text-sm font-label font-semibold text-primary">{{ $faq['q'] }}</span>
+                                <span class="material-symbols-outlined text-primary/40 text-[20px] transition-transform"
+                                      :class="open === 'rb_{{ $i }}' ? 'rotate-180' : ''">expand_more</span>
+                            </button>
+                            <div x-show="open === 'rb_{{ $i }}'" x-collapse>
+                                <p class="px-6 pb-4 text-sm font-label text-primary/70 leading-relaxed">{{ $faq['a'] }}</p>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
-            </section>
 
-            {{-- Contact CTA --}}
-            <section class="relative overflow-hidden bg-tertiary rounded-2xl p-10 md:p-16 text-center border border-primary/10 shadow-sm">
-                <div class="absolute -top-24 -right-24 w-64 h-64 bg-secondary/10 rounded-full blur-3xl"></div>
-                <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
-                
-                <div class="relative z-10">
-                    <h3 class="font-headline text-3xl md:text-4xl text-primary mb-4 italic">✨ Still need help?</h3>
-                    <p class="text-primary/60 mb-10 max-w-lg mx-auto">Our team (and our smart assistants) are ready to answer your questions anytime.</p>
-                    <div class="flex flex-col md:flex-row items-center justify-center gap-6">
-                        <x-user.button variant="pill" icon="forum" iconClass="text-xl icon-filled" class="px-8 py-4 rounded-xl text-sm">Chat with Admin</x-user.button>
+                {{-- AI Features --}}
+                <div class="mb-6">
+                    <h4 class="text-[10px] font-label text-primary/40 uppercase tracking-widest mb-3">AI Features</h4>
+                    <div class="space-y-2">
+                        @php
+                            $aiFeatures = [
+                                ['q' => 'How do I improve my ATS score?', 'a' => 'Use the ATS Analyzer feature to check how well your resume matches a job description. Paste the job posting, and our AI will identify missing keywords and suggest improvements.'],
+                                ['q' => 'How many AI credits do I get?', 'a' => 'Basic users receive 10 AI credits per month. Premium users get 100 credits. Each AI action (ATS analysis, bullet optimization, etc.) uses a set number of credits.'],
+                                ['q' => 'What does "AI Polish" do?', 'a' => 'AI Polish rewrites your resume bullet points to be more impactful, using strong action verbs and quantifiable achievements. It uses 1 credit per bullet point.'],
+                            ];
+                        @endphp
+                        @foreach($aiFeatures as $i => $faq)
+                        <div class="bg-white rounded-2xl border border-primary/5 shadow-sm overflow-hidden">
+                            <button @click="open = (open === 'ai_{{ $i }}') ? null : 'ai_{{ $i }}'"
+                                    class="w-full flex items-center justify-between px-6 py-4 text-left">
+                                <span class="text-sm font-label font-semibold text-primary">{{ $faq['q'] }}</span>
+                                <span class="material-symbols-outlined text-primary/40 text-[20px] transition-transform"
+                                      :class="open === 'ai_{{ $i }}' ? 'rotate-180' : ''">expand_more</span>
+                            </button>
+                            <div x-show="open === 'ai_{{ $i }}'" x-collapse>
+                                <p class="px-6 pb-4 text-sm font-label text-primary/70 leading-relaxed">{{ $faq['a'] }}</p>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Billing --}}
+                <div class="mb-6">
+                    <h4 class="text-[10px] font-label text-primary/40 uppercase tracking-widest mb-3">Billing</h4>
+                    <div class="space-y-2">
+                        @php
+                            $billing = [
+                                ['q' => 'How do I upgrade to Premium?', 'a' => 'Go to the Upgrade page from your dashboard or settings. We support payment via Midtrans (bank transfer, e-wallet, and cards).'],
+                                ['q' => 'What happens to my data if I cancel?', 'a' => 'Your resumes and data are preserved. You\'ll be downgraded to the Basic plan and your AI quota will be adjusted accordingly at the next billing cycle.'],
+                            ];
+                        @endphp
+                        @foreach($billing as $i => $faq)
+                        <div class="bg-white rounded-2xl border border-primary/5 shadow-sm overflow-hidden">
+                            <button @click="open = (open === 'bi_{{ $i }}') ? null : 'bi_{{ $i }}'"
+                                    class="w-full flex items-center justify-between px-6 py-4 text-left">
+                                <span class="text-sm font-label font-semibold text-primary">{{ $faq['q'] }}</span>
+                                <span class="material-symbols-outlined text-primary/40 text-[20px] transition-transform"
+                                      :class="open === 'bi_{{ $i }}' ? 'rotate-180' : ''">expand_more</span>
+                            </button>
+                            <div x-show="open === 'bi_{{ $i }}'" x-collapse>
+                                <p class="px-6 pb-4 text-sm font-label text-primary/70 leading-relaxed">{{ $faq['a'] }}</p>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Technical --}}
+                <div class="mb-6">
+                    <h4 class="text-[10px] font-label text-primary/40 uppercase tracking-widest mb-3">Technical</h4>
+                    <div class="space-y-2">
+                        @php
+                            $technical = [
+                                ['q' => 'Is my data secure?', 'a' => 'Yes. All data is encrypted in transit (HTTPS) and at rest. We never share your personal information with third parties. You can delete your account and all associated data at any time from Settings.'],
+                                ['q' => 'Why won\'t my PDF export?', 'a' => 'Make sure all required sections (Personal Info, Work Experience, Education, Skills) are filled in. If the issue persists, try a different browser or contact support.'],
+                            ];
+                        @endphp
+                        @foreach($technical as $i => $faq)
+                        <div class="bg-white rounded-2xl border border-primary/5 shadow-sm overflow-hidden">
+                            <button @click="open = (open === 'te_{{ $i }}') ? null : 'te_{{ $i }}'"
+                                    class="w-full flex items-center justify-between px-6 py-4 text-left">
+                                <span class="text-sm font-label font-semibold text-primary">{{ $faq['q'] }}</span>
+                                <span class="material-symbols-outlined text-primary/40 text-[20px] transition-transform"
+                                      :class="open === 'te_{{ $i }}' ? 'rotate-180' : ''">expand_more</span>
+                            </button>
+                            <div x-show="open === 'te_{{ $i }}'" x-collapse>
+                                <p class="px-6 pb-4 text-sm font-label text-primary/70 leading-relaxed">{{ $faq['a'] }}</p>
+                            </div>
+                        </div>
+                        @endforeach
                     </div>
                 </div>
             </section>
+
+            {{-- Contact Form --}}
+            <section id="contact" class="bg-white rounded-3xl border border-primary/5 shadow-sm p-8 mb-12">
+                <h3 class="font-headline text-2xl text-primary mb-2">Still need help?</h3>
+                <p class="text-sm font-label text-primary/60 mb-6">Send us a message and we'll get back to you as soon as possible.</p>
+
+                <form action="{{ route('help.contact') }}" method="POST" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1">Subject</label>
+                        <input type="text" name="subject" value="{{ old('subject') }}" required
+                               placeholder="Briefly describe your issue..."
+                               class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-3 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30">
+                        @error('subject')
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1">Message</label>
+                        <textarea name="message" rows="5" required
+                                  placeholder="Describe your issue in detail..."
+                                  class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-3 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30 resize-none">{{ old('message') }}</textarea>
+                        @error('message')
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit"
+                                class="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-label hover:bg-primary/90 transition">
+                            Send Message
+                        </button>
+                    </div>
+                </form>
+            </section>
+
         </div>
 
-        <footer class="mt-12 pb-12 text-center text-primary/40 text-sm">
+        <footer class="pb-12 text-center text-primary/40 text-sm">
             <p>© 2026 Resumify - Curated with Integrity</p>
         </footer>
     </main>
