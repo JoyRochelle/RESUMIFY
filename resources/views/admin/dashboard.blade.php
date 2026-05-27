@@ -115,21 +115,24 @@
         <div class="bg-surface-container-low rounded-3xl p-8 border border-primary/5">
             <h2 class="text-xl font-headline text-primary mb-6">Quick Actions</h2>
             <div class="space-y-4 mb-8">
-                <a href="{{ route('admin.reports') }}" class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
+                <a href="{{ Route::has('admin.reports') ? route('admin.reports') : '#' }}"
+                   class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
                     <div class="flex items-center space-x-3 text-primary">
                         <span class="material-symbols-outlined text-[20px]">description</span>
                         <span class="text-sm font-label font-bold">Generate Report</span>
                     </div>
                     <span class="material-symbols-outlined text-primary/40 group-hover:text-primary transition-colors text-[20px]">chevron_right</span>
                 </a>
-                <a href="{{ route('admin.templates.create') }}" class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
+                <a href="{{ route('admin.templates.create') }}"
+                   class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
                     <div class="flex items-center space-x-3 text-primary">
                         <span class="material-symbols-outlined text-[20px]">add_circle</span>
                         <span class="text-sm font-label font-bold">Add New Template</span>
                     </div>
                     <span class="material-symbols-outlined text-primary/40 group-hover:text-primary transition-colors text-[20px]">chevron_right</span>
                 </a>
-                <a href="{{ route('admin.monitor') }}" class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
+                <a href="{{ Route::has('admin.monitor') ? route('admin.monitor') : '#' }}"
+                   class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
                     <div class="flex items-center space-x-3 text-primary">
                         <span class="material-symbols-outlined text-[20px]">monitor_heart</span>
                         <span class="text-sm font-label font-bold">System Monitor</span>
@@ -185,7 +188,7 @@
             </div>
             <div class="space-y-4">
                 @forelse($recentTickets as $ticket)
-                    <a href="{{ route('admin.support.show', $ticket) }}"
+                    <a href="{{ Route::has('admin.support.show') ? route('admin.support.show', $ticket) : '#' }}"
                        class="block bg-surface p-4 rounded-xl border border-primary/5 hover:border-primary/20 transition-colors">
                         <div class="flex justify-between items-start mb-1">
                             <p class="text-xs font-label font-bold text-primary truncate max-w-[160px]">{{ $ticket->subject }}</p>
