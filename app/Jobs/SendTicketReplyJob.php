@@ -5,13 +5,16 @@ namespace App\Jobs;
 use App\Mail\TicketReplyMail;
 use App\Models\SupportTicket;
 use App\Models\TicketReply;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 
 class SendTicketReplyJob implements ShouldQueue
 {
-    use Queueable;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
     public array $backoff = [10, 60, 300];
@@ -23,6 +26,13 @@ class SendTicketReplyJob implements ShouldQueue
 
     public function handle(): void
     {
-        Mail::to($this->ticket->user->email)->send(new TicketReplyMail($this->ticket, $this->reply));
+        $recipientEmail = $this->ticket->user?->email;
+
+        if (! $recipientEmail) {
+            return;
+        }
+
+        Mail::to($recipientEmail)
+            ->send(new TicketReplyMail($this->ticket, $this->reply));
     }
 }
