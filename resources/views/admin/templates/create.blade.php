@@ -1,92 +1,153 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin - Create Template</title>
-</head>
-<body>
-    <h1>Create Template</h1>
-    
-    @if ($errors->any())
-        <div style="color: red;">
-            <ul>
-                @foreach ($errors->all() as $error)
+@extends('layouts.admin.app')
+
+@section('title', 'New Template - Admin Dashboard')
+
+@section('content')
+<div class="max-w-3xl mx-auto space-y-8 pb-10">
+
+    <!-- Breadcrumb -->
+    <div>
+        <div class="flex items-center space-x-2 text-sm font-label text-primary/50 mb-2">
+            <a href="{{ route('admin.templates.index') }}" class="hover:text-primary transition-colors">Template Catalog</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="text-primary">New Template</span>
+        </div>
+        <h1 class="text-2xl font-headline font-bold text-primary">New Template</h1>
+    </div>
+
+    @if($errors->any())
+        <div class="bg-red-50 border border-red-100 text-red-600 text-sm font-label px-5 py-3 rounded-xl">
+            <ul class="list-disc list-inside space-y-1">
+                @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
             </ul>
         </div>
     @endif
 
-    <form action="{{ route('admin.templates.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.templates.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
-        <p>
-            <label>Name:</label><br>
-            <input type="text" name="name" value="{{ old('name') }}" required>
-        </p>
 
-        <p>
-            <label>Blade Path (e.g. templates.eleanor-vance):</label><br>
-            <input type="text" name="blade_path" value="{{ old('blade_path') }}" required>
-        </p>
+        <!-- Basic Info -->
+        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5 space-y-5">
+            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest">Basic Info</h3>
 
-        <p>
-            <label>Category:</label><br>
-            <select name="category" required>
-                <option value="professional" {{ old('category') == 'professional' ? 'selected' : '' }}>Professional</option>
-                <option value="creative" {{ old('category') == 'creative' ? 'selected' : '' }}>Creative</option>
-                <option value="technology" {{ old('category') == 'technology' ? 'selected' : '' }}>Technology</option>
-                <option value="managerial" {{ old('category') == 'managerial' ? 'selected' : '' }}>Managerial</option>
-            </select>
-        </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Name <span class="text-red-400">*</span></label>
+                    <input type="text" name="name" value="{{ old('name') }}" required
+                           class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Blade Path <span class="text-red-400">*</span></label>
+                    <input type="text" name="blade_path" value="{{ old('blade_path') }}" required
+                           placeholder="e.g. templates.minimal"
+                           class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30">
+                </div>
+            </div>
 
-        <p>
-            <label>Description:</label><br>
-            <textarea name="description" rows="3" cols="40">{{ old('description') }}</textarea>
-        </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Category <span class="text-red-400">*</span></label>
+                    <select name="category" required
+                            class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary focus:outline-none focus:border-primary/30">
+                        <option value="">Select category</option>
+                        <option value="professional" {{ old('category') === 'professional' ? 'selected' : '' }}>Professional</option>
+                        <option value="creative"     {{ old('category') === 'creative'     ? 'selected' : '' }}>Creative</option>
+                        <option value="technology"   {{ old('category') === 'technology'   ? 'selected' : '' }}>Technology</option>
+                        <option value="managerial"   {{ old('category') === 'managerial'   ? 'selected' : '' }}>Managerial</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Sort Order</label>
+                    <input type="number" name="sort_order" value="{{ old('sort_order', 0) }}" min="0"
+                           class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary focus:outline-none focus:border-primary/30">
+                </div>
+            </div>
 
-        <p>
-            <label>Badge:</label><br>
-            <input type="text" name="badge" value="{{ old('badge') }}">
-        </p>
+            <div>
+                <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Description</label>
+                <textarea name="description" rows="3"
+                          class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30 resize-none">{{ old('description') }}</textarea>
+            </div>
+        </div>
 
-        <p>
-            <label>Badge Color:</label><br>
-            <select name="badge_color">
-                <option value="">None</option>
-                <option value="blue" {{ old('badge_color') == 'blue' ? 'selected' : '' }}>Blue</option>
-                <option value="secondary" {{ old('badge_color') == 'secondary' ? 'selected' : '' }}>Secondary</option>
-                <option value="purple" {{ old('badge_color') == 'purple' ? 'selected' : '' }}>Purple</option>
-                <option value="green" {{ old('badge_color') == 'green' ? 'selected' : '' }}>Green</option>
-            </select>
-        </p>
+        <!-- Badge & Flags -->
+        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5 space-y-5">
+            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest">Badge & Flags</h3>
 
-        <p>
-            <label>Is Premium:</label>
-            <input type="checkbox" name="is_premium" value="1" {{ old('is_premium') ? 'checked' : '' }}>
-        </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Badge Label</label>
+                    <input type="text" name="badge" value="{{ old('badge') }}" maxlength="30"
+                           placeholder="e.g. New, Popular"
+                           class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Badge Color</label>
+                    <select name="badge_color"
+                            class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary focus:outline-none focus:border-primary/30">
+                        <option value="">None</option>
+                        <option value="blue"      {{ old('badge_color') === 'blue'      ? 'selected' : '' }}>Blue</option>
+                        <option value="secondary" {{ old('badge_color') === 'secondary' ? 'selected' : '' }}>Secondary</option>
+                        <option value="purple"    {{ old('badge_color') === 'purple'    ? 'selected' : '' }}>Purple</option>
+                        <option value="green"     {{ old('badge_color') === 'green'     ? 'selected' : '' }}>Green</option>
+                    </select>
+                </div>
+            </div>
 
-        <p>
-            <label>Is Active:</label>
-            <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
-        </p>
+            <div class="flex items-center gap-8">
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="hidden" name="is_premium" value="0">
+                    <input type="checkbox" name="is_premium" value="1" {{ old('is_premium') ? 'checked' : '' }}
+                           class="w-4 h-4 rounded border-primary/20 text-primary focus:ring-primary/20">
+                    <span class="text-sm font-label text-primary">Premium only</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="hidden" name="is_active" value="0">
+                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}
+                           class="w-4 h-4 rounded border-primary/20 text-primary focus:ring-primary/20">
+                    <span class="text-sm font-label text-primary">Active (visible to users)</span>
+                </label>
+            </div>
+        </div>
 
-        <p>
-            <label>Sort Order:</label><br>
-            <input type="number" name="sort_order" value="{{ old('sort_order', 0) }}" min="0">
-        </p>
+        <!-- Thumbnail -->
+        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5 space-y-4">
+            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest">Thumbnail</h3>
+            <div x-data="{ preview: null }">
+                <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Upload Image</label>
+                <input type="file" name="thumbnail" accept="image/jpg,image/jpeg,image/png,image/webp"
+                       @change="preview = URL.createObjectURL($event.target.files[0])"
+                       class="w-full text-sm font-label text-primary/60 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-label file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer">
+                <p class="text-[11px] font-label text-primary/40 mt-1">JPG, PNG, WebP — max 2 MB</p>
+                <div x-show="preview" class="mt-3">
+                    <img :src="preview" alt="Preview" class="h-32 w-auto rounded-xl object-cover border border-primary/10">
+                </div>
+            </div>
+        </div>
 
-        <p>
-            <label>Style Config (JSON):</label><br>
-            <textarea name="style_config" rows="5" cols="40">{{ old('style_config') }}</textarea>
-        </p>
+        <!-- Style Config -->
+        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5 space-y-4">
+            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest">Style Config (JSON)</h3>
+            <textarea name="style_config" rows="5"
+                      placeholder='{"primary_color": "#4f3b2f"}'
+                      class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-mono text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30 resize-none">{{ old('style_config') }}</textarea>
+            @error('style_config')
+                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+            @enderror
+        </div>
 
-        <p>
-            <label>Thumbnail:</label><br>
-            <input type="file" name="thumbnail" accept="image/*">
-        </p>
-
-        <button type="submit">Create Template</button>
+        <!-- Actions -->
+        <div class="flex items-center justify-between">
+            <a href="{{ route('admin.templates.index') }}"
+               class="text-sm font-label text-primary/50 hover:text-primary transition">← Cancel</a>
+            <button type="submit"
+                    class="bg-primary text-white px-8 py-2.5 rounded-xl text-sm font-label hover:bg-primary/90 transition shadow-sm">
+                Create Template
+            </button>
+        </div>
     </form>
-    
-    <p><a href="{{ route('admin.templates.index') }}">Back to Index</a></p>
-</body>
-</html>
+
+</div>
+@endsection

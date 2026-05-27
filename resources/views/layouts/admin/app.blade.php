@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 
 <body class="bg-surface text-primary font-body antialiased min-h-screen flex">
@@ -55,6 +56,7 @@
         </main>
     </div>
 
+    @livewireScripts
     @stack('scripts')
 </body>
 </html>
