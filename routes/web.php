@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminLogController;
 use App\Http\Controllers\Admin\AdminMonitorController;
+use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\ResumeExportController;
@@ -165,6 +166,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/logs/export/finance',   [AdminLogController::class, 'exportFinanceCsv'])->name('logs.export.finance');
 
         Route::get('/monitor', [AdminMonitorController::class, 'index'])->name('monitor');
+
+        Route::get('/reports',             [AdminReportController::class, 'index'])->name('reports');
+        Route::get('/reports/export/pdf',  [AdminReportController::class, 'exportPdf'])->name('reports.export.pdf');
+        Route::get('/reports/export/csv',  [AdminReportController::class, 'exportCsv'])->name('reports.export.csv');
 
         Route::get('/settings', function () {
             return view('admin.settings');
