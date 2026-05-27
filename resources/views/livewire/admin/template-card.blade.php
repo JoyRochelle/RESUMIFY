@@ -1,34 +1,14 @@
 <div class="bg-white rounded-3xl shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5 overflow-hidden flex flex-col">
 
-    <!-- Template Preview (A4 aspect-ratio iframe, same pattern as user dashboard) -->
-    <div class="relative w-full aspect-[210/297] bg-surface overflow-hidden flex-shrink-0"
-         x-data="{}"
-         x-init="
-             const iframe = $el.querySelector('iframe');
-             const scale = $el.offsetWidth / 794;
-             if (iframe) {
-                 iframe.style.transform = 'scale(' + scale + ')';
-             }
-         ">
-        <iframe src="{{ route('admin.templates.preview', $template) }}"
-                loading="lazy"
-                tabindex="-1"
-                style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0; pointer-events: none;">
-        </iframe>
-
-        <!-- Transparent click shield -->
-        <div class="absolute inset-0 bg-transparent z-10"></div>
-
-        <!-- Status badge (top-right) -->
-        <div class="absolute top-3 right-3 z-20">
+    <!-- Status + Premium badges row (outside wire:ignore so they update on toggle) -->
+    <div class="relative flex-shrink-0">
+        <div class="absolute top-3 right-3 z-20" style="position:absolute">
             <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-full
                 {{ $template->is_active ? 'bg-secondary/20 text-secondary' : 'bg-primary/10 text-primary/40' }}">
                 {{ $template->is_active ? 'Active' : 'Inactive' }}
             </span>
         </div>
-
-        <!-- Badges (top-left) -->
-        <div class="absolute top-3 left-3 z-20 flex items-center gap-2">
+        <div class="absolute top-3 left-3 z-20 flex items-center gap-2" style="position:absolute">
             @if($template->is_premium)
                 <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-amber-100 text-amber-700">Premium</span>
             @endif
@@ -45,6 +25,24 @@
                     {{ $template->badge }}
                 </span>
             @endif
+        </div>
+
+        <!-- Template Preview — wire:ignore so Livewire never re-morphs it (keeps scale from x-init) -->
+        <div wire:ignore
+             class="relative w-full aspect-[210/297] bg-surface overflow-hidden"
+             x-data="{}"
+             x-init="
+                 const iframe = $el.querySelector('iframe');
+                 const scale = $el.offsetWidth / 794;
+                 if (iframe) iframe.style.transform = 'scale(' + scale + ')';
+             ">
+            <iframe src="{{ route('admin.templates.preview', $template) }}"
+                    loading="lazy"
+                    tabindex="-1"
+                    style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0; pointer-events: none;">
+            </iframe>
+            <!-- Transparent click shield -->
+            <div class="absolute inset-0 z-10"></div>
         </div>
     </div>
 
@@ -94,7 +92,7 @@
                           class="material-symbols-outlined text-[18px] animate-spin">autorenew</span>
                 </button>
 
-                <!-- Delete (triggers Alpine modal) -->
+                <!-- Delete -->
                 <button @click="showDelete = true"
                         class="p-1.5 rounded-lg text-red-400/60 hover:text-red-500 hover:bg-red-50 transition"
                         title="Delete">
@@ -102,7 +100,7 @@
                 </button>
             </div>
 
-            <!-- Delete Confirmation Modal (scoped to this card via Alpine x-data above) -->
+            <!-- Delete Confirmation Modal -->
             <div x-show="showDelete" x-cloak
                  class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
                  @keydown.escape.window="showDelete = false">

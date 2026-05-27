@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Livewire\Admin\TemplateCard;
+use App\Livewire\Admin\TemplateStats;
 use App\Models\CvTemplate;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -132,6 +133,15 @@ class TemplateCardLivewireTest extends TestCase
         $this->assertTrue($this->template->fresh()->is_active);
     }
 
+    public function test_toggle_dispatches_template_toggled_event(): void
+    {
+        $this->actingAs($this->admin);
+
+        Livewire::test(TemplateCard::class, ['template' => $this->template])
+            ->call('toggle')
+            ->assertDispatched('template-toggled');
+    }
+
     // =========================================================
     // Delete — Livewire
     // =========================================================
@@ -193,5 +203,58 @@ class TemplateCardLivewireTest extends TestCase
             ->get(route('admin.templates.index'))
             ->assertOk()
             ->assertSee('No templates found');
+    }
+
+    public function test_template_index_renders_livewire_stats_component(): void
+    {
+        $this->actingAs($this->admin)
+            ->get(route('admin.templates.index'))
+            ->assertSeeLivewire(TemplateStats::class);
+    }
+
+    // =========================================================
+    // TemplateStats — live counts
+    // =========================================================
+
+    public function test_template_stats_shows_correct_counts(): void
+    {
+        CvTemplate::factory()->create(['is_active' => false]);
+        CvTemplate::factory()->premium()->create();
+        $this->actingAs($this->admin);
+
+        Livewire::test(TemplateStats::class)
+            ->assertSee('2') // total active (setUp creates 1 active, premium is also active)
+            ->assertHasNoErrors();
+    }
+
+    public function test_template_stats_refreshes_on_template_toggled_event(): void
+    {
+        $this->actingAs($this->admin);
+
+        Livewire::test(TemplateStats::class)
+            ->dispatch('template-toggled')
+            ->assertHasNoErrors();
+    }
+
+    public function test_template_stats_refreshes_on_template_deleted_event(): void
+    {
+        $this->actingAs($this->admin);
+
+        Livewire::test(TemplateStats::class)
+            ->dispatch('template-deleted')
+            ->assertHasNoErrors();
+    }
+
+    public function test_template_stats_active_count_updates_after_toggle(): void
+    {
+        $this->actingAs($this->admin);
+
+        // Toggle the template to inactive
+        Livewire::test(TemplateCard::class, ['template' => $this->template])
+            ->call('toggle');
+
+        // Stats should now show 0 active
+        Livewire::test(TemplateStats::class)
+            ->assertSee('0'); // 0 active after toggle
     }
 }

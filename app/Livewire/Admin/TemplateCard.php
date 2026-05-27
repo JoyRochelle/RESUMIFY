@@ -4,18 +4,16 @@ namespace App\Livewire\Admin;
 
 use App\Models\CvTemplate;
 use Illuminate\View\View;
-use Livewire\Attributes\On;
 use Livewire\Component;
 
 class TemplateCard extends Component
 {
     public CvTemplate $template;
 
-    public bool $showDeleteModal = false;
-
     public function toggle(): void
     {
         $this->template->update(['is_active' => !$this->template->is_active]);
+        $this->dispatch('template-toggled');
     }
 
     public function delete(): void
