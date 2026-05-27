@@ -5,6 +5,7 @@ use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\ResumeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\TemplateController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\ResumeExportController;
 use App\Http\Controllers\AtsController;
 use App\Http\Controllers\ManuscriptAtsController;
@@ -139,9 +140,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard'); 
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::get('/users', function () {
             return view('admin.users');
         })->name('users');

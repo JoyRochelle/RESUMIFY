@@ -57,4 +57,10 @@ return [
         'client_key' => env('MIDTRANS_CLIENT_KEY'),
         'is_production' => env('MIDTRANS_IS_PRODUCTION', false),
     ],
+
+    'sentry' => [
+        'auth_token'   => env('SENTRY_AUTH_TOKEN'),
+        'org_slug'     => env('SENTRY_ORG_SLUG'),
+        'project_slug' => env('SENTRY_PROJECT_SLUG'),
+    ],
 ];

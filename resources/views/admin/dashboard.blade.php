@@ -7,14 +7,26 @@
 
     <!-- Top Stats Row -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+
         <!-- Total Revenue -->
         <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
             <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-4">Total Revenue</h3>
-            <div class="text-3xl font-headline text-primary mb-4">Rp 30.8M</div>
-            <div class="flex items-center text-sm font-label text-secondary">
-                <span class="material-symbols-outlined text-[16px] mr-1">trending_up</span>
-                <span>+12%</span>
-                <span class="text-primary/40 ml-2">vs last month</span>
+            <div class="text-3xl font-headline text-primary mb-4">
+                Rp {{ number_format($totalRevenue, 0, ',', '.') }}
+            </div>
+            <div class="flex items-center text-sm font-label">
+                @if($revenueGrowth !== null)
+                    @if($revenueGrowth >= 0)
+                        <span class="material-symbols-outlined text-[16px] mr-1 text-secondary">trending_up</span>
+                        <span class="text-secondary">+{{ $revenueGrowth }}%</span>
+                    @else
+                        <span class="material-symbols-outlined text-[16px] mr-1 text-red-500">trending_down</span>
+                        <span class="text-red-500">{{ $revenueGrowth }}%</span>
+                    @endif
+                    <span class="text-primary/40 ml-2">vs last month</span>
+                @else
+                    <span class="text-primary/40">No data for previous month</span>
+                @endif
             </div>
         </div>
 
@@ -22,236 +34,275 @@
         <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
             <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-4">AI API Costs</h3>
             <div class="flex items-end mb-4">
-                <span class="text-3xl font-headline text-primary mr-2">$142.50</span>
-                <span class="text-sm font-label text-primary/40 mb-1">spent</span>
+                <span class="text-3xl font-headline text-primary mr-2">${{ number_format($aiCostUsd, 2) }}</span>
+                <span class="text-sm font-label text-primary/40 mb-1">this month</span>
             </div>
+            @php $aiCostLimit = 200; $aiPct = min(100, round($aiCostUsd / $aiCostLimit * 100)); @endphp
             <div class="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden mb-2">
-                <div class="bg-primary h-full w-[65%] rounded-full"></div>
+                <div class="h-full rounded-full {{ $aiPct >= 80 ? 'bg-red-400' : 'bg-primary' }}"
+                     style="width: {{ $aiPct }}%"></div>
             </div>
-            <p class="text-[10px] font-label text-primary/40">65% of monthly limit used</p>
+            <p class="text-[10px] font-label text-primary/40">{{ $aiPct }}% of ${{ number_format($aiCostLimit) }} monthly limit</p>
         </div>
 
-        <!-- Active Support Tickets -->
+        <!-- Open Support Tickets -->
         <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-4">Active Support Tickets</h3>
-            <div class="text-3xl font-headline text-primary mb-4">14</div>
+            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-4">Open Support Tickets</h3>
+            <div class="text-3xl font-headline text-primary mb-4">{{ $openTickets }}</div>
             <div class="flex items-center">
-                <div class="flex -space-x-2 mr-3">
-                    <img class="w-6 h-6 rounded-full border-2 border-white object-cover" src="{{ asset('images/nion.jpg') }}" onerror="this.src='https://ui-avatars.com/api/?name=Agent+1&background=fcdccb&color=4f3b2f'" />
-                    <img class="w-6 h-6 rounded-full border-2 border-white object-cover" src="{{ asset('images/nion.jpg') }}" onerror="this.src='https://ui-avatars.com/api/?name=Agent+2&background=fcdccb&color=4f3b2f'" />
-                </div>
-                <span class="text-[10px] font-label text-primary/40">assigned to 2 agents</span>
+                @if($openTickets === 0)
+                    <span class="text-[10px] font-label text-secondary">All clear — no open tickets</span>
+                @else
+                    <span class="material-symbols-outlined text-[16px] mr-1 text-primary/40">inbox</span>
+                    <span class="text-[10px] font-label text-primary/40">awaiting response</span>
+                @endif
             </div>
         </div>
 
         <!-- System Health -->
         <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
             <h3 class="text-[10px] font-label text-secondary uppercase tracking-widest mb-4">System Health</h3>
-            <div class="flex items-center text-3xl font-headline text-primary mb-4">
-                <div class="w-3 h-3 bg-secondary rounded-full mr-3 shadow-[0_0_8px_rgba(16,185,129,0.4)]"></div>
-                Optimal
-            </div>
-            <p class="text-[10px] font-label text-secondary leading-tight">All AI nodes performing at 99.9% uptime</p>
+            @if($sentryErrors === null)
+                <div class="flex items-center text-3xl font-headline text-primary mb-4">
+                    <div class="w-3 h-3 bg-secondary rounded-full mr-3 shadow-[0_0_8px_rgba(16,185,129,0.4)]"></div>
+                    Healthy
+                </div>
+                <p class="text-[10px] font-label text-primary/40 leading-tight">Sentry not configured — no error data</p>
+            @elseif($sentryErrors === 0)
+                <div class="flex items-center text-3xl font-headline text-primary mb-4">
+                    <div class="w-3 h-3 bg-secondary rounded-full mr-3 shadow-[0_0_8px_rgba(16,185,129,0.4)]"></div>
+                    Optimal
+                </div>
+                <p class="text-[10px] font-label text-secondary leading-tight">0 unresolved errors in the last 24h</p>
+            @else
+                <div class="flex items-center text-3xl font-headline text-primary mb-4">
+                    <div class="w-3 h-3 bg-red-400 rounded-full mr-3 shadow-[0_0_8px_rgba(248,113,113,0.4)]"></div>
+                    {{ $sentryErrors }} Error{{ $sentryErrors > 1 ? 's' : '' }}
+                </div>
+                <p class="text-[10px] font-label text-red-400 leading-tight">Unresolved issues in last 24h</p>
+            @endif
         </div>
+
     </div>
 
     <!-- Middle Row: Chart & Quick Actions -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Main Chart Area -->
+
+        <!-- Main Chart -->
         <div class="lg:col-span-2 bg-white rounded-3xl p-8 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
             <div class="flex justify-between items-center mb-8">
-                <h2 class="text-xl font-headline font-bold text-primary">Traffic vs AI Usage</h2>
+                <div>
+                    <h2 class="text-xl font-headline font-bold text-primary">New Users vs AI Calls</h2>
+                    <p class="text-[10px] font-label text-primary/40 mt-1">Last 30 days</p>
+                </div>
                 <div class="flex space-x-4">
                     <div class="flex items-center">
                         <div class="w-2 h-2 rounded-full bg-[#4f3b2f] mr-2"></div>
-                        <span class="text-[10px] font-label font-bold text-primary">Direct Traffic</span>
+                        <span class="text-[10px] font-label font-bold text-primary">New Users</span>
                     </div>
                     <div class="flex items-center">
-                        <div class="w-2 h-2 rounded-full bg-[#10b981] mr-2"></div>
-                        <span class="text-[10px] font-label font-bold text-primary">AI Optimization Requests</span>
+                        <div class="w-2 h-2 rounded-full bg-[#0F6E56] mr-2"></div>
+                        <span class="text-[10px] font-label font-bold text-primary">AI Calls</span>
                     </div>
                 </div>
             </div>
-
-            <!-- Chart Placeholder (SVG) -->
             <div class="relative h-[250px] w-full">
-                <!-- Grid Lines -->
-                <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
-                    <div class="h-px w-full bg-primary/5"></div>
-                    <div class="h-px w-full bg-primary/5"></div>
-                    <div class="h-px w-full bg-primary/5"></div>
-                    <div class="h-px w-full bg-primary/5"></div>
-                </div>
-                
-                <!-- SVG Curves -->
-                <svg class="absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 100 100">
-                    <!-- Direct Traffic (Brown) -->
-                    <path d="M0,80 C20,70 30,85 50,75 C70,60 80,40 100,65" fill="none" stroke="#4f3b2f" stroke-width="2" class="opacity-90"/>
-                    <!-- AI Usage (Green) -->
-                    <path d="M0,85 C25,80 35,90 55,75 C75,55 85,55 100,60" fill="none" stroke="#10b981" stroke-width="2" class="opacity-90"/>
-                </svg>
-
-                <!-- X Axis Labels -->
-                <div class="absolute bottom-0 w-full flex justify-between text-[10px] font-label text-primary/30 mt-4 translate-y-6">
-                    <span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span>
-                </div>
+                <canvas id="trafficChart"></canvas>
             </div>
-            <div class="h-6"></div> <!-- Spacer for labels -->
         </div>
 
         <!-- Quick Actions -->
         <div class="bg-surface-container-low rounded-3xl p-8 border border-primary/5">
             <h2 class="text-xl font-headline text-primary mb-6">Quick Actions</h2>
             <div class="space-y-4 mb-8">
-                <button class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
+                <a href="{{ route('admin.reports') }}" class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
                     <div class="flex items-center space-x-3 text-primary">
                         <span class="material-symbols-outlined text-[20px]">description</span>
                         <span class="text-sm font-label font-bold">Generate Report</span>
                     </div>
                     <span class="material-symbols-outlined text-primary/40 group-hover:text-primary transition-colors text-[20px]">chevron_right</span>
-                </button>
-                <button class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
-                    <div class="flex items-center space-x-3 text-primary">
-                        <span class="material-symbols-outlined text-[20px]">auto_fix_high</span>
-                        <span class="text-sm font-label font-bold">Update AI Model</span>
-                    </div>
-                    <span class="material-symbols-outlined text-primary/40 group-hover:text-primary transition-colors text-[20px]">chevron_right</span>
-                </button>
-                <button class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
+                </a>
+                <a href="{{ route('admin.templates.create') }}" class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
                     <div class="flex items-center space-x-3 text-primary">
                         <span class="material-symbols-outlined text-[20px]">add_circle</span>
                         <span class="text-sm font-label font-bold">Add New Template</span>
                     </div>
                     <span class="material-symbols-outlined text-primary/40 group-hover:text-primary transition-colors text-[20px]">chevron_right</span>
-                </button>
+                </a>
+                <a href="{{ route('admin.monitor') }}" class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
+                    <div class="flex items-center space-x-3 text-primary">
+                        <span class="material-symbols-outlined text-[20px]">monitor_heart</span>
+                        <span class="text-sm font-label font-bold">System Monitor</span>
+                    </div>
+                    <span class="material-symbols-outlined text-primary/40 group-hover:text-primary transition-colors text-[20px]">chevron_right</span>
+                </a>
             </div>
             <div class="bg-white p-5 rounded-xl text-[11px] font-headline text-primary/60 italic leading-relaxed border border-primary/5">
-                "Design is not just what it looks like and feels like. Design is how it works."
+                "{{ $premiumUsers }} premium users are trusting Resumify right now."
             </div>
         </div>
+
     </div>
 
     <!-- Bottom Row -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pb-10">
-        <!-- User Activity -->
+
+        <!-- Recent User Activity -->
         <div class="bg-white rounded-3xl p-8 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h2 class="text-lg font-headline text-primary mb-6">User Activity</h2>
-            <div class="space-y-6">
-                <!-- Item 1 -->
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary font-bold text-sm">AS</div>
-                        <div>
-                            <p class="text-sm font-label font-bold text-primary">Adi Saputra</p>
-                            <p class="text-[10px] font-label text-primary/40">Jakarta, ID</p>
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg font-headline text-primary">Recent Signups</h2>
+                <a href="{{ route('admin.users') }}" class="text-[10px] font-label text-secondary hover:underline">View all</a>
+            </div>
+            <div class="space-y-5">
+                @forelse($recentUsers as $user)
+                    @php $initials = collect(explode(' ', $user->name))->take(2)->map(fn($w) => strtoupper($w[0]))->implode(''); @endphp
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-primary font-bold text-xs shrink-0">
+                                {{ $initials }}
+                            </div>
+                            <div>
+                                <p class="text-sm font-label font-bold text-primary leading-tight">{{ $user->name }}</p>
+                                <p class="text-[10px] font-label text-primary/40 truncate max-w-[140px]">{{ $user->email }}</p>
+                            </div>
                         </div>
+                        <span class="text-[10px] font-label px-2 py-0.5 rounded-full shrink-0
+                            {{ $user->role === 'premium' ? 'bg-secondary/10 text-secondary' : 'bg-primary/5 text-primary/50' }}">
+                            {{ strtoupper($user->role) }}
+                        </span>
                     </div>
-                    <span class="text-[10px] font-label text-secondary">Active Now</span>
-                </div>
-                <!-- Item 2 -->
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary font-bold text-sm">RM</div>
-                        <div>
-                            <p class="text-sm font-label font-bold text-primary">Rina Melati</p>
-                            <p class="text-[10px] font-label text-primary/40">Surabaya, ID</p>
-                        </div>
-                    </div>
-                    <span class="text-[10px] font-label text-primary/40">2m ago</span>
-                </div>
-                <!-- Item 3 -->
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary font-bold text-sm">B</div>
-                        <div>
-                            <p class="text-sm font-label font-bold text-primary">Budi J.</p>
-                            <p class="text-[10px] font-label text-primary/40">Bandung, ID</p>
-                        </div>
-                    </div>
-                    <span class="text-[10px] font-label text-primary/40">15m ago</span>
-                </div>
+                @empty
+                    <p class="text-sm font-label text-primary/40">No users yet.</p>
+                @endforelse
             </div>
         </div>
 
         <!-- Support Queue -->
         <div class="bg-white rounded-3xl p-8 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h2 class="text-lg font-headline text-primary mb-6">Support Queue</h2>
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg font-headline text-primary">Support Queue</h2>
+                <a href="{{ route('admin.support') }}" class="text-[10px] font-label text-secondary hover:underline">View all</a>
+            </div>
             <div class="space-y-4">
-                <!-- Ticket 1 -->
-                <div class="bg-surface p-4 rounded-xl relative border border-primary/5">
-                    <div class="absolute -right-2 -top-2 bg-[#dc2626] text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm z-10">3 Pending</div>
-                    <div class="flex justify-between items-start mb-1">
-                        <p class="text-xs font-label font-bold text-primary">Payment Issue</p>
-                        <span class="text-[9px] text-primary/40 text-right leading-tight">Just<br>now</span>
+                @forelse($recentTickets as $ticket)
+                    <a href="{{ route('admin.support.show', $ticket) }}"
+                       class="block bg-surface p-4 rounded-xl border border-primary/5 hover:border-primary/20 transition-colors">
+                        <div class="flex justify-between items-start mb-1">
+                            <p class="text-xs font-label font-bold text-primary truncate max-w-[160px]">{{ $ticket->subject }}</p>
+                            <span class="text-[9px] text-primary/40 ml-2 shrink-0">{{ $ticket->created_at->diffForHumans(null, true) }}</span>
+                        </div>
+                        <p class="text-[10px] font-label text-primary/50">{{ $ticket->user->name }}</p>
+                    </a>
+                @empty
+                    <div class="text-center py-6">
+                        <span class="material-symbols-outlined text-[32px] text-secondary">check_circle</span>
+                        <p class="text-sm font-label text-primary/40 mt-2">No open tickets</p>
                     </div>
-                    <p class="text-[11px] font-label text-primary/60 truncate">"Why was my subscription charged twice..."</p>
-                </div>
-                <!-- Ticket 2 -->
-                <div class="bg-surface p-4 rounded-xl border border-primary/5">
-                    <div class="flex justify-between items-start mb-1">
-                        <p class="text-xs font-label font-bold text-primary">AI Hallucination</p>
-                        <span class="text-[9px] text-primary/40 text-right">5m ago</span>
-                    </div>
-                    <p class="text-[11px] font-label text-primary/60 truncate">"The AI keeps adding fake experience to my..."</p>
-                </div>
-                <!-- Ticket 3 -->
-                <div class="bg-surface p-4 rounded-xl border border-primary/5">
-                    <div class="flex justify-between items-start mb-1">
-                        <p class="text-xs font-label font-bold text-primary">Template Export</p>
-                        <span class="text-[9px] text-primary/40 text-right">12m ago</span>
-                    </div>
-                    <p class="text-[11px] font-label text-primary/60 truncate">"PDF layout is broken when exporting in..."</p>
-                </div>
+                @endforelse
             </div>
         </div>
 
         <!-- Template Performance -->
         <div class="bg-white rounded-3xl p-8 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h2 class="text-lg font-headline text-primary mb-6">Template Performance</h2>
-            <div class="space-y-6">
-                <!-- Item 1 -->
-                <div>
-                    <div class="flex justify-between text-[10px] font-label uppercase tracking-widest font-bold mb-2">
-                        <span class="text-primary">THE EXECUTIVE</span>
-                        <span class="text-primary/60 text-[9px]">8.2k downloads</span>
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg font-headline text-primary">Template Usage</h2>
+                <a href="{{ route('admin.templates.index') }}" class="text-[10px] font-label text-secondary hover:underline">Manage</a>
+            </div>
+            <div class="space-y-5">
+                @forelse($templatePerformance as $template)
+                    @php $pct = $maxCvCount > 0 ? round($template->cvs_count / $maxCvCount * 100) : 0; @endphp
+                    <div>
+                        <div class="flex justify-between text-[10px] font-label uppercase tracking-widest font-bold mb-2">
+                            <span class="text-primary truncate max-w-[150px]">{{ $template->name }}</span>
+                            <span class="text-primary/60 text-[9px] shrink-0 ml-2">{{ number_format($template->cvs_count) }} CVs</span>
+                        </div>
+                        <div class="w-full bg-surface-container-low h-2 rounded-full overflow-hidden">
+                            <div class="bg-primary h-full rounded-full transition-all" style="width: {{ $pct }}%"></div>
+                        </div>
                     </div>
-                    <div class="w-full bg-surface-container-low h-2 rounded-full overflow-hidden">
-                        <div class="bg-primary h-full w-[85%] rounded-full"></div>
-                    </div>
-                </div>
-                <!-- Item 2 -->
-                <div>
-                    <div class="flex justify-between text-[10px] font-label uppercase tracking-widest font-bold mb-2">
-                        <span class="text-primary">MINIMALIST NOIR</span>
-                        <span class="text-primary/60 text-[9px]">6.1k downloads</span>
-                    </div>
-                    <div class="w-full bg-surface-container-low h-2 rounded-full overflow-hidden">
-                        <div class="bg-primary h-full w-[65%] rounded-full"></div>
-                    </div>
-                </div>
-                <!-- Item 3 -->
-                <div>
-                    <div class="flex justify-between text-[10px] font-label uppercase tracking-widest font-bold mb-2">
-                        <span class="text-primary">THE ACADEMIC</span>
-                        <span class="text-primary/60 text-[9px]">4.4k downloads</span>
-                    </div>
-                    <div class="w-full bg-surface-container-low h-2 rounded-full overflow-hidden">
-                        <div class="bg-primary h-full w-[45%] rounded-full"></div>
-                    </div>
-                </div>
-                <!-- Item 4 -->
-                <div>
-                    <div class="flex justify-between text-[10px] font-label uppercase tracking-widest font-bold mb-2">
-                        <span class="text-primary">CREATIVE SPARK</span>
-                        <span class="text-primary/60 text-[9px]">3.8k downloads</span>
-                    </div>
-                    <div class="w-full bg-surface-container-low h-2 rounded-full overflow-hidden">
-                        <div class="bg-primary h-full w-[35%] rounded-full"></div>
-                    </div>
-                </div>
+                @empty
+                    <p class="text-sm font-label text-primary/40">No templates in use yet.</p>
+                @endforelse
             </div>
         </div>
+
     </div>
 
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    const data = @json($chartData);
+    const ctx  = document.getElementById('trafficChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.labels,
+            datasets: [
+                {
+                    label: 'New Users',
+                    data: data.activeUsers,
+                    borderColor: '#4f3b2f',
+                    backgroundColor: 'rgba(79,59,47,0.06)',
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#4f3b2f',
+                    tension: 0.35,
+                    fill: true,
+                },
+                {
+                    label: 'AI Calls',
+                    data: data.aiCalls,
+                    borderColor: '#0F6E56',
+                    backgroundColor: 'rgba(15,110,86,0.06)',
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#0F6E56',
+                    tension: 0.35,
+                    fill: true,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#fff',
+                    titleColor: '#4f3b2f',
+                    bodyColor: '#4f3b2f',
+                    borderColor: 'rgba(79,59,47,0.1)',
+                    borderWidth: 1,
+                    padding: 10,
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        color: 'rgba(79,59,47,0.3)',
+                        font: { size: 10 },
+                        maxTicksLimit: 7,
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(79,59,47,0.05)' },
+                    ticks: {
+                        color: 'rgba(79,59,47,0.3)',
+                        font: { size: 10 },
+                        precision: 0,
+                    }
+                }
+            }
+        }
+    });
+})();
+</script>
+@endpush

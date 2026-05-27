@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class CvTemplate extends Model
@@ -42,6 +43,11 @@ class CvTemplate extends Model
         return $this->thumbnail_url
             ? Storage::disk('public')->url($this->thumbnail_url)
             : asset('images/template-placeholder.png');
+    }
+
+    public function cvs(): HasMany
+    {
+        return $this->hasMany(Cv::class, 'template_id');
     }
 
     // Helper: render this template with a CV's data
