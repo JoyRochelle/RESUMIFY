@@ -30,6 +30,10 @@ class TicketReplyMail extends Mailable
     {
         return new Content(
             view: 'emails.ticket-reply',
+            with: [
+                'ticket' => $this->ticket,
+                'reply'  => $this->reply,
+            ],
         );
     }
 }
