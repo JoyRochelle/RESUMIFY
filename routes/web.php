@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminLogController;
 use App\Http\Controllers\Admin\AdminMonitorController;
 use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\SupportTicketController;
 use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\ResumeExportController;
 use App\Http\Controllers\AtsController;
@@ -152,9 +153,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/users/{user}/suspend',  [AdminUserController::class, 'toggleSuspend'])->name('users.suspend');
         Route::delete('/users/{user}',         [AdminUserController::class, 'destroy'])->name('users.destroy');
         
-        Route::get('/support', function () {
-            return view('admin.support');
-        })->name('support');
+        Route::get('/support',                       [SupportTicketController::class, 'index'])->name('support');
+        Route::get('/support/{ticket}',              [SupportTicketController::class, 'show'])->name('support.show');
+        Route::post('/support/{ticket}/reply',       [SupportTicketController::class, 'reply'])->name('support.reply');
+        Route::patch('/support/{ticket}/assign',     [SupportTicketController::class, 'assign'])->name('support.assign');
+        Route::patch('/support/{ticket}/status',     [SupportTicketController::class, 'updateStatus'])->name('support.status');
 
         // Template Library CRUD
         Route::resource('templates', TemplateController::class);
