@@ -32,5 +32,8 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="SENTRY_AUTH_TOKEN" value=""/>
+        <env name="SENTRY_ORG_SLUG" value=""/>
+        <env name="SENTRY_PROJECT_SLUG" value=""/>
     </php>
 </phpunit>

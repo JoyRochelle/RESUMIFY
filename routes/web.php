@@ -4,8 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\ResumeController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\ResumeExportController;
 use App\Http\Controllers\AtsController;
 use App\Http\Controllers\ManuscriptAtsController;
@@ -141,9 +142,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/users', function () {
-            return view('admin.users');
-        })->name('users');
+        Route::get('/users',                   [AdminUserController::class, 'index'])->name('users');
+        Route::get('/users/{user}',            [AdminUserController::class, 'show'])->name('users.show');
+        Route::patch('/users/{user}/plan',     [AdminUserController::class, 'overridePlan'])->name('users.plan');
+        Route::patch('/users/{user}/credits',  [AdminUserController::class, 'adjustCredits'])->name('users.credits');
+        Route::patch('/users/{user}/suspend',  [AdminUserController::class, 'toggleSuspend'])->name('users.suspend');
+        Route::delete('/users/{user}',         [AdminUserController::class, 'destroy'])->name('users.destroy');
         
         Route::get('/support', function () {
             return view('admin.support');
