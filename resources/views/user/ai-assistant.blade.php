@@ -91,7 +91,7 @@
 
                 {{-- Empty state --}}
                 <div id="ats-empty-state" class="h-full flex flex-col items-center justify-center text-center py-20 lg:py-0">
-                    <div class="w-24 h-24 rounded-full bg-secondary/10 flex items-center justify-center mb-6 animate-pulse-slow">
+                    <div class="w-24 h-24 rounded-full bg-secondary/10 flex items-center justify-center mb-6">
                         <span class="material-symbols-outlined text-secondary text-4xl icon-filled">analytics</span>
                     </div>
                     <h3 class="font-headline text-2xl text-primary mb-2">Select & Analyze</h3>
@@ -232,11 +232,6 @@
             to   { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in-up { animation: fadeInUp 0.45s ease both; }
-        @keyframes pulse-slow {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0.5; }
-        }
-        .animate-pulse-slow { animation: pulse-slow 2.5s ease-in-out infinite; }
         @keyframes spin {
             to { transform: rotate(360deg); }
         }

@@ -22,8 +22,8 @@
     @include('layouts.user.mobilenavbar')
 
     <x-user.toast />
-    @livewireScripts
     @stack('scripts')
+    @livewireScripts
 
 </body>
 </html>
