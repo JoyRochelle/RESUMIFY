@@ -85,6 +85,52 @@
 
     <!-- User Table -->
     <div class="bg-white rounded-3xl shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5 overflow-hidden">
+
+        {{-- Mobile card layout --}}
+        <div class="md:hidden divide-y divide-primary/5">
+            @forelse($users as $user)
+                @php
+                    $quota    = $user->getQuotaLimit();
+                    $used     = $user->ai_quota_used ?? 0;
+                    $initials = collect(explode(' ', $user->name))->take(2)->map(fn($w) => strtoupper($w[0] ?? ''))->implode('');
+                @endphp
+                <div class="p-4 flex items-center gap-3 {{ $user->is_suspended ? 'opacity-60' : '' }}">
+                    <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                        {{ $initials }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <a href="{{ route('admin.users.show', $user) }}"
+                           class="text-sm font-bold text-primary hover:text-secondary transition truncate block">
+                            {{ $user->name }}
+                        </a>
+                        <p class="text-xs text-primary/40 truncate">{{ $user->email }}</p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        @if($user->role === 'premium')
+                            <span class="bg-secondary text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">PRO</span>
+                        @else
+                            <span class="bg-surface-container-low text-primary/60 border border-primary/10 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">FREE</span>
+                        @endif
+                        @if($user->is_suspended)
+                            <span class="w-2 h-2 rounded-full bg-red-400 inline-block" title="Suspended"></span>
+                        @else
+                            <span class="w-2 h-2 rounded-full bg-secondary inline-block" title="Active"></span>
+                        @endif
+                        <a href="{{ route('admin.users.show', $user) }}"
+                           class="w-8 h-8 flex items-center justify-center rounded-lg text-primary/40 hover:text-primary hover:bg-surface transition">
+                            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                        </a>
+                    </div>
+                </div>
+            @empty
+                <div class="py-16 text-center text-sm font-label text-primary/40">
+                    No users found matching your filters.
+                </div>
+            @endforelse
+        </div>
+
+        {{-- Desktop table --}}
+        <div class="hidden md:block">
         <table class="w-full text-left border-collapse">
             <thead>
                 <tr class="border-b border-primary/5">
@@ -210,6 +256,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>{{-- end desktop table --}}
 
         <!-- Pagination -->
         <div class="p-6 border-t border-primary/5 flex items-center justify-between text-sm font-label">

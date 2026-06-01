@@ -14,9 +14,21 @@
             <x-user.button id="download-btn" onclick="downloadPdf('{{ auth()->user()->cvs()->latest()->first()->id ?? 1 }}')" variant="primary" icon="download" iconClass="text-[18px]" class="text-sm px-3 w-full sm:w-auto justify-center">Download PDF</x-user.button>
         </x-user.page-header>
 
+        {{-- Mobile tab bar (hidden on lg+) --}}
+        <div class="flex lg:hidden border-b border-primary/10 bg-surface-container-low shrink-0">
+            <button id="ms-tab-edit" onclick="switchMsTab('edit')"
+                    class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary border-b-2 border-primary transition-colors">
+                <span class="material-symbols-outlined text-[18px]">edit_note</span> Edit
+            </button>
+            <button id="ms-tab-preview" onclick="switchMsTab('preview')"
+                    class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary/40 border-b-2 border-transparent transition-colors">
+                <span class="material-symbols-outlined text-[18px]">preview</span> Preview
+            </button>
+        </div>
+
         <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden pb-20 lg:pb-0">
-            
-            <aside class="w-full lg:w-[40%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
+
+            <aside id="ms-panel-edit" class="w-full lg:w-[40%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
                 <div class="p-4 lg:p-6 lg:overflow-y-auto custom-scrollbar space-y-6 lg:h-full">
                     
                     @php
@@ -441,7 +453,7 @@
                 </div>
             </aside>
 
-            <main class="w-full lg:w-[60%] lg:h-full bg-primary/5 flex flex-col items-center p-4 lg:p-8 lg:overflow-y-auto relative custom-scrollbar">
+            <main id="ms-panel-preview" class="w-full lg:w-[60%] lg:h-full bg-primary/5 flex-col items-center p-4 lg:p-8 lg:overflow-y-auto relative custom-scrollbar hidden lg:flex">
                 
                 <div class="w-full max-w-[794px] relative flex flex-col lg:my-auto shrink-0 mb-10 lg:mb-0">
                     {{-- ATS Score Panel (Gemini-powered) --}}
@@ -855,8 +867,38 @@
                 }
             });
         }
-        window.addEventListener('resize', scaleIframe);
+        window.addEventListener('resize', function() {
+            scaleIframe();
+            // On resize to desktop, clear any mobile tab inline styles
+            if (window.innerWidth >= 1024) {
+                const ep = document.getElementById('ms-panel-edit');
+                const pp = document.getElementById('ms-panel-preview');
+                if (ep) { ep.style.display = ''; ep.classList.remove('hidden'); }
+                if (pp) { pp.style.display = ''; pp.classList.remove('hidden'); }
+            }
+        });
         document.addEventListener('DOMContentLoaded', scaleIframe);
+
+        function switchMsTab(tab) {
+            if (window.innerWidth >= 1024) return;
+            const editPanel    = document.getElementById('ms-panel-edit');
+            const previewPanel = document.getElementById('ms-panel-preview');
+            const editBtn      = document.getElementById('ms-tab-edit');
+            const previewBtn   = document.getElementById('ms-tab-preview');
+
+            editPanel.classList.toggle('hidden', tab !== 'edit');
+            previewPanel.classList.toggle('hidden', tab !== 'preview');
+
+            [editBtn, previewBtn].forEach(btn => {
+                const active = btn.id === `ms-tab-${tab}`;
+                btn.classList.toggle('text-primary',     active);
+                btn.classList.toggle('border-primary',   active);
+                btn.classList.toggle('text-primary/40',  !active);
+                btn.classList.toggle('border-transparent', !active);
+            });
+
+            if (tab === 'preview') scaleIframe();
+        }
 
         // ── Toast helper ────────────────────────────────────────────────
         function showToast(message, type = 'success') {

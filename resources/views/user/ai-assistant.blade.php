@@ -28,10 +28,22 @@
             </div>
         </div>
 
+        {{-- Mobile tab bar (hidden on lg+) --}}
+        <div class="flex lg:hidden border-b border-primary/10 bg-surface-container-low shrink-0">
+            <button id="ats-tab-setup" onclick="switchAtsTab('setup')"
+                    class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary border-b-2 border-primary transition-colors">
+                <span class="material-symbols-outlined text-[18px]">tune</span> Setup
+            </button>
+            <button id="ats-tab-results" onclick="switchAtsTab('results')"
+                    class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary/40 border-b-2 border-transparent transition-colors">
+                <span class="material-symbols-outlined text-[18px]">analytics</span> Results
+            </button>
+        </div>
+
         <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden pb-20 lg:pb-0">
 
             {{-- ════════════════ LEFT PANEL — INPUTS ════════════════ --}}
-            <aside class="w-full lg:w-[42%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
+            <aside id="ats-panel-setup" class="w-full lg:w-[42%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
                 <div class="p-4 lg:p-6 lg:overflow-y-auto custom-scrollbar space-y-5 lg:h-full">
 
                     {{-- Select CV --}}
@@ -87,7 +99,7 @@
             </aside>
 
             {{-- ════════════════ RIGHT PANEL — RESULTS ════════════════ --}}
-            <main class="w-full lg:w-[58%] lg:h-full bg-primary/[0.03] p-4 lg:p-8 lg:overflow-y-auto custom-scrollbar">
+            <main id="ats-panel-results" class="w-full lg:w-[58%] lg:h-full bg-primary/[0.03] p-4 lg:p-8 lg:overflow-y-auto custom-scrollbar hidden lg:block">
 
                 {{-- Empty state --}}
                 <div id="ats-empty-state" class="h-full flex flex-col items-center justify-center text-center py-20 lg:py-0">
@@ -411,6 +423,8 @@
 
         // Scale after the container is visible
         requestAnimationFrame(scaleAtsPreviewIframe);
+        // On mobile, switch to results panel so user sees the preview
+        switchAtsTab('results');
     }
 
     const cvSelector = document.getElementById('cv-selector');
@@ -434,7 +448,36 @@
         renderPreviews();
     }
 
-    window.addEventListener('resize', scaleAtsPreviewIframe);
+    window.addEventListener('resize', function() {
+        scaleAtsPreviewIframe();
+        if (window.innerWidth >= 1024) {
+            const sp = document.getElementById('ats-panel-setup');
+            const rp = document.getElementById('ats-panel-results');
+            if (sp) { sp.classList.remove('hidden'); }
+            if (rp) { rp.classList.remove('hidden'); }
+        }
+    });
+
+    function switchAtsTab(tab) {
+        if (window.innerWidth >= 1024) return;
+        const setupPanel   = document.getElementById('ats-panel-setup');
+        const resultsPanel = document.getElementById('ats-panel-results');
+        const setupBtn     = document.getElementById('ats-tab-setup');
+        const resultsBtn   = document.getElementById('ats-tab-results');
+
+        setupPanel.classList.toggle('hidden', tab !== 'setup');
+        resultsPanel.classList.toggle('hidden', tab !== 'results');
+
+        [setupBtn, resultsBtn].forEach(btn => {
+            const active = btn.id === `ats-tab-${tab}`;
+            btn.classList.toggle('text-primary',      active);
+            btn.classList.toggle('border-primary',    active);
+            btn.classList.toggle('text-primary/40',   !active);
+            btn.classList.toggle('border-transparent', !active);
+        });
+
+        if (tab === 'results') scaleAtsPreviewIframe();
+    }
 
 
     function buildScoreCircle(score) {
@@ -480,6 +523,8 @@
         if (previewPanel) previewPanel.style.display = 'none';
         const resultsEl = document.getElementById('ats-results');
         resultsEl.classList.remove('hidden');
+        // On mobile, auto-switch to results tab
+        switchAtsTab('results');
 
         // Score circle
         const scoreContainer = document.getElementById('score-circle-container');

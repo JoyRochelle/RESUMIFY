@@ -3,13 +3,13 @@
 @section('title', 'Pricing Plans - Resumify')
 
 @section('content')
-    <main class="flex-1 overflow-y-auto custom-scrollbar bg-primary/5">
+    <main class="flex-1 overflow-y-auto custom-scrollbar bg-primary/5 pb-20 md:pb-0">
 
-        <div class="max-w-6xl mx-auto px-6 md:px-12 py-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-16">
 
             {{-- Hero Section --}}
-            <section class="text-center mb-20">
-                <h1 class="font-headline text-5xl md:text-6xl text-primary mb-6 tracking-tight">Choose Your Success Plan ✨
+            <section class="text-center mb-10 md:mb-20">
+                <h1 class="font-headline text-3xl sm:text-4xl md:text-6xl text-primary mb-6 tracking-tight">Choose Your Success Plan ✨
                 </h1>
                 <p class="font-body text-primary/70 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
                     Elevate your career narrative with artificial intelligence. Let every line of your experience speak with
@@ -18,7 +18,7 @@
             </section>
 
             {{-- Pricing Cards --}}
-            <section class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-24 max-w-5xl mx-auto" x-data="paymentGateway()">
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-12 md:mb-24 max-w-5xl mx-auto" x-data="paymentGateway()">
 
                 <x-user.pricing-card plan="Starter" price="Rp 0" period="forever" :features="['1 Active Resume', 'Standard Templates']" :disabledFeatures="['No AI Enhancement']"
                     :isCurrentPlan="true" />
