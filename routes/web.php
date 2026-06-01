@@ -4,12 +4,19 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\ResumeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminLogController;
+use App\Http\Controllers\Admin\AdminMonitorController;
+use App\Http\Controllers\Admin\AdminReportController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\SupportTicketController;
 use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\ResumeExportController;
 use App\Http\Controllers\AtsController;
 use App\Http\Controllers\ManuscriptAtsController;
 use App\Http\Controllers\AiResumeController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\HelpController;
 
 // Public Routes
 Route::get('/', function () { return view('landing_page.welcome'); })->name('home');
@@ -88,9 +95,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('user.settings');
         })->name('user.settings');
 
-        Route::get('/help', function () {
-            return view('user.help');
-        })->name('user.help');
+        Route::get('/help', [HelpController::class, 'index'])->name('user.help');
+        Route::post('/help/contact', [HelpController::class, 'contact'])->name('help.contact');
+        Route::get('/help/tickets', [HelpController::class, 'tickets'])->name('help.tickets');
+        Route::get('/help/tickets/{ticket}', [HelpController::class, 'showTicket'])->name('help.tickets.show');
 
         Route::get('/upgrade-quota', function () {
             return view('user.upgrade-quota');
@@ -139,26 +147,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard'); 
-        Route::get('/users', function () {
-            return view('admin.users');
-        })->name('users');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/users',                   [AdminUserController::class, 'index'])->name('users');
+        Route::get('/users/{user}',            [AdminUserController::class, 'show'])->name('users.show');
+        Route::patch('/users/{user}/plan',     [AdminUserController::class, 'overridePlan'])->name('users.plan');
+        Route::patch('/users/{user}/credits',  [AdminUserController::class, 'adjustCredits'])->name('users.credits');
+        Route::patch('/users/{user}/suspend',  [AdminUserController::class, 'toggleSuspend'])->name('users.suspend');
+        Route::delete('/users/{user}',         [AdminUserController::class, 'destroy'])->name('users.destroy');
         
-        Route::get('/support', function () {
-            return view('admin.support');
-        })->name('support');
+        Route::get('/support',                       [SupportTicketController::class, 'index'])->name('support');
+        Route::get('/support/{ticket}',              [SupportTicketController::class, 'show'])->name('support.show');
+        Route::post('/support/{ticket}/reply',       [SupportTicketController::class, 'reply'])->name('support.reply');
+        Route::patch('/support/{ticket}/assign',     [SupportTicketController::class, 'assign'])->name('support.assign');
+        Route::patch('/support/{ticket}/status',     [SupportTicketController::class, 'updateStatus'])->name('support.status');
 
         // Template Library CRUD
         Route::resource('templates', TemplateController::class);
         Route::patch('templates/{template}/toggle', [TemplateController::class, 'toggle'])->name('templates.toggle');
         Route::get('templates/{template}/preview', [TemplateController::class, 'preview'])->name('templates.preview');
         
-        Route::get('/logs', function () {
-            return view('admin.logs');
-        })->name('logs');
-        
+        Route::get('/logs',                  [AdminLogController::class, 'index'])->name('logs');
+        Route::get('/logs/export/ai',        [AdminLogController::class, 'exportAiCsv'])->name('logs.export.ai');
+        Route::get('/logs/export/finance',   [AdminLogController::class, 'exportFinanceCsv'])->name('logs.export.finance');
+
+        Route::get('/monitor', [AdminMonitorController::class, 'index'])->name('monitor');
+
+        Route::get('/reports',             [AdminReportController::class, 'index'])->name('reports');
+        Route::get('/reports/export/pdf',  [AdminReportController::class, 'exportPdf'])->name('reports.export.pdf');
+        Route::get('/reports/export/csv',  [AdminReportController::class, 'exportCsv'])->name('reports.export.csv');
+
         Route::get('/settings', function () {
             return view('admin.settings');
         })->name('settings');

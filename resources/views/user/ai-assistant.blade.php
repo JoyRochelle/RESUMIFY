@@ -74,7 +74,7 @@
                     <button id="analyze-btn" type="button"
                             class="w-full py-4 rounded-xl font-bold text-sm tracking-wide shadow-lg bg-primary text-tertiary hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3 group">
                         <span id="analyze-btn-label">Analyze Match</span>
-                        <span id="analyze-spinner" class="hidden material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+                        <span id="analyze-spinner" style="display:none" class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
                         <span id="analyze-icon" class="material-symbols-outlined text-tertiary/80 group-hover:rotate-12 transition-transform icon-filled text-[20px]">auto_awesome</span>
                     </button>
 
@@ -91,13 +91,29 @@
 
                 {{-- Empty state --}}
                 <div id="ats-empty-state" class="h-full flex flex-col items-center justify-center text-center py-20 lg:py-0">
-                    <div class="w-24 h-24 rounded-full bg-secondary/10 flex items-center justify-center mb-6 animate-pulse-slow">
+                    <div class="w-24 h-24 rounded-full bg-secondary/10 flex items-center justify-center mb-6">
                         <span class="material-symbols-outlined text-secondary text-4xl icon-filled">analytics</span>
                     </div>
                     <h3 class="font-headline text-2xl text-primary mb-2">Select & Analyze</h3>
                     <p class="text-primary/50 text-sm max-w-xs leading-relaxed">
                         Select a resume on the left, then click <strong class="text-primary/70">Analyze Match</strong> to see your ATS score and actionable recommendations.
                     </p>
+                </div>
+
+                {{-- Resume preview (shown when a resume is selected, before analysis) --}}
+                <div id="ats-resume-preview" style="display:none" class="flex flex-col gap-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-primary flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-primary/60 text-[18px]">description</span>
+                            <span id="ats-preview-title">Resume Preview</span>
+                        </h3>
+                        <span class="text-[10px] font-label text-primary/40 uppercase tracking-widest">Click Analyze Match to score</span>
+                    </div>
+                    <div id="ats-preview-container" class="relative w-full bg-white rounded-xl border border-primary/10 shadow-sm overflow-hidden" style="aspect-ratio: 210/297;">
+                        <iframe id="ats-preview-iframe"
+                                style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0; pointer-events: none;"
+                                loading="lazy"></iframe>
+                    </div>
                 </div>
 
                 {{-- Results (hidden until analysis) --}}
@@ -232,11 +248,6 @@
             to   { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in-up { animation: fadeInUp 0.45s ease both; }
-        @keyframes pulse-slow {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0.5; }
-        }
-        .animate-pulse-slow { animation: pulse-slow 2.5s ease-in-out infinite; }
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -369,6 +380,39 @@
         previewBox.innerHTML = html;
     }
 
+    function scaleAtsPreviewIframe() {
+        const container = document.getElementById('ats-preview-container');
+        const iframe    = document.getElementById('ats-preview-iframe');
+        if (!container || !iframe) return;
+        const scale = container.offsetWidth / 794;
+        iframe.style.transform = `scale(${scale})`;
+    }
+
+    function showResumePreview(cvId, title) {
+        const previewPanel  = document.getElementById('ats-resume-preview');
+        const emptyState    = document.getElementById('ats-empty-state');
+        const resultsPanel  = document.getElementById('ats-results');
+        const iframe        = document.getElementById('ats-preview-iframe');
+        const previewTitle  = document.getElementById('ats-preview-title');
+
+        if (!cvId) {
+            previewPanel.style.display = 'none';
+            emptyState.style.display   = '';
+            return;
+        }
+
+        iframe.src = `/resumes/${cvId}/preview`;
+        if (previewTitle) previewTitle.textContent = title || 'Resume Preview';
+
+        emptyState.style.display   = 'none';
+        resultsPanel.classList.add('hidden');
+        previewPanel.style.display = 'flex';
+        previewPanel.style.flexDirection = 'column';
+
+        // Scale after the container is visible
+        requestAnimationFrame(scaleAtsPreviewIframe);
+    }
+
     const cvSelector = document.getElementById('cv-selector');
     if (cvSelector) {
         cvSelector.addEventListener('change', function() {
@@ -376,17 +420,21 @@
             if (!this.value) {
                 document.getElementById('resume-input').value = '';
                 document.getElementById('jd-input').value = '';
+                showResumePreview(null);
                 return;
             }
             const selectedOption = this.options[this.selectedIndex];
             const data = parseCvSections(selectedOption);
             document.getElementById('resume-input').value = data.text;
             document.getElementById('jd-input').value = data.jd;
+            showResumePreview(this.value, selectedOption.text.trim());
         });
-        
+
         // Initial render on page load
         renderPreviews();
     }
+
+    window.addEventListener('resize', scaleAtsPreviewIframe);
 
 
     function buildScoreCircle(score) {
@@ -426,8 +474,10 @@
     }
 
     function renderResults(data) {
-        // Show results panel
+        // Show results panel, hide empty state and resume preview
         document.getElementById('ats-empty-state').classList.add('hidden');
+        const previewPanel = document.getElementById('ats-resume-preview');
+        if (previewPanel) previewPanel.style.display = 'none';
         const resultsEl = document.getElementById('ats-results');
         resultsEl.classList.remove('hidden');
 
@@ -615,10 +665,10 @@
         const spinner = document.getElementById('analyze-spinner');
         const icon    = document.getElementById('analyze-icon');
 
-        btn.disabled       = loading;
-        label.textContent  = loading ? 'Analyzing…' : 'Analyze Match';
-        spinner.classList.toggle('hidden', !loading);
-        icon.classList.toggle('hidden', loading);
+        btn.disabled          = loading;
+        label.textContent     = loading ? 'Analyzing…' : 'Analyze Match';
+        spinner.style.display = loading ? 'inline-block' : 'none';
+        icon.style.display    = loading ? 'none' : 'inline-block';
     }
 
     function showError(msg) {

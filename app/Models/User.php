@@ -6,6 +6,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Subscription;
+use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -36,6 +38,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role',
+        'is_suspended',
         'avatar_url',
         'ai_quota_used',
         'ai_quota_reset_at',
@@ -61,6 +64,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at'  => 'datetime',
             'ai_quota_reset_at'  => 'datetime',
             'password'           => 'hashed',
+            'is_suspended'       => 'boolean',
         ];
     }
 
@@ -158,6 +162,26 @@ class User extends Authenticatable implements MustVerifyEmail
     public function aiUsageLogs(): HasMany
     {
         return $this->hasMany(AiUsageLog::class);
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function supportTickets(): HasMany
+    {
+        return $this->hasMany(SupportTicket::class);
+    }
+
+    public function adminLogs(): HasMany
+    {
+        return $this->hasMany(AdminLog::class, 'admin_id');
     }
 
 }

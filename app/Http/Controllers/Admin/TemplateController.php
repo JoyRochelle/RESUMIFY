@@ -11,10 +11,28 @@ use Illuminate\Support\Facades\Storage;
 
 class TemplateController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $templates = CvTemplate::orderBy('sort_order')->paginate(10);
-        return view('admin.templates.index', compact('templates'));
+        $search   = $request->input('search');
+        $category = $request->input('category');
+        $status   = $request->input('status');
+
+        $templates = CvTemplate::query()
+            ->when($search, fn($q) => $q->where('name', 'like', "%{$search}%"))
+            ->when($category, fn($q) => $q->where('category', $category))
+            ->when($status === 'active',   fn($q) => $q->where('is_active', true))
+            ->when($status === 'inactive', fn($q) => $q->where('is_active', false))
+            ->orderBy('sort_order')
+            ->paginate(10)
+            ->withQueryString();
+
+        $activeCount   = CvTemplate::where('is_active', true)->count();
+        $inactiveCount = CvTemplate::where('is_active', false)->count();
+        $premiumCount  = CvTemplate::where('is_premium', true)->count();
+
+        return view('admin.templates.index', compact(
+            'templates', 'activeCount', 'inactiveCount', 'premiumCount', 'search', 'category', 'status'
+        ));
     }
 
     public function create()
