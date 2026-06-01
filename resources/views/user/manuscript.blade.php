@@ -880,10 +880,6 @@
 
         function triggerAutoSave(form) {
             clearTimeout(saveTimeout);
-            // Run client-side validation
-            if (!validateFormBeforeSave(form)) {
-                return; // Do not proceed to save if form validation fails
-            }
             const iframe = document.getElementById('resume-preview-iframe');
             if (iframe) iframe.style.opacity = '0.7';
             showToast('Saving…', 'saving');
@@ -943,11 +939,14 @@
                 if (response.ok) {
                     const result = await response.json();
                     const iframe = document.getElementById('resume-preview-iframe');
-                    if (result.success && result.html) {
-                        if (iframe && iframe.contentDocument) {
-                            const parser = new DOMParser();
-                            const newDoc = parser.parseFromString(result.html, 'text/html');
-                            iframe.contentDocument.body.innerHTML = newDoc.body.innerHTML;
+                    if (result.success && result.html && iframe) {
+                        try {
+                            iframe.contentDocument.open();
+                            iframe.contentDocument.write(result.html);
+                            iframe.contentDocument.close();
+                        } catch (e) {
+                            // fallback: full src reload if contentDocument is inaccessible
+                            iframe.src = `/resumes/${cvId}/preview?t=${Date.now()}`;
                         }
                     }
                     if (iframe) iframe.style.opacity = '1';

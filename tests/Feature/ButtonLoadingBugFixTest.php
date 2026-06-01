@@ -85,9 +85,9 @@ class ButtonLoadingBugFixTest extends TestCase
             ->get(route('user.ai-assistant'));
 
         $response->assertOk();
-        // The analyze spinner must have class="hidden" so it doesn't show on load
+        // Spinner uses inline style="display:none" to beat Material Symbols CSS specificity
         $response->assertSee('analyze-spinner', false);
-        $response->assertSee('"hidden material-symbols-outlined animate-spin', false);
+        $response->assertSee('style="display:none"', false);
     }
 
     // =========================================================
