@@ -5,11 +5,11 @@
 @section('content')
     <main class="flex-1 overflow-y-auto custom-scrollbar bg-primary/5 pb-20 md:pb-0">
 
-        <div class="max-w-4xl mx-auto px-6 md:px-12 py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-16">
 
             {{-- Hero --}}
-            <section class="text-center mb-16">
-                <h2 class="font-headline text-4xl md:text-5xl text-primary mb-4 tracking-tight">Help Center</h2>
+            <section class="text-center mb-10 md:mb-16">
+                <h2 class="font-headline text-3xl md:text-5xl text-primary mb-4 tracking-tight">Help Center</h2>
                 <p class="font-body text-primary/60 text-lg max-w-2xl mx-auto leading-relaxed">
                     Find answers to common questions or reach out to our support team.
                 </p>

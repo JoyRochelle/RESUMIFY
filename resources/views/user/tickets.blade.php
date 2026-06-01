@@ -5,7 +5,7 @@
 @section('content')
     <main class="flex-1 overflow-y-auto custom-scrollbar bg-primary/5 pb-20 md:pb-0">
 
-        <div class="max-w-3xl mx-auto px-6 md:px-12 py-16">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-16">
 
             {{-- Header --}}
             <div class="flex items-center justify-between mb-8">

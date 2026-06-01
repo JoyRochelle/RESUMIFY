@@ -14,7 +14,7 @@
 
         <x-auth.input name="email" label="EMAIL" type="email" placeholder="name@email.com" required />
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <x-auth.input name="password" label="PASSWORD" type="password" placeholder="••••••••" required />
             <x-auth.input name="password_confirmation" label="CONFIRM" type="password" placeholder="••••••••" required />
         </div>

@@ -3,10 +3,10 @@
 @section('title', 'Resumify - Dashboard')
 
 @section('content')
-    <main class="flex-1 p-8 md:p-12 max-w-7xl mx-auto w-full">
-        <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+    <main class="flex-1 p-4 sm:p-6 md:p-12 max-w-7xl mx-auto w-full pb-24 md:pb-12">
+        <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 md:mb-16">
             <div>
-                <h1 class="text-5xl md:text-6xl font-headline text-primary tracking-tight leading-tight mb-4">Welcome, <br/>{{ auth()->user()->name }}</h1>
+                <h1 class="text-3xl sm:text-4xl md:text-6xl font-headline text-primary tracking-tight leading-tight mb-4">Welcome, <br/>{{ auth()->user()->name }}</h1>
                 <div class="flex flex-wrap items-center gap-4">
                     <span class="inline-flex items-center px-4 py-1.5 rounded-full bg-secondary text-tertiary text-sm font-label font-semibold">
                         {{ auth()->user()->isPremium() ? 'Premium Member' : 'Basic Member' }}
@@ -38,7 +38,7 @@
                 />
                 @endforeach
 
-                <button type="button" onclick="openCreateModal()" class="w-full h-full group relative bg-surface-container-low/50 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/50 hover:bg-surface-container-low transition-all duration-500 overflow-hidden flex flex-col items-center justify-center min-h-[400px] cursor-pointer">
+                <button type="button" onclick="openCreateModal()" class="w-full h-full group relative bg-surface-container-low/50 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/50 hover:bg-surface-container-low transition-all duration-500 overflow-hidden flex flex-col items-center justify-center min-h-[200px] sm:min-h-[400px] cursor-pointer">
                     <div class="flex flex-col items-center text-center p-8">
                         <div class="w-16 h-16 rounded-full bg-tertiary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-sm">
                             <span class="material-symbols-outlined text-primary text-3xl" data-icon="add">add</span>
@@ -65,7 +65,7 @@
 
     <!-- Template Selection Modal for New Resumes -->
     <div id="create-modal" class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
-        <div id="create-modal-content" class="bg-tertiary w-full max-w-5xl h-[85vh] rounded-2xl shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
+        <div id="create-modal-content" class="bg-tertiary w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 class="font-headline text-2xl font-bold text-primary flex items-center gap-3">
                     <span class="material-symbols-outlined text-secondary">layers</span> Choose Your Starting Point
