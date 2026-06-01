@@ -109,6 +109,42 @@
 
         <!-- AI Usage Tab -->
         <div x-show="tab === 'ai'" x-cloak>
+
+            {{-- Mobile card layout --}}
+            <div class="md:hidden divide-y divide-primary/5">
+                @forelse($aiLogs as $log)
+                @php
+                    $actionColors = [
+                        'ats_analyze'       => 'bg-primary/10 text-primary',
+                        'bullet_optimize'   => 'bg-secondary/10 text-secondary',
+                        'generate_versions' => 'bg-amber-100 text-amber-700',
+                        'manuscript_ats'    => 'bg-blue-100 text-blue-600',
+                    ];
+                    $colorClass = $actionColors[$log->action_type] ?? 'bg-primary/5 text-primary/60';
+                @endphp
+                <div class="p-4 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] text-primary/40 font-label">{{ $log->created_at?->format('d M Y, H:i') }}</span>
+                        <span class="font-headline font-bold text-primary text-sm">${{ number_format($log->cost_usd, 4) }}</span>
+                    </div>
+                    <p class="text-sm font-bold text-primary">{{ $log->user?->name ?? '—' }}</p>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $colorClass }}">
+                            {{ str_replace('_', ' ', $log->action_type) }}
+                        </span>
+                        <span class="text-xs text-primary/40">{{ number_format($log->tokens_used) }} tokens</span>
+                    </div>
+                </div>
+                @empty
+                <div class="py-16 text-center">
+                    <span class="material-symbols-outlined text-primary/20 text-[48px] block mb-2">auto_awesome</span>
+                    <p class="text-sm font-label text-primary/40">No AI usage logs found</p>
+                </div>
+                @endforelse
+            </div>
+
+            {{-- Desktop table --}}
+            <div class="hidden md:block overflow-x-auto">
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead>
@@ -162,6 +198,7 @@
                     </tbody>
                 </table>
             </div>
+            </div>{{-- end desktop table --}}
             @if($aiLogs->hasPages())
                 <div class="px-6 py-4 border-t border-primary/5">
                     {{ $aiLogs->links() }}
@@ -171,6 +208,39 @@
 
         <!-- Finance Tab -->
         <div x-show="tab === 'finance'" x-cloak>
+
+            {{-- Mobile card layout --}}
+            <div class="md:hidden divide-y divide-primary/5">
+                @forelse($transactions as $tx)
+                @php
+                    $statusMap = [
+                        'success' => 'bg-secondary/10 text-secondary',
+                        'pending' => 'bg-amber-100 text-amber-600',
+                        'failed'  => 'bg-red-100 text-red-500',
+                        'expired' => 'bg-primary/10 text-primary/40',
+                    ];
+                @endphp
+                <div class="p-4 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="font-headline font-bold text-primary">Rp {{ number_format($tx->amount, 0, ',', '.') }}</span>
+                        <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $statusMap[$tx->status] ?? 'bg-primary/5 text-primary/50' }}">
+                            {{ $tx->status }}
+                        </span>
+                    </div>
+                    <p class="text-sm font-bold text-primary">{{ $tx->user?->name ?? '—' }}</p>
+                    <p class="text-xs text-primary/40">{{ $tx->user?->email ?? '—' }}</p>
+                    <p class="text-[10px] text-primary/40">{{ $tx->created_at?->format('d M Y, H:i') }}</p>
+                </div>
+                @empty
+                <div class="py-16 text-center">
+                    <span class="material-symbols-outlined text-primary/20 text-[48px] block mb-2">payments</span>
+                    <p class="text-sm font-label text-primary/40">No transactions found</p>
+                </div>
+                @endforelse
+            </div>
+
+            {{-- Desktop table --}}
+            <div class="hidden md:block overflow-x-auto">
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead>
@@ -227,6 +297,7 @@
                     </tbody>
                 </table>
             </div>
+            </div>{{-- end desktop table --}}
             @if($transactions->hasPages())
                 <div class="px-6 py-4 border-t border-primary/5">
                     {{ $transactions->links() }}

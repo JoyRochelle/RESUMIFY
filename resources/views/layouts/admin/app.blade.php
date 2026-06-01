@@ -18,11 +18,15 @@
 
     <div class="flex-1 flex flex-col min-h-screen overflow-hidden bg-surface">
         <!-- Top Header -->
-        <header class="h-20 flex items-center justify-between px-10 border-b border-primary/10 bg-surface/80 backdrop-blur-md sticky top-0 z-10">
-            <!-- Search -->
-            <div class="flex items-center text-primary/40 flex-1">
+        <header class="h-16 md:h-20 flex items-center justify-between px-4 md:px-10 border-b border-primary/10 bg-surface/80 backdrop-blur-md sticky top-0 z-10">
+            <!-- Search (hidden on mobile to save space) -->
+            <div class="hidden md:flex items-center text-primary/40 flex-1">
                 <span class="material-symbols-outlined text-[20px] mr-2">search</span>
                 <input type="text" placeholder="Search analytics or users..." class="bg-transparent border-none focus:outline-none text-sm font-label w-[300px] text-primary placeholder:text-primary/40">
+            </div>
+            <!-- Mobile: just show brand name -->
+            <div class="md:hidden flex items-center gap-2">
+                <span class="text-base font-headline font-bold text-primary">Resumify Admin</span>
             </div>
 
             <!-- Right Actions -->
@@ -51,10 +55,12 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto custom-scrollbar p-10">
+        <main class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-10 pb-24 md:pb-10">
             @yield('content')
         </main>
     </div>
+
+    @include('layouts.admin.mobiletabbar')
 
     @livewireScripts
     @stack('scripts')

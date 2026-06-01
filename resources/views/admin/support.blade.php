@@ -64,6 +64,35 @@
 
     <!-- Ticket Table -->
     <div class="bg-white rounded-3xl shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5 overflow-hidden">
+
+        {{-- Mobile card layout --}}
+        <div class="md:hidden divide-y divide-primary/5">
+            @forelse($tickets as $ticket)
+            @php
+                $badgeMap = ['open' => 'bg-red-100 text-red-600', 'pending' => 'bg-amber-100 text-amber-600', 'closed' => 'bg-primary/10 text-primary/50'];
+            @endphp
+            <a href="{{ route('admin.support.show', $ticket) }}"
+               class="block p-4 hover:bg-surface/40 transition-colors">
+                <div class="flex items-start justify-between gap-2 mb-1">
+                    <p class="text-sm font-label font-bold text-primary truncate flex-1">{{ $ticket->subject }}</p>
+                    <span class="inline-block shrink-0 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $badgeMap[$ticket->status] ?? '' }}">
+                        {{ $ticket->status }}
+                    </span>
+                </div>
+                <p class="text-xs text-primary/50 font-label">
+                    {{ $ticket->user?->name ?? '—' }} &middot; {{ $ticket->created_at->diffForHumans() }}
+                </p>
+            </a>
+            @empty
+            <div class="py-16 text-center">
+                <span class="material-symbols-outlined text-primary/20 text-[48px] block mb-2">support_agent</span>
+                <p class="text-sm font-label text-primary/40">No tickets found</p>
+            </div>
+            @endforelse
+        </div>
+
+        {{-- Desktop table --}}
+        <div class="hidden md:block">
         <table class="w-full">
             <thead>
                 <tr class="border-b border-primary/5 bg-surface/50">
@@ -116,6 +145,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>{{-- end desktop table --}}
 
         @if($tickets->hasPages())
             <div class="px-6 py-4 border-t border-primary/5">{{ $tickets->links() }}</div>
