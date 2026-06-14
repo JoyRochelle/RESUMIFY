@@ -51,4 +51,9 @@ class Cv extends Model
         return $this->hasMany(CvSection::class)->orderBy('order');
     }
 
+    public function interviewSessions(): HasMany
+    {
+        return $this->hasMany(InterviewSession::class, 'resume_id');
+    }
+
 }
