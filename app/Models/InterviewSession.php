@@ -46,4 +46,9 @@ class InterviewSession extends Model
     {
         return $this->hasMany(InterviewMessage::class, 'session_id')->orderBy('created_at');
     }
+
+    public function feedback(): HasOne
+    {
+        return $this->hasOne(InterviewFeedback::class, 'session_id');
+    }
 }

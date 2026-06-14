@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Models\Cv;
+use App\Models\InterviewFeedback;
 use App\Models\InterviewMessage;
 use App\Models\InterviewSession;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -108,6 +110,37 @@ Panduan wawancara:
 PROMPT;
     }
 
+    /**
+     * Generate a structured STAR-method feedback report for a completed session.
+     * Calls Gemini in JSON mode and persists the result to interview_feedback.
+     *
+     * @throws \Exception on API failure or invalid JSON.
+     */
+    public function generateFeedback(InterviewSession $session): InterviewFeedback
+    {
+        $session->load(['messages', 'cv.sections']);
+
+        $transcript = $this->buildTranscript($session->messages);
+        $prompt     = $this->buildFeedbackPrompt($session->job_target, $transcript);
+
+        $data = $this->callGeminiJson($prompt, 45);
+
+        $score = max(0, min(100, (int) ($data['overall_score'] ?? 0)));
+        $badge = match (true) {
+            $score >= 75 => 'ready',
+            $score >= 50 => 'almost_ready',
+            default      => 'needs_practice',
+        };
+
+        return InterviewFeedback::create([
+            'session_id'       => $session->id,
+            'question_scores'  => $data['question_scores'] ?? [],
+            'missing_keywords' => $data['missing_keywords'] ?? [],
+            'overall_score'    => $score,
+            'readiness_badge'  => $badge,
+        ]);
+    }
+
     // ─── Private Helpers ─────────────────────────────────────────────────────
 
     /**
@@ -185,5 +218,104 @@ PROMPT;
         }
 
         return trim($text);
+    }
+
+    /**
+     * Build the single-turn feedback analysis prompt.
+     */
+    private function buildFeedbackPrompt(string $jobTarget, string $transcript): string
+    {
+        return <<<PROMPT
+Kamu adalah penilai wawancara kerja yang ahli. Analisis percakapan wawancara berikut dan berikan penilaian terstruktur.
+
+POSISI YANG DILAMAR: {$jobTarget}
+
+PERCAKAPAN WAWANCARA:
+{$transcript}
+
+Evaluasi jawaban kandidat menggunakan metode STAR dan kembalikan objek JSON dengan struktur berikut (HANYA JSON, tanpa teks lain):
+{
+  "overall_score": (integer 0-100, rata-rata performa keseluruhan),
+  "readiness_badge": ("ready" jika skor >= 75, "almost_ready" jika >= 50, "needs_practice" jika < 50),
+  "missing_keywords": (array string: skill/kata kunci penting yang tidak disebutkan kandidat),
+  "question_scores": [
+    {
+      "question": (string: pertanyaan yang diajukan HRD),
+      "answer_summary": (string: ringkasan 1-2 kalimat jawaban kandidat),
+      "star_scores": {
+        "situation": (integer 0-100),
+        "task": (integer 0-100),
+        "action": (integer 0-100),
+        "result": (integer 0-100)
+      },
+      "feedback": (string: umpan balik spesifik dan dapat ditindaklanjuti untuk jawaban ini)
+    }
+  ]
+}
+
+Hanya sertakan pertanyaan yang benar-benar dijawab oleh kandidat dalam question_scores.
+PROMPT;
+    }
+
+    /**
+     * Format session messages as a readable transcript string.
+     */
+    private function buildTranscript(Collection $messages): string
+    {
+        $lines = [];
+
+        foreach ($messages as $msg) {
+            $prefix  = $msg->role === 'assistant' ? 'Bu Sari (HRD)' : 'Kandidat';
+            $lines[] = "{$prefix}: {$msg->content}";
+        }
+
+        return implode("\n\n", $lines);
+    }
+
+    /**
+     * Single-turn Gemini call with JSON response mode.
+     *
+     * @throws \Exception on API failure, empty response, or invalid JSON.
+     */
+    private function callGeminiJson(string $prompt, int $timeout = 45): array
+    {
+        $apiKey = config('services.gemini.key');
+        if (!$apiKey) {
+            throw new \Exception('Gemini API key not configured.');
+        }
+
+        $response = Http::timeout($timeout)->connectTimeout(5)->post(
+            self::GEMINI_URL . "?key={$apiKey}",
+            [
+                'contents'         => [['parts' => [['text' => $prompt]]]],
+                'generationConfig' => [
+                    'response_mime_type' => 'application/json',
+                    'maxOutputTokens'    => 2000,
+                    'temperature'        => 0.3,
+                ],
+            ]
+        );
+
+        if ($response->failed()) {
+            Log::error('InterviewService feedback Gemini API failed', [
+                'status' => $response->status(),
+                'body'   => $response->body(),
+            ]);
+            throw new \Exception('Feedback AI service failed with status ' . $response->status());
+        }
+
+        $content = $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? null;
+        if (!$content) {
+            throw new \Exception('Empty feedback response from AI service');
+        }
+
+        $content = preg_replace('/^```json\s*|\s*```$/i', '', trim($content));
+        $decoded = json_decode($content, true);
+
+        if ($decoded === null) {
+            throw new \Exception('Invalid JSON feedback from AI service');
+        }
+
+        return $decoded;
     }
 }
