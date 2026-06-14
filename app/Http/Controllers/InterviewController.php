@@ -42,8 +42,7 @@ class InterviewController extends Controller
     }
 
     /**
-     * Mark the session as completed and redirect back to the start page.
-     * I6-03 will update this redirect to go to the feedback report.
+     * Mark the session as completed, generate AI feedback, and redirect to the report page.
      */
     public function endSession(Request $request, InterviewSession $session): RedirectResponse
     {
@@ -60,8 +59,54 @@ class InterviewController extends Controller
             'ended_at' => now(),
         ]);
 
-        return redirect()->route('interview.index')
-            ->with('success', 'Sesi wawancara selesai. Terima kasih!');
+        $user = auth()->user();
+
+        // Premium and admin users bypass quota — skip check for them
+        if (!$user->isPremium() && !$user->isAdmin() && !$user->hasQuotaRemaining(1)) {
+            return redirect()->route('interview.index')
+                ->with('success', 'Sesi selesai! Laporan feedback tidak tersedia karena kredit AI habis.');
+        }
+
+        $user->increment('ai_quota_used', 1);
+
+        try {
+            $this->interviewService->generateFeedback($session);
+
+            AiUsageLog::create([
+                'user_id'     => $user->id,
+                'action_type' => 'interview_feedback',
+                'resume_id'   => $session->resume_id,
+                'tokens_used' => 0,
+                'cost_usd'    => 0,
+            ]);
+
+            return redirect()->route('interview.feedback', $session)
+                ->with('success', 'Sesi selesai! Berikut laporan wawancara Anda.');
+        } catch (\Exception $e) {
+            $user->decrement('ai_quota_used', 1);
+            Log::error('InterviewController@endSession feedback failed', ['error' => $e->getMessage()]);
+
+            return redirect()->route('interview.index')
+                ->with('success', 'Sesi selesai. Maaf, laporan feedback gagal dibuat — silakan coba lagi nanti.');
+        }
+    }
+
+    /**
+     * Show the AI-generated feedback report for a completed session.
+     */
+    public function feedback(InterviewSession $session): View|RedirectResponse
+    {
+        if ($session->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $session->load('feedback');
+
+        if (!$session->feedback) {
+            return redirect()->route('interview.show', $session);
+        }
+
+        return view('user.interview.feedback', compact('session'));
     }
 
     /**
