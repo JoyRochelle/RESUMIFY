@@ -187,10 +187,13 @@
         const cvId      = cvSelect ? cvSelect.value : null;
         const jobTarget = jobTargetInput.value.trim();
 
-        if (!cvId) { showError('Please select a CV first.'); return; }
+        if (!cvId)      { showError('Please select a CV first.'); return; }
         if (!jobTarget) { showError('Please enter the position you\'re applying for.'); return; }
 
         setLoading(true);
+
+        const controller = new AbortController();
+        const timeoutId  = setTimeout(() => controller.abort(), 60000);
 
         try {
             const res = await fetch('{{ route("interview.start") }}', {
@@ -201,8 +204,10 @@
                     'Accept': 'application/json',
                 },
                 body: JSON.stringify({ cv_id: cvId, job_target: jobTarget }),
+                signal: controller.signal,
             });
 
+            clearTimeout(timeoutId);
             const data = await res.json();
 
             if (data.success) {
@@ -212,7 +217,10 @@
                 setLoading(false);
             }
         } catch (err) {
-            showError('A network error occurred. Please try again.');
+            clearTimeout(timeoutId);
+            showError(err.name === 'AbortError'
+                ? 'Request timed out. Please try again.'
+                : 'A network error occurred. Please try again.');
             setLoading(false);
         }
     }

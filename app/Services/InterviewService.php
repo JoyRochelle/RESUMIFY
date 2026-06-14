@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Log;
 
 class InterviewService
 {
-    private const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+    private const GEMINI_URL        = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+    private const GEMINI_STREAM_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent';
 
     /**
      * Create an interview session and ask Bu Sari's opening question.
@@ -270,6 +271,66 @@ PROMPT;
         }
 
         return implode("\n\n", $lines);
+    }
+
+    /**
+     * Streaming Gemini call via SSE. Calls $onToken for each text token as it arrives.
+     * Returns the fully assembled response string.
+     *
+     * Uses Http::withOptions(['stream' => true]) so Http::fake() intercepts in tests.
+     *
+     * @throws \Exception on API failure.
+     */
+    public function callGeminiStreaming(string $systemPrompt, array $messages, callable $onToken): string
+    {
+        $apiKey = config('services.gemini.key');
+        if (!$apiKey) {
+            throw new \Exception('Gemini API key not configured.');
+        }
+
+        $response = Http::withOptions(['stream' => true])
+            ->timeout(60)
+            ->connectTimeout(5)
+            ->post(
+                self::GEMINI_STREAM_URL . "?key={$apiKey}&alt=sse",
+                [
+                    'system_instruction' => ['parts' => [['text' => $systemPrompt]]],
+                    'contents'           => $messages,
+                    'generationConfig'   => ['maxOutputTokens' => 600, 'temperature' => 0.7],
+                ]
+            );
+
+        if ($response->failed()) {
+            throw new \Exception('AI streaming service failed with status ' . $response->status());
+        }
+
+        $body     = $response->toPsrResponse()->getBody();
+        $fullText = '';
+        $buffer   = '';
+
+        while (!$body->eof()) {
+            $chunk = $body->read(256);
+            if (!$chunk) break;
+            $buffer .= $chunk;
+
+            while (($pos = strpos($buffer, "\n")) !== false) {
+                $line   = rtrim(substr($buffer, 0, $pos));
+                $buffer = substr($buffer, $pos + 1);
+
+                if (str_starts_with($line, 'data: ')) {
+                    $json = substr($line, 6);
+                    if ($json === '[DONE]') break 2;
+                    $payload = json_decode($json, true);
+                    $token   = $payload['candidates'][0]['content']['parts'][0]['text'] ?? '';
+                    if ($token) {
+                        $fullText .= $token;
+                        $onToken($token);
+                    }
+                }
+            }
+        }
+
+        return $fullText;
     }
 
     /**

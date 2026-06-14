@@ -154,13 +154,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/sessions/{session}/feedback', [InterviewController::class, 'feedback'])->name('feedback');
             Route::post('/sessions/{session}/end', [InterviewController::class, 'endSession'])->name('end');
 
-            // API routes (I6-02)
+            // API routes (I6-02, I6-06)
             Route::post('/start', [InterviewController::class, 'start'])
                 ->middleware(['ai.quota:1', 'interview.trial'])
                 ->name('start');
             Route::post('/sessions/{session}/message', [InterviewController::class, 'message'])
                 ->middleware('ai.quota:1')
                 ->name('message');
+            Route::post('/sessions/{session}/stream', [InterviewController::class, 'stream'])
+                ->middleware('ai.quota:1')
+                ->name('stream');
         });
     });
 
