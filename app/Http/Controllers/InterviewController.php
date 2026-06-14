@@ -22,9 +22,12 @@ class InterviewController extends Controller
      */
     public function index(Request $request): View
     {
-        $cvs = auth()->user()->cvs()->with('sections')->latest()->get();
+        $user      = auth()->user();
+        $cvs       = $user->cvs()->with('sections')->latest()->get();
+        $trialUsed = !$user->isPremium() && !$user->isAdmin()
+                     && $user->interviewSessions()->exists();
 
-        return view('user.interview.index', compact('cvs'));
+        return view('user.interview.index', compact('cvs', 'trialUsed'));
     }
 
     /**

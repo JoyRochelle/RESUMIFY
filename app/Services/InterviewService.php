@@ -34,8 +34,8 @@ class InterviewService
 
         $systemPrompt = $this->buildSystemPrompt($cv, $jobTarget);
 
-        // Trigger Bu Sari to open — not stored, just the prompt seed
-        $seed = [['role' => 'user', 'parts' => [['text' => 'Silakan mulai sesi wawancara.']]]];
+        // Trigger Ms. Sarah to open — not stored, just the prompt seed
+        $seed = [['role' => 'user', 'parts' => [['text' => 'Please begin the interview session.']]]];
 
         $opening = $this->callGemini($systemPrompt, $seed);
 
@@ -64,7 +64,7 @@ class InterviewService
         $systemPrompt = $this->buildSystemPrompt($session->cv, $session->job_target);
 
         // Build full conversation history for Gemini (seed + all saved turns)
-        $contents = [['role' => 'user', 'parts' => [['text' => 'Silakan mulai sesi wawancara.']]]];
+        $contents = [['role' => 'user', 'parts' => [['text' => 'Please begin the interview session.']]]];
         foreach ($session->messages as $msg) {
             $contents[] = [
                 'role'  => $msg->role === 'assistant' ? 'model' : 'user',
@@ -84,7 +84,7 @@ class InterviewService
     }
 
     /**
-     * Build a CV-specific system prompt with the Bu Sari HRD persona.
+     * Build a CV-specific system prompt with the Ms. Sarah HRD persona.
      * At least 60% of generated questions should reference specific CV content.
      */
     public function buildSystemPrompt(Cv $cv, string $jobTarget): string
@@ -92,21 +92,21 @@ class InterviewService
         $resumeText = $this->flattenSections($cv);
 
         return <<<PROMPT
-Kamu adalah Bu Sari, seorang HRD berpengalaman di perusahaan profesional yang sedang mewawancarai kandidat.
-Kandidat melamar posisi: {$jobTarget}
+You are Ms. Sarah, an experienced HRD professional at a reputable company conducting a job interview.
+The candidate is applying for: {$jobTarget}
 
-Berikut adalah CV kandidat yang harus kamu gunakan sebagai dasar pertanyaan:
+Here is the candidate's CV, which you must use as the basis for your questions:
 
 {$resumeText}
 
-Panduan wawancara:
-- Ajukan pertanyaan yang LANGSUNG merujuk pada isi CV di atas (nama perusahaan, jabatan, proyek, tanggal, teknologi, atau pencapaian spesifik yang tercantum).
-- Minimal 60% pertanyaan harus mengandung referensi spesifik dari CV.
-- Jangan ajukan pertanyaan generik yang bisa ditujukan ke siapa saja.
-- Lakukan wawancara secara alami: 1–2 pertanyaan per giliran, tunggu jawaban sebelum melanjutkan.
-- Gunakan bahasa Indonesia profesional namun hangat. Campuran Bahasa Indonesia dan Bahasa Inggris diperbolehkan.
-- Eksplorasi topik STAR (Situation, Task, Action, Result) pada setiap jawaban kandidat.
-- Jangan beri skor atau evaluasi selama sesi berlangsung — simpan penilaian untuk akhir sesi.
+Interview guidelines:
+- Ask questions that DIRECTLY reference content in the CV above (company names, job titles, projects, dates, technologies, or specific achievements listed).
+- At least 60% of questions must contain specific references from the CV.
+- Do not ask generic questions that could be directed at anyone.
+- Conduct the interview naturally: 1-2 questions per turn, wait for answers before continuing.
+- Use professional yet warm English. Conversational but formal tone.
+- Explore STAR topics (Situation, Task, Action, Result) in each of the candidate's answers.
+- Do not score or evaluate during the session — save your assessment for the end.
 PROMPT;
     }
 
@@ -226,34 +226,34 @@ PROMPT;
     private function buildFeedbackPrompt(string $jobTarget, string $transcript): string
     {
         return <<<PROMPT
-Kamu adalah penilai wawancara kerja yang ahli. Analisis percakapan wawancara berikut dan berikan penilaian terstruktur.
+You are an expert interview assessor. Analyze the following mock interview conversation and provide structured feedback.
 
-POSISI YANG DILAMAR: {$jobTarget}
+POSITION APPLIED FOR: {$jobTarget}
 
-PERCAKAPAN WAWANCARA:
+INTERVIEW CONVERSATION:
 {$transcript}
 
-Evaluasi jawaban kandidat menggunakan metode STAR dan kembalikan objek JSON dengan struktur berikut (HANYA JSON, tanpa teks lain):
+Evaluate the candidate's answers using the STAR method and return a JSON object with the following structure (JSON ONLY, no other text):
 {
-  "overall_score": (integer 0-100, rata-rata performa keseluruhan),
-  "readiness_badge": ("ready" jika skor >= 75, "almost_ready" jika >= 50, "needs_practice" jika < 50),
-  "missing_keywords": (array string: skill/kata kunci penting yang tidak disebutkan kandidat),
+  "overall_score": (integer 0-100, average overall performance),
+  "readiness_badge": ("ready" if score >= 75, "almost_ready" if >= 50, "needs_practice" if < 50),
+  "missing_keywords": (array of strings: important skills/keywords the candidate failed to mention),
   "question_scores": [
     {
-      "question": (string: pertanyaan yang diajukan HRD),
-      "answer_summary": (string: ringkasan 1-2 kalimat jawaban kandidat),
+      "question": (string: the HRD's question),
+      "answer_summary": (string: 1-2 sentence summary of the candidate's answer),
       "star_scores": {
         "situation": (integer 0-100),
         "task": (integer 0-100),
         "action": (integer 0-100),
         "result": (integer 0-100)
       },
-      "feedback": (string: umpan balik spesifik dan dapat ditindaklanjuti untuk jawaban ini)
+      "feedback": (string: specific, actionable feedback for this answer)
     }
   ]
 }
 
-Hanya sertakan pertanyaan yang benar-benar dijawab oleh kandidat dalam question_scores.
+Only include questions that were actually answered by the candidate in question_scores.
 PROMPT;
     }
 
@@ -265,7 +265,7 @@ PROMPT;
         $lines = [];
 
         foreach ($messages as $msg) {
-            $prefix  = $msg->role === 'assistant' ? 'Bu Sari (HRD)' : 'Kandidat';
+            $prefix  = $msg->role === 'assistant' ? 'Ms. Sarah (HRD)' : 'Candidate';
             $lines[] = "{$prefix}: {$msg->content}";
         }
 

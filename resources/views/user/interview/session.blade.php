@@ -1,6 +1,6 @@
 @extends('layouts.user.app')
 
-@section('title', 'Resumify — Interview dengan Bu Sari')
+@section('title', 'Resumify — Interview with Ms. Sarah')
 
 @section('content')
 <div class="flex-1 flex flex-col min-w-0 overflow-hidden h-screen">
@@ -17,7 +17,7 @@
                 <span class="material-symbols-outlined text-secondary text-[16px]">smart_toy</span>
             </div>
             <div class="min-w-0">
-                <p class="font-semibold text-primary text-sm leading-tight">Bu Sari · HRD Interviewer</p>
+                <p class="font-semibold text-primary text-sm leading-tight">Ms. Sarah · HRD Interviewer</p>
                 <p class="text-primary/50 text-xs truncate">{{ $session->job_target }}</p>
             </div>
         </div>
@@ -27,11 +27,11 @@
                 class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-200
                        text-red-600 text-xs font-medium hover:bg-red-50 transition-all">
             <span class="material-symbols-outlined text-[15px]">stop_circle</span>
-            Akhiri Sesi
+            End Session
         </button>
         @else
         <span class="px-3 py-1.5 rounded-lg bg-primary/5 text-primary/40 text-xs font-medium">
-            Sesi Selesai
+            Session Ended
         </span>
         @endif
     </header>
@@ -40,7 +40,7 @@
     @if($session->status !== 'active')
     <div class="shrink-0 px-4 py-2.5 bg-primary/5 border-b border-primary/10
                 text-primary/60 text-sm text-center">
-        Sesi ini telah selesai pada {{ $session->ended_at?->format('d M Y, H:i') }}.
+        This session ended on {{ $session->ended_at?->format('d M Y, H:i') }}.
     </div>
     @endif
 
@@ -50,7 +50,7 @@
 
         @foreach($session->messages as $msg)
             @if($msg->role === 'assistant')
-                {{-- Bu Sari bubble (left) --}}
+                {{-- Ms. Sarah bubble (left) --}}
                 <div class="flex items-end gap-2 max-w-[85%] md:max-w-[70%]">
                     <div class="w-7 h-7 rounded-full bg-secondary/15 flex items-center justify-center shrink-0 mb-1">
                         <span class="material-symbols-outlined text-secondary text-[13px]">smart_toy</span>
@@ -91,7 +91,7 @@
     <div class="shrink-0 border-t border-primary/10 bg-surface px-4 md:px-6 py-3">
         <div class="flex items-end gap-3 max-w-3xl mx-auto">
             <textarea id="user-input" rows="1"
-                      placeholder="Ketik jawaban Anda… (Enter untuk kirim, Shift+Enter untuk baris baru)"
+                      placeholder="Type your answer… (Enter to send, Shift+Enter for new line)"
                       class="flex-1 resize-none rounded-xl border border-primary/20 bg-surface-container-low
                              px-4 py-2.5 text-sm text-primary placeholder:text-primary/30
                              focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary/50
@@ -123,25 +123,25 @@
                 <span class="material-symbols-outlined text-red-500 text-[20px]">stop_circle</span>
             </div>
             <div>
-                <p class="font-semibold text-primary text-sm">Akhiri Sesi?</p>
-                <p class="text-primary/50 text-xs">Sesi yang diakhiri tidak dapat dilanjutkan.</p>
+                <p class="font-semibold text-primary text-sm">End Session?</p>
+                <p class="text-primary/50 text-xs">Ended sessions cannot be resumed.</p>
             </div>
         </div>
         <p class="text-primary/70 text-sm mb-5">
-            Yakin ingin mengakhiri sesi wawancara ini sekarang?
+            Are you sure you want to end this interview session now?
         </p>
         <div class="flex gap-3">
             <button onclick="closeEndModal()"
                     class="flex-1 px-4 py-2.5 rounded-xl border border-primary/20 text-primary/70
                            text-sm font-medium hover:border-primary/40 transition">
-                Batal
+                Cancel
             </button>
             <form method="POST" action="{{ route('interview.end', $session) }}" class="flex-1">
                 @csrf
                 <button type="submit"
                         class="w-full px-4 py-2.5 rounded-xl bg-red-500 text-white
                                text-sm font-semibold hover:bg-red-600 active:scale-[.98] transition">
-                    Akhiri Sesi
+                    End Session
                 </button>
             </form>
         </div>
@@ -259,11 +259,11 @@
             if (data.success) {
                 appendBubble('assistant', data.message);
             } else {
-                appendBubble('assistant', 'Maaf, terjadi kesalahan. Coba kirim ulang.');
+                appendBubble('assistant', 'An error occurred. Please try again.');
             }
         } catch (err) {
             typing.classList.add('hidden');
-            appendBubble('assistant', 'Koneksi terputus. Periksa jaringan Anda dan coba lagi.');
+            appendBubble('assistant', 'Connection lost. Check your network and try again.');
         }
 
         setLoading(false);
