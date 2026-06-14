@@ -145,8 +145,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->middleware(['ai.quota:3', 'throttle:3,1'])
             ->name('resumes.ai.generateVersions');
 
-        // Mock Interview — CV-context AI (I6-02)
+        // Mock Interview (I6-01 UI + I6-02 API)
         Route::prefix('interview')->name('interview.')->group(function () {
+            // Page routes (I6-01)
+            Route::get('/', [InterviewController::class, 'index'])->name('index');
+            Route::get('/sessions/{session}', [InterviewController::class, 'show'])->name('show');
+            Route::post('/sessions/{session}/end', [InterviewController::class, 'endSession'])->name('end');
+
+            // API routes (I6-02)
             Route::post('/start', [InterviewController::class, 'start'])
                 ->middleware('ai.quota:1')
                 ->name('start');
