@@ -19,6 +19,12 @@ class InterviewServiceTest extends TestCase
 
     private const GEMINI_PATTERN = 'https://generativelanguage.googleapis.com/*';
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        config(['services.gemini.key' => 'test-api-key']);
+    }
+
     private function geminiResponse(string $text): array
     {
         return ['candidates' => [['content' => ['parts' => [['text' => $text]]]]]];
