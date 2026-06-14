@@ -147,8 +147,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Mock Interview (I6-01 UI + I6-02 API)
         Route::prefix('interview')->name('interview.')->group(function () {
-            // Page routes (I6-01, I6-03)
+            // Page routes (I6-01, I6-03, I6-04)
             Route::get('/', [InterviewController::class, 'index'])->name('index');
+            Route::get('/history', [InterviewController::class, 'history'])->name('history');
             Route::get('/sessions/{session}', [InterviewController::class, 'show'])->name('show');
             Route::get('/sessions/{session}/feedback', [InterviewController::class, 'feedback'])->name('feedback');
             Route::post('/sessions/{session}/end', [InterviewController::class, 'endSession'])->name('end');

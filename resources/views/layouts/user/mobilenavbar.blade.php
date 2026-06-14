@@ -14,6 +14,10 @@
         <span class="material-symbols-outlined {{ request()->routeIs('user.ai-assistant') ? 'icon-filled' : '' }}">analytics</span>
         <span class="text-[10px] font-label font-medium mt-1">ATS</span>
     </a>
+    <a href="{{ route('interview.history') }}" class="flex flex-col items-center {{ request()->routeIs('interview.*') ? 'text-primary' : 'text-primary/50 hover:text-primary' }} transition-colors">
+        <span class="material-symbols-outlined {{ request()->routeIs('interview.*') ? 'icon-filled' : '' }}">record_voice_over</span>
+        <span class="text-[10px] font-label font-medium mt-1">Interview</span>
+    </a>
     <a href="{{ route('user.settings') }}" class="flex flex-col items-center {{ request()->routeIs('user.settings') ? 'text-primary' : 'text-primary/50 hover:text-primary' }}">
         <span class="material-symbols-outlined {{ request()->routeIs('user.settings') ? 'icon-filled' : '' }}">settings</span>
         <span class="text-[10px] font-label font-medium mt-1">Account</span>
