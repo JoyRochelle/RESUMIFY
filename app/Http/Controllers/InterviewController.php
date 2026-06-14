@@ -113,6 +113,52 @@ class InterviewController extends Controller
     }
 
     /**
+     * List all interview sessions for the authenticated user.
+     */
+    public function history(Request $request): View
+    {
+        $user = auth()->user();
+        $cvs  = $user->cvs()->latest()->get();
+
+        $query = $user->interviewSessions()
+            ->with(['cv', 'feedback'])
+            ->leftJoin('interview_feedback as f', 'interview_sessions.id', '=', 'f.session_id')
+            ->select('interview_sessions.*')
+            ->when($request->filled('cv_id'), fn($q) => $q->where('resume_id', $request->cv_id));
+
+        $sort  = $request->get('sort', 'date');
+        $order = $request->get('order', 'desc') === 'asc' ? 'asc' : 'desc';
+
+        if ($sort === 'score') {
+            $query->orderByRaw('CASE WHEN f.overall_score IS NULL THEN 1 ELSE 0 END')
+                  ->orderBy('f.overall_score', $order);
+        } else {
+            $query->orderBy('interview_sessions.started_at', $order);
+        }
+
+        $sessions = $query->paginate(10)->withQueryString();
+
+        // Trend: score delta vs. the chronologically previous session with feedback
+        $trends    = [];
+        $prevScore = null;
+        $allWithFeedback = $user->interviewSessions()
+            ->whereHas('feedback')
+            ->with('feedback:session_id,overall_score')
+            ->orderBy('started_at')
+            ->get(['interview_sessions.id']);
+
+        foreach ($allWithFeedback as $s) {
+            $score = $s->feedback->overall_score;
+            if ($prevScore !== null) {
+                $trends[$s->id] = $score - $prevScore;
+            }
+            $prevScore = $score;
+        }
+
+        return view('user.interview.history', compact('sessions', 'cvs', 'trends', 'sort', 'order'));
+    }
+
+    /**
      * Start a new interview session and return Bu Sari's opening question.
      * Quota: 1 credit (handled by ai.quota middleware on the route).
      */
