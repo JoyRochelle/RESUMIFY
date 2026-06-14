@@ -17,6 +17,7 @@ use App\Http\Controllers\ManuscriptAtsController;
 use App\Http\Controllers\AiResumeController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\HelpController;
+use App\Http\Controllers\InterviewController;
 
 // Public Routes
 Route::get('/', function () { return view('landing_page.welcome'); })->name('home');
@@ -143,6 +144,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('resumes/{cv}/ai/generate-versions', [AiResumeController::class, 'generateVersions'])
             ->middleware(['ai.quota:3', 'throttle:3,1'])
             ->name('resumes.ai.generateVersions');
+
+        // Mock Interview — CV-context AI (I6-02)
+        Route::prefix('interview')->name('interview.')->group(function () {
+            Route::post('/start', [InterviewController::class, 'start'])
+                ->middleware('ai.quota:1')
+                ->name('start');
+            Route::post('/sessions/{session}/message', [InterviewController::class, 'message'])
+                ->middleware('ai.quota:1')
+                ->name('message');
+        });
     });
 
     // Admin Routes

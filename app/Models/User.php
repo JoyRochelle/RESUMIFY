@@ -184,4 +184,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(AdminLog::class, 'admin_id');
     }
 
+    public function interviewSessions(): HasMany
+    {
+        return $this->hasMany(InterviewSession::class);
+    }
+
 }
