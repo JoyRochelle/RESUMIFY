@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckSuspended;
+use App\Http\Middleware\InterviewTrialMiddleware;
 use App\Http\Middleware\QuotaMiddleware;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
@@ -15,9 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role'      => RoleMiddleware::class,
-            'ai.quota'  => QuotaMiddleware::class,
-            'suspended' => CheckSuspended::class,
+            'role'             => RoleMiddleware::class,
+            'ai.quota'         => QuotaMiddleware::class,
+            'suspended'        => CheckSuspended::class,
+            'interview.trial'  => InterviewTrialMiddleware::class,
         ]);
 
         $middleware->appendToGroup('web', CheckSuspended::class);

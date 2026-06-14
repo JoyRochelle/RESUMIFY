@@ -24,22 +24,47 @@
                         <span class="material-symbols-outlined text-secondary text-[20px]">smart_toy</span>
                     </div>
                     <div>
-                        <p class="font-semibold text-primary text-sm">Halo! Saya Bu Sari</p>
+                        <p class="font-semibold text-primary text-sm">Hello! I'm Ms. Sarah</p>
                         <p class="text-primary/60 text-sm mt-1">
-                            Saya akan mewawancarai Anda berdasarkan isi CV Anda yang sebenarnya —
-                            bukan pertanyaan generik. Pilih CV dan posisi yang ingin Anda latih.
+                            I'll interview you based on your actual CV content —
+                            not generic questions. Choose a CV and the position you'd like to practice.
                         </p>
                     </div>
                 </div>
             </div>
 
+            @if($trialUsed)
+            {{-- Upgrade wall --}}
+            <div class="bg-surface rounded-2xl border border-primary/10 p-8 text-center space-y-4">
+                <span class="material-symbols-outlined text-primary/30 text-[48px] block">lock</span>
+                <p class="font-semibold text-primary">Your Free Trial Has Been Used</p>
+                <p class="text-primary/60 text-sm leading-relaxed">
+                    You've used your 1 free interview session.<br>
+                    Upgrade to Premium for unlimited sessions.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                    <a href="{{ route('user.upgrade-quota') }}"
+                       class="px-5 py-2.5 rounded-xl bg-secondary text-white font-semibold text-sm
+                              hover:bg-secondary/90 active:scale-[.98] transition">
+                        Upgrade to Premium
+                    </a>
+                    @if($lastSession = auth()->user()->interviewSessions()->latest()->first())
+                    <a href="{{ route('interview.show', $lastSession) }}"
+                       class="px-5 py-2.5 rounded-xl border border-primary/20 text-primary/70
+                              font-medium text-sm hover:border-primary/40 transition">
+                        View Last Session
+                    </a>
+                    @endif
+                </div>
+            </div>
+            @else
             {{-- Form --}}
             <div class="bg-surface rounded-2xl border border-primary/10 p-6 space-y-5">
 
                 {{-- Quota bar --}}
                 @php $user = auth()->user(); @endphp
                 <div class="flex items-center justify-between text-xs text-primary/50 pb-1">
-                    <span>AI Credits tersisa</span>
+                    <span>AI Credits Remaining</span>
                     <div class="flex items-center gap-2">
                         <div class="w-24 h-1.5 bg-primary/10 rounded-full overflow-hidden">
                             <div class="h-full bg-secondary rounded-full transition-all"
@@ -54,12 +79,12 @@
                 {{-- Resume selector --}}
                 <div class="space-y-1.5">
                     <label for="cv-select" class="text-sm font-medium text-primary">
-                        Pilih CV
+                        Select CV
                     </label>
                     @if($cvs->isEmpty())
                         <p class="text-sm text-primary/50 py-2">
-                            Anda belum memiliki CV.
-                            <a href="{{ route('dashboard') }}" class="text-secondary underline">Buat CV dulu</a>.
+                            You don't have a CV yet.
+                            <a href="{{ route('dashboard') }}" class="text-secondary underline">Create a CV first</a>.
                         </p>
                     @else
                         <select id="cv-select"
@@ -82,14 +107,23 @@
                 {{-- Job target --}}
                 <div class="space-y-1.5">
                     <label for="job-target" class="text-sm font-medium text-primary">
-                        Posisi yang dilamar
+                        Position Applied For
                     </label>
                     <input id="job-target" type="text" maxlength="200"
-                           placeholder="cth. Backend Engineer, Product Manager…"
+                           placeholder="e.g. Backend Engineer, Product Manager…"
                            class="w-full px-4 py-2.5 rounded-xl border border-primary/20 bg-surface text-primary text-sm
                                   placeholder:text-primary/30 focus:outline-none focus:ring-2 focus:ring-secondary/30
                                   focus:border-secondary/50 transition" />
                 </div>
+
+                {{-- Trial info banner for basic users --}}
+                @if(!$user->isPremium() && !$user->isAdmin())
+                <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl
+                            bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs">
+                    <span class="material-symbols-outlined text-[16px] shrink-0">info</span>
+                    <span>You have <strong>1 free trial session</strong> as a Basic user.</span>
+                </div>
+                @endif
 
                 {{-- Error banner --}}
                 <div id="error-banner"
@@ -103,10 +137,12 @@
                                disabled:opacity-50 disabled:cursor-not-allowed">
                     <span id="start-icon" class="material-symbols-outlined text-[18px]">play_arrow</span>
                     <span class="material-symbols-outlined text-[18px] animate-spin hidden" id="start-spinner">progress_activity</span>
-                    <span id="start-label">Mulai Wawancara</span>
+                    <span id="start-label">Start Interview</span>
                 </button>
 
             </div>
+            @endif
+
         </div>
     </div>
 </div>
@@ -137,7 +173,7 @@
         startBtn.disabled = on;
         startIcon.classList.toggle('hidden', on);
         startSpinner.classList.toggle('hidden', !on);
-        startLabel.textContent = on ? 'Memulai…' : 'Mulai Wawancara';
+        startLabel.textContent = on ? 'Starting…' : 'Start Interview';
     }
 
     function showError(msg) {
@@ -151,8 +187,8 @@
         const cvId      = cvSelect ? cvSelect.value : null;
         const jobTarget = jobTargetInput.value.trim();
 
-        if (!cvId) { showError('Pilih CV terlebih dahulu.'); return; }
-        if (!jobTarget) { showError('Isi posisi yang dilamar.'); return; }
+        if (!cvId) { showError('Please select a CV first.'); return; }
+        if (!jobTarget) { showError('Please enter the position you\'re applying for.'); return; }
 
         setLoading(true);
 
@@ -172,11 +208,11 @@
             if (data.success) {
                 window.location.href = `/interview/sessions/${data.session_id}`;
             } else {
-                showError(data.message || 'Gagal memulai sesi. Coba lagi.');
+                showError(data.message || 'Failed to start session. Please try again.');
                 setLoading(false);
             }
         } catch (err) {
-            showError('Terjadi kesalahan jaringan. Coba lagi.');
+            showError('A network error occurred. Please try again.');
             setLoading(false);
         }
     }

@@ -1,6 +1,6 @@
 @extends('layouts.user.app')
 
-@section('title', 'Resumify — Laporan Wawancara')
+@section('title', 'Resumify — Interview Report')
 
 @section('content')
 @php
@@ -17,7 +17,7 @@
 <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
     <x-user.page-header
-        title="Laporan Wawancara"
+        title="Interview Report"
         backUrl="{{ route('interview.index') }}" />
 
     <div class="flex-1 overflow-y-auto px-4 py-6 md:px-8 custom-scrollbar">
@@ -30,7 +30,7 @@
                 <div class="min-w-0">
                     <p class="font-semibold text-sm {{ $badgeConfig['text'] }}">{{ $badgeConfig['label'] }}</p>
                     <p class="text-xs {{ $badgeConfig['text'] }} opacity-75 mt-0.5 truncate">
-                        Posisi: {{ $session->job_target }}
+                        Position: {{ $session->job_target }}
                     </p>
                 </div>
             </div>
@@ -39,14 +39,14 @@
             <div class="bg-surface rounded-2xl border border-primary/10 p-6 flex flex-col sm:flex-row items-center gap-6">
                 <x-user.score-circle :score="$feedback->overall_score" size="lg" />
                 <div class="text-center sm:text-left">
-                    <p class="font-semibold text-primary text-base">Skor Keseluruhan</p>
+                    <p class="font-semibold text-primary text-base">Overall Score</p>
                     <p class="text-primary/60 text-sm mt-1 leading-relaxed">
                         @if($feedback->overall_score >= 75)
-                            Performa wawancara Anda sangat baik. Terus pertahankan!
+                            Your interview performance was excellent. Keep it up!
                         @elseif($feedback->overall_score >= 50)
-                            Performa Anda cukup baik dengan beberapa area yang dapat ditingkatkan.
+                            Your performance was good with a few areas to improve.
                         @else
-                            Masih perlu banyak latihan. Perhatikan umpan balik di bawah ini.
+                            More practice needed. Review the feedback below carefully.
                         @endif
                     </p>
                     <p class="text-primary/40 text-xs mt-2">
@@ -60,7 +60,7 @@
             <div class="bg-surface rounded-2xl border border-primary/10 p-5">
                 <p class="font-semibold text-primary text-sm mb-3 flex items-center gap-2">
                     <span class="material-symbols-outlined text-[18px] text-red-400">label_off</span>
-                    Kata Kunci yang Terlewat
+                    Missing Keywords
                 </p>
                 <div class="flex flex-wrap gap-2">
                     @foreach($feedback->missing_keywords as $keyword)
@@ -73,7 +73,7 @@
             {{-- STAR Score Cards --}}
             @if(!empty($feedback->question_scores))
             <div class="space-y-4">
-                <p class="font-semibold text-primary text-sm px-1">Detail per Pertanyaan</p>
+                <p class="font-semibold text-primary text-sm px-1">Per-Question Breakdown</p>
 
                 @foreach($feedback->question_scores as $i => $qs)
                 @php
@@ -129,22 +129,39 @@
             @endif
 
             {{-- Action Buttons --}}
-            <div class="flex flex-col sm:flex-row gap-3 pt-2 pb-8">
+            <div class="flex flex-col sm:flex-row gap-3 pt-2">
                 <a href="{{ route('interview.index') }}"
                    class="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl
                           bg-secondary text-white font-semibold text-sm
                           hover:bg-secondary/90 active:scale-[.98] transition-all">
                     <span class="material-symbols-outlined text-[18px]">play_arrow</span>
-                    Mulai Interview Baru
+                    Start New Interview
                 </a>
                 <a href="{{ route('interview.show', $session) }}"
                    class="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl
                           border border-primary/20 text-primary/70 font-medium text-sm
                           hover:border-primary/40 hover:text-primary transition-all">
                     <span class="material-symbols-outlined text-[18px]">chat</span>
-                    Lihat Percakapan
+                    View Conversation
                 </a>
             </div>
+
+            {{-- Upgrade prompt for basic users --}}
+            @if(!auth()->user()->isPremium() && !auth()->user()->isAdmin())
+            <div class="bg-secondary/5 border border-secondary/20 rounded-2xl p-5 text-center space-y-3 pb-8">
+                <p class="font-semibold text-primary text-sm">Want more practice?</p>
+                <p class="text-primary/60 text-xs leading-relaxed">
+                    Upgrade to Premium for unlimited interview sessions + 50 AI credits/month.
+                </p>
+                <a href="{{ route('user.upgrade-quota') }}"
+                   class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl
+                          bg-secondary text-white font-semibold text-sm
+                          hover:bg-secondary/90 active:scale-[.98] transition">
+                    <span class="material-symbols-outlined text-[16px]">workspace_premium</span>
+                    Upgrade to Premium
+                </a>
+            </div>
+            @endif
 
         </div>
     </div>

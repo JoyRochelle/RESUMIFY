@@ -155,7 +155,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             // API routes (I6-02)
             Route::post('/start', [InterviewController::class, 'start'])
-                ->middleware('ai.quota:1')
+                ->middleware(['ai.quota:1', 'interview.trial'])
                 ->name('start');
             Route::post('/sessions/{session}/message', [InterviewController::class, 'message'])
                 ->middleware('ai.quota:1')
