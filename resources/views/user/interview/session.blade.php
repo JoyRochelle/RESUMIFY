@@ -101,7 +101,7 @@
                            text-white hover:bg-secondary/90 active:scale-95 transition-all
                            disabled:opacity-40 disabled:cursor-not-allowed">
                 <span id="send-icon" class="material-symbols-outlined text-[18px]">send</span>
-                <span id="send-spinner" class="material-symbols-outlined text-[18px] animate-spin hidden">progress_activity</span>
+                <span id="send-spinner" style="display:none" class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
             </button>
         </div>
     </div>
@@ -190,8 +190,8 @@
     function setLoading(on) {
         if (!sendBtn) return;
         sendBtn.disabled = on;
-        sendIcon.classList.toggle('hidden', on);
-        sendSpinner.classList.toggle('hidden', !on);
+        sendIcon.style.display = on ? 'none' : 'inline-block';
+        sendSpinner.style.display = on ? 'inline-block' : 'none';
         if (userInput) userInput.disabled = on;
     }
 
