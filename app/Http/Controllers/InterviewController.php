@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AiUsageLog;
 use App\Models\Cv;
+use App\Models\InterviewMessage;
 use App\Models\InterviewSession;
 use App\Services\InterviewService;
 use Illuminate\Http\JsonResponse;
@@ -12,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class InterviewController extends Controller
 {
@@ -54,7 +56,7 @@ class InterviewController extends Controller
         }
 
         if ($session->status !== 'active') {
-            return redirect()->back()->with('error', 'Sesi ini sudah selesai.');
+            return redirect()->back()->with('error', 'This session has already ended.');
         }
 
         $session->update([
@@ -67,7 +69,7 @@ class InterviewController extends Controller
         // Premium and admin users bypass quota — skip check for them
         if (!$user->isPremium() && !$user->isAdmin() && !$user->hasQuotaRemaining(1)) {
             return redirect()->route('interview.index')
-                ->with('success', 'Sesi selesai! Laporan feedback tidak tersedia karena kredit AI habis.');
+                ->with('success', 'Session ended! Feedback report is unavailable — your AI credits are exhausted.');
         }
 
         $user->increment('ai_quota_used', 1);
@@ -84,13 +86,13 @@ class InterviewController extends Controller
             ]);
 
             return redirect()->route('interview.feedback', $session)
-                ->with('success', 'Sesi selesai! Berikut laporan wawancara Anda.');
+                ->with('success', 'Session ended! Here is your interview report.');
         } catch (\Exception $e) {
             $user->decrement('ai_quota_used', 1);
             Log::error('InterviewController@endSession feedback failed', ['error' => $e->getMessage()]);
 
             return redirect()->route('interview.index')
-                ->with('success', 'Sesi selesai. Maaf, laporan feedback gagal dibuat — silakan coba lagi nanti.');
+                ->with('success', 'Session ended. Feedback report could not be generated — please try again later.');
         }
     }
 
@@ -156,6 +158,92 @@ class InterviewController extends Controller
         }
 
         return view('user.interview.history', compact('sessions', 'cvs', 'trends', 'sort', 'order'));
+    }
+
+    /**
+     * Stream Ms. Sarah's reply token-by-token via SSE.
+     * Quota: 1 credit (handled by ai.quota middleware on the route).
+     */
+    public function stream(Request $request, InterviewSession $session): StreamedResponse
+    {
+        if ($session->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $request->validate(['content' => 'required|string|max:2000']);
+
+        if ($session->status !== 'active') {
+            return response()->stream(function () {
+                echo 'data: ' . json_encode(['error' => 'Session is no longer active.']) . "\n\n";
+            }, 422, ['Content-Type' => 'text/event-stream', 'Cache-Control' => 'no-cache']);
+        }
+
+        $user    = auth()->user();
+        $content = $request->content;
+
+        $user->increment('ai_quota_used', 1);
+
+        // Save user message before stream so tests can assert on it without triggering the closure
+        InterviewMessage::create([
+            'session_id' => $session->id,
+            'role'       => 'user',
+            'content'    => $content,
+        ]);
+
+        $session->load(['cv.sections', 'messages']);
+        $systemPrompt = $this->interviewService->buildSystemPrompt($session->cv, $session->job_target);
+
+        $contents = [['role' => 'user', 'parts' => [['text' => 'Please begin the interview session.']]]];
+        foreach ($session->messages as $msg) {
+            $contents[] = [
+                'role'  => $msg->role === 'assistant' ? 'model' : 'user',
+                'parts' => [['text' => $msg->content]],
+            ];
+        }
+
+        return response()->stream(function () use ($user, $session, $systemPrompt, $contents) {
+            try {
+                $fullText = $this->interviewService->callGeminiStreaming(
+                    $systemPrompt,
+                    $contents,
+                    function (string $token) {
+                        echo 'data: ' . json_encode(['token' => $token]) . "\n\n";
+                        ob_flush();
+                        flush();
+                    }
+                );
+
+                InterviewMessage::create([
+                    'session_id' => $session->id,
+                    'role'       => 'assistant',
+                    'content'    => $fullText,
+                ]);
+
+                AiUsageLog::create([
+                    'user_id'     => $user->id,
+                    'action_type' => 'interview_question',
+                    'resume_id'   => $session->resume_id,
+                    'tokens_used' => 0,
+                    'cost_usd'    => 0,
+                ]);
+
+                echo 'data: ' . json_encode(['done' => true]) . "\n\n";
+                ob_flush();
+                flush();
+
+            } catch (\Exception $e) {
+                $user->decrement('ai_quota_used', 1);
+                Log::error('InterviewController@stream failed', ['error' => $e->getMessage()]);
+                echo 'data: ' . json_encode(['error' => 'Failed to get AI response.']) . "\n\n";
+                ob_flush();
+                flush();
+            }
+        }, 200, [
+            'Content-Type'      => 'text/event-stream',
+            'Cache-Control'     => 'no-cache',
+            'X-Accel-Buffering' => 'no',
+            'Connection'        => 'keep-alive',
+        ]);
     }
 
     /**

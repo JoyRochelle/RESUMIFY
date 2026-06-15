@@ -101,7 +101,7 @@
                            text-white hover:bg-secondary/90 active:scale-95 transition-all
                            disabled:opacity-40 disabled:cursor-not-allowed">
                 <span id="send-icon" class="material-symbols-outlined text-[18px]">send</span>
-                <span id="send-spinner" class="material-symbols-outlined text-[18px] animate-spin hidden">progress_activity</span>
+                <span id="send-spinner" style="display:none" class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
             </button>
         </div>
     </div>
@@ -160,6 +160,7 @@
 
     const SESSION_ID  = '{{ $session->id }}';
     const MESSAGE_URL = '{{ route("interview.message", $session) }}';
+    const STREAM_URL  = '{{ route("interview.stream", $session) }}';
     const CSRF        = '{{ csrf_token() }}';
 
     // Scroll to bottom on load
@@ -189,8 +190,8 @@
     function setLoading(on) {
         if (!sendBtn) return;
         sendBtn.disabled = on;
-        sendIcon.classList.toggle('hidden', on);
-        sendSpinner.classList.toggle('hidden', !on);
+        sendIcon.style.display = on ? 'none' : 'inline-block';
+        sendSpinner.style.display = on ? 'inline-block' : 'none';
         if (userInput) userInput.disabled = on;
     }
 
@@ -228,6 +229,21 @@
             .replace(/"/g, '&quot;');
     }
 
+    function createStreamingBubble() {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'flex items-end gap-2 max-w-[85%] md:max-w-[70%]';
+        wrapper.innerHTML = `
+            <div class="w-7 h-7 rounded-full bg-secondary/15 flex items-center justify-center shrink-0 mb-1">
+                <span class="material-symbols-outlined text-secondary text-[13px]">smart_toy</span>
+            </div>
+            <div class="bg-surface-container-low rounded-tr-2xl rounded-br-2xl rounded-tl-2xl
+                        px-4 py-2.5 text-primary text-sm leading-relaxed"></div>
+        `;
+        messageList.insertBefore(wrapper, typing);
+        scrollToBottom();
+        return wrapper.querySelector('div:last-child');
+    }
+
     async function sendMessage() {
         if (!userInput) return;
         const text = userInput.value.trim();
@@ -241,29 +257,75 @@
         typing.classList.remove('hidden');
         scrollToBottom();
 
+        const controller = new AbortController();
+        const timeoutId  = setTimeout(() => controller.abort(), 60000);
+
         try {
-            const res = await fetch(MESSAGE_URL, {
-                method: 'POST',
+            const res = await fetch(STREAM_URL, {
+                method:  'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': CSRF,
-                    'Accept': 'application/json',
+                    'Accept':       'text/event-stream',
                 },
-                body: JSON.stringify({ content: text }),
+                body:   JSON.stringify({ content: text }),
+                signal: controller.signal,
             });
 
-            const data = await res.json();
-
+            clearTimeout(timeoutId);
             typing.classList.add('hidden');
 
-            if (data.success) {
-                appendBubble('assistant', data.message);
-            } else {
+            if (!res.ok) {
                 appendBubble('assistant', 'An error occurred. Please try again.');
+                setLoading(false);
+                return;
             }
+
+            const bubble  = createStreamingBubble();
+            const reader  = res.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer    = '';
+            let fullText  = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+
+                const lines = buffer.split('\n');
+                buffer = lines.pop();
+
+                for (const line of lines) {
+                    if (!line.startsWith('data: ')) continue;
+                    try {
+                        const data = JSON.parse(line.slice(6));
+                        if (data.token) {
+                            fullText += data.token;
+                            bubble.textContent = fullText;
+                            scrollToBottom();
+                        }
+                        if (data.done) {
+                            bubble.innerHTML = escHtml(fullText).replace(/\n/g, '<br>');
+                            reader.cancel();
+                            break;
+                        }
+                        if (data.error) {
+                            bubble.textContent = 'An error occurred. Please try again.';
+                            reader.cancel();
+                            break;
+                        }
+                    } catch (_) { /* skip malformed SSE line */ }
+                }
+            }
+
         } catch (err) {
+            clearTimeout(timeoutId);
             typing.classList.add('hidden');
-            appendBubble('assistant', 'Connection lost. Check your network and try again.');
+            appendBubble('assistant',
+                err.name === 'AbortError'
+                    ? 'Request timed out. Please try again.'
+                    : 'Connection lost. Check your network and try again.');
         }
 
         setLoading(false);
