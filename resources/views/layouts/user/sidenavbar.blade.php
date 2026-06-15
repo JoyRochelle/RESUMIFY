@@ -26,6 +26,10 @@
             <span class="material-symbols-outlined {{ request()->routeIs('user.ai-assistant') ? 'icon-filled' : '' }}" data-icon="analytics">analytics</span>
             <span class="font-label tracking-wide">ATS Analyzer</span>
         </a>
+        <a href="{{ route('interview.history') }}" class="flex items-center space-x-3 p-3 transition-all duration-300 {{ request()->routeIs('interview.*') ? 'text-primary font-bold bg-tertiary rounded-lg shadow-sm' : 'text-primary/60 hover:text-primary hover:translate-x-1' }}">
+            <span class="material-symbols-outlined {{ request()->routeIs('interview.*') ? 'icon-filled' : '' }}">record_voice_over</span>
+            <span class="font-label tracking-wide">Interview</span>
+        </a>
         <a href="{{ route('user.settings') }}" class="flex items-center space-x-3 p-3 transition-all duration-300 {{ request()->routeIs('user.settings') ? 'text-primary font-bold bg-tertiary rounded-lg shadow-sm' : 'text-primary/60 hover:text-primary hover:translate-x-1' }}">
             <span class="material-symbols-outlined {{ request()->routeIs('user.settings') ? 'icon-filled' : '' }}" data-icon="settings">settings</span>
             <span class="font-label tracking-wide">Settings</span>

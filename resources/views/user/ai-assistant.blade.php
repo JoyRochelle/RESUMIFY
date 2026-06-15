@@ -7,7 +7,7 @@
         {{-- Page Header --}}
         <x-user.page-header title="ATS Analyzer">
             <button id="ats-instructions-btn" type="button"
-                    class="flex items-center gap-2 text-sm px-4 py-2 rounded-lg border border-primary/15 text-primary/70 hover:text-primary hover:border-primary/30 transition-all duration-200">
+                class="flex items-center gap-2 text-sm px-4 py-2 rounded-lg border border-primary/15 text-primary/70 hover:text-primary hover:border-primary/30 transition-all duration-200">
                 <span class="material-symbols-outlined text-[16px]">info</span>
                 How It Works
             </button>
@@ -19,7 +19,7 @@
                 <div class="flex items-center gap-2">
                     <div class="w-32 h-2 bg-primary/10 rounded-full overflow-hidden">
                         <div class="h-full bg-secondary rounded-full transition-all"
-                             style="width: {{ $quota['percentage'] }}%"></div>
+                            style="width: {{ $quota['percentage'] }}%"></div>
                     </div>
                     <span class="font-bold text-primary text-xs">
                         {{ $quota['remaining'] }}/{{ $quota['limit'] }}
@@ -31,11 +31,11 @@
         {{-- Mobile tab bar (hidden on lg+) --}}
         <div class="flex lg:hidden border-b border-primary/10 bg-surface-container-low shrink-0">
             <button id="ats-tab-setup" onclick="switchAtsTab('setup')"
-                    class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary border-b-2 border-primary transition-colors">
+                class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary border-b-2 border-primary transition-colors">
                 <span class="material-symbols-outlined text-[18px]">tune</span> Setup
             </button>
             <button id="ats-tab-results" onclick="switchAtsTab('results')"
-                    class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary/40 border-b-2 border-transparent transition-colors">
+                class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary/40 border-b-2 border-transparent transition-colors">
                 <span class="material-symbols-outlined text-[18px]">analytics</span> Results
             </button>
         </div>
@@ -43,25 +43,27 @@
         <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden pb-20 lg:pb-0">
 
             {{-- ════════════════ LEFT PANEL — INPUTS ════════════════ --}}
-            <aside id="ats-panel-setup" class="w-full lg:w-[42%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
+            <aside id="ats-panel-setup"
+                class="w-full lg:w-[42%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
                 <div class="p-4 lg:p-6 lg:overflow-y-auto custom-scrollbar space-y-5 lg:h-full">
 
                     {{-- Select CV --}}
-                    @if(isset($cvs) && $cvs->isNotEmpty())
-                    <div class="bg-tertiary rounded-xl p-5 border border-primary/10 shadow-sm flex flex-col gap-3">
-                        <label for="cv-selector" class="font-bold text-primary flex items-center gap-2 text-sm">
-                            <span class="material-symbols-outlined text-primary/60 text-[18px]">folder_open</span>
-                            Select from your Resumes
-                        </label>
-                        <select id="cv-selector" class="w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none p-3 text-sm transition-all duration-200">
-                            <option value="">-- Choose a Resume --</option>
-                            @foreach($cvs as $cv)
-                                <option value="{{ $cv->id }}" data-sections="{{ json_encode($cv->sections) }}">
-                                    {{ $cv->title }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                    @if (isset($cvs) && $cvs->isNotEmpty())
+                        <div class="bg-tertiary rounded-xl p-5 border border-primary/10 shadow-sm flex flex-col gap-3">
+                            <label for="cv-selector" class="font-bold text-primary flex items-center gap-2 text-sm">
+                                <span class="material-symbols-outlined text-primary/60 text-[18px]">folder_open</span>
+                                Select from your Resumes
+                            </label>
+                            <select id="cv-selector"
+                                class="w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none p-3 text-sm transition-all duration-200">
+                                <option value="">-- Choose a Resume --</option>
+                                @foreach ($cvs as $cv)
+                                    <option value="{{ $cv->id }}" data-sections="{{ json_encode($cv->sections) }}">
+                                        {{ $cv->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     @endif
 
                     {{-- Resume input (Hidden, populated by CV selector) --}}
@@ -78,20 +80,24 @@
                                 <span id="preview-header-text">All Resumes Preview</span>
                             </h3>
                         </div>
-                        <div id="preview-content-box" class="w-full text-xs leading-relaxed custom-scrollbar overflow-y-auto max-h-[250px] text-primary/80 pr-2">
+                        <div id="preview-content-box"
+                            class="w-full text-xs leading-relaxed custom-scrollbar overflow-y-auto max-h-[250px] text-primary/80 pr-2">
                         </div>
                     </div>
 
                     {{-- Analyze Button --}}
                     <button id="analyze-btn" type="button"
-                            class="w-full py-4 rounded-xl font-bold text-sm tracking-wide shadow-lg bg-primary text-tertiary hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3 group">
+                        class="w-full py-4 rounded-xl font-bold text-sm tracking-wide shadow-lg bg-primary text-tertiary hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3 group">
                         <span id="analyze-btn-label">Analyze Match</span>
-                        <span id="analyze-spinner" style="display:none" class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
-                        <span id="analyze-icon" class="material-symbols-outlined text-tertiary/80 group-hover:rotate-12 transition-transform icon-filled text-[20px]">auto_awesome</span>
+                        <span id="analyze-spinner" style="display:none"
+                            class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+                        <span id="analyze-icon"
+                            class="material-symbols-outlined text-tertiary/80 group-hover:rotate-12 transition-transform icon-filled text-[20px]">auto_awesome</span>
                     </button>
 
                     {{-- Error banner --}}
-                    <div id="ats-error" class="hidden bg-red-500/10 text-red-600 border border-red-500/20 rounded-xl p-4 text-sm flex items-start gap-3">
+                    <div id="ats-error"
+                        class="hidden bg-red-500/10 text-red-600 border border-red-500/20 rounded-xl p-4 text-sm flex items-start gap-3">
                         <span class="material-symbols-outlined text-[18px] shrink-0 mt-0.5">error_outline</span>
                         <span id="ats-error-msg"></span>
                     </div>
@@ -99,16 +105,19 @@
             </aside>
 
             {{-- ════════════════ RIGHT PANEL — RESULTS ════════════════ --}}
-            <main id="ats-panel-results" class="w-full lg:w-[58%] lg:h-full bg-primary/[0.03] p-4 lg:p-8 lg:overflow-y-auto custom-scrollbar hidden lg:block">
+            <main id="ats-panel-results"
+                class="w-full lg:w-[58%] lg:h-full bg-primary/[0.03] p-4 lg:p-8 lg:overflow-y-auto custom-scrollbar hidden lg:block">
 
                 {{-- Empty state --}}
-                <div id="ats-empty-state" class="h-full flex flex-col items-center justify-center text-center py-20 lg:py-0">
+                <div id="ats-empty-state"
+                    class="h-full flex flex-col items-center justify-center text-center py-20 lg:py-0">
                     <div class="w-24 h-24 rounded-full bg-secondary/10 flex items-center justify-center mb-6">
                         <span class="material-symbols-outlined text-secondary text-4xl icon-filled">analytics</span>
                     </div>
                     <h3 class="font-headline text-2xl text-primary mb-2">Select & Analyze</h3>
                     <p class="text-primary/50 text-sm max-w-xs leading-relaxed">
-                        Select a resume on the left, then click <strong class="text-primary/70">Analyze Match</strong> to see your ATS score and actionable recommendations.
+                        Select a resume on the left, then click <strong class="text-primary/70">Analyze Match</strong> to
+                        see your ATS score and actionable recommendations.
                     </p>
                 </div>
 
@@ -119,12 +128,15 @@
                             <span class="material-symbols-outlined text-primary/60 text-[18px]">description</span>
                             <span id="ats-preview-title">Resume Preview</span>
                         </h3>
-                        <span class="text-[10px] font-label text-primary/40 uppercase tracking-widest">Click Analyze Match to score</span>
+                        <span class="text-[10px] font-label text-primary/40 uppercase tracking-widest">Click Analyze Match
+                            to score</span>
                     </div>
-                    <div id="ats-preview-container" class="relative w-full bg-white rounded-xl border border-primary/10 shadow-sm overflow-hidden" style="aspect-ratio: 210/297;">
+                    <div id="ats-preview-container"
+                        class="relative w-full bg-white rounded-xl border border-primary/10 shadow-sm overflow-hidden"
+                        style="aspect-ratio: 210/297;">
                         <iframe id="ats-preview-iframe"
-                                style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0; pointer-events: none;"
-                                loading="lazy"></iframe>
+                            style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0; pointer-events: none;"
+                            loading="lazy"></iframe>
                     </div>
                 </div>
 
@@ -135,24 +147,27 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
                         {{-- Score circle card --}}
-                        <div class="bg-tertiary rounded-2xl p-7 border border-primary/10 shadow-sm flex flex-col items-center justify-center text-center">
+                        <div
+                            class="bg-tertiary rounded-2xl p-7 border border-primary/10 shadow-sm flex flex-col items-center justify-center text-center">
                             <div id="score-circle-container" class="mb-4"></div>
                             <h4 id="score-rating-label" class="font-bold text-lg text-secondary"></h4>
-                            <p  id="score-rating-sub"   class="text-primary/50 text-xs mt-1"></p>
+                            <p id="score-rating-sub" class="text-primary/50 text-xs mt-1"></p>
                         </div>
 
                         {{-- Missing keywords card --}}
-                        <div class="bg-tertiary rounded-2xl p-5 border border-primary/10 shadow-sm md:col-span-2 flex flex-col max-h-[320px]">
+                        <div
+                            class="bg-tertiary rounded-2xl p-5 border border-primary/10 shadow-sm md:col-span-2 flex flex-col max-h-[320px]">
                             <div class="flex items-center gap-2 mb-4 text-red-500 shrink-0">
                                 <span class="material-symbols-outlined text-[18px]">error_outline</span>
                                 <h4 class="font-bold tracking-tight text-xs uppercase">Missing Keywords</h4>
                                 <span id="missing-count-badge"
-                                      class="ml-auto text-[10px] font-bold bg-red-500/10 text-red-500 px-2 py-0.5 rounded-full"></span>
+                                    class="ml-auto text-[10px] font-bold bg-red-500/10 text-red-500 px-2 py-0.5 rounded-full"></span>
                             </div>
                             <div class="overflow-y-auto custom-scrollbar flex-1 pr-2">
                                 <div id="missing-keywords-container" class="flex flex-col gap-2 min-h-[2rem]"></div>
                             </div>
-                            <p id="missing-keywords-tip" class="text-xs text-primary/60 leading-relaxed italic mt-3 shrink-0"></p>
+                            <p id="missing-keywords-tip"
+                                class="text-xs text-primary/60 leading-relaxed italic mt-3 shrink-0"></p>
                         </div>
                     </div>
 
@@ -162,7 +177,7 @@
                             <span class="material-symbols-outlined text-[18px] icon-filled">check_circle</span>
                             <h4 class="font-bold tracking-tight text-xs uppercase">Matched Keywords</h4>
                             <span id="matched-count-badge"
-                                  class="ml-auto text-[10px] font-bold bg-secondary/10 text-secondary px-2 py-0.5 rounded-full"></span>
+                                class="ml-auto text-[10px] font-bold bg-secondary/10 text-secondary px-2 py-0.5 rounded-full"></span>
                         </div>
                         <div id="matched-keywords-container" class="flex flex-wrap gap-2 min-h-[2rem]"></div>
                     </div>
@@ -175,7 +190,8 @@
                         </div>
                         <div id="action-verbs-container" class="flex flex-wrap gap-2 mb-3 min-h-[2rem]"></div>
                         <div id="missing-verbs-row" class="hidden mt-3 pt-3 border-t border-primary/5">
-                            <p class="text-[11px] text-primary/50 mb-2 uppercase tracking-wider font-bold">Consider Adding</p>
+                            <p class="text-[11px] text-primary/50 mb-2 uppercase tracking-wider font-bold">Consider Adding
+                            </p>
                             <div id="missing-verbs-container" class="flex flex-wrap gap-2"></div>
                         </div>
                     </div>
@@ -185,7 +201,7 @@
                         <span id="length-tip-icon" class="material-symbols-outlined text-[22px] shrink-0 mt-0.5"></span>
                         <div>
                             <p id="length-tip-title" class="text-xs font-bold uppercase tracking-wider mb-1"></p>
-                            <p id="length-tip-body"  class="text-sm text-primary/70 leading-relaxed"></p>
+                            <p id="length-tip-body" class="text-sm text-primary/70 leading-relaxed"></p>
                         </div>
                     </div>
 
@@ -199,8 +215,11 @@
                     </section>
 
                     {{-- Strategic Insights --}}
-                    <section class="rounded-2xl p-7 border border-secondary/20 bg-secondary/[0.04] relative overflow-hidden">
-                        <div class="absolute -top-12 -right-12 w-48 h-48 bg-secondary/10 blur-3xl rounded-full pointer-events-none"></div>
+                    <section
+                        class="rounded-2xl p-7 border border-secondary/20 bg-secondary/[0.04] relative overflow-hidden">
+                        <div
+                            class="absolute -top-12 -right-12 w-48 h-48 bg-secondary/10 blur-3xl rounded-full pointer-events-none">
+                        </div>
                         <div class="flex items-center gap-3 mb-6">
                             <span class="material-symbols-outlined text-secondary icon-filled">auto_awesome</span>
                             <h3 class="font-headline text-xl font-bold text-primary">Strategic Insights</h3>
@@ -210,7 +229,8 @@
 
                     {{-- Re-analyze nudge --}}
                     <p class="text-center text-xs text-primary/30 pb-4">
-                        Update your texts and click <span class="font-bold text-primary/50">Analyze Match</span> again to see your new score.
+                        Update your texts and click <span class="font-bold text-primary/50">Analyze Match</span> again to
+                        see your new score.
                     </p>
                 </div>
             </main>
@@ -219,51 +239,78 @@
 
     {{-- ── How It Works modal ─────────────────────────────────────── --}}
     <div id="instructions-modal"
-         class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
-        <div class="bg-tertiary w-full max-w-lg rounded-2xl shadow-2xl border border-primary/10 transform scale-95 transition-transform duration-300 overflow-hidden" id="instructions-content">
+        class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div class="bg-tertiary w-full max-w-lg rounded-2xl shadow-2xl border border-primary/10 transform scale-95 transition-transform duration-300 overflow-hidden"
+            id="instructions-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 class="font-headline text-xl font-bold text-primary flex items-center gap-2">
                     <span class="material-symbols-outlined text-secondary">info</span>
                     How ATS Scoring Works
                 </h3>
                 <button onclick="closeInstructions()"
-                        class="text-primary/50 hover:text-primary material-symbols-outlined rounded-full p-1 hover:bg-primary/5 transition-colors">close</button>
+                    class="text-primary/50 hover:text-primary material-symbols-outlined rounded-full p-1 hover:bg-primary/5 transition-colors">close</button>
             </div>
             <div class="p-6 space-y-4 text-sm text-primary/80 leading-relaxed">
-                <p>Our ATS analyzer mimics how Applicant Tracking Systems evaluate your resume against a job description.</p>
+                <p>Our ATS analyzer mimics how Applicant Tracking Systems evaluate your resume against a job description.
+                </p>
                 <ul class="space-y-3">
                     <li class="flex items-start gap-3">
-                        <span class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
-                        <span><strong class="text-primary">Keyword Match (65%)</strong> — We extract critical single-word and multi-word terms from the JD and check how many appear in your resume.</span>
+                        <span
+                            class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
+                        <span><strong class="text-primary">Keyword Match (65%)</strong> — We extract critical single-word
+                            and multi-word terms from the JD and check how many appear in your resume.</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <span class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
-                        <span><strong class="text-primary">Action Verbs (15%)</strong> — Strong, impactful verbs signal an achievement-oriented candidate to ATS parsers.</span>
+                        <span
+                            class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
+                        <span><strong class="text-primary">Action Verbs (15%)</strong> — Strong, impactful verbs signal an
+                            achievement-oriented candidate to ATS parsers.</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <span class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
-                        <span><strong class="text-primary">Quantification (12%)</strong> — Numbers and percentages dramatically improve relevancy scores in most ATS systems.</span>
+                        <span
+                            class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
+                        <span><strong class="text-primary">Quantification (12%)</strong> — Numbers and percentages
+                            dramatically improve relevancy scores in most ATS systems.</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <span class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
-                        <span><strong class="text-primary">Length &amp; Format (8%)</strong> — Resumes between 200–800 words are parsed most reliably by automated systems.</span>
+                        <span
+                            class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
+                        <span><strong class="text-primary">Length &amp; Format (8%)</strong> — Resumes between 200–800
+                            words are parsed most reliably by automated systems.</span>
                     </li>
                 </ul>
-                <p class="text-primary/50 text-xs pt-2">Tip: The closer your resume's language mirrors the job description, the higher your match score will be.</p>
+                <p class="text-primary/50 text-xs pt-2">Tip: The closer your resume's language mirrors the job description,
+                    the higher your match score will be.</p>
             </div>
         </div>
     </div>
 
     <style>
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .animate-fade-in-up { animation: fadeInUp 0.45s ease both; }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.45s ease both;
+        }
+
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
-        .animate-spin { animation: spin 0.8s linear infinite; }
+
+        .animate-spin {
+            animation: spin 0.8s linear infinite;
+        }
 
         /* Score circle animation */
         #score-circle-container circle.progress-ring {
@@ -272,78 +319,89 @@
     </style>
 
     <script>
-
-    function wordCount(text) {
-        return text.trim() ? text.trim().split(/\s+/).length : 0;
-    }
-
-    function makeDangerTag(text) {
-        return `<span class="px-3 py-1.5 rounded-full text-xs font-bold border bg-red-500/10 text-red-600 border-red-500/20">${escHtml(text)}</span>`;
-    }
-    function makeSuccessTag(text) {
-        return `<span class="px-3 py-1.5 rounded-full text-xs font-bold border bg-secondary/10 text-secondary border-secondary/20">${escHtml(text)}</span>`;
-    }
-    function makeNeutralTag(text) {
-        return `<span class="px-3 py-1.5 rounded-full text-xs font-bold border bg-primary/5 text-primary/60 border-primary/10">${escHtml(text)}</span>`;
-    }
-    function escHtml(s) {
-        return String(s)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-    }
-
-    function parseCvSections(option) {
-        const sectionsRaw = option.getAttribute('data-sections');
-        if (!sectionsRaw) return { text: '', jd: '' };
-        try {
-            const sections = JSON.parse(sectionsRaw);
-            let resumeText = '';
-            let jobDesc = '';
-
-            function extractTextFromContent(content) {
-                if (!content) return '';
-                if (typeof content === 'string') return content;
-                if (Array.isArray(content)) {
-                    return content.map(extractTextFromContent).filter(Boolean).join('\n');
-                }
-                if (typeof content === 'object') {
-                    return Object.values(content).map(extractTextFromContent).filter(Boolean).join(' | ');
-                }
-                return String(content);
-            }
-            
-            sections.forEach(sec => {
-                if (sec.type === 'target_job') {
-                    const title = sec.content?.job_title || '';
-                    const desc = sec.content?.job_description || '';
-                    jobDesc = (title + '\n\n' + desc).trim();
-                } else {
-                    if (sec.content) {
-                        resumeText += extractTextFromContent(sec.content) + '\n\n';
-                    }
-                }
-            });
-            return { text: resumeText.trim(), jd: jobDesc };
-        } catch(e) {
-            console.error("Failed to parse sections", e);
-            return { text: '', jd: '' };
+        function wordCount(text) {
+            return text.trim() ? text.trim().split(/\s+/).length : 0;
         }
-    }
 
-    function renderPreviews() {
-        const selector = document.getElementById('cv-selector');
-        const previewHeader = document.getElementById('preview-header-text');
-        const previewBox = document.getElementById('preview-content-box');
-        if (!selector || !previewBox) return;
+        function makeDangerTag(text) {
+            return `<span class="px-3 py-1.5 rounded-full text-xs font-bold border bg-red-500/10 text-red-600 border-red-500/20">${escHtml(text)}</span>`;
+        }
 
-        let html = '';
-        if (selector.value) {
-            previewHeader.textContent = 'Selected Resume';
-            const option = selector.options[selector.selectedIndex];
-            const data = parseCvSections(option);
-            
-            html = `
+        function makeSuccessTag(text) {
+            return `<span class="px-3 py-1.5 rounded-full text-xs font-bold border bg-secondary/10 text-secondary border-secondary/20">${escHtml(text)}</span>`;
+        }
+
+        function makeNeutralTag(text) {
+            return `<span class="px-3 py-1.5 rounded-full text-xs font-bold border bg-primary/5 text-primary/60 border-primary/10">${escHtml(text)}</span>`;
+        }
+
+        function escHtml(s) {
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        function parseCvSections(option) {
+            const sectionsRaw = option.getAttribute('data-sections');
+            if (!sectionsRaw) return {
+                text: '',
+                jd: ''
+            };
+            try {
+                const sections = JSON.parse(sectionsRaw);
+                let resumeText = '';
+                let jobDesc = '';
+
+                function extractTextFromContent(content) {
+                    if (!content) return '';
+                    if (typeof content === 'string') return content;
+                    if (Array.isArray(content)) {
+                        return content.map(extractTextFromContent).filter(Boolean).join('\n');
+                    }
+                    if (typeof content === 'object') {
+                        return Object.values(content).map(extractTextFromContent).filter(Boolean).join(' | ');
+                    }
+                    return String(content);
+                }
+
+                sections.forEach(sec => {
+                    if (sec.type === 'target_job') {
+                        const title = sec.content?.job_title || '';
+                        const desc = sec.content?.job_description || '';
+                        jobDesc = (title + '\n\n' + desc).trim();
+                    } else {
+                        if (sec.content) {
+                            resumeText += extractTextFromContent(sec.content) + '\n\n';
+                        }
+                    }
+                });
+                return {
+                    text: resumeText.trim(),
+                    jd: jobDesc
+                };
+            } catch (e) {
+                console.error("Failed to parse sections", e);
+                return {
+                    text: '',
+                    jd: ''
+                };
+            }
+        }
+
+        function renderPreviews() {
+            const selector = document.getElementById('cv-selector');
+            const previewHeader = document.getElementById('preview-header-text');
+            const previewBox = document.getElementById('preview-content-box');
+            if (!selector || !previewBox) return;
+
+            let html = '';
+            if (selector.value) {
+                previewHeader.textContent = 'Selected Resume';
+                const option = selector.options[selector.selectedIndex];
+                const data = parseCvSections(option);
+
+                html = `
                 <div class="bg-surface-container-low rounded-xl border border-primary/10 p-5 mb-4 shadow-sm hover:border-primary/20 transition-colors">
                     <div class="font-bold text-secondary text-[10px] uppercase tracking-wider mb-3 flex items-center gap-2">
                         <span class="material-symbols-outlined text-[14px]">description</span> 
@@ -351,9 +409,9 @@
                     </div>
                     <div class="whitespace-pre-wrap opacity-80 text-[11px]">${escHtml(data.text) || '<i class="opacity-50">No text content</i>'}</div>
                 </div>`;
-            
-            if (data.jd) {
-                html += `
+
+                if (data.jd) {
+                    html += `
                 <div class="bg-surface-container-low rounded-xl border border-primary/10 p-5 shadow-sm hover:border-primary/20 transition-colors">
                     <div class="font-bold text-secondary text-[10px] uppercase tracking-wider mb-3 flex items-center gap-2">
                         <span class="material-symbols-outlined text-[14px]">target</span> 
@@ -361,16 +419,16 @@
                     </div>
                     <div class="whitespace-pre-wrap opacity-80 text-[11px]">${escHtml(data.jd)}</div>
                 </div>`;
-            }
-        } else {
-            previewHeader.textContent = 'All Resumes Preview';
-            let hasAny = false;
-            for (let i = 1; i < selector.options.length; i++) {
-                if (!selector.options[i].value) continue;
-                hasAny = true;
-                const option = selector.options[i];
-                const data = parseCvSections(option);
-                html += `
+                }
+            } else {
+                previewHeader.textContent = 'All Resumes Preview';
+                let hasAny = false;
+                for (let i = 1; i < selector.options.length; i++) {
+                    if (!selector.options[i].value) continue;
+                    hasAny = true;
+                    const option = selector.options[i];
+                    const data = parseCvSections(option);
+                    html += `
                 <div class="bg-surface-container-low rounded-xl border border-primary/10 p-5 mb-4 last:mb-0 shadow-sm hover:shadow-md hover:border-primary/20 transition-all">
                     <div class="font-bold text-primary mb-3 flex items-center gap-3 text-sm">
                         <div class="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary/70 shrink-0">
@@ -380,115 +438,119 @@
                     </div>
                     <div class="opacity-70 text-[11px] line-clamp-3 overflow-hidden text-ellipsis whitespace-pre-wrap leading-relaxed">${escHtml(data.text) || '<i class="opacity-50">No text content</i>'}</div>
                 </div>`;
-            }
-            if (!hasAny) {
-                html = `
+                }
+                if (!hasAny) {
+                    html = `
                 <div class="flex flex-col items-center justify-center py-10 opacity-50">
                     <span class="material-symbols-outlined text-4xl mb-3">folder_off</span>
                     <span class="italic text-sm">No resumes found.</span>
                 </div>`;
+                }
             }
-        }
-        previewBox.innerHTML = html;
-    }
-
-    function scaleAtsPreviewIframe() {
-        const container = document.getElementById('ats-preview-container');
-        const iframe    = document.getElementById('ats-preview-iframe');
-        if (!container || !iframe) return;
-        const scale = container.offsetWidth / 794;
-        iframe.style.transform = `scale(${scale})`;
-    }
-
-    function showResumePreview(cvId, title) {
-        const previewPanel  = document.getElementById('ats-resume-preview');
-        const emptyState    = document.getElementById('ats-empty-state');
-        const resultsPanel  = document.getElementById('ats-results');
-        const iframe        = document.getElementById('ats-preview-iframe');
-        const previewTitle  = document.getElementById('ats-preview-title');
-
-        if (!cvId) {
-            previewPanel.style.display = 'none';
-            emptyState.style.display   = '';
-            return;
+            previewBox.innerHTML = html;
         }
 
-        iframe.src = `/resumes/${cvId}/preview`;
-        if (previewTitle) previewTitle.textContent = title || 'Resume Preview';
+        function scaleAtsPreviewIframe() {
+            const container = document.getElementById('ats-preview-container');
+            const iframe = document.getElementById('ats-preview-iframe');
+            if (!container || !iframe) return;
+            const scale = container.offsetWidth / 794;
+            iframe.style.transform = `scale(${scale})`;
+        }
 
-        emptyState.style.display   = 'none';
-        resultsPanel.classList.add('hidden');
-        previewPanel.style.display = 'flex';
-        previewPanel.style.flexDirection = 'column';
+        function showResumePreview(cvId, title) {
+            const previewPanel = document.getElementById('ats-resume-preview');
+            const emptyState = document.getElementById('ats-empty-state');
+            const resultsPanel = document.getElementById('ats-results');
+            const iframe = document.getElementById('ats-preview-iframe');
+            const previewTitle = document.getElementById('ats-preview-title');
 
-        // Scale after the container is visible
-        requestAnimationFrame(scaleAtsPreviewIframe);
-        // On mobile, switch to results panel so user sees the preview
-        switchAtsTab('results');
-    }
-
-    const cvSelector = document.getElementById('cv-selector');
-    if (cvSelector) {
-        cvSelector.addEventListener('change', function() {
-            renderPreviews();
-            if (!this.value) {
-                document.getElementById('resume-input').value = '';
-                document.getElementById('jd-input').value = '';
-                showResumePreview(null);
+            if (!cvId) {
+                previewPanel.style.display = 'none';
+                emptyState.style.display = '';
                 return;
             }
-            const selectedOption = this.options[this.selectedIndex];
-            const data = parseCvSections(selectedOption);
-            document.getElementById('resume-input').value = data.text;
-            document.getElementById('jd-input').value = data.jd;
-            showResumePreview(this.value, selectedOption.text.trim());
-        });
 
-        // Initial render on page load
-        renderPreviews();
-    }
+            iframe.src = `/resumes/${cvId}/preview`;
+            if (previewTitle) previewTitle.textContent = title || 'Resume Preview';
 
-    window.addEventListener('resize', function() {
-        scaleAtsPreviewIframe();
-        if (window.innerWidth >= 1024) {
-            const sp = document.getElementById('ats-panel-setup');
-            const rp = document.getElementById('ats-panel-results');
-            if (sp) { sp.classList.remove('hidden'); }
-            if (rp) { rp.classList.remove('hidden'); }
+            emptyState.style.display = 'none';
+            resultsPanel.classList.add('hidden');
+            previewPanel.style.display = 'flex';
+            previewPanel.style.flexDirection = 'column';
+
+            // Scale after the container is visible
+            requestAnimationFrame(scaleAtsPreviewIframe);
+            // On mobile, switch to results panel so user sees the preview
+            switchAtsTab('results');
         }
-    });
 
-    function switchAtsTab(tab) {
-        if (window.innerWidth >= 1024) return;
-        const setupPanel   = document.getElementById('ats-panel-setup');
-        const resultsPanel = document.getElementById('ats-panel-results');
-        const setupBtn     = document.getElementById('ats-tab-setup');
-        const resultsBtn   = document.getElementById('ats-tab-results');
+        const cvSelector = document.getElementById('cv-selector');
+        if (cvSelector) {
+            cvSelector.addEventListener('change', function() {
+                renderPreviews();
+                if (!this.value) {
+                    document.getElementById('resume-input').value = '';
+                    document.getElementById('jd-input').value = '';
+                    showResumePreview(null);
+                    return;
+                }
+                const selectedOption = this.options[this.selectedIndex];
+                const data = parseCvSections(selectedOption);
+                document.getElementById('resume-input').value = data.text;
+                document.getElementById('jd-input').value = data.jd;
+                showResumePreview(this.value, selectedOption.text.trim());
+            });
 
-        setupPanel.classList.toggle('hidden', tab !== 'setup');
-        resultsPanel.classList.toggle('hidden', tab !== 'results');
+            // Initial render on page load
+            renderPreviews();
+        }
 
-        [setupBtn, resultsBtn].forEach(btn => {
-            const active = btn.id === `ats-tab-${tab}`;
-            btn.classList.toggle('text-primary',      active);
-            btn.classList.toggle('border-primary',    active);
-            btn.classList.toggle('text-primary/40',   !active);
-            btn.classList.toggle('border-transparent', !active);
+        window.addEventListener('resize', function() {
+            scaleAtsPreviewIframe();
+            if (window.innerWidth >= 1024) {
+                const sp = document.getElementById('ats-panel-setup');
+                const rp = document.getElementById('ats-panel-results');
+                if (sp) {
+                    sp.classList.remove('hidden');
+                }
+                if (rp) {
+                    rp.classList.remove('hidden');
+                }
+            }
         });
 
-        if (tab === 'results') scaleAtsPreviewIframe();
-    }
+        function switchAtsTab(tab) {
+            if (window.innerWidth >= 1024) return;
+            const setupPanel = document.getElementById('ats-panel-setup');
+            const resultsPanel = document.getElementById('ats-panel-results');
+            const setupBtn = document.getElementById('ats-tab-setup');
+            const resultsBtn = document.getElementById('ats-tab-results');
+
+            setupPanel.classList.toggle('hidden', tab !== 'setup');
+            resultsPanel.classList.toggle('hidden', tab !== 'results');
+
+            [setupBtn, resultsBtn].forEach(btn => {
+                const active = btn.id === `ats-tab-${tab}`;
+                btn.classList.toggle('text-primary', active);
+                btn.classList.toggle('border-primary', active);
+                btn.classList.toggle('text-primary/40', !active);
+                btn.classList.toggle('border-transparent', !active);
+            });
+
+            if (tab === 'results') scaleAtsPreviewIframe();
+        }
 
 
-    function buildScoreCircle(score) {
-        const r           = 56;
-        const center      = 64;
-        const strokeW     = 8;
-        const circ        = +(2 * Math.PI * r).toFixed(1);
-        const offset      = +((1 - score / 100) * circ).toFixed(1);
-        const colorClass  = score >= 70 ? 'text-secondary' : score >= 50 ? 'text-yellow-500' : 'text-red-500';
+        function buildScoreCircle(score) {
+            const r = 56;
+            const center = 64;
+            const strokeW = 8;
+            const circ = +(2 * Math.PI * r).toFixed(1);
+            const offset = +((1 - score / 100) * circ).toFixed(1);
+            const colorClass = score >= 70 ? 'text-secondary' : score >= 50 ? 'text-yellow-500' : 'text-red-500';
 
-        return `
+            return `
         <div class="relative w-32 h-32 flex items-center justify-center">
             <svg class="w-full h-full -rotate-90">
                 <circle class="text-primary/10" cx="${center}" cy="${center}" r="${r}"
@@ -501,118 +563,123 @@
             </svg>
             <span class="absolute font-headline text-3xl font-bold text-primary italic">${score}%</span>
         </div>`;
-    }
+        }
 
-    function animateCircle(container) {
-        const circle = container.querySelector('.progress-ring');
-        if (!circle) return;
-        const target = parseFloat(circle.dataset.target);
+        function animateCircle(container) {
+            const circle = container.querySelector('.progress-ring');
+            if (!circle) return;
+            const target = parseFloat(circle.dataset.target);
 
-        requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-                circle.style.transition = 'stroke-dashoffset 1.1s cubic-bezier(.4,0,.2,1)';
-                circle.style.strokeDashoffset = target;
+                requestAnimationFrame(() => {
+                    circle.style.transition = 'stroke-dashoffset 1.1s cubic-bezier(.4,0,.2,1)';
+                    circle.style.strokeDashoffset = target;
+                });
             });
-        });
-    }
+        }
 
-    function renderResults(data) {
-        // Show results panel, hide empty state and resume preview
-        document.getElementById('ats-empty-state').classList.add('hidden');
-        const previewPanel = document.getElementById('ats-resume-preview');
-        if (previewPanel) previewPanel.style.display = 'none';
-        const resultsEl = document.getElementById('ats-results');
-        resultsEl.classList.remove('hidden');
-        // On mobile, auto-switch to results tab
-        switchAtsTab('results');
+        function renderResults(data) {
+            // Show results panel, hide empty state and resume preview
+            document.getElementById('ats-empty-state').classList.add('hidden');
+            const previewPanel = document.getElementById('ats-resume-preview');
+            if (previewPanel) previewPanel.style.display = 'none';
+            const resultsEl = document.getElementById('ats-results');
+            resultsEl.classList.remove('hidden');
+            // On mobile, auto-switch to results tab
+            switchAtsTab('results');
 
-        // Score circle
-        const scoreContainer = document.getElementById('score-circle-container');
-        scoreContainer.innerHTML = buildScoreCircle(data.score);
-        animateCircle(scoreContainer);
+            // Score circle
+            const scoreContainer = document.getElementById('score-circle-container');
+            scoreContainer.innerHTML = buildScoreCircle(data.score);
+            animateCircle(scoreContainer);
 
-        // Rating
-        const ratingColorMap = { success: 'text-secondary', warning: 'text-yellow-500', danger: 'text-red-500' };
-        document.getElementById('score-rating-label').textContent   = data.rating.label;
-        document.getElementById('score-rating-label').className     = `font-bold text-lg ${ratingColorMap[data.rating.color] ?? 'text-secondary'}`;
-        document.getElementById('score-rating-sub').textContent     = data.rating.sublabel;
+            // Rating
+            const ratingColorMap = {
+                success: 'text-secondary',
+                warning: 'text-yellow-500',
+                danger: 'text-red-500'
+            };
+            document.getElementById('score-rating-label').textContent = data.rating.label;
+            document.getElementById('score-rating-label').className =
+                `font-bold text-lg ${ratingColorMap[data.rating.color] ?? 'text-secondary'}`;
+            document.getElementById('score-rating-sub').textContent = data.rating.sublabel;
 
-        // ─ Missing keywords
-        const missingContainer = document.getElementById('missing-keywords-container');
-        document.getElementById('missing-count-badge').textContent = data.missing.length + ' missing';
-        if (data.missing.length === 0) {
-            missingContainer.innerHTML = `<span class="text-xs text-secondary font-semibold">🎉 No critical keywords missing!</span>`;
-        } else {
-            missingContainer.innerHTML = data.missing.map(m => `
+            // ─ Missing keywords
+            const missingContainer = document.getElementById('missing-keywords-container');
+            document.getElementById('missing-count-badge').textContent = data.missing.length + ' missing';
+            if (data.missing.length === 0) {
+                missingContainer.innerHTML =
+                    `<span class="text-xs text-secondary font-semibold">🎉 No critical keywords missing!</span>`;
+            } else {
+                missingContainer.innerHTML = data.missing.map(m => `
                 <div class="flex flex-col p-3 bg-red-500/5 rounded-xl border border-red-500/10 hover:bg-red-500/10 transition-colors">
                     <span class="text-xs font-bold text-red-600 mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">cancel</span> ${escHtml(m.keyword)}</span>
                     <span class="text-[11px] text-primary/70 leading-relaxed">${escHtml(m.context)}</span>
                 </div>
             `).join('');
-        }
-        const pct = data.missing.length > 0
-            ? Math.round((data.missing.length / (data.missing.length + data.matched.length)) * 100)
-            : 0;
-        document.getElementById('missing-keywords-tip').textContent =
-            data.missing.length > 0
-                ? `Adding these terms could increase your ATS visibility by approx. ${pct}%.`
-                : 'Your resume covers all critical keywords from the job description.';
+            }
+            const pct = data.missing.length > 0 ?
+                Math.round((data.missing.length / (data.missing.length + data.matched.length)) * 100) :
+                0;
+            document.getElementById('missing-keywords-tip').textContent =
+                data.missing.length > 0 ?
+                `Adding these terms could increase your ATS visibility by approx. ${pct}%.` :
+                'Your resume covers all critical keywords from the job description.';
 
-        const matchedContainer = document.getElementById('matched-keywords-container');
-        document.getElementById('matched-count-badge').textContent = data.matched.length + ' matched';
-        matchedContainer.innerHTML = data.matched.length
-            ? data.matched.map(k => makeSuccessTag(k)).join('')
-            : `<span class="text-xs text-primary/40">No keywords matched yet.</span>`;
+            const matchedContainer = document.getElementById('matched-keywords-container');
+            document.getElementById('matched-count-badge').textContent = data.matched.length + ' matched';
+            matchedContainer.innerHTML = data.matched.length ?
+                data.matched.map(k => makeSuccessTag(k)).join('') :
+                `<span class="text-xs text-primary/40">No keywords matched yet.</span>`;
 
-        const verbsContainer = document.getElementById('action-verbs-container');
-        verbsContainer.innerHTML = data.action_verbs.length
-            ? data.action_verbs.map(v => makeSuccessTag(v)).join('')
-            : `<span class="text-xs text-primary/40">No strong action verbs detected.</span>`;
+            const verbsContainer = document.getElementById('action-verbs-container');
+            verbsContainer.innerHTML = data.action_verbs.length ?
+                data.action_verbs.map(v => makeSuccessTag(v)).join('') :
+                `<span class="text-xs text-primary/40">No strong action verbs detected.</span>`;
 
-        const missingVerbsRow = document.getElementById('missing-verbs-row');
-        if (data.missing_verbs && data.missing_verbs.length > 0) {
-            missingVerbsRow.classList.remove('hidden');
-            document.getElementById('missing-verbs-container').innerHTML =
-                data.missing_verbs.map(v => makeNeutralTag(v)).join('');
-        } else {
-            missingVerbsRow.classList.add('hidden');
-        }
+            const missingVerbsRow = document.getElementById('missing-verbs-row');
+            if (data.missing_verbs && data.missing_verbs.length > 0) {
+                missingVerbsRow.classList.remove('hidden');
+                document.getElementById('missing-verbs-container').innerHTML =
+                    data.missing_verbs.map(v => makeNeutralTag(v)).join('');
+            } else {
+                missingVerbsRow.classList.add('hidden');
+            }
 
-        // Length tip
-        const lengthCard  = document.getElementById('length-tip-card');
-        const lengthIcon  = document.getElementById('length-tip-icon');
-        const lengthTitle = document.getElementById('length-tip-title');
-        const lengthBody  = document.getElementById('length-tip-body');
+            // Length tip
+            const lengthCard = document.getElementById('length-tip-card');
+            const lengthIcon = document.getElementById('length-tip-icon');
+            const lengthTitle = document.getElementById('length-tip-title');
+            const lengthBody = document.getElementById('length-tip-body');
 
-        if (data.word_count >= 200 && data.word_count <= 800) {
-            lengthCard.className = 'flex items-start gap-4 rounded-2xl p-5 border border-secondary/20 bg-secondary/5';
-            lengthIcon.textContent = 'check_circle';
-            lengthIcon.className   = 'material-symbols-outlined text-[22px] shrink-0 mt-0.5 text-secondary icon-filled';
-            lengthTitle.textContent = 'Resume Length';
-            lengthTitle.className   = 'text-xs font-bold uppercase tracking-wider mb-1 text-secondary';
-        } 
-        else {
-            lengthCard.className = 'flex items-start gap-4 rounded-2xl p-5 border border-yellow-500/20 bg-yellow-500/5';
-            lengthIcon.textContent = 'warning';
-            lengthIcon.className   = 'material-symbols-outlined text-[22px] shrink-0 mt-0.5 text-yellow-500';
-            lengthTitle.textContent = 'Resume Length Warning';
-            lengthTitle.className   = 'text-xs font-bold uppercase tracking-wider mb-1 text-yellow-600';
-        }
-        lengthBody.textContent = data.length_tip;
+            if (data.word_count >= 200 && data.word_count <= 800) {
+                lengthCard.className = 'flex items-start gap-4 rounded-2xl p-5 border border-secondary/20 bg-secondary/5';
+                lengthIcon.textContent = 'check_circle';
+                lengthIcon.className = 'material-symbols-outlined text-[22px] shrink-0 mt-0.5 text-secondary icon-filled';
+                lengthTitle.textContent = 'Resume Length';
+                lengthTitle.className = 'text-xs font-bold uppercase tracking-wider mb-1 text-secondary';
+            } else {
+                lengthCard.className = 'flex items-start gap-4 rounded-2xl p-5 border border-yellow-500/20 bg-yellow-500/5';
+                lengthIcon.textContent = 'warning';
+                lengthIcon.className = 'material-symbols-outlined text-[22px] shrink-0 mt-0.5 text-yellow-500';
+                lengthTitle.textContent = 'Resume Length Warning';
+                lengthTitle.className = 'text-xs font-bold uppercase tracking-wider mb-1 text-yellow-600';
+            }
+            lengthBody.textContent = data.length_tip;
 
-        const breakdownContainer = document.getElementById('section-breakdown-container');
-        if (data.section_breakdown && data.section_breakdown.length > 0) {
-            breakdownContainer.innerHTML = data.section_breakdown.map((sec, i) => {
-                let colorClass = 'text-secondary bg-secondary/10 border-secondary/20';
-                let icon = 'check_circle';
-                if (sec.strength === 'Weak') {
-                    colorClass = 'text-red-500 bg-red-500/10 border-red-500/20';
-                    icon = 'error';
-                } else if (sec.strength === 'Adequate') {
-                    colorClass = 'text-yellow-600 bg-yellow-500/10 border-yellow-500/20';
-                    icon = 'warning';
-                }
-                return `
+            const breakdownContainer = document.getElementById('section-breakdown-container');
+            if (data.section_breakdown && data.section_breakdown.length > 0) {
+                breakdownContainer.innerHTML = data.section_breakdown.map((sec, i) => {
+                    let colorClass = 'text-secondary bg-secondary/10 border-secondary/20';
+                    let icon = 'check_circle';
+                    if (sec.strength === 'Weak') {
+                        colorClass = 'text-red-500 bg-red-500/10 border-red-500/20';
+                        icon = 'error';
+                    } else if (sec.strength === 'Adequate') {
+                        colorClass = 'text-yellow-600 bg-yellow-500/10 border-yellow-500/20';
+                        icon = 'warning';
+                    }
+                    return `
                 <div class="flex items-start gap-4 p-4 rounded-xl border border-primary/5 bg-primary/[0.02] hover:bg-primary/5 transition-colors animate-fade-in-up" style="animation-delay:${i * 80}ms">
                     <div class="flex flex-col items-center justify-center shrink-0 w-[72px] py-2 rounded-lg border ${colorClass}">
                         <span class="material-symbols-outlined text-[20px] mb-1 icon-filled">${icon}</span>
@@ -623,13 +690,13 @@
                         <p class="text-xs text-primary/70 leading-relaxed">${escHtml(sec.feedback)}</p>
                     </div>
                 </div>`;
-            }).join('');
-        } else {
-            breakdownContainer.innerHTML = `<p class="text-sm text-primary/50">No section breakdown available.</p>`;
-        }
+                }).join('');
+            } else {
+                breakdownContainer.innerHTML = `<p class="text-sm text-primary/50">No section breakdown available.</p>`;
+            }
 
-        const insightsContainer = document.getElementById('insights-container');
-        insightsContainer.innerHTML = data.insights.map((ins, i) => `
+            const insightsContainer = document.getElementById('insights-container');
+            insightsContainer.innerHTML = data.insights.map((ins, i) => `
             <div class="animate-fade-in-up" style="animation-delay:${i * 80}ms">
                 <h5 class="font-bold text-sm text-primary mb-1.5">${escHtml(ins.title)}</h5>
                 <p  class="text-sm text-primary/65 leading-relaxed">${escHtml(ins.body)}</p>
@@ -637,115 +704,122 @@
         `).join('');
 
 
-        resultsEl.querySelectorAll(':scope > div, :scope > section, :scope > p').forEach((el, i) => {
-            el.style.animation = `fadeInUp 0.4s ease ${i * 60}ms both`;
-        });
-    }
-
-    document.getElementById('analyze-btn').addEventListener('click', async function () {
-        const resume = document.getElementById('resume-input').value.trim();
-        const jd = document.getElementById('jd-input').value.trim();
-        if (resume.length < 50) {
-            showError('The selected resume must have more content (at least 50 characters).');
-            return;
+            resultsEl.querySelectorAll(':scope > div, :scope > section, :scope > p').forEach((el, i) => {
+                el.style.animation = `fadeInUp 0.4s ease ${i * 60}ms both`;
+            });
         }
-        if (jd.length < 50) {
-            showError('The selected resume\'s job description must have more content (at least 50 characters).');
-            return;
-        }
-        clearError();
-        setLoading(true);
-        const controller = new AbortController();
-        const timeoutId  = setTimeout(() => controller.abort(), 90_000);
 
-        try {
-            let response;
+        document.getElementById('analyze-btn').addEventListener('click', async function() {
+            const resume = document.getElementById('resume-input').value.trim();
+            const jd = document.getElementById('jd-input').value.trim();
+            if (resume.length < 50) {
+                showError('The selected resume must have more content (at least 50 characters).');
+                return;
+            }
+            if (jd.length < 50) {
+                showError(
+                    'The selected resume\'s job description must have more content (at least 50 characters).'
+                    );
+                return;
+            }
+            clearError();
+            setLoading(true);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 90_000);
+
             try {
-                response = await fetch('{{ route("ats.analyze") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({ resume, job_description: jd }),
-                    signal: controller.signal,
-                });
-            } catch (fetchErr) {
-                if (fetchErr.name === 'AbortError') {
-                    showError('Request timed out. The AI service took too long — please try again.');
-                } else {
-                    showError('Network error — please check your connection and try again.');
+                let response;
+                try {
+                    response = await fetch('{{ route('ats.analyze') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            resume,
+                            job_description: jd
+                        }),
+                        signal: controller.signal,
+                    });
+                } catch (fetchErr) {
+                    if (fetchErr.name === 'AbortError') {
+                        showError('Request timed out. The AI service took too long — please try again.');
+                    } else {
+                        showError('Network error — please check your connection and try again.');
+                    }
+                    setLoading(false);
+                    return;
                 }
-                setLoading(false);
-                return;
-            }
 
-            let data;
-            try {
-                data = await response.json();
-            } catch (_) {
-                showError('Unexpected server response. Please try again.');
-                setLoading(false);
-                return;
-            }
+                let data;
+                try {
+                    data = await response.json();
+                } catch (_) {
+                    showError('Unexpected server response. Please try again.');
+                    setLoading(false);
+                    return;
+                }
 
-            if (!response.ok) {
-                const msg = data.message ?? (data.errors ? Object.values(data.errors).flat().join(' ') : 'Something went wrong.');
-                showError(msg);
-                setLoading(false);
-                return;
-            }
+                if (!response.ok) {
+                    const msg = data.message ?? (data.errors ? Object.values(data.errors).flat().join(' ') :
+                        'Something went wrong.');
+                    showError(msg);
+                    setLoading(false);
+                    return;
+                }
 
-            renderResults(data);
-        } finally {
-            clearTimeout(timeoutId);
-            setLoading(false);
+                renderResults(data);
+            } finally {
+                clearTimeout(timeoutId);
+                setLoading(false);
+            }
+        });
+
+        function setLoading(loading) {
+            const btn = document.getElementById('analyze-btn');
+            const label = document.getElementById('analyze-btn-label');
+            const spinner = document.getElementById('analyze-spinner');
+            const icon = document.getElementById('analyze-icon');
+
+            btn.disabled = loading;
+            label.textContent = loading ? 'Analyzing…' : 'Analyze Match';
+            spinner.style.display = loading ? 'inline-block' : 'none';
+            icon.style.display = loading ? 'none' : 'inline-block';
         }
-    });
 
-    function setLoading(loading) {
-        const btn     = document.getElementById('analyze-btn');
-        const label   = document.getElementById('analyze-btn-label');
-        const spinner = document.getElementById('analyze-spinner');
-        const icon    = document.getElementById('analyze-icon');
+        function showError(msg) {
+            const el = document.getElementById('ats-error');
+            document.getElementById('ats-error-msg').textContent = msg;
+            el.classList.remove('hidden');
+        }
 
-        btn.disabled          = loading;
-        label.textContent     = loading ? 'Analyzing…' : 'Analyze Match';
-        spinner.style.display = loading ? 'inline-block' : 'none';
-        icon.style.display    = loading ? 'none' : 'inline-block';
-    }
+        function clearError() {
+            document.getElementById('ats-error').classList.add('hidden');
+        }
 
-    function showError(msg) {
-        const el = document.getElementById('ats-error');
-        document.getElementById('ats-error-msg').textContent = msg;
-        el.classList.remove('hidden');
-    }
-    function clearError() {
-        document.getElementById('ats-error').classList.add('hidden');
-    }
+        document.getElementById('ats-instructions-btn').addEventListener('click', () => {
+            const modal = document.getElementById('instructions-modal');
+            const content = document.getElementById('instructions-content');
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.style.opacity = '1';
+            content.classList.replace('scale-95', 'scale-100');
+        });
 
-    document.getElementById('ats-instructions-btn').addEventListener('click', () => {
-        const modal   = document.getElementById('instructions-modal');
-        const content = document.getElementById('instructions-content');
-        modal.classList.remove('hidden');
-        void modal.offsetWidth;
-        modal.style.opacity = '1';
-        content.classList.replace('scale-95', 'scale-100');
-    });
-
-    function closeInstructions() {
-        const modal   = document.getElementById('instructions-modal');
-        const content = document.getElementById('instructions-content');
-        modal.style.opacity = '0';
-        content.classList.replace('scale-100', 'scale-95');
-        setTimeout(() => modal.classList.add('hidden'), 300);
-    }
+        function closeInstructions() {
+            const modal = document.getElementById('instructions-modal');
+            const content = document.getElementById('instructions-content');
+            modal.style.opacity = '0';
+            content.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
 
 
 
-    document.getElementById('instructions-modal').addEventListener('click', function (e) {
-        if (e.target === this) closeInstructions();
-    });
+        document.getElementById('instructions-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeInstructions();
+        });
     </script>
 @endsection

@@ -17,6 +17,7 @@ use App\Http\Controllers\ManuscriptAtsController;
 use App\Http\Controllers\AiResumeController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\HelpController;
+use App\Http\Controllers\InterviewController;
 
 // Public Routes
 Route::get('/', function () { return view('landing_page.welcome'); })->name('home');
@@ -143,6 +144,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('resumes/{cv}/ai/generate-versions', [AiResumeController::class, 'generateVersions'])
             ->middleware(['ai.quota:3', 'throttle:3,1'])
             ->name('resumes.ai.generateVersions');
+
+        // Mock Interview (I6-01 UI + I6-02 API)
+        Route::prefix('interview')->name('interview.')->group(function () {
+            // Page routes (I6-01, I6-03, I6-04)
+            Route::get('/', [InterviewController::class, 'index'])->name('index');
+            Route::get('/history', [InterviewController::class, 'history'])->name('history');
+            Route::get('/sessions/{session}', [InterviewController::class, 'show'])->name('show');
+            Route::get('/sessions/{session}/feedback', [InterviewController::class, 'feedback'])->name('feedback');
+            Route::post('/sessions/{session}/end', [InterviewController::class, 'endSession'])->name('end');
+
+            // API routes (I6-02, I6-06)
+            Route::post('/start', [InterviewController::class, 'start'])
+                ->middleware(['ai.quota:1', 'interview.trial'])
+                ->name('start');
+            Route::post('/sessions/{session}/message', [InterviewController::class, 'message'])
+                ->middleware('ai.quota:1')
+                ->name('message');
+            Route::post('/sessions/{session}/stream', [InterviewController::class, 'stream'])
+                ->middleware('ai.quota:1')
+                ->name('stream');
+        });
     });
 
     // Admin Routes
