@@ -184,7 +184,7 @@ class InterviewFeedbackTest extends TestCase
             ->get("/interview/sessions/{$session->id}/feedback");
 
         $response->assertStatus(200)
-                 ->assertSee('Siap Bekerja');
+                 ->assertSee('Ready to Work');
     }
 
     // ── 5. Feedback page renders question score cards ─────────────────────────
