@@ -4,15 +4,15 @@
 
 @section('content')
 {{-- Header Section --}}
-<section class="max-w-7xl mx-auto px-8 pt-20 pb-8 text-center">
-    <h1 class="text-5xl md:text-6xl font-headline font-bold text-primary tracking-tighter mb-6 leading-tight">Invest in Your Career</h1>
-    <p class="text-lg md:text-xl text-outline max-w-2xl mx-auto font-body leading-relaxed">
+<section class="max-w-7xl mx-auto px-4 sm:px-8 pt-14 sm:pt-20 pb-8 text-center">
+    <h1 class="text-4xl sm:text-5xl md:text-6xl font-headline font-bold text-primary tracking-tighter mb-4 sm:mb-6 leading-tight">Invest in Your Career</h1>
+    <p class="text-base sm:text-lg md:text-xl text-outline max-w-2xl mx-auto font-body leading-relaxed">
         Start for free, or unlock your full potential with AI Premium features.
     </p>
 </section>
 
 {{-- Pricing Cards Section --}}
-<section class="max-w-7xl mx-auto px-8 pb-24">
+<section class="max-w-7xl mx-auto px-4 sm:px-8 pb-16 sm:pb-24">
     <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
 
         {{-- Free Plan --}}
@@ -71,27 +71,23 @@
 </section>
 
 {{-- Compare Our Features Section --}}
-<section class="max-w-4xl mx-auto px-8 py-24">
-    <h2 class="text-3xl md:text-4xl font-headline font-bold text-center mb-16 tracking-tighter text-primary">Compare Our Features</h2>
+<section class="max-w-4xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
+    <h2 class="text-3xl md:text-4xl font-headline font-bold text-center mb-10 sm:mb-16 tracking-tighter text-primary">Compare Our Features</h2>
 
-    <div class="w-full">
+    {{-- Desktop Table (hidden on mobile) --}}
+    <div class="hidden sm:block w-full">
         {{-- Table Header --}}
         <div class="grid grid-cols-3 pb-4 border-b border-primary/10 mb-2">
             <span class="text-[10px] text-outline uppercase tracking-[0.15em] font-bold font-body">Key Features</span>
             <span class="text-[10px] text-outline uppercase tracking-[0.15em] font-bold font-body text-center">Free</span>
             <span class="text-[10px] text-secondary uppercase tracking-[0.15em] font-bold font-body text-center">Premium</span>
         </div>
-
-        {{-- Feature Rows --}}
         <div class="divide-y divide-primary/5">
-            {{-- Number of Resumes --}}
             <div class="grid grid-cols-3 py-5 items-center">
                 <span class="text-sm font-body text-primary">Number of Resumes</span>
                 <span class="text-sm font-body text-outline text-center">1 Resume</span>
                 <span class="text-sm font-body font-bold text-primary text-center">Unlimited</span>
             </div>
-
-            {{-- AI Bullet Point Optimizer --}}
             <div class="grid grid-cols-3 py-5 items-center">
                 <span class="text-sm font-body text-primary">AI Bullet Point Optimizer</span>
                 <span class="text-sm font-body text-outline text-center">—</span>
@@ -99,8 +95,6 @@
                     <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1; font-size: 20px;">check_circle</span>
                 </span>
             </div>
-
-            {{-- Real-time ATS Matcher --}}
             <div class="grid grid-cols-3 py-5 items-center">
                 <span class="text-sm font-body text-primary">Real-time ATS Matcher</span>
                 <span class="text-sm font-body text-outline text-center">—</span>
@@ -108,15 +102,11 @@
                     <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1; font-size: 20px;">check_circle</span>
                 </span>
             </div>
-
-            {{-- Premium PDF Export --}}
             <div class="grid grid-cols-3 py-5 items-center">
                 <span class="text-sm font-body text-primary">Premium PDF Export</span>
                 <span class="text-sm font-body text-outline text-center">Standard</span>
                 <span class="text-sm font-body font-bold text-primary text-center">Premium</span>
             </div>
-
-            {{-- Priority Support --}}
             <div class="grid grid-cols-3 py-5 items-center">
                 <span class="text-sm font-body text-primary">Priority Support</span>
                 <span class="text-sm font-body text-outline text-center">—</span>
@@ -126,10 +116,47 @@
             </div>
         </div>
     </div>
+
+    {{-- Mobile Cards (hidden on sm+) --}}
+    <div class="sm:hidden space-y-3">
+        @php
+        $features = [
+            ['label' => 'Number of Resumes',       'free' => '1 Resume',  'premium' => 'Unlimited', 'premiumCheck' => false],
+            ['label' => 'AI Bullet Point Optimizer','free' => null,        'premium' => null,         'premiumCheck' => true],
+            ['label' => 'Real-time ATS Matcher',   'free' => null,        'premium' => null,         'premiumCheck' => true],
+            ['label' => 'Premium PDF Export',      'free' => 'Standard',  'premium' => 'Premium',    'premiumCheck' => false],
+            ['label' => 'Priority Support',        'free' => null,        'premium' => null,         'premiumCheck' => true],
+        ];
+        @endphp
+        @foreach($features as $f)
+        <div class="bg-surface-container-lowest rounded-lg border border-primary/5 p-4">
+            <p class="text-sm font-bold text-primary font-body mb-3">{{ $f['label'] }}</p>
+            <div class="flex justify-around">
+                <div class="text-center">
+                    <p class="text-[10px] text-outline uppercase tracking-wider font-bold mb-1">Free</p>
+                    @if($f['free'])
+                        <span class="text-sm font-body text-outline">{{ $f['free'] }}</span>
+                    @else
+                        <span class="text-outline">—</span>
+                    @endif
+                </div>
+                <div class="w-px bg-primary/10"></div>
+                <div class="text-center">
+                    <p class="text-[10px] text-secondary uppercase tracking-wider font-bold mb-1">Premium</p>
+                    @if($f['premiumCheck'])
+                        <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1; font-size: 20px;">check_circle</span>
+                    @else
+                        <span class="text-sm font-body font-bold text-primary">{{ $f['premium'] }}</span>
+                    @endif
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
 </section>
 
 {{-- FAQ Section --}}
-<section class="max-w-3xl mx-auto px-8 py-24" x-data="{ active: null }">
+<section class="max-w-3xl mx-auto px-4 sm:px-8 py-16 sm:py-24" x-data="{ active: null }">
     <h2 class="text-3xl md:text-4xl font-headline font-bold text-center mb-12 tracking-tighter text-primary">Frequently Asked Questions</h2>
     <div class="space-y-4">
         {{-- FAQ 1 --}}

@@ -130,6 +130,38 @@
         </div>
     </div>
 
+    <!-- Rename Modal -->
+    <div id="rename-modal" class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="rename-modal-content" class="bg-tertiary w-full max-w-md rounded-2xl shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
+                <h3 class="font-headline text-xl font-bold text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary">drive_file_rename_outline</span> Rename Resume
+                </h3>
+                <button onclick="closeRenameModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
+            </div>
+            <div class="p-6 bg-surface">
+                <form id="rename-form" method="POST" action="">
+                    @csrf
+                    @method('PATCH')
+                    <label for="rename-title-input" class="block text-sm font-label font-semibold text-primary/70 mb-2">Resume Title</label>
+                    <input
+                        id="rename-title-input"
+                        type="text"
+                        name="title"
+                        maxlength="100"
+                        autocomplete="off"
+                        placeholder="Enter resume title..."
+                        class="w-full px-4 py-2.5 rounded-lg border border-primary/20 bg-tertiary text-primary font-body text-sm focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-colors"
+                    >
+                    <div class="flex justify-end gap-3 mt-6">
+                        <button type="button" onclick="closeRenameModal()" class="px-4 py-2 rounded-lg font-bold text-primary/70 hover:bg-primary/5 transition-colors">Cancel</button>
+                        <button type="submit" class="px-5 py-2 rounded-lg font-bold bg-secondary text-white hover:bg-secondary/90 transition-colors shadow-md">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         function openCreateModal() {
             const modal = document.getElementById('create-modal');
@@ -200,5 +232,48 @@
                 modal.classList.add('hidden');
             }, 300);
         }
+
+        // Rename Modal Logic
+        function openRenameModal(cvId, currentTitle) {
+            const modal = document.getElementById('rename-modal');
+            const modalContent = document.getElementById('rename-modal-content');
+            const renameForm = document.getElementById('rename-form');
+            const titleInput = document.getElementById('rename-title-input');
+
+            renameForm.action = `/resumes/${cvId}`;
+            titleInput.value = currentTitle;
+
+            modal.classList.remove('hidden');
+            void modal.offsetWidth; // Trigger reflow
+            modal.style.opacity = '1';
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+
+            // Focus & select all text for quick editing
+            setTimeout(() => {
+                titleInput.focus();
+                titleInput.select();
+            }, 150);
+        }
+
+        function closeRenameModal() {
+            const modal = document.getElementById('rename-modal');
+            const modalContent = document.getElementById('rename-modal-content');
+            modal.style.opacity = '0';
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Close modals on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeRenameModal();
+                closeDeleteModal();
+                closeCreateModal();
+            }
+        });
     </script>
 @endsection
