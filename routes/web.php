@@ -27,6 +27,10 @@ Route::get('/templates', function () {
 })->name('templates');
 Route::get('/pricing', function () { return view('landing_page.pricing'); })->name('pricing');
 
+// Public Template Demo Preview (dummy data only — no user data exposed)
+Route::get('/templates/{template}/demo', [\App\Http\Controllers\Admin\TemplateController::class, 'preview'])
+    ->name('templates.demo');
+
 // Webhook Route
 Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 

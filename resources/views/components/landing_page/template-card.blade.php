@@ -3,15 +3,14 @@
 {{-- Template Card: Menggunakan rounded-sm (4px) sesuai pedoman kelima DESIGN.md --}}
 <div class="group bg-surface-container-lowest rounded-sm border border-primary/5 p-2 transition-all duration-500 hover:shadow-xl">
     
-    {{-- Preview Area: Background shifting ke surface-container-low sesuai pedoman kedua DESIGN.md --}}
-    <div class="aspect-[1/1.41] bg-surface-container-low rounded-sm overflow-hidden relative flex flex-col p-6 border border-primary/5">
-        
-        <div class="opacity-60 group-hover:opacity-100 transition-opacity duration-500">
-            {{ $slot }}
-        </div>
+    {{-- Preview Area: identik dengan dashboard resume-card --}}
+    <div class="aspect-[210/297] bg-surface-container-low rounded-sm overflow-hidden relative border border-primary/5 cursor-pointer">
 
-        {{-- Overlay menggunakan backdrop-blur 12px sesuai aturan Glassmorphism --}}
-        <div class="absolute inset-0 bg-primary/60 backdrop-blur-[12px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center text-white cursor-pointer">
+        {{-- Slot: iframe langsung di sini, sama seperti dashboard --}}
+        {{ $slot }}
+
+        {{-- Overlay hover --}}
+        <div class="absolute inset-0 bg-primary/60 backdrop-blur-[12px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center text-white z-20">
             <span class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-6 py-2.5 rounded-full text-sm font-bold border border-white/30 hover:bg-white/30 transition-all">
                 <span class="material-symbols-outlined text-[18px]">visibility</span>
                 Preview Template

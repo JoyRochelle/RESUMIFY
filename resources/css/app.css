@@ -21,6 +21,9 @@
     --color-surface-container-low: #f7f2ee;
     /* Estimated for alternating lists */
 
+    /* Navbar & Footer */
+    --color-nav-footer: #f0e8dc;
+
     /* Typography */
     --font-headline: "Newsreader", serif;
     --font-body: "Manrope", sans-serif;
@@ -32,8 +35,13 @@
 }
 
 @layer base {
+    html {
+        overflow-x: hidden;
+    }
+
     body {
         @apply bg-surface text-primary font-body;
+        overflow-x: hidden;
     }
 
     h1,

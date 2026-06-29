@@ -32,7 +32,17 @@
         <a href="{{ $url }}" class="absolute inset-0 z-30"></a>
     </div>
     <div class="p-6 bg-tertiary relative z-20">
-        <h3 class="text-lg font-headline font-bold text-primary mb-1">{{ $title }}</h3>
+        <div class="flex items-start justify-between gap-2 mb-1">
+            <h3 class="text-lg font-headline font-bold text-primary leading-tight">{{ $title }}</h3>
+            @if($cvId)
+            <button type="button"
+                    onclick="openRenameModal('{{ $cvId }}', {{ json_encode($title) }})"
+                    title="Rename Resume"
+                    class="flex-shrink-0 p-1 hover:bg-primary/5 hover:text-secondary rounded-full transition-colors text-primary/30 flex items-center justify-center mt-0.5">
+                <span class="material-symbols-outlined text-[16px]">drive_file_rename_outline</span>
+            </button>
+            @endif
+        </div>
         <p class="text-sm text-primary/60 font-label mb-6">Last edited: {{ $date }}</p>
         <div class="flex items-center justify-between border-t border-primary/5 pt-4">
             <a href="{{ $url }}" class="text-secondary font-label font-bold text-sm hover:underline flex items-center gap-1">
@@ -40,9 +50,30 @@
                 Edit
             </a>
             @if($cvId)
-            <button type="button" onclick="openDeleteModal('{{ $cvId }}')" class="p-1 hover:bg-red-50 hover:text-red-600 rounded-full transition-colors text-primary/40 flex items-center justify-center">
-                <span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
-            </button>
+            <div class="flex items-center gap-1">
+                {{-- Rename Button --}}
+                <button type="button"
+                        onclick="openRenameModal('{{ $cvId }}', {{ json_encode($title) }})"
+                        title="Rename Resume"
+                        class="p-1 hover:bg-primary/5 hover:text-secondary rounded-full transition-colors text-primary/40 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[20px]">drive_file_rename_outline</span>
+                </button>
+                {{-- Duplicate Button --}}
+                <form method="POST" action="{{ route('resumes.duplicate', $cvId) }}" class="inline">
+                    @csrf
+                    <button type="submit"
+                            title="Duplicate Resume"
+                            class="p-1 hover:bg-blue-50 hover:text-blue-600 rounded-full transition-colors text-primary/40 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[20px]" data-icon="content_copy">content_copy</span>
+                    </button>
+                </form>
+                {{-- Delete Button --}}
+                <button type="button" onclick="openDeleteModal('{{ $cvId }}')"
+                        title="Delete Resume"
+                        class="p-1 hover:bg-red-50 hover:text-red-600 rounded-full transition-colors text-primary/40 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+                </button>
+            </div>
             @else
             <button class="p-1 hover:bg-surface-container-low rounded-full transition-colors text-primary/40 flex items-center justify-center">
                 <span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
