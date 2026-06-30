@@ -126,7 +126,11 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getAvatarUrlAttribute($value)
     {
-        return $value ? asset('storage/' . $value) : 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+        if ($value) {
+            return str_starts_with($value, 'http') ? $value : asset('storage/' . $value);
+        }
+        
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
     }
 
     // Returns the max quota for this user based on their role

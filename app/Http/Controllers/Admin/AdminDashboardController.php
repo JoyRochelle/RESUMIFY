@@ -139,4 +139,9 @@ class AdminDashboardController extends Controller
             return null;
         });
     }
+
+    public function settings(): View
+    {
+        return view('admin.settings');
+    }
 }
