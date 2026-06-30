@@ -154,10 +154,9 @@ function templateLibrary() {
         previewUrl: '',
         tabs: [
             { key: 'all', label: 'All' },
-            { key: 'professional', label: 'Professional' },
-            { key: 'creative', label: 'Creative' },
-            { key: 'technology', label: 'Technology' },
-            { key: 'managerial', label: 'Managerial' },
+            @foreach($templates->pluck('category')->unique() as $cat)
+            { key: '{{ $cat }}', label: '{{ ucfirst($cat) }}' },
+            @endforeach
         ],
         openPreview(id, name, description, url) {
             this.previewName = name;
