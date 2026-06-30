@@ -110,6 +110,24 @@ class ResumeController extends Controller
                          ->with('success', 'Resume deleted successfully!');
     }
 
+    /**
+     * Update the resume's template.
+     */
+    public function updateTemplate(Request $request, Cv $cv)
+    {
+        Gate::authorize('update', $cv);
+        
+        $request->validate([
+            'template_id' => 'required|exists:cv_templates,id',
+        ]);
+        
+        $cv->update(['template_id' => $request->template_id]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Template updated successfully.'
+        ]);
+    }
      /**
      * Duplicate a resume and all its sections.
      */

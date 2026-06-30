@@ -1,9 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SocialAuthController;
-use App\Http\Controllers\ResumeController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminLogController;
 use App\Http\Controllers\Admin\AdminMonitorController;
@@ -11,32 +7,36 @@ use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\SupportTicketController;
 use App\Http\Controllers\Admin\TemplateController;
-use App\Http\Controllers\ResumeExportController;
-use App\Http\Controllers\AtsController;
-use App\Http\Controllers\ManuscriptAtsController;
 use App\Http\Controllers\AiResumeController;
-use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\AtsController;
 use App\Http\Controllers\HelpController;
 use App\Http\Controllers\InterviewController;
+use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\ManuscriptAtsController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ResumeController;
+use App\Http\Controllers\ResumeExportController;
+use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 // Public Routes
-Route::get('/', function () { return view('landing_page.welcome'); })->name('home');
-Route::get('/templates', function () {
-    $templates = \App\Models\CvTemplate::where('is_active', true)->orderBy('sort_order')->get();
-    return view('landing_page.templates', compact('templates'));
-})->name('templates');
-Route::get('/pricing', function () { return view('landing_page.pricing'); })->name('pricing');
+Route::controller(LandingPageController::class)->group(function () {
+    Route::get('/', 'welcome')->name('home');
+    Route::get('/templates', 'templates')->name('templates');
+    Route::get('/pricing', 'pricing')->name('pricing');
+});
 
 // Public Template Demo Preview (dummy data only — no user data exposed)
-Route::get('/templates/{template}/demo', [\App\Http\Controllers\Admin\TemplateController::class, 'preview'])
+Route::get('/templates/{template}/demo', [TemplateController::class, 'preview'])
     ->name('templates.demo');
 
 // Webhook Route
 Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 
-
 // OAuth Routes
-Route::middleware('guest')->group(function ()  {
+Route::middleware('guest')->group(function () {
     Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect'])->name('social.redirect');
     Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
 });
@@ -45,165 +45,150 @@ Route::middleware('guest')->group(function ()  {
 Route::middleware(['auth', 'verified'])->group(function () {
     // Customer Routes (verified email required)
     Route::middleware(['role:basic,premium'])->group(function () {
-        Route::get('/dashboard', function () {
-            $templates = \App\Models\CvTemplate::where('is_active', true)->orderBy('sort_order')->get();
-            return view('user.dashboard', compact('templates'));
-        })->name('dashboard');
 
-        Route::get('/manuscripts', function (\Illuminate\Http\Request $request) {
-            if ($request->has('cv_id')) {
-                $cv = auth()->user()->cvs()->findOrFail($request->cv_id);
-            } else {
-                $cv = auth()->user()->cvs()->latest()->first();
-            }
-            
-            // If they have no CVs at all, force them to the dashboard to pick a template
-            if (!$cv) {
-                return redirect()->route('dashboard', ['create' => 'true']);
-            }
+        // Dashboard & Main Pages
+        Route::controller(UserController::class)->group(function () {
+            Route::get('/dashboard', 'dashboard')->name('dashboard');
+            Route::get('/manuscripts', 'manuscript')->name('user.manuscript');
+            Route::get('/ai-assistant', 'aiAssistant')->name('user.ai-assistant');
+            Route::get('/settings', 'settings')->name('user.settings');
+            Route::get('/upgrade-quota', 'upgradeQuota')->name('user.upgrade-quota');
+        });
 
-            // Ensure essential sections exist
-            $required = ['personal_info', 'work_experience', 'education', 'skills', 'target_job'];
-            $existing = $cv->sections()->pluck('type')->toArray();
-            $missing  = array_diff($required, $existing);
-            
-            if (!empty($missing)) {
-                foreach ($missing as $type) {
-                    $cv->sections()->create([
-                        'type' => $type,
-                        'title' => ucwords(str_replace('_', ' ', $type)),
-                        'order' => array_search($type, $required) + 1,
-                        'content' => null
-                    ]);
-                }
-                $cv->load('sections');
-            }
-            
-            $templates = \App\Models\CvTemplate::where('is_active', true)->orderBy('sort_order')->get();
-            return view('user.manuscript', compact('templates', 'cv'));
-        })->name('user.manuscript');
+        // Help Center Routes
+        Route::prefix('help')->controller(HelpController::class)->group(function () {
+            Route::get('/', 'index')->name('user.help');
+            Route::post('/contact', 'contact')->name('help.contact');
+            Route::get('/tickets', 'tickets')->name('help.tickets');
+            Route::get('/tickets/{ticket}', 'showTicket')->name('help.tickets.show');
+        });
 
-        Route::get('/ai-assistant', function () {
-            $user = auth()->user();
-            $cvs = $user->cvs()->with('sections')->latest()->get();
-            
-            $quota = [
-                'remaining'  => $user->getQuotaRemaining(),
-                'limit'      => $user->getQuotaLimit(),
-                'percentage' => $user->getQuotaPercentage(),
-            ];
-            
-            return view('user.ai-assistant', compact('cvs', 'quota'));
-        })->name('user.ai-assistant');
-
-        Route::get('/settings', function () {
-            return view('user.settings');
-        })->name('user.settings');
-
-        Route::get('/help', [HelpController::class, 'index'])->name('user.help');
-        Route::post('/help/contact', [HelpController::class, 'contact'])->name('help.contact');
-        Route::get('/help/tickets', [HelpController::class, 'tickets'])->name('help.tickets');
-        Route::get('/help/tickets/{ticket}', [HelpController::class, 'showTicket'])->name('help.tickets.show');
-
-        Route::get('/upgrade-quota', function () {
-            return view('user.upgrade-quota');
-        })->name('user.upgrade-quota');
-
+        // Payment Routes
         Route::post('/payment/create', [PaymentController::class, 'create'])->name('payment.create');
 
-        // Profile management routes
-        Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
-        Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        // Profile Management Routes
+        Route::prefix('profile')->controller(ProfileController::class)->name('profile.')->group(function () {
+            Route::post('/avatar', 'updateAvatar')->name('avatar.update');
+            Route::delete('/avatar', 'deleteAvatar')->name('avatar.delete');
+            Route::delete('/', 'destroy')->name('destroy');
+        });
 
-        // Public Template Preview
-        Route::get('/templates/{template}/preview', [\App\Http\Controllers\Admin\TemplateController::class, 'preview'])->name('templates.preview');
-
-        // Resumes routes
-        Route::resource('resumes',ResumeController::class)->parameters([
-            'resumes' => 'cv'
+        // Resumes Resource
+        Route::resource('resumes', ResumeController::class)->parameters([
+            'resumes' => 'cv',
         ]);
 
-        Route::post('resumes/{cv}/duplicate', [ResumeController::class, 'duplicate'])->name('resumes.duplicate');
+        // Resumes Nested Routes
+        Route::prefix('resumes/{cv}')->name('resumes.')->group(function () {
+            // General actions
+            Route::controller(ResumeController::class)->group(function () {
+                Route::post('/duplicate', 'duplicate')->name('duplicate');
+                Route::patch('/template', 'updateTemplate')->name('updateTemplate');
 
-        Route::put('resumes/{cv}/section/{section}', [ResumeController::class, 'updateSection'])->name('resumes.updateSection');
-        Route::post('resumes/{cv}/section', [ResumeController::class, 'storeSection'])->name('resumes.sections.store');
-        Route::delete('resumes/{cv}/section/{section}', [ResumeController::class, 'destroySection'])->name('resumes.sections.destroy');
-        Route::post('resumes/{cv}/ats-score', [ManuscriptAtsController::class, 'score'])
-            ->middleware('throttle:5,1')
-            ->name('resumes.atsScore');
+                // Section actions
+                Route::prefix('section')->group(function () {
+                    Route::post('/', 'storeSection')->name('sections.store');
+                    Route::put('/{section}', 'updateSection')->name('updateSection');
+                    Route::delete('/{section}', 'destroySection')->name('sections.destroy');
+                });
+            });
 
-        Route::get('resumes/{cv}/preview', [ResumeExportController::class, 'preview'])->name('resumes.preview');
-        Route::get('resumes/{cv}/pdf', [ResumeExportController::class, 'downloadPdf'])->name('resumes.pdf');
+            // ATS actions
+            Route::post('/ats-score', [ManuscriptAtsController::class, 'score'])
+                ->middleware('throttle:5,1')
+                ->name('atsScore');
 
-        // AI Features — Premium, quota-gated, throttled
-        Route::post('/ats/analyze', [AtsController::class, 'analyze'])
-            ->middleware(['ai.quota:1', 'throttle:5,1'])
-            ->name('ats.analyze');
+            // Export & Preview actions
+            Route::controller(ResumeExportController::class)->group(function () {
+                Route::get('/preview', 'preview')->name('preview');
+                Route::get('/pdf', 'downloadPdf')->name('pdf');
+            });
 
-        Route::post('resumes/{cv}/ai/refine-bullet', [AiResumeController::class, 'refineBullet'])
-            ->middleware(['ai.quota:1', 'throttle:10,1'])
-            ->name('resumes.ai.refineBullet');
+            // AI Features actions
+            Route::prefix('ai')->controller(AiResumeController::class)->name('ai.')->group(function () {
+                Route::post('/refine-bullet', 'refineBullet')
+                    ->middleware(['ai.quota:1', 'throttle:10,1'])
+                    ->name('refineBullet');
 
-        Route::post('resumes/{cv}/ai/generate-versions', [AiResumeController::class, 'generateVersions'])
-            ->middleware(['ai.quota:3', 'throttle:3,1'])
-            ->name('resumes.ai.generateVersions');
+                Route::post('/generate-versions', 'generateVersions')
+                    ->middleware(['ai.quota:3', 'throttle:3,1'])
+                    ->name('generateVersions');
+            });
+        });
 
-        // Mock Interview (I6-01 UI + I6-02 API)
-        Route::prefix('interview')->name('interview.')->group(function () {
-            // Page routes (I6-01, I6-03, I6-04)
-            Route::get('/', [InterviewController::class, 'index'])->name('index');
-            Route::get('/history', [InterviewController::class, 'history'])->name('history');
-            Route::get('/sessions/{session}', [InterviewController::class, 'show'])->name('show');
-            Route::get('/sessions/{session}/feedback', [InterviewController::class, 'feedback'])->name('feedback');
-            Route::post('/sessions/{session}/end', [InterviewController::class, 'endSession'])->name('end');
+        // Mock Interview Routes
+        Route::prefix('interview')->controller(InterviewController::class)->name('interview.')->group(function () {
+            // Page routes
+            Route::get('/', 'index')->name('index');
+            Route::get('/history', 'history')->name('history');
+            Route::get('/sessions/{session}', 'show')->name('show');
+            Route::get('/sessions/{session}/feedback', 'feedback')->name('feedback');
+            Route::post('/sessions/{session}/end', 'endSession')->name('end');
 
-            // API routes (I6-02, I6-06)
-            Route::post('/start', [InterviewController::class, 'start'])
+            // API routes
+            Route::post('/start', 'start')
                 ->middleware(['ai.quota:1', 'interview.trial'])
                 ->name('start');
-            Route::post('/sessions/{session}/message', [InterviewController::class, 'message'])
+            Route::post('/sessions/{session}/message', 'message')
                 ->middleware('ai.quota:1')
                 ->name('message');
-            Route::post('/sessions/{session}/stream', [InterviewController::class, 'stream'])
+            Route::post('/sessions/{session}/stream', 'stream')
                 ->middleware('ai.quota:1')
                 ->name('stream');
         });
+
+        // AI Global Features
+        Route::post('/ats/analyze', [AtsController::class, 'analyze'])
+            ->middleware(['ai.quota:1', 'throttle:5,1'])
+            ->name('ats.analyze');
     });
 
     // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/users',                   [AdminUserController::class, 'index'])->name('users');
-        Route::get('/users/{user}',            [AdminUserController::class, 'show'])->name('users.show');
-        Route::patch('/users/{user}/plan',     [AdminUserController::class, 'overridePlan'])->name('users.plan');
-        Route::patch('/users/{user}/credits',  [AdminUserController::class, 'adjustCredits'])->name('users.credits');
-        Route::patch('/users/{user}/suspend',  [AdminUserController::class, 'toggleSuspend'])->name('users.suspend');
-        Route::delete('/users/{user}',         [AdminUserController::class, 'destroy'])->name('users.destroy');
-        
-        Route::get('/support',                       [SupportTicketController::class, 'index'])->name('support');
-        Route::get('/support/{ticket}',              [SupportTicketController::class, 'show'])->name('support.show');
-        Route::post('/support/{ticket}/reply',       [SupportTicketController::class, 'reply'])->name('support.reply');
-        Route::patch('/support/{ticket}/assign',     [SupportTicketController::class, 'assign'])->name('support.assign');
-        Route::patch('/support/{ticket}/status',     [SupportTicketController::class, 'updateStatus'])->name('support.status');
+
+        // User Management Routes
+        Route::prefix('users')->controller(AdminUserController::class)->name('users')->group(function () {
+            Route::get('/', 'index'); // Maps to admin.users
+            Route::get('/{user}', 'show')->name('.show');
+            Route::patch('/{user}/plan', 'overridePlan')->name('.plan');
+            Route::patch('/{user}/credits', 'adjustCredits')->name('.credits');
+            Route::patch('/{user}/suspend', 'toggleSuspend')->name('.suspend');
+            Route::delete('/{user}', 'destroy')->name('.destroy');
+        });
+
+        // Support Ticket Routes
+        Route::prefix('support')->controller(SupportTicketController::class)->name('support')->group(function () {
+            Route::get('/', 'index'); // Maps to admin.support
+            Route::get('/{ticket}', 'show')->name('.show');
+            Route::post('/{ticket}/reply', 'reply')->name('.reply');
+            Route::patch('/{ticket}/assign', 'assign')->name('.assign');
+            Route::patch('/{ticket}/status', 'updateStatus')->name('.status');
+        });
 
         // Template Library CRUD
         Route::resource('templates', TemplateController::class);
-        Route::patch('templates/{template}/toggle', [TemplateController::class, 'toggle'])->name('templates.toggle');
-        Route::get('templates/{template}/preview', [TemplateController::class, 'preview'])->name('templates.preview');
-        
-        Route::get('/logs',                  [AdminLogController::class, 'index'])->name('logs');
-        Route::get('/logs/export/ai',        [AdminLogController::class, 'exportAiCsv'])->name('logs.export.ai');
-        Route::get('/logs/export/finance',   [AdminLogController::class, 'exportFinanceCsv'])->name('logs.export.finance');
+        Route::prefix('templates/{template}')->controller(TemplateController::class)->name('templates.')->group(function () {
+            Route::patch('/toggle', 'toggle')->name('toggle');
+            Route::get('/preview', 'preview')->name('preview');
+        });
+
+        // Log Routes
+        Route::prefix('logs')->controller(AdminLogController::class)->name('logs')->group(function () {
+            Route::get('/', 'index'); // Maps to admin.logs
+            Route::get('/export/ai', 'exportAiCsv')->name('.export.ai');
+            Route::get('/export/finance', 'exportFinanceCsv')->name('.export.finance');
+        });
 
         Route::get('/monitor', [AdminMonitorController::class, 'index'])->name('monitor');
 
-        Route::get('/reports',             [AdminReportController::class, 'index'])->name('reports');
-        Route::get('/reports/export/pdf',  [AdminReportController::class, 'exportPdf'])->name('reports.export.pdf');
-        Route::get('/reports/export/csv',  [AdminReportController::class, 'exportCsv'])->name('reports.export.csv');
+        // Report Routes
+        Route::prefix('reports')->controller(AdminReportController::class)->name('reports')->group(function () {
+            Route::get('/', 'index'); // Maps to admin.reports
+            Route::get('/export/pdf', 'exportPdf')->name('.export.pdf');
+            Route::get('/export/csv', 'exportCsv')->name('.export.csv');
+        });
 
-        Route::get('/settings', function () {
-            return view('admin.settings');
-        })->name('settings');
+        Route::get('/settings', [AdminDashboardController::class, 'settings'])->name('settings');
     });
 });

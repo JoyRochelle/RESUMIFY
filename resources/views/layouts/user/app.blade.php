@@ -17,7 +17,9 @@
     
     @include('layouts.user.sidenavbar')
 
-    @yield('content')
+    <div class="flex-1 w-full md:pl-64 min-h-screen flex flex-col">
+        @yield('content')
+    </div>
 
     @include('layouts.user.mobilenavbar')
 

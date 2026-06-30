@@ -34,14 +34,7 @@
     <div class="p-6 bg-tertiary relative z-20">
         <div class="flex items-start justify-between gap-2 mb-1">
             <h3 class="text-lg font-headline font-bold text-primary leading-tight">{{ $title }}</h3>
-            @if($cvId)
-            <button type="button"
-                    onclick="openRenameModal('{{ $cvId }}', {{ json_encode($title) }})"
-                    title="Rename Resume"
-                    class="flex-shrink-0 p-1 hover:bg-primary/5 hover:text-secondary rounded-full transition-colors text-primary/30 flex items-center justify-center mt-0.5">
-                <span class="material-symbols-outlined text-[16px]">drive_file_rename_outline</span>
-            </button>
-            @endif
+
         </div>
         <p class="text-sm text-primary/60 font-label mb-6">Last edited: {{ $date }}</p>
         <div class="flex items-center justify-between border-t border-primary/5 pt-4">

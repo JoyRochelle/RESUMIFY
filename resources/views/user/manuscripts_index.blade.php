@@ -1,29 +1,19 @@
 @extends('layouts.user.app')
 
-@section('title', 'Resumify - Dashboard')
+@section('title', 'Resumify - Your Manuscripts')
 
 @section('content')
     <main class="flex-1 p-4 sm:p-6 md:p-12 max-w-7xl mx-auto w-full pb-24 md:pb-12">
         <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 md:mb-16">
             <div>
-                <h1 class="text-3xl sm:text-4xl md:text-6xl font-headline text-primary tracking-tight leading-tight mb-4">Welcome, <br/>{{ auth()->user()->name }}</h1>
-                <div class="flex flex-wrap items-center gap-4">
-                    <span class="inline-flex items-center px-4 py-1.5 rounded-full bg-secondary text-tertiary text-sm font-label font-semibold">
-                        {{ auth()->user()->isPremium() ? 'Premium Member' : 'Basic Member' }}
-                    </span>
-                    <span class="text-primary/60 font-label text-sm">AI Quota Remaining: <span class="serif-number font-bold text-primary">{{ auth()->user()->getQuotaRemaining() }}</span>/{{ auth()->user()->getQuotaLimit() }}</span>
-                </div>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-headline text-primary tracking-tight leading-tight mb-2">Your Manuscripts</h1>
+                <p class="text-primary/60 font-label text-sm max-w-md">Manage your existing resumes or create a new one tailored to your target job.</p>
             </div>
-            
+
             <x-user.btn-create />
         </header>
 
         <section>
-            <div class="flex items-center justify-between mb-8">
-                <h2 class="text-xl font-body font-medium text-primary tracking-wide">Your Resumes</h2>
-                <div class="h-px flex-1 mx-6 bg-primary/10 hidden md:block"></div>
-            </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @php
                     $cvs = auth()->user()->cvs()->latest('updated_at')->get();
@@ -50,17 +40,6 @@
             </div>
         </section>
 
-        <section class="mt-24 grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-primary/10 pt-12">
-            
-            <x-user.insight-block number="01" label="DAILY TIP">
-                "Use strong action verbs to give weight to your professional narrative."
-            </x-user.insight-block>
-
-            <x-user.insight-block number="02" label="ATS Analyzer">
-                Check how well your resume matches a job description with our <a href="{{ route('user.ai-assistant') }}" class="text-secondary font-bold hover:underline">ATS Analyzer</a> — get a keyword score and actionable suggestions in seconds.
-            </x-user.insight-block>
-
-        </section>
     </main>
 
     <!-- Template Selection Modal for New Resumes -->
