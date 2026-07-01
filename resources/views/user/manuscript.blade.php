@@ -5,13 +5,29 @@
 @section('body_class', 'h-screen flex overflow-hidden')
 
 @section('content')
+    @php
+        $user = auth()->user();
+    @endphp
+
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         
         {{-- Page Header --}}
         <x-user.page-header title="Editor: Senior Product Designer" backUrl="{{ route('dashboard') }}">
             <x-user.button type="button" onclick="openCvVersionsModal()" variant="outline" icon="auto_awesome" class="text-sm px-3 hidden sm:flex text-secondary border-secondary hover:bg-secondary/10">Tailor CV</x-user.button>
-            <x-user.button onclick="previewPdf('{{ auth()->user()->cvs()->latest()->first()->id ?? 1 }}')" variant="ghost" class="text-sm px-3 hidden sm:flex">Preview</x-user.button>
-            <x-user.button id="download-btn" onclick="downloadPdf('{{ auth()->user()->cvs()->latest()->first()->id ?? 1 }}')" variant="primary" icon="download" iconClass="text-[18px]" class="text-sm px-3 w-full sm:w-auto justify-center">Download PDF</x-user.button>
+            <x-user.button onclick="previewPdf('{{ $cv->id ?? '' }}')" variant="ghost" class="text-sm px-3 hidden sm:flex">Preview</x-user.button>
+            @if($user->canUsePremiumFeature('pdf_export'))
+                <x-user.button id="download-btn" onclick="downloadPdf('{{ $cv->id ?? '' }}')" variant="primary" icon="download" iconClass="text-[18px]" class="text-sm px-3 w-full sm:w-auto justify-center">Download PDF</x-user.button>
+            @else
+                <x-user.premium-lock
+                    title="Premium PDF export"
+                    description="Export polished, high-quality PDFs for applications and recruiter sharing."
+                    align="right">
+                    <span class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-[#A16207]/25 bg-[#A16207]/10 px-4 py-2 text-sm font-bold text-[#7C4A03] sm:w-auto">
+                        <span class="material-symbols-outlined text-[18px] icon-filled" aria-hidden="true">lock</span>
+                        Download PDF
+                    </span>
+                </x-user.premium-lock>
+            @endif
         </x-user.page-header>
 
         {{-- Mobile tab bar (hidden on lg+) --}}
@@ -647,8 +663,17 @@
             <div class="p-6 overflow-y-auto custom-scrollbar bg-surface flex-1">
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     @foreach($templates as $template)
+                    @php
+                        $isLockedTemplate = $template->is_premium && !$user->canUsePremiumFeature('premium_templates');
+                    @endphp
                     @if($cv)
-                        <button type="button" id="template-card-{{ $template->id }}" onclick="selectTemplate('{{ $template->id }}')" onmouseenter="previewTemplate('{{ $template->id }}')" onmouseleave="resetPreview()" class="template-card cursor-pointer group relative border @if($cv && $cv->template_id === $template->id) border-secondary bg-secondary/5 @else border-primary/10 @endif rounded-xl overflow-hidden hover:border-secondary transition-all hover:shadow-lg hover:-translate-y-1 text-left focus:outline-none focus:ring-2 focus:ring-secondary/40" aria-pressed="{{ $cv && $cv->template_id === $template->id ? 'true' : 'false' }}">
+                        <button type="button" id="template-card-{{ $template->id }}"
+                            @if($isLockedTemplate)
+                                aria-describedby="template-lock-{{ $template->id }}"
+                            @else
+                                onclick="selectTemplate('{{ $template->id }}')"
+                            @endif
+                            onmouseenter="previewTemplate('{{ $template->id }}')" onmouseleave="resetPreview()" class="template-card {{ $isLockedTemplate ? 'cursor-not-allowed border-[#A16207]/30 bg-[#A16207]/[0.03]' : 'cursor-pointer hover:border-secondary hover:shadow-lg hover:-translate-y-1' }} group relative border @if(!$isLockedTemplate && $cv && $cv->template_id === $template->id) border-secondary bg-secondary/5 @elseif(!$isLockedTemplate) border-primary/10 @endif rounded-xl overflow-hidden transition-all duration-200 text-left focus:outline-none focus:ring-2 focus:ring-secondary/40" aria-pressed="{{ $cv && $cv->template_id === $template->id ? 'true' : 'false' }}">
                             <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
                                 <iframe src="{{ route('resumes.preview', $cv) }}?template_id={{ $template->id }}" 
                                         style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
@@ -656,22 +681,46 @@
                                         loading="lazy" tabindex="-1">
                                 </iframe>
                                 <div class="absolute inset-0 bg-transparent z-10"></div>
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
-                                    <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
-                                </div>
+                                @if($template->is_premium)
+                                    <div class="absolute left-3 top-3 z-30 inline-flex items-center gap-1 rounded-full border border-[#A16207]/25 bg-tertiary/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#7C4A03] shadow-sm backdrop-blur">
+                                        <span class="material-symbols-outlined text-[13px] icon-filled" aria-hidden="true">workspace_premium</span>
+                                        Premium
+                                    </div>
+                                @endif
+                                @if($isLockedTemplate)
+                                    <div id="template-lock-{{ $template->id }}" class="absolute inset-0 z-20 flex items-center justify-center bg-white/70 p-4 text-center backdrop-blur-[2px]">
+                                        <div class="rounded-lg border border-[#A16207]/20 bg-tertiary/95 p-4 shadow-lg">
+                                            <span class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#A16207]/10 text-[#7C4A03]">
+                                                <span class="material-symbols-outlined icon-filled" aria-hidden="true">lock</span>
+                                            </span>
+                                            <p class="text-sm font-bold text-primary">Locked Premium Template</p>
+                                            <p class="mt-1 text-xs leading-relaxed text-primary/60">Upgrade to apply this layout to your resume.</p>
+                                            <a href="{{ route('user.upgrade-quota') }}"
+                                               class="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-tertiary transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-[#A16207]/40"
+                                               onclick="event.stopPropagation()">
+                                                <span class="material-symbols-outlined text-[15px] icon-filled" aria-hidden="true">workspace_premium</span>
+                                                Upgrade to Unlock
+                                            </a>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
+                                        <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
+                                    </div>
+                                @endif
                             </div>
                             <div class="p-4">
-                                <h4 class="font-bold text-sm text-primary group-hover:text-secondary transition-colors">{{ $template->name }}</h4>
+                                <h4 class="font-bold text-sm text-primary {{ $isLockedTemplate ? '' : 'group-hover:text-secondary' }} transition-colors">{{ $template->name }}</h4>
                                 <p class="text-[11px] text-primary/60 mt-1 line-clamp-2 leading-relaxed">{{ $template->description }}</p>
                             </div>
-                            @if($cv && $cv->template_id === $template->id)
+                            @if(!$isLockedTemplate && $cv && $cv->template_id === $template->id)
                             <div class="absolute top-3 right-3 bg-secondary text-white rounded-full w-6 h-6 shadow-md flex items-center justify-center checkmark">
                                 <span class="material-symbols-outlined text-[14px]">check</span>
                             </div>
                             @endif
                         </button>
                     @else
-                        <form action="{{ route('resumes.store') }}" method="POST" class="cursor-pointer group relative border border-primary/10 rounded-xl overflow-hidden hover:border-secondary transition-all hover:shadow-lg hover:-translate-y-1 bg-tertiary">
+                        <form action="{{ route('resumes.store') }}" method="POST" onsubmit="{{ $isLockedTemplate ? 'return false' : '' }}" class="{{ $isLockedTemplate ? 'cursor-not-allowed border-[#A16207]/30 bg-[#A16207]/[0.03]' : 'cursor-pointer border-primary/10 bg-tertiary hover:border-secondary hover:shadow-lg hover:-translate-y-1' }} group relative border rounded-xl overflow-hidden transition-all duration-200">
                             @csrf
                             <input type="hidden" name="title" value="My Professional Resume">
                             <input type="hidden" name="template_id" value="{{ $template->id }}">
@@ -683,17 +732,39 @@
                                         loading="lazy" tabindex="-1">
                                 </iframe>
                                 <div class="absolute inset-0 bg-transparent z-10"></div>
-                                
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
-                                    <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
-                                </div>
+                                @if($template->is_premium)
+                                    <div class="absolute left-3 top-3 z-30 inline-flex items-center gap-1 rounded-full border border-[#A16207]/25 bg-tertiary/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#7C4A03] shadow-sm backdrop-blur">
+                                        <span class="material-symbols-outlined text-[13px] icon-filled" aria-hidden="true">workspace_premium</span>
+                                        Premium
+                                    </div>
+                                @endif
+                                @if($isLockedTemplate)
+                                    <div class="absolute inset-0 z-20 flex items-center justify-center bg-white/70 p-4 text-center backdrop-blur-[2px]">
+                                        <div class="rounded-lg border border-[#A16207]/20 bg-tertiary/95 p-4 shadow-lg">
+                                            <span class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#A16207]/10 text-[#7C4A03]">
+                                                <span class="material-symbols-outlined icon-filled" aria-hidden="true">lock</span>
+                                            </span>
+                                            <p class="text-sm font-bold text-primary">Locked Premium Template</p>
+                                            <a href="{{ route('user.upgrade-quota') }}" class="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-tertiary transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-[#A16207]/40">
+                                                <span class="material-symbols-outlined text-[15px] icon-filled" aria-hidden="true">workspace_premium</span>
+                                                Upgrade to Unlock
+                                            </a>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
+                                        <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
+                                    </div>
+                                @endif
                             </div>
                             <div class="p-4">
-                                <h4 class="font-bold text-sm text-primary group-hover:text-secondary transition-colors">{{ $template->name }}</h4>
+                                <h4 class="font-bold text-sm text-primary {{ $isLockedTemplate ? '' : 'group-hover:text-secondary' }} transition-colors">{{ $template->name }}</h4>
                                 <p class="text-[11px] text-primary/60 mt-1 line-clamp-2 leading-relaxed">{{ $template->description }}</p>
                             </div>
                             
-                            <button type="submit" class="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer"></button>
+                            @unless($isLockedTemplate)
+                                <button type="submit" class="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer" aria-label="Use {{ $template->name }} template"></button>
+                            @endunless
                         </form>
                     @endif
                     @endforeach
@@ -756,6 +827,7 @@
 
     <script>
         function previewPdf(resumeId) {
+            if (!resumeId) return;
             window.open(`/resumes/${resumeId}/preview`, '_blank');
         }
 
@@ -804,6 +876,7 @@
         // ── End Photo Upload ───────────────────────────────────────
 
         async function downloadPdf(resumeId) {
+            if (!resumeId) return;
             const btn = document.getElementById('download-btn');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> <span class="ml-1">Generating...</span>';
@@ -811,7 +884,20 @@
             btn.classList.add('opacity-75', 'cursor-not-allowed');
 
             try {
-                const response = await fetch(`/resumes/${resumeId}/pdf`);
+                const response = await fetch(`/resumes/${resumeId}/pdf`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.status === 402) {
+                    const data = await response.json();
+                    showToast(data.message || 'Premium is required for PDF export.', 'error');
+                    if (data.upgrade_url) window.location.href = data.upgrade_url;
+                    return;
+                }
+
                 if (!response.ok) throw new Error('Network response was not ok');
                 
                 const blob = await response.blob();
@@ -903,6 +989,13 @@
                     body: JSON.stringify({ template_id: templateId })
                 });
                 
+                if (response.status === 402) {
+                    const data = await response.json();
+                    showToast(data.message || 'Premium is required for this template.', 'error');
+                    if (data.upgrade_url) window.location.href = data.upgrade_url;
+                    return;
+                }
+
                 if (!response.ok) throw new Error('Network response was not ok');
                 
                 const data = await response.json();
@@ -1494,4 +1587,3 @@
         }
     </script>
 @endsection
-

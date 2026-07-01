@@ -9,12 +9,19 @@
     </a>
 
     <div class="flex items-center space-x-3 mb-4">
-        <div class="w-10 h-10 rounded-full overflow-hidden bg-primary/10">
+        <div class="relative w-10 h-10 rounded-full bg-primary/10 {{ auth()->user()->isPremium() ? 'ring-2 ring-[#A16207]/40 ring-offset-2 ring-offset-nav-footer' : '' }}">
+            <div class="h-full w-full overflow-hidden rounded-full">
             <img alt="{{ auth()->user()->name }} avatar" class="w-full h-full object-cover" src="{{ auth()->user()->avatar_url }}"/>
+            </div>
+            @if(auth()->user()->isPremium())
+                <span class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-nav-footer bg-[#A16207] text-white" aria-label="Premium member">
+                    <span class="material-symbols-outlined text-[12px] icon-filled" aria-hidden="true">workspace_premium</span>
+                </span>
+            @endif
         </div>
-        <div>
+        <div class="min-w-0">
             <p class="text-sm font-headline font-bold text-primary">{{ auth()->user()->name }}</p>
-            <p class="text-xs font-label text-primary/60 uppercase tracking-wider">{{ auth()->user()->isPremium() ? 'Premium Member' : 'Basic Member' }}</p>
+            <x-user.plan-badge :user="auth()->user()" size="xs" />
         </div>
     </div>
 

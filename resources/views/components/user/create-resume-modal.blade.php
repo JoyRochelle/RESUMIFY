@@ -2,6 +2,7 @@
 
 @php
     $categories = $templates->pluck('category')->filter()->unique()->sort()->values();
+    $user = auth()->user();
 @endphp
 
 <div id="create-modal"
@@ -89,15 +90,16 @@
                     @php
                         $access = $template->is_premium ? 'premium' : 'free';
                         $category = strtolower($template->category ?? '');
+                        $isLocked = $template->is_premium && !$user->canUsePremiumFeature('premium_templates');
                     @endphp
                     <form action="{{ route('resumes.store') }}"
                           method="POST"
-                          onsubmit="return prepareCreateResumeSubmit(event)"
+                          onsubmit="{{ $isLocked ? 'return false' : 'return prepareCreateResumeSubmit(event)' }}"
                           data-template-card
                           data-template-name="{{ strtolower($template->name) }}"
                           data-template-category="{{ $category }}"
                           data-template-access="{{ $access }}"
-                          class="group relative border border-primary/10 rounded-xl overflow-hidden hover:border-secondary transition-all hover:shadow-lg hover:-translate-y-1 bg-tertiary">
+                          class="group relative border {{ $isLocked ? 'border-[#A16207]/30 bg-[#A16207]/[0.03]' : 'border-primary/10 bg-tertiary hover:border-secondary hover:shadow-lg hover:-translate-y-1' }} rounded-xl overflow-hidden transition-all duration-200">
                         @csrf
                         <input type="hidden" name="title" class="js-create-resume-title-value" value="{{ old('title') }}">
                         <input type="hidden" name="template_id" value="{{ $template->id }}">
@@ -111,15 +113,39 @@
                             </iframe>
                             <div class="absolute inset-0 bg-transparent z-10"></div>
 
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
-                                <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
-                            </div>
+                            @if($template->is_premium)
+                                <div class="absolute left-3 top-3 z-30 inline-flex items-center gap-1 rounded-full border border-[#A16207]/25 bg-tertiary/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#7C4A03] shadow-sm backdrop-blur">
+                                    <span class="material-symbols-outlined text-[13px] icon-filled" aria-hidden="true">workspace_premium</span>
+                                    Premium
+                                </div>
+                            @endif
+
+                            @if($isLocked)
+                                <div class="absolute inset-0 z-20 flex items-center justify-center bg-white/70 p-4 text-center opacity-100 backdrop-blur-[2px]">
+                                    <div class="rounded-lg border border-[#A16207]/20 bg-tertiary/95 p-4 shadow-lg">
+                                        <span class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#A16207]/10 text-[#7C4A03]">
+                                            <span class="material-symbols-outlined icon-filled" aria-hidden="true">lock</span>
+                                        </span>
+                                        <p class="text-sm font-bold text-primary">Locked Premium Template</p>
+                                        <p class="mt-1 text-xs leading-relaxed text-primary/60">Unlock polished layouts for senior roles and creative applications.</p>
+                                        <a href="{{ route('user.upgrade-quota') }}"
+                                           class="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-tertiary transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-[#A16207]/40">
+                                            <span class="material-symbols-outlined text-[15px] icon-filled" aria-hidden="true">workspace_premium</span>
+                                            Upgrade to Unlock
+                                        </a>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
+                                    <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="p-4">
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
-                                    <h4 class="font-bold text-sm text-primary group-hover:text-secondary transition-colors truncate">{{ $template->name }}</h4>
+                                    <h4 class="font-bold text-sm text-primary {{ $isLocked ? '' : 'group-hover:text-secondary' }} transition-colors truncate">{{ $template->name }}</h4>
                                     <p class="text-[11px] text-primary/60 mt-1 line-clamp-1">
                                         {{ $template->category ? ucfirst($template->category) . ' · ' : '' }}{{ $template->is_premium ? 'Premium' : 'Free' }}
                                     </p>
@@ -127,9 +153,11 @@
                             </div>
                         </div>
 
-                        <button type="submit"
-                                class="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer"
-                                aria-label="Use {{ $template->name }} template"></button>
+                        @unless($isLocked)
+                            <button type="submit"
+                                    class="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer"
+                                    aria-label="Use {{ $template->name }} template"></button>
+                        @endunless
                     </form>
                 @endforeach
             </div>

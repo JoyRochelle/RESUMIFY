@@ -7,6 +7,8 @@ use App\Models\CvSection;
 use App\Models\ChameleonAdaptation;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class ResumeExportController extends Controller
 {
@@ -43,8 +45,22 @@ class ResumeExportController extends Controller
         return view($templateBlade, compact('cv'));
     }
 
-    public function downloadPdf(Cv $cv) {
+    public function downloadPdf(Cv $cv): Response|RedirectResponse {
         \Illuminate\Support\Facades\Gate::authorize('view', $cv);
+
+        if (!auth()->user()->canUsePremiumFeature('pdf_export')) {
+            if (request()->expectsJson() || request()->ajax()) {
+                return response()->json([
+                    'error' => 'premium_required',
+                    'message' => 'Upgrade to Premium to unlock PDF export.',
+                    'upgrade_url' => route('user.upgrade-quota'),
+                ], 402);
+            }
+
+            return redirect()->route('user.upgrade-quota')
+                ->with('error', 'Upgrade to Premium to unlock PDF export.');
+        }
+
         $cv->load(['template', 'sections']);
 
         if (request()->has('adaptation_id')) {
