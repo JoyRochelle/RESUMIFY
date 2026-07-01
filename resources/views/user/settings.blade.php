@@ -5,7 +5,7 @@
 @section('content')
     <div class="flex-1 flex flex-col min-w-0">
         {{-- Page Header --}}
-        <x-user.page-header title="Account Settings">
+        <x-user.page-header title="Account Settings" backUrl="{{ route('dashboard') }}">
             <div class="flex items-center space-x-6 hidden md:flex">
                 <button class="text-primary/60 hover:text-primary transition-colors">
                     <span class="material-symbols-outlined">notifications</span>
@@ -155,11 +155,9 @@
                                         </span>
                                     @endif
                                 </div>
-                                {{-- <p class="text-tertiary/80 font-body">Your subscription will automatically renew on October
-                                    12, 2026.</p> --}}
                             </div>
                             <a href="{{ route('user.upgrade-quota') }}"
-                                class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-label font-bold bg-secondary/10 text-secondary hover:bg-secondary/20 transition-all duration-300">
+                                class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-label font-bold bg-secondary text-tertiary hover:brightness-110 shadow-md transition-all duration-300">
                                 <span class="material-symbols-outlined text-sm icon-filled">bolt</span>
                                 Upgrade Quota
                             </a>
@@ -182,9 +180,11 @@
                                 <p class="mt-4 text-xs italic opacity-60">Optimized by Resumify Editorial Engine.</p>
                             </div>
                             <div class="flex flex-col justify-end items-start md:items-end">
-                                <a class="text-sm font-bold text-secondary border-b border-secondary/30 hover:border-secondary transition-all flex items-center gap-2"
-                                    href="#">View Transaction History <span
-                                        class="material-symbols-outlined text-sm">arrow_forward</span></a>
+                                <a class="text-sm font-bold text-tertiary hover:text-secondary border-b border-tertiary/30 hover:border-secondary transition-all flex items-center gap-2 cursor-pointer"
+                                    onclick="alert('Transaction history feature is currently in development. Please check back later.')">
+                                    View Transaction History <span
+                                        class="material-symbols-outlined text-sm">arrow_forward</span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -192,25 +192,29 @@
 
                 {{-- Security & Password --}}
                 <section class="bg-tertiary rounded-2xl p-8 border border-primary/10 shadow-sm">
-                    <h3 class="font-headline text-2xl text-primary mb-8">Security & Password</h3>
+                    <div class="mb-8">
+                        <h3 class="font-headline text-2xl text-primary mb-2">Security & Password</h3>
+                        <p class="text-sm text-primary/60 font-body">Ensure your account is using a long, random password to stay secure.</p>
+                    </div>
                     <form action="{{ route('user-password.update') }}" method="POST">
                         @csrf
                         @method('PUT')
-                        <div class="max-w-2xl space-y-8">
-                            <x-user.settings-input label="Current Password" name="current_password" type="password"
-                                placeholder="••••••••" :showToggle="true" />
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="w-full space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="md:col-span-2">
+                                    <x-user.settings-input label="Current Password" name="current_password" type="password"
+                                        placeholder="••••••••" :showToggle="true" />
+                                </div>
                                 <x-user.settings-input label="New Password" name="password" type="password" />
                                 <x-user.settings-input label="Confirm New Password" name="password_confirmation"
                                     type="password" />
                             </div>
-                            <div class="bg-primary/5 p-4 rounded-xl flex items-start gap-3">
-                                <span class="material-symbols-outlined text-secondary text-lg">info</span>
-                                <p class="text-xs text-primary/80 font-body leading-relaxed">Use at least 8 characters with
-                                    a combination of numbers and symbols.</p>
+                            <div class="bg-primary/5 p-4 rounded-xl flex items-start gap-3 mt-2">
+                                <span class="material-symbols-outlined text-secondary text-xl">info</span>
+                                <p class="text-sm text-primary/80 font-body leading-relaxed">Use at least 8 characters with a combination of numbers and symbols.</p>
                             </div>
-                            <div class="flex justify-start">
-                                <x-user.button type="submit" variant="outline">Update Password</x-user.button>
+                            <div class="flex justify-end pt-4 border-t border-primary/10 mt-6">
+                                <x-user.button type="submit" variant="primary" icon="save" iconClass="text-sm">Update Password</x-user.button>
                             </div>
                         </div>
                     </form>

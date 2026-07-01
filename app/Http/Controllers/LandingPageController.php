@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\CvTemplate;
 
 class LandingPageController extends Controller
@@ -15,6 +14,7 @@ class LandingPageController extends Controller
     public function templates()
     {
         $templates = CvTemplate::where('is_active', true)->orderBy('sort_order')->get();
+
         return view('landing_page.templates', compact('templates'));
     }
 

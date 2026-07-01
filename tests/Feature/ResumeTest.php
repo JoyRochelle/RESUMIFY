@@ -44,7 +44,8 @@ class ResumeTest extends TestCase
             'template_id' => $template->id,
         ]);
 
-        $response->assertRedirect('/manuscripts');
+        $cv = Cv::where('title', 'My First Resume')->first();
+        $response->assertRedirect("/manuscripts?cv_id={$cv->id}");
         
         $this->assertDatabaseHas('cvs', [
             'user_id' => $user->id,

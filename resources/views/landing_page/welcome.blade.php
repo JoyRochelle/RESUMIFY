@@ -9,7 +9,8 @@
         {{-- Hero Left: Content --}}
         <div class="w-full md:w-[40%] flex items-start justify-center md:justify-start px-4 sm:px-8 md:px-16 py-12 md:py-20">
             <div class="max-w-md w-full text-center md:text-left">
-                <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary leading-tight tracking-tighter mb-6 md:mb-8">
+                <h1
+                    class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary leading-tight tracking-tighter mb-6 md:mb-8">
                     Write Your Success Story <span class="inline-block text-3xl sm:text-4xl md:text-5xl">✨</span>
                 </h1>
                 <p class="text-base sm:text-lg md:text-xl text-outline mb-8 md:mb-10 leading-relaxed font-body">
@@ -24,14 +25,16 @@
         </div>
 
         {{-- Hero Right: Visual Preview --}}
-        <div class="w-full md:w-[60%] bg-[#f0f4f8] relative flex items-start justify-center px-4 sm:px-8 md:px-16 py-10 md:py-20">
+        <div
+            class="w-full md:w-[60%] bg-[#f0f4f8] relative flex items-start justify-center px-4 sm:px-8 md:px-16 py-10 md:py-20">
             <div class="relative w-full max-w-sm md:max-w-md">
 
                 {{-- Resume Card Preview --}}
                 <div class="bg-white p-6 md:p-8 rounded-sm shadow-2xl relative z-10 border border-primary/5">
                     <div class="flex justify-between items-start mb-6 md:mb-8">
                         <div>
-                            <h2 class="text-xl md:text-2xl font-serif text-primary tracking-tighter leading-none">Theofrolic</h2>
+                            <h2 class="text-xl md:text-2xl font-serif text-primary tracking-tighter leading-none">Theofrolic
+                            </h2>
                             <p class="text-[#00c9a7] font-bold font-body tracking-widest uppercase text-[10px] mt-2">Senior
                                 Product Designer</p>
                         </div>
@@ -44,7 +47,8 @@
                     <div class="space-y-4 md:space-y-6">
                         <div class="h-px bg-gray-100 w-full mb-2"></div>
                         <div>
-                            <h3 class="text-[10px] font-bold text-primary font-body mb-3 md:mb-4 uppercase tracking-widest">WORK
+                            <h3 class="text-[10px] font-bold text-primary font-body mb-3 md:mb-4 uppercase tracking-widest">
+                                WORK
                                 EXPERIENCE</h3>
                             <div class="space-y-4 md:space-y-5">
                                 <div>
@@ -76,7 +80,8 @@
                 </div>
 
                 {{-- ATS Match Score — Desktop only (absolute positioned) --}}
-                <div class="hidden md:block absolute -right-10 top-[280px] bg-white/95 backdrop-blur-xl p-5 rounded-md shadow-xl w-56 z-20 border border-gray-100 transform rotate-1">
+                <div
+                    class="hidden md:block absolute -right-10 top-[280px] bg-white/95 backdrop-blur-xl p-5 rounded-md shadow-xl w-56 z-20 border border-gray-100 transform rotate-1">
                     <p class="text-[9px] text-gray-400 mb-3 tracking-widest uppercase font-bold">ATS MATCH SCORE</p>
                     <div class="flex items-end gap-1.5 h-10 mb-3">
                         <div class="w-full bg-[#f4c4c4] h-1/4 rounded-sm"></div>
@@ -118,7 +123,8 @@
                 </div>
 
                 {{-- Mobile-only: ATS Score badge (inline, not absolute) --}}
-                <div class="md:hidden mt-4 bg-white/95 p-4 rounded-lg shadow-md border border-gray-100 flex items-center gap-4">
+                <div
+                    class="md:hidden mt-4 bg-white/95 p-4 rounded-lg shadow-md border border-gray-100 flex items-center gap-4">
                     <div>
                         <p class="text-[9px] text-gray-400 mb-2 tracking-widest uppercase font-bold">ATS MATCH SCORE</p>
                         <div class="flex items-end gap-1 h-8">
@@ -158,9 +164,12 @@
 
     {{-- ======================== CALL TO ACTION ======================== --}}
     <section class="py-12 sm:py-16 md:py-24 px-4 sm:px-8">
-        <div class="max-w-5xl mx-auto bg-primary rounded-2xl relative min-h-[320px] md:min-h-[400px] flex items-center p-8 sm:p-12 md:p-20 overflow-hidden">
+        <div
+            class="max-w-5xl mx-auto bg-primary rounded-2xl relative min-h-[320px] md:min-h-[400px] flex items-center p-8 sm:p-12 md:p-20 overflow-hidden">
             <div class="relative z-10 max-w-2xl text-left">
-                <h2 class="text-3xl sm:text-4xl md:text-5xl text-white mb-4 md:mb-6 leading-tight font-headline tracking-tighter">Ready to build
+                <h2
+                    class="text-3xl sm:text-4xl md:text-5xl text-white mb-4 md:mb-6 leading-tight font-headline tracking-tighter">
+                    Ready to build
                     your story?</h2>
                 <p class="text-base md:text-lg text-white/80 mb-8 md:mb-10 leading-relaxed font-body">
                     Join thousands of professionals who have accelerated their career with Resumify.

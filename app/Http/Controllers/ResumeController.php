@@ -49,7 +49,7 @@ class ResumeController extends Controller
             ['type' => 'target_job',      'title' => 'Target Job',      'content' => null, 'order' => 5],
         ]);
 
-        return redirect()->route('user.manuscript')->with('success', 'Resume Created Successfully!');
+        return redirect()->route('user.manuscript', ['cv_id' => $cv->id])->with('success', 'Resume Created Successfully!');
     }
 
     /**
@@ -188,8 +188,8 @@ class ResumeController extends Controller
             $cv->update(['job_target' => $data['content']['job_title']]);
         }
 
-        $atsScore = \App\Services\AtsScoreService::calculate($cv);
-        $cv->update(['ats_score' => $atsScore]);
+        $atsResult = \App\Services\AtsScoreService::calculate($cv);
+        $cv->update(['ats_score' => $atsResult['score']]);
 
         if ($request->ajax() || $request->wantsJson()) {
             $cv->refresh(); // ensure the latest data is loaded
@@ -197,7 +197,8 @@ class ResumeController extends Controller
             return response()->json([
                 'success' => true, 
                 'saved_at' => now()->format('H:i:s'),
-                'ats_score' => $atsScore,
+                'ats_score' => $atsResult['score'],
+                'ats_matched' => $atsResult['matched'],
                 'section' => $section,
                 'html' => $html
             ]);

@@ -12,62 +12,22 @@
 </section>
 
 {{-- Pricing Cards Section --}}
-<section class="max-w-7xl mx-auto px-4 sm:px-8 pb-16 sm:pb-24">
-    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-16 sm:mb-24 max-w-5xl mx-auto px-4 sm:px-8">
 
-        {{-- Free Plan --}}
-        <div class="bg-surface-container-lowest rounded-sm p-10 flex flex-col items-center text-center transition-transform hover:scale-[1.01] border border-primary/5 shadow-sm">
-            <span class="text-outline uppercase tracking-[0.2em] text-[10px] font-bold mb-4 font-body">Basic</span>
-            <h3 class="text-3xl font-headline font-bold mb-2 text-primary">Free</h3>
-            <div class="flex items-baseline mb-8">
-                <span class="text-4xl font-headline font-bold text-primary">$0</span>
-                <span class="text-outline ml-1 font-body">/forever</span>
-            </div>
-            <ul class="space-y-4 mb-10 w-full text-left font-body text-sm">
-                <li class="flex items-center space-x-3 text-primary">
-                    <span class="material-symbols-outlined text-outline" style="font-size: 20px;">check_circle</span>
-                    <span>1 Active Resume</span>
-                </li>
-                <li class="flex items-center space-x-3 text-outline/50">
-                    <span class="material-symbols-outlined" style="font-size: 20px;">cancel</span>
-                    <span>AI Bullet Point Optimizer</span>
-                </li>
-                <li class="flex items-center space-x-3 text-outline/50">
-                    <span class="material-symbols-outlined" style="font-size: 20px;">cancel</span>
-                    <span>Real-time ATS Matcher</span>
-                </li>
-            </ul>
-            <x-landing_page.button variant="outline" class="w-full">Get Started</x-landing_page.button>
-        </div>
+    <x-user.pricing-card plan="Starter" price="Rp 0" period="forever" 
+        :features="['1 Active Resume', 'Standard Templates']" 
+        :disabledFeatures="['No AI Enhancement']"
+        buttonText="Get Started" onclick="window.location.href='{{ route('register') }}'" />
 
-        {{-- Premium Plan --}}
-        <div class="bg-surface-container-lowest rounded-sm p-10 flex flex-col items-center text-center relative transition-transform hover:scale-[1.01] border-2 border-secondary/20 shadow-xl overflow-hidden">
-            <div class="absolute top-0 right-0 bg-secondary px-6 py-1.5 rounded-bl-sm text-white text-[10px] font-bold uppercase tracking-wider">
-                Most Popular
-            </div>
-            <span class="text-secondary uppercase tracking-[0.2em] text-[10px] font-bold mb-4 font-body">Recommended</span>
-            <h3 class="text-3xl font-headline font-bold mb-2 text-primary">Premium</h3>
-            <div class="flex items-baseline mb-8">
-                <span class="text-4xl font-headline font-bold text-primary">$15</span>
-                <span class="text-outline ml-1 font-body">/month</span>
-            </div>
-            <ul class="space-y-4 mb-10 w-full text-left font-body text-sm">
-                <li class="flex items-center space-x-3 text-primary">
-                    <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1; font-size: 20px;">check_circle</span>
-                    <span class="font-bold">Unlimited Resumes</span>
-                </li>
-                <li class="flex items-center space-x-3 text-primary">
-                    <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1; font-size: 20px;">check_circle</span>
-                    <span class="font-bold">AI Bullet Point Optimizer</span>
-                </li>
-                <li class="flex items-center space-x-3 text-primary">
-                    <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1; font-size: 20px;">check_circle</span>
-                    <span class="font-bold">Real-time ATS Matcher</span>
-                </li>
-            </ul>
-            <x-landing_page.button variant="primary" class="w-full">Select Premium</x-landing_page.button>
-        </div>
-    </div>
+    <x-user.pricing-card plan="Premium PRO" price="Rp 49.000" period="month" :features="[
+        'Unlimited Resumes',
+        ['title' => 'AI Bullet Point Optimizer', 'subtitle' => 'Optimize with high-impact keywords'],
+        'Real-time ATS Matcher',
+        'Premium PDF Export',
+        'Priority Support',
+    ]" :isPremium="true"
+        buttonText="Activate Premium Now" onclick="window.location.href='{{ route('register') }}'" />
+
 </section>
 
 {{-- Compare Our Features Section --}}
@@ -75,50 +35,52 @@
     <h2 class="text-3xl md:text-4xl font-headline font-bold text-center mb-10 sm:mb-16 tracking-tighter text-primary">Compare Our Features</h2>
 
     {{-- Desktop Table (hidden on mobile) --}}
-    <div class="hidden sm:block w-full">
+    <div class="hidden sm:block w-full bg-tertiary rounded-3xl p-8 shadow-sm border border-primary/10">
         {{-- Table Header --}}
-        <div class="grid grid-cols-3 pb-4 border-b border-primary/10 mb-2">
-            <span class="text-[10px] text-outline uppercase tracking-[0.15em] font-bold font-body">Key Features</span>
-            <span class="text-[10px] text-outline uppercase tracking-[0.15em] font-bold font-body text-center">Free</span>
-            <span class="text-[10px] text-secondary uppercase tracking-[0.15em] font-bold font-body text-center">Premium</span>
+        <div class="grid grid-cols-3 pb-6 border-b-2 border-primary/10 mb-4">
+            <span class="text-xs text-outline uppercase tracking-[0.2em] font-bold font-body pl-6">Key Features</span>
+            <span class="text-xs text-outline uppercase tracking-[0.2em] font-bold font-body text-center">Starter</span>
+            <span class="text-xs text-secondary uppercase tracking-[0.2em] font-bold font-body text-center flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-[16px] icon-filled">auto_awesome</span> Premium PRO
+            </span>
         </div>
         <div class="divide-y divide-primary/5">
-            <div class="grid grid-cols-3 py-5 items-center">
-                <span class="text-sm font-body text-primary">Number of Resumes</span>
-                <span class="text-sm font-body text-outline text-center">1 Resume</span>
-                <span class="text-sm font-body font-bold text-primary text-center">Unlimited</span>
+            <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <span class="text-base font-body text-primary font-medium">Number of Resumes</span>
+                <span class="text-base font-body text-outline text-center">1 Resume</span>
+                <span class="text-base font-body font-bold text-primary text-center">Unlimited</span>
             </div>
-            <div class="grid grid-cols-3 py-5 items-center">
-                <span class="text-sm font-body text-primary">AI Bullet Point Optimizer</span>
-                <span class="text-sm font-body text-outline text-center">—</span>
+            <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <span class="text-base font-body text-primary font-medium">AI Bullet Point Optimizer</span>
+                <span class="text-base font-body text-outline text-center">—</span>
                 <span class="flex justify-center">
-                    <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1; font-size: 20px;">check_circle</span>
+                    <span class="material-symbols-outlined text-secondary text-2xl icon-filled">check_circle</span>
                 </span>
             </div>
-            <div class="grid grid-cols-3 py-5 items-center">
-                <span class="text-sm font-body text-primary">Real-time ATS Matcher</span>
-                <span class="text-sm font-body text-outline text-center">—</span>
+            <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <span class="text-base font-body text-primary font-medium">Real-time ATS Matcher</span>
+                <span class="text-base font-body text-outline text-center">—</span>
                 <span class="flex justify-center">
-                    <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1; font-size: 20px;">check_circle</span>
+                    <span class="material-symbols-outlined text-secondary text-2xl icon-filled">check_circle</span>
                 </span>
             </div>
-            <div class="grid grid-cols-3 py-5 items-center">
-                <span class="text-sm font-body text-primary">Premium PDF Export</span>
-                <span class="text-sm font-body text-outline text-center">Standard</span>
-                <span class="text-sm font-body font-bold text-primary text-center">Premium</span>
+            <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <span class="text-base font-body text-primary font-medium">Premium PDF Export</span>
+                <span class="text-base font-body text-outline text-center">Standard</span>
+                <span class="text-base font-body font-bold text-primary text-center">Premium</span>
             </div>
-            <div class="grid grid-cols-3 py-5 items-center">
-                <span class="text-sm font-body text-primary">Priority Support</span>
-                <span class="text-sm font-body text-outline text-center">—</span>
+            <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <span class="text-base font-body text-primary font-medium">Priority Support</span>
+                <span class="text-base font-body text-outline text-center">—</span>
                 <span class="flex justify-center">
-                    <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1; font-size: 20px;">check_circle</span>
+                    <span class="material-symbols-outlined text-secondary text-2xl icon-filled">check_circle</span>
                 </span>
             </div>
         </div>
     </div>
 
     {{-- Mobile Cards (hidden on sm+) --}}
-    <div class="sm:hidden space-y-3">
+    <div class="sm:hidden space-y-4">
         @php
         $features = [
             ['label' => 'Number of Resumes',       'free' => '1 Resume',  'premium' => 'Unlimited', 'premiumCheck' => false],
@@ -129,22 +91,24 @@
         ];
         @endphp
         @foreach($features as $f)
-        <div class="bg-surface-container-lowest rounded-lg border border-primary/5 p-4">
-            <p class="text-sm font-bold text-primary font-body mb-3">{{ $f['label'] }}</p>
-            <div class="flex justify-around">
-                <div class="text-center">
-                    <p class="text-[10px] text-outline uppercase tracking-wider font-bold mb-1">Free</p>
+        <div class="bg-tertiary rounded-2xl border border-primary/10 p-6 shadow-sm">
+            <p class="text-base font-bold text-primary font-body mb-5">{{ $f['label'] }}</p>
+            <div class="flex justify-around items-center">
+                <div class="text-center flex-1">
+                    <p class="text-[10px] text-outline uppercase tracking-[0.2em] font-bold mb-2">Starter</p>
                     @if($f['free'])
                         <span class="text-sm font-body text-outline">{{ $f['free'] }}</span>
                     @else
                         <span class="text-outline">—</span>
                     @endif
                 </div>
-                <div class="w-px bg-primary/10"></div>
-                <div class="text-center">
-                    <p class="text-[10px] text-secondary uppercase tracking-wider font-bold mb-1">Premium</p>
+                <div class="w-px h-10 bg-primary/10"></div>
+                <div class="text-center flex-1">
+                    <p class="text-[10px] text-secondary uppercase tracking-[0.2em] font-bold mb-2 flex items-center justify-center gap-1">
+                        <span class="material-symbols-outlined text-[12px] icon-filled">auto_awesome</span> PRO
+                    </p>
                     @if($f['premiumCheck'])
-                        <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1; font-size: 20px;">check_circle</span>
+                        <span class="material-symbols-outlined text-secondary text-2xl icon-filled">check_circle</span>
                     @else
                         <span class="text-sm font-body font-bold text-primary">{{ $f['premium'] }}</span>
                     @endif

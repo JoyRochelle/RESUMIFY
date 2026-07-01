@@ -50,7 +50,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::controller(UserController::class)->group(function () {
             Route::get('/dashboard', 'dashboard')->name('dashboard');
             Route::get('/manuscripts', 'manuscript')->name('user.manuscript');
-            Route::get('/ai-assistant', 'aiAssistant')->name('user.ai-assistant');
             Route::get('/settings', 'settings')->name('user.settings');
             Route::get('/upgrade-quota', 'upgradeQuota')->name('user.upgrade-quota');
         });
@@ -137,10 +136,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->name('stream');
         });
 
-        // AI Global Features
-        Route::post('/ats/analyze', [AtsController::class, 'analyze'])
-            ->middleware(['ai.quota:1', 'throttle:5,1'])
-            ->name('ats.analyze');
+        // AI Global Features — ATS Analyzer
+        Route::prefix('ats')->controller(AtsController::class)->name('ats.')->group(function () {
+            Route::get('/', 'index')->name('index');                    // GET  /ats  (also aliased as user.ai-assistant)
+            Route::post('/analyze', 'analyze')                          // POST /ats/analyze
+                ->middleware(['ai.quota:1', 'throttle:5,1'])
+                ->name('analyze');
+            Route::get('/history/{scan}', 'showHistory')                // GET  /ats/history/{scan}
+                ->name('history.show');
+            Route::delete('/history/{scan}', 'destroyHistory')          // DELETE /ats/history/{scan}
+                ->name('history.destroy');
+        });
+
+        // Alias: keep the old named route so existing nav links don't break
+        Route::get('/ai-assistant', [AtsController::class, 'index'])->name('user.ai-assistant');
     });
 
     // Admin Routes

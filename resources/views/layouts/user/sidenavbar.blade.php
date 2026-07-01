@@ -1,6 +1,7 @@
-<aside class="hidden md:flex flex-col h-screen w-64 border-r border-primary/10 bg-surface-container-low p-6 space-y-8 fixed top-0 left-0 z-40 shrink-0">
-    <a href="{{ route('dashboard') }}" class="block">
+<aside class="hidden md:flex flex-col h-screen w-64 border-r border-primary/10 bg-nav-footer p-6 space-y-8 fixed top-0 left-0 z-40 shrink-0">
+    <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
         <img src="{{ asset('images/logo.jpg') }}" alt="Resumify" class="h-10 w-10 rounded-xl object-cover shadow-sm">
+        <span class="text-xl font-bold font-headline text-primary tracking-tight">Resumify</span>
     </a>
     
     <div class="flex items-center space-x-3 mb-4">
