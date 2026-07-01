@@ -2,6 +2,10 @@
 
 @section('title', 'Resumify — ATS Analyzer')
 @section('content')
+    @php
+        $user = auth()->user();
+    @endphp
+
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {{-- Page Header --}}
@@ -14,18 +18,7 @@
         </x-user.page-header>
 
         <div class="px-4 lg:px-6 py-3 bg-surface-container-low border-b border-primary/10">
-            <div class="flex items-center justify-between text-sm">
-                <span class="text-primary/60">AI Credits</span>
-                <div class="flex items-center gap-2">
-                    <div class="w-32 h-2 bg-primary/10 rounded-full overflow-hidden">
-                        <div class="h-full bg-secondary rounded-full transition-all"
-                            style="width: {{ $quota['percentage'] }}%"></div>
-                    </div>
-                    <span class="font-bold text-primary text-xs">
-                        {{ $quota['remaining'] }}/{{ $quota['limit'] }}
-                    </span>
-                </div>
-            </div>
+            <x-user.quota-status :user="$user" compact class="grid gap-3" />
         </div>
 
         {{-- Mobile tab bar (hidden on lg+) --}}
@@ -108,14 +101,28 @@
                     </x-user.editor-accordion>
 
                     {{-- Analyze Button --}}
-                    <button id="analyze-btn" type="button"
-                        class="w-full py-4 rounded-xl font-bold text-sm tracking-wide shadow-lg bg-primary text-tertiary hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3 group">
-                        <span id="analyze-btn-label">Analyze Match</span>
-                        <span id="analyze-spinner" style="display:none"
-                            class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
-                        <span id="analyze-icon"
-                            class="material-symbols-outlined text-tertiary/80 group-hover:rotate-12 transition-transform icon-filled text-[20px]">auto_awesome</span>
-                    </button>
+                    @if($user->canUsePremiumFeature('ats_analyze'))
+                        <button id="analyze-btn" type="button"
+                            class="w-full py-4 rounded-xl font-bold text-sm tracking-wide shadow-lg bg-primary text-tertiary hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3 group focus:outline-none focus:ring-2 focus:ring-secondary/40">
+                            <span id="analyze-btn-label">Analyze Match</span>
+                            <span id="analyze-spinner" style="display:none"
+                                class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+                            <span id="analyze-icon"
+                                class="material-symbols-outlined text-tertiary/80 group-hover:rotate-12 transition-transform icon-filled text-[20px]">auto_awesome</span>
+                        </button>
+                    @else
+                        <x-user.premium-lock
+                            title="ATS Analyzer"
+                            description="Premium unlocks full resume-to-job matching, missing keywords, and prioritized improvement guidance."
+                            align="left"
+                            class="w-full">
+                            <span class="flex w-full min-h-11 items-center justify-center gap-3 rounded-xl border border-[#A16207]/25 bg-[#A16207]/10 px-4 py-4 text-sm font-bold tracking-wide text-[#7C4A03] shadow-sm">
+                                <span class="material-symbols-outlined icon-filled text-[20px]" aria-hidden="true">lock</span>
+                                Analyze Match
+                                <span class="text-xs uppercase tracking-widest">Premium</span>
+                            </span>
+                        </x-user.premium-lock>
+                    @endif
 
                     {{-- Error banner --}}
                     <div id="ats-error"
@@ -726,7 +733,8 @@
             });
         }
 
-        document.getElementById('analyze-btn').addEventListener('click', async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        if (analyzeBtn) analyzeBtn.addEventListener('click', async function() {
             const resume = document.getElementById('resume-input').value.trim();
             const jobTitleEl = document.querySelector('[name="job_title"]');
             const jobCompanyEl = document.querySelector('[name="job_company"]');
@@ -792,6 +800,12 @@
                 }
 
                 if (!response.ok) {
+                    if (response.status === 402 && data.upgrade_url) {
+                        showError(data.message ?? 'Upgrade to Premium to unlock ATS Analyzer.');
+                        window.location.href = data.upgrade_url;
+                        return;
+                    }
+
                     const msg = data.message ?? (data.errors ? Object.values(data.errors).flat().join(' ') :
                         'Something went wrong.');
                     showError(msg);
@@ -1011,6 +1025,8 @@
             const label = document.getElementById('analyze-btn-label');
             const spinner = document.getElementById('analyze-spinner');
             const icon = document.getElementById('analyze-icon');
+
+            if (!btn || !label || !spinner || !icon) return;
 
             btn.disabled = loading;
             label.textContent = loading ? 'Analyzing…' : 'Analyze Match';

@@ -3,22 +3,32 @@
 @section('title', 'Resumify - Your Manuscripts')
 
 @section('content')
+    @php
+        $user = auth()->user();
+        $cvs = $user->cvs()->latest('updated_at')->get();
+    @endphp
+
     <main class="flex-1 p-4 sm:p-6 md:p-12 max-w-7xl mx-auto w-full pb-24 md:pb-12">
         <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 md:mb-16">
             <div>
                 <h1 class="text-3xl sm:text-4xl md:text-5xl font-headline text-primary tracking-tight leading-tight mb-2">Your Manuscripts</h1>
                 <p class="text-primary/60 font-label text-sm max-w-md">Manage your existing resumes or create a new one tailored to your target job.</p>
+                <div class="mt-4 flex flex-wrap items-center gap-3">
+                    <x-user.plan-badge :user="$user" />
+                    <span class="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-tertiary px-3 py-1 text-sm font-label text-primary/70">
+                        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">description</span>
+                        {{ $user->getResumeQuotaUsed() }}/{{ $user->getResumeLimit() ?? 'Unlimited' }} Resumes Created
+                    </span>
+                </div>
             </div>
 
             <x-user.btn-create />
         </header>
 
+        <x-user.quota-status :user="$user" class="mb-10 md:mb-12" />
+
         <section>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @php
-                    $cvs = auth()->user()->cvs()->latest('updated_at')->get();
-                @endphp
-                
                 @foreach($cvs as $cv)
                 <x-user.resume-card 
                     title="{{ $cv->title ?: 'Untitled Resume' }}" 
@@ -28,13 +38,15 @@
                 />
                 @endforeach
 
-                <button type="button" onclick="openCreateModal()" class="w-full h-full group relative bg-surface-container-low/50 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/50 hover:bg-surface-container-low transition-all duration-500 overflow-hidden flex flex-col items-center justify-center min-h-[200px] sm:min-h-[400px] cursor-pointer">
+                <button type="button" onclick="{{ $user->canCreateResume() ? 'openCreateModal()' : '' }}"
+                    @unless($user->canCreateResume()) disabled aria-describedby="manuscripts-create-limit" @endunless
+                    class="w-full h-full group relative bg-surface-container-low/50 rounded-lg border-2 border-dashed {{ $user->canCreateResume() ? 'border-primary/20 hover:border-primary/50 hover:bg-surface-container-low cursor-pointer' : 'border-[#A16207]/30 cursor-not-allowed' }} transition-all duration-300 overflow-hidden flex flex-col items-center justify-center min-h-[200px] sm:min-h-[400px]">
                     <div class="flex flex-col items-center text-center p-8">
                         <div class="w-16 h-16 rounded-full bg-tertiary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-sm">
-                            <span class="material-symbols-outlined text-primary text-3xl" data-icon="add">add</span>
+                            <span class="material-symbols-outlined text-primary text-3xl" data-icon="add">{{ $user->canCreateResume() ? 'add' : 'lock' }}</span>
                         </div>
-                        <p class="font-headline text-xl text-primary mb-2">Start New Manuscript</p>
-                        <p class="text-sm text-primary/60 font-label max-w-[200px]">Create your professional career narrative in minutes.</p>
+                        <p class="font-headline text-xl text-primary mb-2">{{ $user->canCreateResume() ? 'Start New Manuscript' : 'Resume Limit Reached' }}</p>
+                        <p id="manuscripts-create-limit" class="text-sm text-primary/60 font-label max-w-[220px]">{{ $user->canCreateResume() ? 'Create your professional career narrative in minutes.' : 'Basic includes 1 resume. Upgrade for unlimited manuscripts.' }}</p>
                     </div>
                 </button>
             </div>

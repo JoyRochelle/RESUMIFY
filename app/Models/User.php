@@ -95,6 +95,52 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Check if the user is on the Basic plan.
+     */
+    public function isBasic(): bool
+    {
+        return $this->role === 'basic';
+    }
+
+    /**
+     * Get the maximum number of active resumes allowed for the user's plan.
+     */
+    public function getResumeLimit(): ?int
+    {
+        return config('plans.resume_limits.' . $this->role);
+    }
+
+    /**
+     * Count active resumes for quota display and enforcement.
+     */
+    public function getResumeQuotaUsed(): int
+    {
+        return $this->cvs()->count();
+    }
+
+    /**
+     * Check if the user can create another resume.
+     */
+    public function canCreateResume(): bool
+    {
+        $limit = $this->getResumeLimit();
+
+        return $limit === null || $this->getResumeQuotaUsed() < $limit;
+    }
+
+    /**
+     * Check if the user can use a named Premium feature.
+     */
+    public function canUsePremiumFeature(string $feature): bool
+    {
+        if ($this->isPremium() || $this->isAdmin()) {
+            return true;
+        }
+
+        return !in_array($feature, config('plans.premium_features', []), true);
+    }
+
+    /**
      * Prevent admin from receiving password reset emails.
      */
     public function sendPasswordResetNotification($token)

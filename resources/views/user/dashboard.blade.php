@@ -3,23 +3,29 @@
 @section('title', 'Resumify - Dashboard')
 
 @section('content')
+    @php
+        $user = auth()->user();
+        $cvs = $user->cvs()->latest('updated_at')->get();
+    @endphp
+
     <main class="flex-1 p-4 sm:p-6 md:p-12 max-w-7xl mx-auto w-full pb-24 md:pb-12">
         <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 md:mb-16">
             <div>
                 <h1 class="text-3xl sm:text-4xl md:text-6xl font-headline text-primary tracking-tight leading-tight mb-4">
-                    Welcome, <br />{{ auth()->user()->name }}</h1>
-                <div class="flex flex-wrap items-center gap-4">
-                    <span
-                        class="inline-flex items-center px-4 py-1.5 rounded-full bg-secondary text-tertiary text-sm font-label font-semibold">
-                        {{ auth()->user()->isPremium() ? 'Premium Member' : 'Basic Member' }}
+                    Welcome, <br />{{ $user->name }}</h1>
+                <div class="flex flex-wrap items-center gap-3">
+                    <x-user.plan-badge :user="$user" />
+                    <span class="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-tertiary px-3 py-1 text-sm font-label text-primary/70">
+                        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">visibility</span>
+                        {{ $user->getResumeQuotaUsed() }}/{{ $user->getResumeLimit() ?? 'Unlimited' }} Resumes Created
                     </span>
-                    <span class="text-primary/60 font-label text-sm">AI Quota Remaining: <span
-                            class="serif-number font-bold text-primary">{{ auth()->user()->getQuotaRemaining() }}</span>/{{ auth()->user()->getQuotaLimit() }}</span>
                 </div>
             </div>
 
             <x-user.btn-create />
         </header>
+
+        <x-user.quota-status :user="$user" class="mb-10 md:mb-12" />
 
         <section>
             <div class="flex items-center justify-between mb-8">
@@ -28,26 +34,24 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @php
-                    $cvs = auth()->user()->cvs()->latest('updated_at')->get();
-                @endphp
-
                 @foreach ($cvs as $cv)
                     <x-user.resume-card title="{{ $cv->title ?: 'Untitled Resume' }}"
                         date="{{ $cv->updated_at->diffForHumans() }}"
                         url="{{ route('user.manuscript', ['cv_id' => $cv->id]) }}" cvId="{{ $cv->id }}" />
                 @endforeach
 
-                <button type="button" onclick="openCreateModal()"
-                    class="w-full h-full group relative bg-surface-container-low/50 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/50 hover:bg-surface-container-low transition-all duration-500 overflow-hidden flex flex-col items-center justify-center min-h-[200px] sm:min-h-[400px] cursor-pointer">
+                <button type="button" onclick="{{ $user->canCreateResume() ? 'openCreateModal()' : '' }}"
+                    @unless($user->canCreateResume()) disabled aria-describedby="dashboard-create-limit" @endunless
+                    class="w-full h-full group relative bg-surface-container-low/50 rounded-lg border-2 border-dashed {{ $user->canCreateResume() ? 'border-primary/20 hover:border-primary/50 hover:bg-surface-container-low cursor-pointer' : 'border-[#A16207]/30 cursor-not-allowed' }} transition-all duration-300 overflow-hidden flex flex-col items-center justify-center min-h-[200px] sm:min-h-[400px]">
                     <div class="flex flex-col items-center text-center p-8">
                         <div
-                            class="w-16 h-16 rounded-full bg-tertiary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-sm">
-                            <span class="material-symbols-outlined text-primary text-3xl" data-icon="add">add</span>
+                            class="w-16 h-16 rounded-full bg-tertiary flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-200 shadow-sm">
+                            <span class="material-symbols-outlined text-primary text-3xl" data-icon="add">{{ $user->canCreateResume() ? 'add' : 'lock' }}</span>
                         </div>
-                        <p class="font-headline text-xl text-primary mb-2">Start New Manuscript</p>
-                        <p class="text-sm text-primary/60 font-label max-w-[200px]">Create your professional career
-                            narrative in minutes.</p>
+                        <p class="font-headline text-xl text-primary mb-2">{{ $user->canCreateResume() ? 'Start New Manuscript' : 'Resume Limit Reached' }}</p>
+                        <p id="dashboard-create-limit" class="text-sm text-primary/60 font-label max-w-[220px]">
+                            {{ $user->canCreateResume() ? 'Create your professional career narrative in minutes.' : 'Basic includes 1 resume. Upgrade from the plan card above for unlimited resumes.' }}
+                        </p>
                     </div>
                 </button>
             </div>

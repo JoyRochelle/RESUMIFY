@@ -3,6 +3,10 @@
 @section('title', 'Resumify - Settings')
 
 @section('content')
+    @php
+        $user = auth()->user();
+    @endphp
+
     <div class="flex-1 flex flex-col min-w-0">
         {{-- Page Header --}}
         <x-user.page-header title="Account Settings" backUrl="{{ route('dashboard') }}">
@@ -12,11 +16,18 @@
                 </button>
                 <div class="flex items-center space-x-3 group cursor-pointer">
                     <div class="text-right">
-                        <p class="text-xs font-bold text-primary">{{ auth()->user()->name }}</p>
-                        <p class="text-[10px] text-primary/60">{{ auth()->user()->isPremium() ? 'Premium Member' : 'Basic Member' }}</p>
+                        <p class="text-xs font-bold text-primary">{{ $user->name }}</p>
+                        <x-user.plan-badge :user="$user" size="xs" />
                     </div>
-                    <img alt="User Profile" class="w-8 h-8 rounded-full border border-primary/10 object-cover"
-                        src="{{ auth()->user()->avatar_url }}" />
+                    <div class="relative">
+                        <img alt="{{ $user->name }} profile avatar" class="w-8 h-8 rounded-full border border-primary/10 object-cover {{ $user->isPremium() ? 'ring-2 ring-[#A16207]/40 ring-offset-2 ring-offset-surface' : '' }}"
+                            src="{{ $user->avatar_url }}" />
+                        @if($user->isPremium())
+                            <span class="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#A16207] text-white" aria-label="Premium member">
+                                <span class="material-symbols-outlined text-[10px] icon-filled" aria-hidden="true">workspace_premium</span>
+                            </span>
+                        @endif
+                    </div>
                 </div>
             </div>
         </x-user.page-header>
@@ -25,11 +36,10 @@
 
             {{-- Flash Messages --}}
             @if (session('status') === 'avatar-updated')
-                <div class="mb-6 p-4 bg-green-100 text-green-700 rounded-xl text-sm font-body">✅ Avatar updated
-                    successfully.</div>
+                <div class="mb-6 flex items-center gap-2 rounded-xl bg-green-100 p-4 text-sm font-body text-green-700"><span class="material-symbols-outlined text-[18px] icon-filled" aria-hidden="true">check_circle</span> Avatar updated successfully.</div>
             @endif
             @if (session('status') === 'avatar-deleted')
-                <div class="mb-6 p-4 bg-green-100 text-green-700 rounded-xl text-sm font-body">✅ Avatar removed.</div>
+                <div class="mb-6 flex items-center gap-2 rounded-xl bg-green-100 p-4 text-sm font-body text-green-700"><span class="material-symbols-outlined text-[18px] icon-filled" aria-hidden="true">check_circle</span> Avatar removed.</div>
             @endif
             @if ($errors->updateProfileInformation->any())
                 <div class="mb-6 p-4 bg-red-100 text-red-700 rounded-xl text-sm font-body">
@@ -50,13 +60,11 @@
                 </div>
             @endif
             @if (session('status') === 'profile-information-updated')
-                <div class="mb-6 p-4 bg-green-100 text-green-700 rounded-xl text-sm font-body">✅ Profile updated
-                    successfully.</div>
+                <div class="mb-6 flex items-center gap-2 rounded-xl bg-green-100 p-4 text-sm font-body text-green-700"><span class="material-symbols-outlined text-[18px] icon-filled" aria-hidden="true">check_circle</span> Profile updated successfully.</div>
             @endif
 
             @if (session('status') === 'password-updated')
-                <div class="mb-6 p-4 bg-green-100 text-green-700 rounded-xl text-sm font-body">✅ Password updated
-                    successfully.</div>
+                <div class="mb-6 flex items-center gap-2 rounded-xl bg-green-100 p-4 text-sm font-body text-green-700"><span class="material-symbols-outlined text-[18px] icon-filled" aria-hidden="true">check_circle</span> Password updated successfully.</div>
             @endif
 
             <div class="max-w-4xl mx-auto space-y-8">
@@ -140,23 +148,13 @@
                     <div class="p-8 relative z-10">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                             <div>
-                                <div class="flex items-center gap-3 mb-2">
+                                <div class="flex flex-wrap items-center gap-3 mb-2">
                                     <h3 class="font-headline text-3xl">Subscription & Billing</h3>
                                     {{-- role badge --}}
-                                    @if (auth()->user()->isPremium())
-                                        <span
-                                            class="bg-secondary text-tertiary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
-                                            Premium Member
-                                        </span>
-                                    @else
-                                        <span
-                                            class="bg-secondary text-tertiary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
-                                            Basic Member
-                                        </span>
-                                    @endif
+                                    <x-user.plan-badge :user="$user" surface="dark" />
                                 </div>
                             </div>
-                            <a href="{{ route('user.upgrade-quota') }}"
+                                <a href="{{ route('user.upgrade-quota') }}"
                                 class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-label font-bold bg-secondary text-tertiary hover:brightness-110 shadow-md transition-all duration-300">
                                 <span class="material-symbols-outlined text-sm icon-filled">bolt</span>
                                 Upgrade Quota

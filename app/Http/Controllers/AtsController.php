@@ -59,6 +59,14 @@ class AtsController extends Controller
      */
     public function analyze(Request $request): JsonResponse
     {
+        if (!$request->user()->canUsePremiumFeature('ats_analyze')) {
+            return response()->json([
+                'error' => 'premium_required',
+                'message' => 'Upgrade to Premium to unlock full ATS analysis.',
+                'upgrade_url' => route('user.upgrade-quota'),
+            ], 402);
+        }
+
         $request->validate([
             'resume'          => ['required', 'string', 'min:50', 'max:20000'],
             'job_description' => ['required', 'string', 'min:50', 'max:20000'],
