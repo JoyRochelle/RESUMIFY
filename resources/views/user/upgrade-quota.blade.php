@@ -21,7 +21,7 @@
             <section class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-12 md:mb-24 max-w-5xl mx-auto" x-data="paymentGateway()">
 
                 <x-user.pricing-card plan="Starter" price="Rp 0" period="forever" :features="['1 Active Resume', 'Standard Templates']" :disabledFeatures="['No AI Enhancement']"
-                    :isCurrentPlan="true" />
+                    :isCurrentPlan="!auth()->user()->isPremium()" />
 
                 <x-user.pricing-card plan="Premium PRO" price="Rp 49.000" period="month" :features="[
                     'Unlimited Resumes',
@@ -30,6 +30,7 @@
                     'Premium PDF Export',
                     'Priority Support',
                 ]" :isPremium="true"
+                    :isCurrentPlan="auth()->user()->isPremium()"
                     buttonText="Activate Premium Now" @click="pay()" x-bind:disabled="isProcessing" x-text="isProcessing ? 'Processing...' : 'Activate Premium Now'" />
 
             </section>

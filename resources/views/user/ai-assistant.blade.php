@@ -5,7 +5,7 @@
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {{-- Page Header --}}
-        <x-user.page-header title="ATS Analyzer">
+        <x-user.page-header title="ATS Analyzer" backUrl="{{ route('dashboard') }}">
             <button id="ats-instructions-btn" type="button"
                 class="flex items-center gap-2 text-sm px-4 py-2 rounded-lg border border-primary/15 text-primary/70 hover:text-primary hover:border-primary/30 transition-all duration-200">
                 <span class="material-symbols-outlined text-[16px]">info</span>
