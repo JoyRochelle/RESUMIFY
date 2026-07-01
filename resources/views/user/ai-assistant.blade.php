@@ -29,12 +29,18 @@
         </div>
 
         {{-- Mobile tab bar (hidden on lg+) --}}
-        <div class="flex lg:hidden border-b border-primary/10 bg-surface-container-low shrink-0">
-            <button id="ats-tab-setup" onclick="switchAtsTab('setup')"
+        <div class="flex lg:hidden border-b border-primary/10 bg-surface-container-low shrink-0" role="tablist" aria-label="ATS Analyzer sections">
+            <button id="ats-tab-setup" type="button" onclick="switchAtsTab('setup')"
+                role="tab"
+                aria-selected="true"
+                aria-controls="ats-panel-setup"
                 class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary border-b-2 border-primary transition-colors">
                 <span class="material-symbols-outlined text-[18px]">tune</span> Setup
             </button>
-            <button id="ats-tab-results" onclick="switchAtsTab('results')"
+            <button id="ats-tab-results" type="button" onclick="switchAtsTab('results')"
+                role="tab"
+                aria-selected="false"
+                aria-controls="ats-panel-results"
                 class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary/40 border-b-2 border-transparent transition-colors">
                 <span class="material-symbols-outlined text-[18px]">analytics</span> Results
             </button>
@@ -44,6 +50,8 @@
 
             {{-- ════════════════ LEFT PANEL — INPUTS ════════════════ --}}
             <aside id="ats-panel-setup"
+                role="tabpanel"
+                aria-labelledby="ats-tab-setup"
                 class="w-full lg:w-[42%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
                 <div class="p-4 lg:p-6 lg:overflow-y-auto custom-scrollbar space-y-5 lg:h-full">
 
@@ -86,8 +94,8 @@
                                     value=""
                                     placeholder="e.g. Acme Corp" />
                             </div>
-                            <div class="relative group mt-2">
-                                <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Job Description</label>
+                <div class="relative group mt-2">
+                                <label for="jd-input" class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Job Description</label>
                                 <textarea id="jd-input" rows="6"
                                     placeholder="Paste the job description here to see how well your resume matches..."
                                     class="w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30"></textarea>
@@ -134,8 +142,11 @@
                                             : 'text-red-500 bg-red-500/10 border-red-500/20');
                                     @endphp
                                     <div id="history-card-{{ $scan->id }}"
-                                        class="history-card group flex items-center gap-3 bg-tertiary border border-primary/10 hover:border-primary/25 rounded-xl p-3 transition-all duration-200 cursor-pointer"
-                                        onclick="loadHistoryResult('{{ $scan->id }}', this)">
+                                        class="history-card group flex items-center gap-2 bg-tertiary border border-primary/10 hover:border-primary/25 rounded-xl p-2 transition-all duration-200">
+                                        <button type="button"
+                                            class="flex min-w-0 flex-1 items-center gap-3 rounded-lg p-1 text-left focus:outline-none focus:ring-2 focus:ring-secondary/40"
+                                            onclick="loadHistoryResult('{{ $scan->id }}', this.closest('.history-card'))"
+                                            aria-label="Load scan {{ $scan->job_title ?: 'Untitled Scan' }}">
 
                                         {{-- Score badge --}}
                                         <div class="shrink-0 w-11 h-11 rounded-lg border flex flex-col items-center justify-center {{ $scoreColor }}">
@@ -157,11 +168,14 @@
                                             </p>
                                         </div>
 
+                                        </button>
+
                                         {{-- Delete button --}}
                                         <button type="button" title="Delete"
-                                            onclick="event.stopPropagation(); deleteHistoryScan('{{ $scan->id }}')"
-                                            class="shrink-0 opacity-0 group-hover:opacity-100 text-primary/30 hover:text-red-500 transition-all duration-200 rounded-lg p-1 hover:bg-red-500/10">
-                                            <span class="material-symbols-outlined text-[17px]">delete</span>
+                                            aria-label="Delete scan {{ $scan->job_title ?: 'Untitled Scan' }}"
+                                            onclick="deleteHistoryScan('{{ $scan->id }}')"
+                                            class="shrink-0 opacity-0 group-hover:opacity-100 text-primary/30 hover:text-red-500 transition-all duration-200 rounded-lg p-2 hover:bg-red-500/10 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-red-300">
+                                            <span class="material-symbols-outlined text-[17px]" aria-hidden="true">delete</span>
                                         </button>
                                     </div>
                                 @endforeach
@@ -181,6 +195,8 @@
 
             {{-- ════════════════ RIGHT PANEL — RESULTS ════════════════ --}}
             <main id="ats-panel-results"
+                role="tabpanel"
+                aria-labelledby="ats-tab-results"
                 class="w-full lg:w-[58%] lg:h-full bg-primary/[0.03] p-4 lg:p-8 lg:overflow-y-auto custom-scrollbar hidden lg:block">
 
                 {{-- Empty state --}}
@@ -314,18 +330,23 @@
 
     {{-- ── How It Works modal ─────────────────────────────────────── --}}
     <div id="instructions-modal"
-        class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="instructions-modal-title"
+        aria-describedby="instructions-modal-description">
         <div class="bg-tertiary w-full max-w-lg rounded-2xl shadow-2xl border border-primary/10 transform scale-95 transition-transform duration-300 overflow-hidden"
             id="instructions-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
-                <h3 class="font-headline text-xl font-bold text-primary flex items-center gap-2">
+                <h3 id="instructions-modal-title" class="font-headline text-xl font-bold text-primary flex items-center gap-2">
                     <span class="material-symbols-outlined text-secondary">info</span>
                     How ATS Scoring Works
                 </h3>
-                <button onclick="closeInstructions()"
-                    class="text-primary/50 hover:text-primary material-symbols-outlined rounded-full p-1 hover:bg-primary/5 transition-colors">close</button>
+                <button type="button" onclick="closeInstructions()"
+                    aria-label="Close ATS scoring instructions"
+                    class="text-primary/50 hover:text-primary material-symbols-outlined rounded-full p-2 hover:bg-primary/5 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
-            <div class="p-6 space-y-4 text-sm text-primary/80 leading-relaxed">
+            <div id="instructions-modal-description" class="p-6 space-y-4 text-sm text-primary/80 leading-relaxed">
                 <p>Our ATS analyzer mimics how Applicant Tracking Systems evaluate your resume against a job description.
                 </p>
                 <ul class="space-y-3">
@@ -532,6 +553,7 @@
                 btn.classList.toggle('border-primary', active);
                 btn.classList.toggle('text-primary/40', !active);
                 btn.classList.toggle('border-transparent', !active);
+                btn.setAttribute('aria-selected', active ? 'true' : 'false');
             });
 
         }
@@ -849,20 +871,25 @@
             const timeAgo = meta.created_at ? new Date(meta.created_at).toLocaleString('id-ID', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : 'just now';
 
             return `<div id="history-card-${meta.id}"
-                class="history-card group flex items-center gap-3 bg-tertiary border border-primary/10 hover:border-primary/25 rounded-xl p-3 transition-all duration-200 cursor-pointer"
-                onclick="loadHistoryResult('${meta.id}', this)">
-                <div class="shrink-0 w-11 h-11 rounded-lg border flex flex-col items-center justify-center ${scoreColor}">
-                    <span class="font-headline font-bold text-sm leading-none">${label}</span>
-                    <span class="text-[9px] font-bold uppercase tracking-wider opacity-70">pts</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-xs font-bold text-primary truncate leading-tight">${title}${company}</p>
-                    <p class="text-[11px] text-primary/40 mt-0.5 truncate">${cvLine} · ${timeAgo}</p>
-                </div>
+                class="history-card group flex items-center gap-2 bg-tertiary border border-primary/10 hover:border-primary/25 rounded-xl p-2 transition-all duration-200">
+                <button type="button"
+                    class="flex min-w-0 flex-1 items-center gap-3 rounded-lg p-1 text-left focus:outline-none focus:ring-2 focus:ring-secondary/40"
+                    onclick="loadHistoryResult('${meta.id}', this.closest('.history-card'))"
+                    aria-label="Load scan ${title}">
+                    <div class="shrink-0 w-11 h-11 rounded-lg border flex flex-col items-center justify-center ${scoreColor}">
+                        <span class="font-headline font-bold text-sm leading-none">${label}</span>
+                        <span class="text-[9px] font-bold uppercase tracking-wider opacity-70">pts</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold text-primary truncate leading-tight">${title}${company}</p>
+                        <p class="text-[11px] text-primary/40 mt-0.5 truncate">${cvLine} · ${timeAgo}</p>
+                    </div>
+                </button>
                 <button type="button" title="Delete"
-                    onclick="event.stopPropagation(); deleteHistoryScan('${meta.id}')"
-                    class="shrink-0 opacity-0 group-hover:opacity-100 text-primary/30 hover:text-red-500 transition-all duration-200 rounded-lg p-1 hover:bg-red-500/10">
-                    <span class="material-symbols-outlined text-[17px]">delete</span>
+                    aria-label="Delete scan ${title}"
+                    onclick="deleteHistoryScan('${meta.id}')"
+                    class="shrink-0 opacity-0 group-hover:opacity-100 text-primary/30 hover:text-red-500 transition-all duration-200 rounded-lg p-2 hover:bg-red-500/10 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-red-300">
+                    <span class="material-symbols-outlined text-[17px]" aria-hidden="true">delete</span>
                 </button>
             </div>`;
         }
@@ -1023,4 +1050,3 @@
         });
     </script>
 @endsection
-

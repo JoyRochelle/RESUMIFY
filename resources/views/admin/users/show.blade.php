@@ -24,10 +24,7 @@
 
     <!-- Flash messages -->
     @if(session('success'))
-        <div class="bg-secondary/10 border border-secondary/20 text-secondary text-sm font-label px-5 py-3 rounded-xl flex items-center space-x-2">
-            <span class="material-symbols-outlined text-[18px]">check_circle</span>
-            <span>{{ session('success') }}</span>
-        </div>
+        <x-ui.alert variant="success">{{ session('success') }}</x-ui.alert>
     @endif
 
     <!-- Profile Card + Quick Actions -->
@@ -91,21 +88,21 @@
             <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-4">Quick Actions</h3>
 
             <!-- Override Plan -->
-            <button @click="openPlanModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->role }}')"
+            <button type="button" @click="openPlanModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->role }}')"
                     class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl border border-primary/10 hover:bg-primary/5 transition-colors text-left">
                 <span class="material-symbols-outlined text-primary/50 text-[20px]">card_membership</span>
                 <span class="text-sm font-label text-primary">Override Plan</span>
             </button>
 
             <!-- Adjust Credits -->
-            <button @click="openCreditsModal('{{ $user->id }}', '{{ $user->name }}', {{ $user->ai_quota_used }})"
+            <button type="button" @click="openCreditsModal('{{ $user->id }}', '{{ $user->name }}', {{ $user->ai_quota_used }})"
                     class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl border border-primary/10 hover:bg-primary/5 transition-colors text-left">
                 <span class="material-symbols-outlined text-primary/50 text-[20px]">toll</span>
                 <span class="text-sm font-label text-primary">Adjust AI Credits</span>
             </button>
 
             <!-- Suspend / Activate -->
-            <button @click="openSuspendModal('{{ $user->id }}', '{{ $user->name }}', {{ $user->is_suspended ? 'true' : 'false' }})"
+            <button type="button" @click="openSuspendModal('{{ $user->id }}', '{{ $user->name }}', {{ $user->is_suspended ? 'true' : 'false' }})"
                     class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl border border-primary/10 hover:bg-primary/5 transition-colors text-left">
                 <span class="material-symbols-outlined text-[20px] {{ $user->is_suspended ? 'text-secondary' : 'text-amber-500' }}">
                     {{ $user->is_suspended ? 'lock_open' : 'block' }}
@@ -114,7 +111,7 @@
             </button>
 
             <!-- Delete -->
-            <button @click="openDeleteModal('{{ $user->id }}', '{{ $user->name }}')"
+            <button type="button" @click="openDeleteModal('{{ $user->id }}', '{{ $user->name }}')"
                     class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl border border-red-100 hover:bg-red-50 transition-colors text-left">
                 <span class="material-symbols-outlined text-red-400 text-[20px]">delete_forever</span>
                 <span class="text-sm font-label text-red-600">Delete Account</span>
@@ -125,21 +122,25 @@
             <!-- Override Plan Modal -->
             <div x-show="planModal.open" x-cloak
                  class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-                 @keydown.escape.window="planModal.open = false">
-                <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl mx-4" @click.stop>
-                    <h3 class="text-xl font-headline font-bold text-primary mb-1">Override Plan</h3>
-                    <p class="text-sm font-label text-primary/60 mb-6">Changing plan for <strong x-text="planModal.name"></strong></p>
+                 @keydown.escape.window="planModal.open = false"
+                 role="dialog"
+                 aria-modal="true"
+                 aria-labelledby="plan-modal-title"
+                 aria-describedby="plan-modal-description">
+                <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl mx-4" @click.stop tabindex="-1">
+                    <h3 id="plan-modal-title" class="text-xl font-headline font-bold text-primary mb-1">Override Plan</h3>
+                    <p id="plan-modal-description" class="text-sm font-label text-primary/60 mb-6">Changing plan for <strong x-text="planModal.name"></strong></p>
                     <form :action="planModal.url" method="POST">
                         @csrf @method('PATCH')
                         <div class="mb-6">
-                            <label class="text-xs font-label text-primary/60 uppercase tracking-widest block mb-2">New Plan</label>
-                            <select name="plan" class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-3 text-sm font-label text-primary focus:outline-none focus:border-primary/30">
+                            <label for="admin-user-plan" class="text-xs font-label text-primary/60 uppercase tracking-widest block mb-2">New Plan</label>
+                            <select id="admin-user-plan" name="plan" class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-3 text-sm font-label text-primary focus:outline-none focus:border-primary/30">
                                 <option value="basic" :selected="planModal.current === 'basic'">Free (Basic)</option>
                                 <option value="premium" :selected="planModal.current === 'premium'">Premium</option>
                             </select>
                         </div>
                         <div class="flex space-x-3">
-                            <button type="submit" class="flex-1 bg-primary text-white py-3 rounded-xl text-sm font-label hover:bg-primary/90 transition">Apply</button>
+                            <x-ui.loading-button class="flex-1" loading-text="Applying...">Apply</x-ui.loading-button>
                             <button type="button" @click="planModal.open = false" class="flex-1 border border-primary/10 text-primary py-3 rounded-xl text-sm font-label hover:bg-primary/5 transition">Cancel</button>
                         </div>
                     </form>
@@ -149,19 +150,23 @@
             <!-- Adjust Credits Modal -->
             <div x-show="creditsModal.open" x-cloak
                  class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-                 @keydown.escape.window="creditsModal.open = false">
-                <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl mx-4" @click.stop>
-                    <h3 class="text-xl font-headline font-bold text-primary mb-1">Adjust AI Credits</h3>
-                    <p class="text-sm font-label text-primary/60 mb-6">Set used credits for <strong x-text="creditsModal.name"></strong></p>
+                 @keydown.escape.window="creditsModal.open = false"
+                 role="dialog"
+                 aria-modal="true"
+                 aria-labelledby="credits-modal-title"
+                 aria-describedby="credits-modal-description">
+                <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl mx-4" @click.stop tabindex="-1">
+                    <h3 id="credits-modal-title" class="text-xl font-headline font-bold text-primary mb-1">Adjust AI Credits</h3>
+                    <p id="credits-modal-description" class="text-sm font-label text-primary/60 mb-6">Set used credits for <strong x-text="creditsModal.name"></strong></p>
                     <form :action="creditsModal.url" method="POST">
                         @csrf @method('PATCH')
                         <div class="mb-6">
-                            <label class="text-xs font-label text-primary/60 uppercase tracking-widest block mb-2">AI Quota Used</label>
-                            <input type="number" name="ai_quota_used" :value="creditsModal.current" min="0"
+                            <label for="admin-user-ai-quota-used" class="text-xs font-label text-primary/60 uppercase tracking-widest block mb-2">AI Quota Used</label>
+                            <input id="admin-user-ai-quota-used" type="number" name="ai_quota_used" :value="creditsModal.current" min="0"
                                    class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-3 text-sm font-label text-primary focus:outline-none focus:border-primary/30">
                         </div>
                         <div class="flex space-x-3">
-                            <button type="submit" class="flex-1 bg-primary text-white py-3 rounded-xl text-sm font-label hover:bg-primary/90 transition">Update</button>
+                            <x-ui.loading-button class="flex-1" loading-text="Updating...">Update</x-ui.loading-button>
                             <button type="button" @click="creditsModal.open = false" class="flex-1 border border-primary/10 text-primary py-3 rounded-xl text-sm font-label hover:bg-primary/5 transition">Cancel</button>
                         </div>
                     </form>
@@ -171,10 +176,14 @@
             <!-- Suspend/Activate Modal -->
             <div x-show="suspendModal.open" x-cloak
                  class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-                 @keydown.escape.window="suspendModal.open = false">
-                <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl mx-4" @click.stop>
-                    <h3 class="text-xl font-headline font-bold text-primary mb-1" x-text="suspendModal.isSuspended ? 'Activate Account' : 'Suspend Account'"></h3>
-                    <p class="text-sm font-label text-primary/60 mb-6">
+                 @keydown.escape.window="suspendModal.open = false"
+                 role="dialog"
+                 aria-modal="true"
+                 aria-labelledby="suspend-modal-title"
+                 aria-describedby="suspend-modal-description">
+                <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl mx-4" @click.stop tabindex="-1">
+                    <h3 id="suspend-modal-title" class="text-xl font-headline font-bold text-primary mb-1" x-text="suspendModal.isSuspended ? 'Activate Account' : 'Suspend Account'"></h3>
+                    <p id="suspend-modal-description" class="text-sm font-label text-primary/60 mb-6">
                         <span x-text="suspendModal.isSuspended ? 'Restore access for' : 'Block access for'"></span>
                         <strong x-text="suspendModal.name"></strong>?
                     </p>
@@ -195,13 +204,17 @@
             <!-- Delete Modal -->
             <div x-show="deleteModal.open" x-cloak
                  class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-                 @keydown.escape.window="deleteModal.open = false">
-                <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl mx-4" @click.stop>
+                 @keydown.escape.window="deleteModal.open = false"
+                 role="dialog"
+                 aria-modal="true"
+                 aria-labelledby="delete-modal-title"
+                 aria-describedby="delete-modal-description">
+                <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl mx-4" @click.stop tabindex="-1">
                     <div class="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <span class="material-symbols-outlined text-red-500 text-[24px]">warning</span>
                     </div>
-                    <h3 class="text-xl font-headline font-bold text-primary mb-1 text-center">Delete Account</h3>
-                    <p class="text-sm font-label text-primary/60 mb-6 text-center">
+                    <h3 id="delete-modal-title" class="text-xl font-headline font-bold text-primary mb-1 text-center">Delete Account</h3>
+                    <p id="delete-modal-description" class="text-sm font-label text-primary/60 mb-6 text-center">
                         Permanently delete <strong x-text="deleteModal.name"></strong>? This cannot be undone.
                     </p>
                     <form :action="deleteModal.url" method="POST">

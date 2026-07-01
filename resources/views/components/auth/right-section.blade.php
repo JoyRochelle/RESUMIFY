@@ -43,14 +43,18 @@
         {{-- Secondary Footer --}}
         <div x-data="authFooterData()"
             class="mt-8 flex justify-center gap-6 text-[10px] uppercase tracking-widest text-on-surface-variant/60 font-bold">
-            <button @click="openModal('terms')" class="hover:text-primary transition-colors uppercase tracking-widest">TERMS & CONDITIONS</button>
-            <button @click="openModal('privacy')" class="hover:text-primary transition-colors uppercase tracking-widest">PRIVACY POLICY</button>
-            <button @click="openModal('help')" class="hover:text-primary transition-colors uppercase tracking-widest">HELP CENTER</button>
+            <button type="button" @click="openModal('terms')" class="hover:text-primary transition-colors uppercase tracking-widest">TERMS & CONDITIONS</button>
+            <button type="button" @click="openModal('privacy')" class="hover:text-primary transition-colors uppercase tracking-widest">PRIVACY POLICY</button>
+            <button type="button" @click="openModal('help')" class="hover:text-primary transition-colors uppercase tracking-widest">HELP CENTER</button>
 
             {{-- Modal Overlay --}}
             <div x-show="isModalOpen" 
                  style="display: none;"
                  class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 text-left font-body text-base capitalize tracking-normal"
+                 role="dialog"
+                 aria-modal="true"
+                 aria-labelledby="auth-footer-modal-title"
+                 @keydown.escape.window="closeModal()"
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="opacity-0"
                  x-transition:enter-end="opacity-100"
@@ -58,7 +62,8 @@
                  x-transition:leave-start="opacity-100"
                  x-transition:leave-end="opacity-0">
                 
-                <div @click.away="closeModal()" 
+                <div @click.away="closeModal()"
+                     tabindex="-1"
                      class="bg-surface w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden"
                      x-transition:enter="transition ease-out duration-300 transform"
                      x-transition:enter-start="opacity-0 translate-y-4 scale-95"
@@ -68,9 +73,9 @@
                      x-transition:leave-end="opacity-0 translate-y-4 scale-95">
                      
                     <div class="px-6 py-4 border-b border-primary/10 flex justify-between items-center bg-surface-container-lowest">
-                        <h3 class="text-xl font-headline font-bold text-primary normal-case tracking-normal" x-text="modalTitle"></h3>
-                        <button @click="closeModal()" class="text-primary/50 hover:text-primary transition-colors flex items-center justify-center rounded-full p-1 hover:bg-primary/5">
-                            <span class="material-symbols-outlined text-[20px]">close</span>
+                        <h3 id="auth-footer-modal-title" class="text-xl font-headline font-bold text-primary normal-case tracking-normal" x-text="modalTitle"></h3>
+                        <button type="button" @click="closeModal()" aria-label="Close modal" class="text-primary/50 hover:text-primary transition-colors flex items-center justify-center rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">
+                            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
                         </button>
                     </div>
                     
@@ -78,7 +83,7 @@
                     </div>
                     
                     <div class="px-6 py-4 border-t border-primary/10 bg-surface-container-lowest flex justify-end">
-                        <button @click="closeModal()" class="bg-primary text-white px-5 py-2 rounded-full font-bold text-sm hover:bg-primary/90 transition-colors shadow-sm normal-case tracking-normal">
+                        <button type="button" @click="closeModal()" class="bg-primary text-white px-5 py-2 rounded-full font-bold text-sm hover:bg-primary/90 transition-colors shadow-sm normal-case tracking-normal focus:outline-none focus:ring-2 focus:ring-secondary/40">
                             Close
                         </button>
                     </div>

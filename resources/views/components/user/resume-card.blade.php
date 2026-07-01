@@ -1,6 +1,6 @@
 @props(['title', 'date', 'url' => '#', 'cvId' => null])
 
-<div class="group bg-tertiary rounded-lg border border-primary/10 hover:shadow-[0_16px_32px_rgba(79,59,47,0.08)] transition-all duration-500 overflow-hidden flex flex-col cursor-pointer">
+<article class="group bg-tertiary rounded-lg border border-primary/10 hover:shadow-[0_16px_32px_rgba(79,59,47,0.08)] transition-all duration-500 overflow-hidden flex flex-col">
     <div class="aspect-[210/297] bg-surface-container-low overflow-hidden relative border-b border-primary/5">
         <div class="absolute inset-0 bg-transparent z-10"></div>
         @if($cvId)
@@ -29,7 +29,7 @@
         </div>
 
         <!-- Clickable overlay to open resume -->
-        <a href="{{ $url }}" class="absolute inset-0 z-30"></a>
+        <a href="{{ $url }}" class="absolute inset-0 z-30" aria-label="Edit {{ $title }}"></a>
     </div>
     <div class="p-6 bg-tertiary relative z-20">
         <div class="flex items-start justify-between gap-2 mb-1">
@@ -48,30 +48,33 @@
                 <button type="button"
                         onclick="openRenameModal('{{ $cvId }}', {{ json_encode($title) }})"
                         title="Rename Resume"
-                        class="p-1 hover:bg-primary/5 hover:text-secondary rounded-full transition-colors text-primary/40 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[20px]">drive_file_rename_outline</span>
+                        aria-label="Rename {{ $title }}"
+                        class="min-h-11 min-w-11 hover:bg-primary/5 hover:text-secondary rounded-full transition-colors text-primary/40 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-secondary/40">
+                    <span class="material-symbols-outlined text-[20px]" aria-hidden="true">drive_file_rename_outline</span>
                 </button>
                 {{-- Duplicate Button --}}
                 <form method="POST" action="{{ route('resumes.duplicate', $cvId) }}" class="inline">
                     @csrf
                     <button type="submit"
                             title="Duplicate Resume"
-                            class="p-1 hover:bg-blue-50 hover:text-blue-600 rounded-full transition-colors text-primary/40 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[20px]" data-icon="content_copy">content_copy</span>
+                            aria-label="Duplicate {{ $title }}"
+                            class="min-h-11 min-w-11 hover:bg-blue-50 hover:text-blue-600 rounded-full transition-colors text-primary/40 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-secondary/40">
+                        <span class="material-symbols-outlined text-[20px]" data-icon="content_copy" aria-hidden="true">content_copy</span>
                     </button>
                 </form>
                 {{-- Delete Button --}}
                 <button type="button" onclick="openDeleteModal('{{ $cvId }}')"
                         title="Delete Resume"
-                        class="p-1 hover:bg-red-50 hover:text-red-600 rounded-full transition-colors text-primary/40 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+                        aria-label="Delete {{ $title }}"
+                        class="min-h-11 min-w-11 hover:bg-red-50 hover:text-red-600 rounded-full transition-colors text-primary/40 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-300">
+                    <span class="material-symbols-outlined text-[20px]" data-icon="delete" aria-hidden="true">delete</span>
                 </button>
             </div>
             @else
-            <button class="p-1 hover:bg-surface-container-low rounded-full transition-colors text-primary/40 flex items-center justify-center">
-                <span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+            <button type="button" class="min-h-11 min-w-11 hover:bg-surface-container-low rounded-full transition-colors text-primary/40 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-secondary/40" aria-label="More actions">
+                <span class="material-symbols-outlined text-[20px]" data-icon="more_vert" aria-hidden="true">more_vert</span>
             </button>
             @endif
         </div>
     </div>
-</div>
+</article>

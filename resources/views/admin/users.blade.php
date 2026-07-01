@@ -213,36 +213,41 @@
                                 <!-- View -->
                                 <a href="{{ route('admin.users.show', $user) }}"
                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-primary/40 hover:text-primary hover:bg-surface transition"
-                                   title="View detail">
-                                    <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                                   title="View detail"
+                                   aria-label="View {{ $user->name }}">
+                                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">open_in_new</span>
                                 </a>
 
                                 <!-- Override Plan -->
-                                <button @click="openPlanModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->role }}')"
+                                <button type="button" @click="openPlanModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->role }}')"
                                         class="w-8 h-8 flex items-center justify-center rounded-lg text-primary/40 hover:text-secondary hover:bg-surface transition"
-                                        title="Override plan">
-                                    <span class="material-symbols-outlined text-[18px]">workspace_premium</span>
+                                        title="Override plan"
+                                        aria-label="Override plan for {{ $user->name }}">
+                                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">workspace_premium</span>
                                 </button>
 
                                 <!-- Adjust Credits -->
-                                <button @click="openCreditsModal('{{ $user->id }}', '{{ $user->name }}', {{ $used }})"
+                                <button type="button" @click="openCreditsModal('{{ $user->id }}', '{{ $user->name }}', {{ $used }})"
                                         class="w-8 h-8 flex items-center justify-center rounded-lg text-primary/40 hover:text-primary hover:bg-surface transition"
-                                        title="Adjust credits">
-                                    <span class="material-symbols-outlined text-[18px]">token</span>
+                                        title="Adjust credits"
+                                        aria-label="Adjust credits for {{ $user->name }}">
+                                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">token</span>
                                 </button>
 
                                 <!-- Suspend / Activate -->
-                                <button @click="openSuspendModal('{{ $user->id }}', '{{ $user->name }}', {{ $user->is_suspended ? 'true' : 'false' }})"
+                                <button type="button" @click="openSuspendModal('{{ $user->id }}', '{{ $user->name }}', {{ $user->is_suspended ? 'true' : 'false' }})"
                                         class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface transition {{ $user->is_suspended ? 'text-secondary' : 'text-orange-400' }}"
-                                        title="{{ $user->is_suspended ? 'Activate' : 'Suspend' }}">
-                                    <span class="material-symbols-outlined text-[18px]">{{ $user->is_suspended ? 'lock_open' : 'block' }}</span>
+                                        title="{{ $user->is_suspended ? 'Activate' : 'Suspend' }}"
+                                        aria-label="{{ $user->is_suspended ? 'Activate' : 'Suspend' }} {{ $user->name }}">
+                                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">{{ $user->is_suspended ? 'lock_open' : 'block' }}</span>
                                 </button>
 
                                 <!-- Delete -->
-                                <button @click="openDeleteModal('{{ $user->id }}', '{{ $user->name }}')"
+                                <button type="button" @click="openDeleteModal('{{ $user->id }}', '{{ $user->name }}')"
                                         class="w-8 h-8 flex items-center justify-center rounded-lg text-red-400 hover:bg-red-50 transition"
-                                        title="Delete permanently">
-                                    <span class="material-symbols-outlined text-[18px]">delete_forever</span>
+                                        title="Delete permanently"
+                                        aria-label="Delete {{ $user->name }}">
+                                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">delete_forever</span>
                                 </button>
                             </div>
                         </td>
@@ -270,16 +275,21 @@
 
     <!-- ── Override Plan Modal ── -->
     <div x-show="planModal.open" x-cloak
-         class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+         class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="admin-users-plan-title"
+         aria-describedby="admin-users-plan-description">
         <div @click.outside="planModal.open = false"
              class="bg-white rounded-2xl p-8 w-full max-w-sm shadow-xl">
-            <h3 class="text-lg font-headline font-bold text-primary mb-2">Override Plan</h3>
-            <p class="text-sm font-label text-primary/60 mb-6">
+            <h3 id="admin-users-plan-title" class="text-lg font-headline font-bold text-primary mb-2">Override Plan</h3>
+            <p id="admin-users-plan-description" class="text-sm font-label text-primary/60 mb-6">
                 Change plan for <span class="font-bold text-primary" x-text="planModal.name"></span>
             </p>
             <form :action="`/admin/users/${planModal.userId}/plan`" method="POST">
                 @csrf @method('PATCH')
-                <select name="plan" x-model="planModal.currentRole"
+                <label for="admin-users-plan" class="sr-only">New plan</label>
+                <select id="admin-users-plan" name="plan" x-model="planModal.currentRole"
                         class="w-full border border-primary/20 rounded-xl px-4 py-3 text-sm font-label text-primary mb-6 focus:outline-none focus:border-primary/40">
                     <option value="basic">Free (Basic)</option>
                     <option value="premium">Premium</option>
@@ -300,16 +310,21 @@
 
     <!-- ── Adjust Credits Modal ── -->
     <div x-show="creditsModal.open" x-cloak
-         class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+         class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="admin-users-credits-title"
+         aria-describedby="admin-users-credits-description">
         <div @click.outside="creditsModal.open = false"
              class="bg-white rounded-2xl p-8 w-full max-w-sm shadow-xl">
-            <h3 class="text-lg font-headline font-bold text-primary mb-2">Adjust AI Credits Used</h3>
-            <p class="text-sm font-label text-primary/60 mb-6">
+            <h3 id="admin-users-credits-title" class="text-lg font-headline font-bold text-primary mb-2">Adjust AI Credits Used</h3>
+            <p id="admin-users-credits-description" class="text-sm font-label text-primary/60 mb-6">
                 Set <span class="font-bold text-primary" x-text="creditsModal.name"></span>'s consumed credit count.
             </p>
             <form :action="`/admin/users/${creditsModal.userId}/credits`" method="POST">
                 @csrf @method('PATCH')
-                <input type="number" name="ai_quota_used" :value="creditsModal.used" min="0"
+                <label for="admin-users-ai-quota-used" class="sr-only">AI quota used</label>
+                <input id="admin-users-ai-quota-used" type="number" name="ai_quota_used" :value="creditsModal.used" min="0"
                        class="w-full border border-primary/20 rounded-xl px-4 py-3 text-sm font-label text-primary mb-6 focus:outline-none focus:border-primary/40">
                 <div class="flex space-x-3">
                     <button type="button" @click="creditsModal.open = false"
@@ -327,12 +342,16 @@
 
     <!-- ── Suspend / Activate Modal ── -->
     <div x-show="suspendModal.open" x-cloak
-         class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+         class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="admin-users-suspend-title"
+         aria-describedby="admin-users-suspend-description">
         <div @click.outside="suspendModal.open = false"
              class="bg-white rounded-2xl p-8 w-full max-w-sm shadow-xl">
-            <h3 class="text-lg font-headline font-bold text-primary mb-2"
+            <h3 id="admin-users-suspend-title" class="text-lg font-headline font-bold text-primary mb-2"
                 x-text="suspendModal.isSuspended ? 'Activate Account' : 'Suspend Account'"></h3>
-            <p class="text-sm font-label text-primary/60 mb-6">
+            <p id="admin-users-suspend-description" class="text-sm font-label text-primary/60 mb-6">
                 <span x-text="suspendModal.isSuspended
                     ? `Activate ${suspendModal.name}? They will be able to log in again.`
                     : `Suspend ${suspendModal.name}? They will be logged out immediately.`">
@@ -359,14 +378,18 @@
 
     <!-- ── Delete Modal ── -->
     <div x-show="deleteModal.open" x-cloak
-         class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+         class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="admin-users-delete-title"
+         aria-describedby="admin-users-delete-description">
         <div @click.outside="deleteModal.open = false"
              class="bg-white rounded-2xl p-8 w-full max-w-sm shadow-xl">
             <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
                 <span class="material-symbols-outlined text-red-500">delete_forever</span>
             </div>
-            <h3 class="text-lg font-headline font-bold text-primary mb-2">Delete Permanently</h3>
-            <p class="text-sm font-label text-primary/60 mb-6">
+            <h3 id="admin-users-delete-title" class="text-lg font-headline font-bold text-primary mb-2">Delete Permanently</h3>
+            <p id="admin-users-delete-description" class="text-sm font-label text-primary/60 mb-6">
                 This will permanently delete <span class="font-bold text-primary" x-text="deleteModal.name"></span>
                 and all their data. This action cannot be undone.
             </p>

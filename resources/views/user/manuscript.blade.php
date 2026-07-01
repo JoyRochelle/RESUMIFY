@@ -633,19 +633,22 @@
     </div>
 
     {{-- Template Selection Modal --}}
-    <div id="template-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="opacity: 0; pointer-events: none;">
+    <div id="template-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="opacity: 0; pointer-events: none;"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="template-modal-title">
         <div class="bg-surface w-full max-w-4xl max-h-[80vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden mx-4 transform scale-95 transition-transform duration-300" id="template-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
-                <h3 class="text-xl font-headline font-bold text-primary flex items-center gap-2">
+                <h3 id="template-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
                     <span class="material-symbols-outlined text-secondary">layers</span> Select Template
                 </h3>
-                <button id="close-modal-btn" onclick="closeTemplateModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
+                <button id="close-modal-btn" type="button" onclick="closeTemplateModal()" aria-label="Close template selection" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div class="p-6 overflow-y-auto custom-scrollbar bg-surface flex-1">
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     @foreach($templates as $template)
                     @if($cv)
-                        <div id="template-card-{{ $template->id }}" onclick="selectTemplate('{{ $template->id }}')" onmouseenter="previewTemplate('{{ $template->id }}')" onmouseleave="resetPreview()" class="template-card cursor-pointer group relative border @if($cv && $cv->template_id === $template->id) border-secondary bg-secondary/5 @else border-primary/10 @endif rounded-xl overflow-hidden hover:border-secondary transition-all hover:shadow-lg hover:-translate-y-1">
+                        <button type="button" id="template-card-{{ $template->id }}" onclick="selectTemplate('{{ $template->id }}')" onmouseenter="previewTemplate('{{ $template->id }}')" onmouseleave="resetPreview()" class="template-card cursor-pointer group relative border @if($cv && $cv->template_id === $template->id) border-secondary bg-secondary/5 @else border-primary/10 @endif rounded-xl overflow-hidden hover:border-secondary transition-all hover:shadow-lg hover:-translate-y-1 text-left focus:outline-none focus:ring-2 focus:ring-secondary/40" aria-pressed="{{ $cv && $cv->template_id === $template->id ? 'true' : 'false' }}">
                             <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
                                 <iframe src="{{ route('resumes.preview', $cv) }}?template_id={{ $template->id }}" 
                                         style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
@@ -666,7 +669,7 @@
                                 <span class="material-symbols-outlined text-[14px]">check</span>
                             </div>
                             @endif
-                        </div>
+                        </button>
                     @else
                         <form action="{{ route('resumes.store') }}" method="POST" class="cursor-pointer group relative border border-primary/10 rounded-xl overflow-hidden hover:border-secondary transition-all hover:shadow-lg hover:-translate-y-1 bg-tertiary">
                             @csrf
@@ -700,13 +703,17 @@
     </div>
 
     {{-- Refine Modal --}}
-    <div id="refine-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;">
+    <div id="refine-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="refine-modal-title"
+         aria-describedby="refine-loading">
         <div class="bg-surface w-full max-w-lg rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300" id="refine-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
-                <h3 class="text-xl font-headline font-bold text-primary flex items-center gap-2">
+                <h3 id="refine-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
                     <span class="material-symbols-outlined text-secondary">auto_awesome</span> Refine with AI
                 </h3>
-                <button onclick="closeRefineModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
+                <button type="button" onclick="closeRefineModal()" aria-label="Close AI refinement" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div class="p-6 bg-surface">
                 <div id="refine-loading" class="flex flex-col items-center justify-center py-8">
@@ -719,13 +726,16 @@
     </div>
 
     {{-- CV Versions Modal --}}
-    <div id="cv-versions-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;">
+    <div id="cv-versions-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="cv-versions-modal-title">
         <div class="bg-surface w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300 overflow-hidden" id="cv-versions-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
-                <h3 class="text-xl font-headline font-bold text-primary flex items-center gap-2">
+                <h3 id="cv-versions-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
                     <span class="material-symbols-outlined text-secondary">auto_awesome</span> Tailored CV Versions
                 </h3>
-                <button onclick="closeCvVersionsModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
+                <button type="button" onclick="closeCvVersionsModal()" aria-label="Close tailored CV versions" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div class="p-6 overflow-y-auto custom-scrollbar bg-surface flex-1">
                 <div id="cv-versions-setup" class="flex flex-col gap-4 max-w-2xl mx-auto py-8 text-center">
@@ -1484,5 +1494,4 @@
         }
     </script>
 @endsection
-
 

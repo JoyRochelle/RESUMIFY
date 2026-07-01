@@ -7,29 +7,42 @@
     'required'    => false,
     'hint'        => '',
     'maxlength'   => null,
+    'id'          => null,
+    'autocomplete' => null,
 ])
 
+@php
+    $inputId = $id ?? ($attributes->get('id') ?: ($name ? 'field-' . \Illuminate\Support\Str::slug($name) : 'field-' . md5($label)));
+    $errorId = $inputId . '-client-error';
+    $hintId = $hint ? $inputId . '-hint' : null;
+@endphp
+
 <div class="relative group/input" x-data="{ focused: false, error: '' }">
-    <label class="text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 mb-1 flex items-center gap-1"
+    <label for="{{ $inputId }}" class="text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 mb-1 flex items-center gap-1"
            :class="error ? 'text-red-500' : (focused ? 'text-secondary' : 'text-primary/60')">
         {{ $label }}
         @if($required)
-            <span class="text-red-400 text-[10px]">*</span>
+            <span class="text-red-400 text-[10px]" aria-hidden="true">*</span>
         @endif
     </label>
 
     <div class="relative">
         <input
             name="{{ $name }}"
+            id="{{ $inputId }}"
             type="{{ $type }}"
             value="{{ $value }}"
             placeholder="{{ $placeholder }}"
             @if($required) required @endif
             @if($maxlength) maxlength="{{ $maxlength }}" @endif
+            @if($autocomplete) autocomplete="{{ $autocomplete }}" @endif
+            aria-invalid="false"
+            aria-describedby="{{ trim(($hintId ?? '') . ' ' . $errorId) }}"
             {{ $attributes->merge(['class' => 'w-full border-b-2 border-primary/15 focus:border-secondary bg-transparent py-2 px-0 outline-none transition-all duration-200 focus:ring-0 text-primary text-sm placeholder:text-primary/30']) }}
             @focus="focused = true; error = ''"
             @blur="focused = false; validate($event, '{{ $type }}', {{ $required ? 'true' : 'false' }})"
             x-on:input="if(error) validate($event, '{{ $type }}', {{ $required ? 'true' : 'false' }})"
+            x-bind:aria-invalid="error ? 'true' : 'false'"
         />
         {{-- Valid checkmark --}}
         <span class="absolute right-0 top-2 text-emerald-500 text-[16px] material-symbols-outlined transition-all duration-200"
@@ -46,11 +59,11 @@
     </div>
 
     {{-- Error message --}}
-    <p class="text-[11px] text-red-400 mt-1 leading-tight" x-show="error" x-text="error" style="display:none"></p>
+    <p id="{{ $errorId }}" class="text-[11px] text-red-500 mt-1 leading-tight" x-show="error" x-text="error" style="display:none" role="alert"></p>
 
     {{-- Hint text --}}
     @if($hint)
-        <p class="text-[10px] text-primary/40 mt-1 leading-tight" x-show="!error">{{ $hint }}</p>
+        <p id="{{ $hintId }}" class="text-[10px] text-primary/40 mt-1 leading-tight" x-show="!error">{{ $hint }}</p>
     @endif
 
     {{-- Character counter for maxlength fields --}}
@@ -66,10 +79,6 @@
 function validate(event, type, required) {
     const input = event.target;
     const val   = input.value.trim();
-    const comp  = input.closest('[x-data]').__x;
-
-    if (!comp) return;
-
     let msg = '';
 
     if (required && !val) {
@@ -84,7 +93,7 @@ function validate(event, type, required) {
         }
     }
 
-    comp.$data.error = msg;
+    Alpine.$data(input.closest('[x-data]')).error = msg;
 }
 </script>
 @endpush

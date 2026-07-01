@@ -15,15 +15,7 @@
         <h1 class="text-2xl font-headline font-bold text-primary">New Template</h1>
     </div>
 
-    @if($errors->any())
-        <div class="bg-red-50 border border-red-100 text-red-600 text-sm font-label px-5 py-3 rounded-xl">
-            <ul class="list-disc list-inside space-y-1">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+    <x-ui.error-summary />
 
     <form action="{{ route('admin.templates.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
@@ -34,22 +26,32 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                    <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Name <span class="text-red-400">*</span></label>
-                    <input type="text" name="name" value="{{ old('name') }}" required
+                    <label for="template-name" class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Name <span class="text-red-400" aria-hidden="true">*</span></label>
+                    <input id="template-name" type="text" name="name" value="{{ old('name') }}" required
+                           autocomplete="off"
+                           aria-invalid="{{ $errors->has('name') ? 'true' : 'false' }}"
+                           aria-describedby="{{ $errors->has('name') ? 'template-name-error' : '' }}"
                            class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30">
+                    @error('name')<p id="template-name-error" class="mt-1 text-xs text-red-600" role="alert">{{ $message }}</p>@enderror
                 </div>
                 <div>
-                    <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Blade Path <span class="text-red-400">*</span></label>
-                    <input type="text" name="blade_path" value="{{ old('blade_path') }}" required
+                    <label for="template-blade-path" class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Blade Path <span class="text-red-400" aria-hidden="true">*</span></label>
+                    <input id="template-blade-path" type="text" name="blade_path" value="{{ old('blade_path') }}" required
                            placeholder="e.g. templates.minimal"
+                           autocomplete="off"
+                           aria-invalid="{{ $errors->has('blade_path') ? 'true' : 'false' }}"
+                           aria-describedby="{{ $errors->has('blade_path') ? 'template-blade-path-error' : '' }}"
                            class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30">
+                    @error('blade_path')<p id="template-blade-path-error" class="mt-1 text-xs text-red-600" role="alert">{{ $message }}</p>@enderror
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                    <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Category <span class="text-red-400">*</span></label>
-                    <select name="category" required
+                    <label for="template-category" class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Category <span class="text-red-400" aria-hidden="true">*</span></label>
+                    <select id="template-category" name="category" required
+                            aria-invalid="{{ $errors->has('category') ? 'true' : 'false' }}"
+                            aria-describedby="{{ $errors->has('category') ? 'template-category-error' : '' }}"
                             class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary focus:outline-none focus:border-primary/30">
                         <option value="">Select category</option>
                         <option value="professional" {{ old('category') === 'professional' ? 'selected' : '' }}>Professional</option>
@@ -57,18 +59,25 @@
                         <option value="technology"   {{ old('category') === 'technology'   ? 'selected' : '' }}>Technology</option>
                         <option value="managerial"   {{ old('category') === 'managerial'   ? 'selected' : '' }}>Managerial</option>
                     </select>
+                    @error('category')<p id="template-category-error" class="mt-1 text-xs text-red-600" role="alert">{{ $message }}</p>@enderror
                 </div>
                 <div>
-                    <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Sort Order</label>
-                    <input type="number" name="sort_order" value="{{ old('sort_order', 0) }}" min="0"
+                    <label for="template-sort-order" class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Sort Order</label>
+                    <input id="template-sort-order" type="number" name="sort_order" value="{{ old('sort_order', 0) }}" min="0"
+                           aria-invalid="{{ $errors->has('sort_order') ? 'true' : 'false' }}"
+                           aria-describedby="{{ $errors->has('sort_order') ? 'template-sort-order-error' : '' }}"
                            class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary focus:outline-none focus:border-primary/30">
+                    @error('sort_order')<p id="template-sort-order-error" class="mt-1 text-xs text-red-600" role="alert">{{ $message }}</p>@enderror
                 </div>
             </div>
 
             <div>
-                <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Description</label>
-                <textarea name="description" rows="3"
+                <label for="template-description" class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Description</label>
+                <textarea id="template-description" name="description" rows="3"
+                          aria-invalid="{{ $errors->has('description') ? 'true' : 'false' }}"
+                          aria-describedby="{{ $errors->has('description') ? 'template-description-error' : '' }}"
                           class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30 resize-none">{{ old('description') }}</textarea>
+                @error('description')<p id="template-description-error" class="mt-1 text-xs text-red-600" role="alert">{{ $message }}</p>@enderror
             </div>
         </div>
 
@@ -78,14 +87,19 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                    <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Badge Label</label>
-                    <input type="text" name="badge" value="{{ old('badge') }}" maxlength="30"
+                    <label for="template-badge" class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Badge Label</label>
+                    <input id="template-badge" type="text" name="badge" value="{{ old('badge') }}" maxlength="30"
                            placeholder="e.g. New, Popular"
+                           aria-invalid="{{ $errors->has('badge') ? 'true' : 'false' }}"
+                           aria-describedby="{{ $errors->has('badge') ? 'template-badge-error' : '' }}"
                            class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30">
+                    @error('badge')<p id="template-badge-error" class="mt-1 text-xs text-red-600" role="alert">{{ $message }}</p>@enderror
                 </div>
                 <div>
-                    <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Badge Color</label>
-                    <select name="badge_color"
+                    <label for="template-badge-color" class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Badge Color</label>
+                    <select id="template-badge-color" name="badge_color"
+                            aria-invalid="{{ $errors->has('badge_color') ? 'true' : 'false' }}"
+                            aria-describedby="{{ $errors->has('badge_color') ? 'template-badge-color-error' : '' }}"
                             class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary focus:outline-none focus:border-primary/30">
                         <option value="">None</option>
                         <option value="blue"      {{ old('badge_color') === 'blue'      ? 'selected' : '' }}>Blue</option>
@@ -93,19 +107,20 @@
                         <option value="purple"    {{ old('badge_color') === 'purple'    ? 'selected' : '' }}>Purple</option>
                         <option value="green"     {{ old('badge_color') === 'green'     ? 'selected' : '' }}>Green</option>
                     </select>
+                    @error('badge_color')<p id="template-badge-color-error" class="mt-1 text-xs text-red-600" role="alert">{{ $message }}</p>@enderror
                 </div>
             </div>
 
             <div class="flex items-center gap-8">
-                <label class="flex items-center gap-3 cursor-pointer">
+                <label for="template-is-premium" class="flex items-center gap-3 cursor-pointer">
                     <input type="hidden" name="is_premium" value="0">
-                    <input type="checkbox" name="is_premium" value="1" {{ old('is_premium') ? 'checked' : '' }}
+                    <input id="template-is-premium" type="checkbox" name="is_premium" value="1" {{ old('is_premium') ? 'checked' : '' }}
                            class="w-4 h-4 rounded border-primary/20 text-primary focus:ring-primary/20">
                     <span class="text-sm font-label text-primary">Premium only</span>
                 </label>
-                <label class="flex items-center gap-3 cursor-pointer">
+                <label for="template-is-active" class="flex items-center gap-3 cursor-pointer">
                     <input type="hidden" name="is_active" value="0">
-                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}
+                    <input id="template-is-active" type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}
                            class="w-4 h-4 rounded border-primary/20 text-primary focus:ring-primary/20">
                     <span class="text-sm font-label text-primary">Active (visible to users)</span>
                 </label>
@@ -116,11 +131,12 @@
         <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5 space-y-4">
             <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest">Thumbnail</h3>
             <div x-data="{ preview: null }">
-                <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Upload Image</label>
-                <input type="file" name="thumbnail" accept="image/jpg,image/jpeg,image/png,image/webp"
+                <label for="template-thumbnail" class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Upload Image</label>
+                <input id="template-thumbnail" type="file" name="thumbnail" accept="image/jpg,image/jpeg,image/png,image/webp"
                        @change="preview = URL.createObjectURL($event.target.files[0])"
+                       aria-describedby="template-thumbnail-hint"
                        class="w-full text-sm font-label text-primary/60 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-label file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer">
-                <p class="text-[11px] font-label text-primary/40 mt-1">JPG, PNG, WebP — max 2 MB</p>
+                <p id="template-thumbnail-hint" class="text-[11px] font-label text-primary/40 mt-1">JPG, PNG, WebP — max 2 MB</p>
                 <div x-show="preview" class="mt-3">
                     <img :src="preview" alt="Preview" class="h-32 w-auto rounded-xl object-cover border border-primary/10">
                 </div>
@@ -130,11 +146,14 @@
         <!-- Style Config -->
         <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5 space-y-4">
             <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest">Style Config (JSON)</h3>
-            <textarea name="style_config" rows="5"
+            <label for="template-style-config" class="sr-only">Style Config JSON</label>
+            <textarea id="template-style-config" name="style_config" rows="5"
                       placeholder='{"primary_color": "#4f3b2f"}'
+                      aria-invalid="{{ $errors->has('style_config') ? 'true' : 'false' }}"
+                      aria-describedby="{{ $errors->has('style_config') ? 'template-style-config-error' : '' }}"
                       class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-mono text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30 resize-none">{{ old('style_config') }}</textarea>
             @error('style_config')
-                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                <p id="template-style-config-error" class="text-xs text-red-600 mt-1" role="alert">{{ $message }}</p>
             @enderror
         </div>
 
@@ -142,10 +161,7 @@
         <div class="flex items-center justify-between">
             <a href="{{ route('admin.templates.index') }}"
                class="text-sm font-label text-primary/50 hover:text-primary transition">← Cancel</a>
-            <button type="submit"
-                    class="bg-primary text-white px-8 py-2.5 rounded-xl text-sm font-label hover:bg-primary/90 transition shadow-sm">
-                Create Template
-            </button>
+            <x-ui.loading-button loading-text="Creating...">Create Template</x-ui.loading-button>
         </div>
     </form>
 

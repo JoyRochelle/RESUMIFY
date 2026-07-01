@@ -42,61 +42,23 @@
 
     </main>
 
-    <!-- Template Selection Modal for New Resumes -->
-    <div id="create-modal" class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
-        <div id="create-modal-content" class="bg-tertiary w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
-            <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
-                <h3 class="font-headline text-2xl font-bold text-primary flex items-center gap-3">
-                    <span class="material-symbols-outlined text-secondary">layers</span> Choose Your Starting Point
-                </h3>
-                <button onclick="closeCreateModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
-            </div>
-            <div class="p-6 overflow-y-auto custom-scrollbar bg-surface flex-1">
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    @foreach($templates as $template)
-                    <form action="{{ route('resumes.store') }}" method="POST" class="cursor-pointer group relative border border-primary/10 rounded-xl overflow-hidden hover:border-secondary transition-all hover:shadow-lg hover:-translate-y-1 bg-tertiary">
-                        @csrf
-                        <input type="hidden" name="title" value="My Professional Resume">
-                        <input type="hidden" name="template_id" value="{{ $template->id }}">
-                        
-                        <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
-                            <iframe src="{{ route('templates.demo', $template) }}" 
-                                    style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
-                                    class="template-thumbnail-iframe pointer-events-none transition-transform duration-500 origin-top-left"
-                                    loading="lazy" tabindex="-1">
-                            </iframe>
-                            <div class="absolute inset-0 bg-transparent z-10"></div>
-                            
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
-                                <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
-                            </div>
-                        </div>
-                        <div class="p-4 flex justify-between items-center">
-                            <div>
-                                <h4 class="font-bold text-sm text-primary group-hover:text-secondary transition-colors">{{ $template->name }}</h4>
-                                <p class="text-[11px] text-primary/60 mt-1 line-clamp-1">{{ $template->is_premium ? 'Premium' : 'Free' }}</p>
-                            </div>
-                        </div>
-                        
-                        <button type="submit" class="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer"></button>
-                    </form>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-    </div>
+    <x-user.create-resume-modal :templates="$templates" />
 
     <!-- Delete Confirmation Modal -->
-    <div id="delete-modal" class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+    <div id="delete-modal" class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="delete-modal-title"
+         aria-describedby="delete-modal-description">
         <div id="delete-modal-content" class="bg-tertiary w-full max-w-md rounded-2xl shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
-                <h3 class="font-headline text-xl font-bold text-red-600 flex items-center gap-2">
+                <h3 id="delete-modal-title" class="font-headline text-xl font-bold text-red-600 flex items-center gap-2">
                     <span class="material-symbols-outlined">warning</span> Delete Resume
                 </h3>
-                <button onclick="closeDeleteModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
+                <button type="button" onclick="closeDeleteModal()" aria-label="Close delete confirmation" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div class="p-6 bg-surface">
-                <p class="text-primary/80 mb-6">Are you sure you want to delete this resume? This action cannot be undone.</p>
+                <p id="delete-modal-description" class="text-primary/80 mb-6">Are you sure you want to delete this resume? This action cannot be undone.</p>
                 <div class="flex justify-end gap-3">
                     <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 rounded-lg font-bold text-primary/70 hover:bg-primary/5 transition-colors">Cancel</button>
                     <form id="delete-form" method="POST" action="">
@@ -110,13 +72,16 @@
     </div>
 
     <!-- Rename Modal -->
-    <div id="rename-modal" class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+    <div id="rename-modal" class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="rename-modal-title">
         <div id="rename-modal-content" class="bg-tertiary w-full max-w-md rounded-2xl shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
-                <h3 class="font-headline text-xl font-bold text-primary flex items-center gap-2">
+                <h3 id="rename-modal-title" class="font-headline text-xl font-bold text-primary flex items-center gap-2">
                     <span class="material-symbols-outlined text-secondary">drive_file_rename_outline</span> Rename Resume
                 </h3>
-                <button onclick="closeRenameModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
+                <button type="button" onclick="closeRenameModal()" aria-label="Close rename dialog" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div class="p-6 bg-surface">
                 <form id="rename-form" method="POST" action="">
@@ -142,7 +107,20 @@
     </div>
 
     <script>
+        let lastFocusedElement = null;
+
+        function rememberFocus() {
+            lastFocusedElement = document.activeElement;
+        }
+
+        function restoreFocus() {
+            if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+                lastFocusedElement.focus();
+            }
+        }
+
         function openCreateModal() {
+            rememberFocus();
             const modal = document.getElementById('create-modal');
             const modalContent = document.getElementById('create-modal-content');
             modal.classList.remove('hidden');
@@ -151,6 +129,7 @@
             modalContent.classList.remove('scale-95');
             modalContent.classList.add('scale-100');
             scaleThumbnails();
+            setTimeout(() => document.getElementById('create-resume-title')?.focus(), 120);
         }
 
         function scaleThumbnails() {
@@ -175,6 +154,7 @@
             modalContent.classList.add('scale-95');
             setTimeout(() => {
                 modal.classList.add('hidden');
+                restoreFocus();
             }, 300);
         }
 
@@ -187,6 +167,7 @@
 
         // Delete Modal Logic
         function openDeleteModal(cvId) {
+            rememberFocus();
             const modal = document.getElementById('delete-modal');
             const modalContent = document.getElementById('delete-modal-content');
             const deleteForm = document.getElementById('delete-form');
@@ -199,6 +180,7 @@
             modal.style.opacity = '1';
             modalContent.classList.remove('scale-95');
             modalContent.classList.add('scale-100');
+            setTimeout(() => modal.querySelector('button')?.focus(), 120);
         }
 
         function closeDeleteModal() {
@@ -209,11 +191,13 @@
             modalContent.classList.add('scale-95');
             setTimeout(() => {
                 modal.classList.add('hidden');
+                restoreFocus();
             }, 300);
         }
 
         // Rename Modal Logic
         function openRenameModal(cvId, currentTitle) {
+            rememberFocus();
             const modal = document.getElementById('rename-modal');
             const modalContent = document.getElementById('rename-modal-content');
             const renameForm = document.getElementById('rename-form');
@@ -243,6 +227,7 @@
             modalContent.classList.add('scale-95');
             setTimeout(() => {
                 modal.classList.add('hidden');
+                restoreFocus();
             }, 300);
         }
 

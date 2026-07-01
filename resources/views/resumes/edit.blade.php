@@ -3,74 +3,77 @@
 @section('title', 'Edit: ' . $cv->title . ' - Resumify')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <h2 class="mb-4">Edit Resume</h2>
+    <main class="flex-1 p-4 sm:p-6 md:p-12 max-w-5xl mx-auto w-full pb-24 md:pb-12">
+        <x-user.page-header title="Edit Resume" :back-url="route('user.manuscript', ['cv_id' => $cv->id])" />
 
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
+        <section class="mt-8 space-y-6">
+            @if(session('success'))
+                <x-ui.alert variant="success">{{ session('success') }}</x-ui.alert>
+            @endif
+            <x-ui.error-summary />
 
-        {{-- Resume Details Form --}}
-        <div class="card mb-4">
-            <div class="card-header">Resume Details</div>
-            <div class="card-body">
-                <form action="{{ route('resumes.update', $cv) }}" method="POST">
-                    @csrf @method('PUT')
+            <article class="rounded-lg border border-primary/10 bg-tertiary p-6 shadow-sm">
+                <h2 class="font-headline text-2xl font-bold text-primary">Resume Details</h2>
+                <form action="{{ route('resumes.update', $cv) }}" method="POST" class="mt-6 space-y-6">
+                    @csrf
+                    @method('PUT')
 
-                    <div class="mb-3">
-                        <label for="title" class="form-label">Title</label>
-                        <input type="text" name="title" id="title"
-                               class="form-control"
-                               value="{{ old('title', $cv->title) }}" required>
+                    <div>
+                        <label for="title" class="mb-2 block text-xs font-bold uppercase tracking-wider text-primary/60">Title</label>
+                        <input type="text"
+                               name="title"
+                               id="title"
+                               value="{{ old('title', $cv->title) }}"
+                               required
+                               autocomplete="off"
+                               aria-invalid="{{ $errors->has('title') ? 'true' : 'false' }}"
+                               aria-describedby="{{ $errors->has('title') ? 'title-error' : null }}"
+                               class="w-full rounded-lg border border-primary/20 bg-surface px-4 py-3 text-primary outline-none transition focus:border-secondary focus:ring-2 focus:ring-secondary/20">
+                        @error('title')
+                            <p id="title-error" class="mt-2 text-sm text-red-600" role="alert">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    <div class="mb-3 form-check">
+                    <div class="flex items-start gap-3 rounded-lg border border-primary/10 bg-surface p-4">
                         <input type="hidden" name="is_public" value="0">
-                        <input type="checkbox" name="is_public" id="is_public"
-                               class="form-check-input" value="1"
-                               {{ $cv->is_public ? 'checked' : '' }}>
-                        <label for="is_public" class="form-check-label">Make Public</label>
+                        <input type="checkbox" name="is_public" id="is_public" value="1" {{ old('is_public', $cv->is_public) ? 'checked' : '' }} class="mt-1 h-5 w-5 rounded border-primary/30 text-secondary focus:ring-secondary/30">
+                        <label for="is_public" class="text-sm leading-6 text-primary">
+                            <span class="block font-bold">Make Public</span>
+                            <span class="text-primary/60">Allow this resume to be available from public preview links.</span>
+                        </label>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <x-ui.loading-button loading-text="Saving..." icon="save">Save Changes</x-ui.loading-button>
                 </form>
-            </div>
-        </div>
+            </article>
 
-        {{-- Sections --}}
-        <h4 class="mb-3">Sections</h4>
+            <section class="space-y-4">
+                <h2 class="font-headline text-2xl font-bold text-primary">Sections</h2>
+                @foreach($cv->sections as $section)
+                    <article class="rounded-lg border border-primary/10 bg-tertiary p-6 shadow-sm">
+                        <div class="mb-5 flex flex-wrap items-center gap-3">
+                            <h3 class="font-headline text-xl font-bold text-primary">{{ $section->title }}</h3>
+                            <span class="rounded-full bg-secondary/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-secondary">{{ str_replace('_', ' ', $section->type) }}</span>
+                        </div>
+                        <form action="{{ route('resumes.sections.update', [$cv, $section]) }}" method="POST" class="space-y-5">
+                            @csrf
+                            @method('PUT')
 
-        @foreach($cv->sections as $section)
-        <div class="card mb-3">
-            <div class="card-header">
-                {{ $section->title }}
-                <span class="badge bg-secondary">{{ $section->type }}</span>
-            </div>
-            <div class="card-body">
-                <form action="{{ route('resumes.sections.update', [$cv, $section]) }}" method="POST">
-                    @csrf @method('PUT')
+                            <div>
+                                <label for="section-title-{{ $section->id }}" class="mb-2 block text-xs font-bold uppercase tracking-wider text-primary/60">Section Title</label>
+                                <input type="text" name="title" id="section-title-{{ $section->id }}" value="{{ old('title', $section->title) }}" class="w-full rounded-lg border border-primary/20 bg-surface px-4 py-3 text-primary outline-none transition focus:border-secondary focus:ring-2 focus:ring-secondary/20">
+                            </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Section Title</label>
-                        <input type="text" name="title" class="form-control"
-                               value="{{ old('title', $section->title) }}">
-                    </div>
+                            <div>
+                                <label for="section-content-{{ $section->id }}" class="mb-2 block text-xs font-bold uppercase tracking-wider text-primary/60">Content JSON</label>
+                                <textarea name="content" id="section-content-{{ $section->id }}" rows="5" placeholder='e.g. {"name": "John Doe", "email": "john@example.com"}' class="w-full rounded-lg border border-primary/20 bg-surface px-4 py-3 font-mono text-sm text-primary outline-none transition focus:border-secondary focus:ring-2 focus:ring-secondary/20">{{ old('content', $section->content ? json_encode($section->content, JSON_PRETTY_PRINT) : '') }}</textarea>
+                            </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Content (JSON)</label>
-                        <textarea name="content" class="form-control" rows="4"
-                            placeholder='e.g. {"name": "John Doe", "email": "john@example.com"}'
-                        >{{ old('content', $section->content ? json_encode($section->content, JSON_PRETTY_PRINT) : '') }}</textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-sm btn-outline-primary">Update Section</button>
-                </form>
-            </div>
-        </div>
-        @endforeach
-
-        <a href="{{ route('resumes.index') }}" class="btn btn-link">← Back to Resumes</a>
-    </div>
-</div>
+                            <x-ui.loading-button variant="outline" loading-text="Updating...">Update Section</x-ui.loading-button>
+                        </form>
+                    </article>
+                @endforeach
+            </section>
+        </section>
+    </main>
 @endsection
