@@ -95,9 +95,9 @@ class AiService
      * Score a resume for ATS compatibility (lightweight scoring for manuscript editor).
      * Returns score, label, tip, strengths, and improvements.
      */
-    public function scoreResume(string $resumeText, ?string $jobTitle = null, ?string $jobDescription = null): array
+    public function scoreResume(string $resumeText, ?string $jobTitle = null, ?string $jobCompany = null, ?string $jobDescription = null): array
     {
-        $prompt = $this->buildScorePrompt($resumeText, $jobTitle, $jobDescription);
+        $prompt = $this->buildScorePrompt($resumeText, $jobTitle, $jobCompany, $jobDescription);
         return $this->callGemini($prompt, 25);
     }
 
@@ -231,12 +231,13 @@ PROMPT;
     /**
      * Build the lightweight score prompt (for manuscript editor auto-score).
      */
-    private function buildScorePrompt(string $resumeText, ?string $jobTitle = null, ?string $jobDescription = null): string
+    private function buildScorePrompt(string $resumeText, ?string $jobTitle = null, ?string $jobCompany = null, ?string $jobDescription = null): string
     {
         $jobContext = "";
-        if ($jobTitle || $jobDescription) {
+        if ($jobTitle || $jobCompany || $jobDescription) {
             $jobContext = "Evaluate this resume against the following job:\n";
             if ($jobTitle) $jobContext .= "JOB TITLE: $jobTitle\n";
+            if ($jobCompany) $jobContext .= "COMPANY: $jobCompany\n";
             if ($jobDescription) $jobContext .= "JOB DESCRIPTION: $jobDescription\n";
             $jobContext .= "\nFocus on: keyword matching, relevance of experience to this role, and overall fit.";
         } else {

@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\AtsScan;
+
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -191,6 +193,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function interviewSessions(): HasMany
     {
         return $this->hasMany(InterviewSession::class);
+    }
+
+    /**
+     * Get the ATS scans run by this user, newest first.
+     */
+    public function atsScans(): HasMany
+    {
+        return $this->hasMany(AtsScan::class)->latest('created_at');
     }
 
 }

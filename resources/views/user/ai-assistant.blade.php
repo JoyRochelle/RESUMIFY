@@ -69,21 +69,35 @@
                     {{-- Resume input (Hidden, populated by CV selector) --}}
                     <input type="hidden" id="resume-input" value="">
 
-                    {{-- Job Description input (Hidden, populated by CV selector) --}}
-                    <input type="hidden" id="jd-input" value="">
-
-                    {{-- Preview Area --}}
-                    <div class="bg-tertiary rounded-xl p-6 border border-primary/10 shadow-sm flex flex-col gap-4">
-                        <div class="flex justify-between items-center">
-                            <h3 class="font-bold text-primary flex items-center gap-2 text-sm">
-                                <span class="material-symbols-outlined text-primary/60 text-[18px]">visibility</span>
-                                <span id="preview-header-text">All Resumes Preview</span>
-                            </h3>
+                    {{-- Target Job section (accordion style, matches manuscript editor) --}}
+                    <x-user.editor-accordion title="Target Job" icon="target" :isOpen="true">
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <x-user.form-input
+                                    id="ats-job-title"
+                                    label="Target Job Title"
+                                    name="job_title"
+                                    value=""
+                                    placeholder="e.g. Senior Software Engineer" />
+                                <x-user.form-input
+                                    id="ats-job-company"
+                                    label="Target Company"
+                                    name="job_company"
+                                    value=""
+                                    placeholder="e.g. Acme Corp" />
+                            </div>
+                            <div class="relative group mt-2">
+                                <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Job Description</label>
+                                <textarea id="jd-input" rows="6"
+                                    placeholder="Paste the job description here to see how well your resume matches..."
+                                    class="w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30"></textarea>
+                            </div>
+                            <p class="text-xs text-primary/40 -mt-2 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[13px]">info</span>
+                                Auto-filled from your resume's target job. You can edit before analyzing.
+                            </p>
                         </div>
-                        <div id="preview-content-box"
-                            class="w-full text-xs leading-relaxed custom-scrollbar overflow-y-auto max-h-[250px] text-primary/80 pr-2">
-                        </div>
-                    </div>
+                    </x-user.editor-accordion>
 
                     {{-- Analyze Button --}}
                     <button id="analyze-btn" type="button"
@@ -101,6 +115,67 @@
                         <span class="material-symbols-outlined text-[18px] shrink-0 mt-0.5">error_outline</span>
                         <span id="ats-error-msg"></span>
                     </div>
+
+                    {{-- ─── Scan History ─────────────────────────────────── --}}
+                    @if (isset($history) && $history->isNotEmpty())
+                        <div class="flex flex-col gap-3">
+                            <div class="flex items-center justify-between">
+                                <h3 class="font-bold text-primary/70 text-xs uppercase tracking-widest flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[15px]">history</span>
+                                    Scan History
+                                </h3>
+                                <span class="text-[10px] text-primary/40">{{ $history->count() }} recent scan{{ $history->count() > 1 ? 's' : '' }}</span>
+                            </div>
+                            <div id="ats-history-list" class="flex flex-col gap-2">
+                                @foreach ($history as $scan)
+                                    @php
+                                        $scoreColor = $scan->score >= 70 ? 'text-secondary bg-secondary/10 border-secondary/20'
+                                            : ($scan->score >= 50 ? 'text-yellow-600 bg-yellow-500/10 border-yellow-500/20'
+                                            : 'text-red-500 bg-red-500/10 border-red-500/20');
+                                    @endphp
+                                    <div id="history-card-{{ $scan->id }}"
+                                        class="history-card group flex items-center gap-3 bg-tertiary border border-primary/10 hover:border-primary/25 rounded-xl p-3 transition-all duration-200 cursor-pointer"
+                                        onclick="loadHistoryResult('{{ $scan->id }}', this)">
+
+                                        {{-- Score badge --}}
+                                        <div class="shrink-0 w-11 h-11 rounded-lg border flex flex-col items-center justify-center {{ $scoreColor }}">
+                                            <span class="font-headline font-bold text-sm leading-none">{{ $scan->score ?? '?' }}</span>
+                                            <span class="text-[9px] font-bold uppercase tracking-wider opacity-70">pts</span>
+                                        </div>
+
+                                        {{-- Info --}}
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-xs font-bold text-primary truncate leading-tight">
+                                                {{ $scan->job_title ?: 'Untitled Scan' }}
+                                                @if($scan->job_company)
+                                                    <span class="font-normal text-primary/50">@ {{ $scan->job_company }}</span>
+                                                @endif
+                                            </p>
+                                            <p class="text-[11px] text-primary/40 mt-0.5 truncate">
+                                                {{ $scan->cv?->title ?? 'No resume linked' }}
+                                                · {{ $scan->created_at->diffForHumans() }}
+                                            </p>
+                                        </div>
+
+                                        {{-- Delete button --}}
+                                        <button type="button" title="Delete"
+                                            onclick="event.stopPropagation(); deleteHistoryScan('{{ $scan->id }}')"
+                                            class="shrink-0 opacity-0 group-hover:opacity-100 text-primary/30 hover:text-red-500 transition-all duration-200 rounded-lg p-1 hover:bg-red-500/10">
+                                            <span class="material-symbols-outlined text-[17px]">delete</span>
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @else
+                        {{-- Empty history state (hidden once items are prepended by JS) --}}
+                        <div id="ats-history-list" class="flex flex-col gap-2">
+                            <div id="ats-history-empty" class="flex items-center gap-2 text-primary/30 text-xs italic py-2">
+                                <span class="material-symbols-outlined text-[15px]">history</span>
+                                No scan history yet — run your first analysis above.
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </aside>
 
@@ -368,17 +443,29 @@
                 sections.forEach(sec => {
                     if (sec.type === 'target_job') {
                         const title = sec.content?.job_title || '';
+                        const company = sec.content?.job_company || '';
                         const desc = sec.content?.job_description || '';
                         jobDesc = (title + '\n\n' + desc).trim();
+                        return { title, company, desc };
                     } else {
                         if (sec.content) {
                             resumeText += extractTextFromContent(sec.content) + '\n\n';
                         }
                     }
                 });
+
+                // Also extract individual target job fields
+                const targetJobSec = sections.find(s => s.type === 'target_job');
+                const jobTitle = targetJobSec?.content?.job_title || '';
+                const jobCompany = targetJobSec?.content?.job_company || '';
+                const jobDesc2 = targetJobSec?.content?.job_description || '';
+
                 return {
                     text: resumeText.trim(),
-                    jd: jobDesc
+                    jd: jobDesc,
+                    jobTitle,
+                    jobCompany,
+                    jobDesc: jobDesc2,
                 };
             } catch (e) {
                 console.error("Failed to parse sections", e);
@@ -389,125 +476,34 @@
             }
         }
 
-        function renderPreviews() {
-            const selector = document.getElementById('cv-selector');
-            const previewHeader = document.getElementById('preview-header-text');
-            const previewBox = document.getElementById('preview-content-box');
-            if (!selector || !previewBox) return;
-
-            let html = '';
-            if (selector.value) {
-                previewHeader.textContent = 'Selected Resume';
-                const option = selector.options[selector.selectedIndex];
-                const data = parseCvSections(option);
-
-                html = `
-                <div class="bg-surface-container-low rounded-xl border border-primary/10 p-5 mb-4 shadow-sm hover:border-primary/20 transition-colors">
-                    <div class="font-bold text-secondary text-[10px] uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[14px]">description</span> 
-                        Resume Content
-                    </div>
-                    <div class="whitespace-pre-wrap opacity-80 text-[11px]">${escHtml(data.text) || '<i class="opacity-50">No text content</i>'}</div>
-                </div>`;
-
-                if (data.jd) {
-                    html += `
-                <div class="bg-surface-container-low rounded-xl border border-primary/10 p-5 shadow-sm hover:border-primary/20 transition-colors">
-                    <div class="font-bold text-secondary text-[10px] uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[14px]">target</span> 
-                        Target Job Description
-                    </div>
-                    <div class="whitespace-pre-wrap opacity-80 text-[11px]">${escHtml(data.jd)}</div>
-                </div>`;
-                }
-            } else {
-                previewHeader.textContent = 'All Resumes Preview';
-                let hasAny = false;
-                for (let i = 1; i < selector.options.length; i++) {
-                    if (!selector.options[i].value) continue;
-                    hasAny = true;
-                    const option = selector.options[i];
-                    const data = parseCvSections(option);
-                    html += `
-                <div class="bg-surface-container-low rounded-xl border border-primary/10 p-5 mb-4 last:mb-0 shadow-sm hover:shadow-md hover:border-primary/20 transition-all">
-                    <div class="font-bold text-primary mb-3 flex items-center gap-3 text-sm">
-                        <div class="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary/70 shrink-0">
-                            <span class="material-symbols-outlined text-[16px]">description</span>
-                        </div>
-                        <span class="truncate">${escHtml(option.text.trim())}</span>
-                    </div>
-                    <div class="opacity-70 text-[11px] line-clamp-3 overflow-hidden text-ellipsis whitespace-pre-wrap leading-relaxed">${escHtml(data.text) || '<i class="opacity-50">No text content</i>'}</div>
-                </div>`;
-                }
-                if (!hasAny) {
-                    html = `
-                <div class="flex flex-col items-center justify-center py-10 opacity-50">
-                    <span class="material-symbols-outlined text-4xl mb-3">folder_off</span>
-                    <span class="italic text-sm">No resumes found.</span>
-                </div>`;
-                }
-            }
-            previewBox.innerHTML = html;
-        }
-
-        function scaleAtsPreviewIframe() {
-            const container = document.getElementById('ats-preview-container');
-            const iframe = document.getElementById('ats-preview-iframe');
-            if (!container || !iframe) return;
-            const scale = container.offsetWidth / 794;
-            iframe.style.transform = `scale(${scale})`;
-        }
-
-        function showResumePreview(cvId, title) {
-            const previewPanel = document.getElementById('ats-resume-preview');
-            const emptyState = document.getElementById('ats-empty-state');
-            const resultsPanel = document.getElementById('ats-results');
-            const iframe = document.getElementById('ats-preview-iframe');
-            const previewTitle = document.getElementById('ats-preview-title');
-
-            if (!cvId) {
-                previewPanel.style.display = 'none';
-                emptyState.style.display = '';
-                return;
-            }
-
-            iframe.src = `/resumes/${cvId}/preview`;
-            if (previewTitle) previewTitle.textContent = title || 'Resume Preview';
-
-            emptyState.style.display = 'none';
-            resultsPanel.classList.add('hidden');
-            previewPanel.style.display = 'flex';
-            previewPanel.style.flexDirection = 'column';
-
-            // Scale after the container is visible
-            requestAnimationFrame(scaleAtsPreviewIframe);
-            // On mobile, switch to results panel so user sees the preview
-            switchAtsTab('results');
-        }
-
         const cvSelector = document.getElementById('cv-selector');
         if (cvSelector) {
             cvSelector.addEventListener('change', function() {
-                renderPreviews();
                 if (!this.value) {
                     document.getElementById('resume-input').value = '';
-                    document.getElementById('jd-input').value = '';
-                    showResumePreview(null);
+                    // Clear target job fields
+                    const titleInput = document.querySelector('[name="job_title"]');
+                    const companyInput = document.querySelector('[name="job_company"]');
+                    const jdTextarea = document.getElementById('jd-input');
+                    if (titleInput) titleInput.value = '';
+                    if (companyInput) companyInput.value = '';
+                    if (jdTextarea) jdTextarea.value = '';
                     return;
                 }
                 const selectedOption = this.options[this.selectedIndex];
                 const data = parseCvSections(selectedOption);
                 document.getElementById('resume-input').value = data.text;
-                document.getElementById('jd-input').value = data.jd;
-                showResumePreview(this.value, selectedOption.text.trim());
+                // Auto-fill target job fields from resume data
+                const titleInput = document.querySelector('[name="job_title"]');
+                const companyInput = document.querySelector('[name="job_company"]');
+                const jdTextarea = document.getElementById('jd-input');
+                if (titleInput) titleInput.value = data.jobTitle || '';
+                if (companyInput) companyInput.value = data.jobCompany || '';
+                if (jdTextarea) jdTextarea.value = data.jobDesc || '';
             });
-
-            // Initial render on page load
-            renderPreviews();
         }
 
         window.addEventListener('resize', function() {
-            scaleAtsPreviewIframe();
             if (window.innerWidth >= 1024) {
                 const sp = document.getElementById('ats-panel-setup');
                 const rp = document.getElementById('ats-panel-results');
@@ -538,7 +534,6 @@
                 btn.classList.toggle('border-transparent', !active);
             });
 
-            if (tab === 'results') scaleAtsPreviewIframe();
         }
 
 
@@ -711,15 +706,24 @@
 
         document.getElementById('analyze-btn').addEventListener('click', async function() {
             const resume = document.getElementById('resume-input').value.trim();
-            const jd = document.getElementById('jd-input').value.trim();
+            const jobTitleEl = document.querySelector('[name="job_title"]');
+            const jobCompanyEl = document.querySelector('[name="job_company"]');
+            const jobTitle = jobTitleEl ? jobTitleEl.value.trim() : '';
+            const jobCompany = jobCompanyEl ? jobCompanyEl.value.trim() : '';
+            const jobDescRaw = document.getElementById('jd-input').value.trim();
+            const cvId = document.getElementById('cv-selector')?.value || null;
+            const cvTitle = document.getElementById('cv-selector')?.options[document.getElementById('cv-selector')?.selectedIndex]?.text?.trim() || null;
+
+            // Compose the full jd: title on top, then description
+            const jd = [jobTitle, jobDescRaw].filter(Boolean).join('\n\n');
             if (resume.length < 50) {
                 showError('The selected resume must have more content (at least 50 characters).');
                 return;
             }
             if (jd.length < 50) {
                 showError(
-                    'The selected resume\'s job description must have more content (at least 50 characters).'
-                    );
+                    'Please enter a Target Job description with at least 50 characters before analyzing.'
+                );
                 return;
             }
             clearError();
@@ -739,7 +743,10 @@
                         },
                         body: JSON.stringify({
                             resume,
-                            job_description: jd
+                            job_description: jd,
+                            cv_id:      cvId || null,
+                            job_title:  jobTitle || null,
+                            job_company: jobCompany || null,
                         }),
                         signal: controller.signal,
                     });
@@ -771,11 +778,206 @@
                 }
 
                 renderResults(data);
+
+                // Prepend new card to history list
+                if (data._scan_id) {
+                    prependHistory({
+                        id:         data._scan_id,
+                        score:      data.score,
+                        job_title:  jobTitle,
+                        job_company: jobCompany,
+                        cv_title:   cvTitle,
+                        created_at: data._scan_created,
+                    }, data);
+                }
             } finally {
                 clearTimeout(timeoutId);
                 setLoading(false);
             }
         });
+
+        // ── History helpers ──────────────────────────────────────────────
+
+        /**
+         * Cache for result_json keyed by scan id (populated when card is first clicked or newly created).
+         */
+        const _historyCache = {};
+
+        /**
+         * Prepend a newly created scan card to the top of #ats-history-list.
+         */
+        function prependHistory(meta, resultData) {
+            const list = document.getElementById('ats-history-list');
+            if (!list) return;
+
+            // Hide the "no history yet" placeholder if present
+            const empty = document.getElementById('ats-history-empty');
+            if (empty) empty.style.display = 'none';
+
+            // Cache the full result so loadHistoryResult can use it immediately
+            _historyCache[meta.id] = resultData;
+
+            const card = buildHistoryCard(meta);
+            list.insertAdjacentHTML('afterbegin', card);
+
+            // Animate in
+            const el = document.getElementById('history-card-' + meta.id);
+            if (el) {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-8px)';
+                requestAnimationFrame(() => {
+                    el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                });
+            }
+        }
+
+        /**
+         * Build the HTML string for a history card.
+         */
+        function buildHistoryCard(meta) {
+            const score = meta.score ?? null;
+            let scoreColor = 'text-red-500 bg-red-500/10 border-red-500/20';
+            if (score !== null && score >= 70) scoreColor = 'text-secondary bg-secondary/10 border-secondary/20';
+            else if (score !== null && score >= 50) scoreColor = 'text-yellow-600 bg-yellow-500/10 border-yellow-500/20';
+
+            const label = score !== null ? score : '?';
+            const title = escHtml(meta.job_title || 'Untitled Scan');
+            const company = meta.job_company ? ` <span class="font-normal text-primary/50">@ ${escHtml(meta.job_company)}</span>` : '';
+            const cvLine = escHtml(meta.cv_title || 'No resume linked');
+            const timeAgo = meta.created_at ? new Date(meta.created_at).toLocaleString('id-ID', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : 'just now';
+
+            return `<div id="history-card-${meta.id}"
+                class="history-card group flex items-center gap-3 bg-tertiary border border-primary/10 hover:border-primary/25 rounded-xl p-3 transition-all duration-200 cursor-pointer"
+                onclick="loadHistoryResult('${meta.id}', this)">
+                <div class="shrink-0 w-11 h-11 rounded-lg border flex flex-col items-center justify-center ${scoreColor}">
+                    <span class="font-headline font-bold text-sm leading-none">${label}</span>
+                    <span class="text-[9px] font-bold uppercase tracking-wider opacity-70">pts</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-bold text-primary truncate leading-tight">${title}${company}</p>
+                    <p class="text-[11px] text-primary/40 mt-0.5 truncate">${cvLine} · ${timeAgo}</p>
+                </div>
+                <button type="button" title="Delete"
+                    onclick="event.stopPropagation(); deleteHistoryScan('${meta.id}')"
+                    class="shrink-0 opacity-0 group-hover:opacity-100 text-primary/30 hover:text-red-500 transition-all duration-200 rounded-lg p-1 hover:bg-red-500/10">
+                    <span class="material-symbols-outlined text-[17px]">delete</span>
+                </button>
+            </div>`;
+        }
+
+        /**
+         * Load a history scan result into the right panel.
+         * Data is read from the inline data-result attribute or from cache.
+         */
+        function loadHistoryResult(scanId, cardEl) {
+            // Check in-memory cache first (covers newly created scans in this session)
+            if (_historyCache[scanId]) {
+                renderResults(_historyCache[scanId]);
+                highlightActiveCard(cardEl);
+                switchAtsTab('results');
+                return;
+            }
+
+            // Otherwise read from the data-result attribute on the card element
+            const raw = cardEl?.dataset?.result;
+            if (raw) {
+                try {
+                    const data = JSON.parse(raw);
+                    _historyCache[scanId] = data;
+                    renderResults(data);
+                    highlightActiveCard(cardEl);
+                    switchAtsTab('results');
+                    return;
+                } catch (e) {
+                    console.error('Failed to parse history result JSON', e);
+                }
+            }
+
+            // Fallback: fetch from server (for history items from previous sessions)
+            if (cardEl) {
+                cardEl.style.opacity = '0.5';
+                cardEl.style.pointerEvents = 'none';
+            }
+            fetch(`{{ url('ats/history') }}/${scanId}`, {
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                _historyCache[scanId] = data;
+                renderResults(data);
+                highlightActiveCard(cardEl);
+                switchAtsTab('results');
+            })
+            .catch(() => console.error('Failed to load history scan', scanId))
+            .finally(() => {
+                if (cardEl) {
+                    cardEl.style.opacity = '';
+                    cardEl.style.pointerEvents = '';
+                }
+            });
+        }
+
+        /**
+         * Highlight the active history card and remove highlight from others.
+         */
+        function highlightActiveCard(cardEl) {
+            document.querySelectorAll('.history-card').forEach(c => {
+                c.classList.remove('border-secondary', 'bg-secondary/5');
+                c.classList.add('border-primary/10');
+            });
+            if (cardEl) {
+                cardEl.classList.remove('border-primary/10');
+                cardEl.classList.add('border-secondary', 'bg-secondary/5');
+            }
+        }
+
+        /**
+         * DELETE a scan from the database and remove its card from the DOM.
+         */
+        async function deleteHistoryScan(scanId) {
+            const card = document.getElementById('history-card-' + scanId);
+            if (!card) return;
+
+            // Optimistic UI: fade out immediately
+            card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(12px)';
+
+            try {
+                const res = await fetch(`{{ url('ats/history') }}/${scanId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (res.ok) {
+                    setTimeout(() => {
+                        card.remove();
+                        delete _historyCache[scanId];
+
+                        // Show empty placeholder if no cards left
+                        const list = document.getElementById('ats-history-list');
+                        if (list && list.querySelectorAll('.history-card').length === 0) {
+                            list.innerHTML = `<div id="ats-history-empty" class="flex items-center gap-2 text-primary/30 text-xs italic py-2">
+                                <span class="material-symbols-outlined text-[15px]">history</span>
+                                No scan history yet — run your first analysis above.
+                            </div>`;
+                        }
+                    }, 280);
+                } else {
+                    // Revert on failure
+                    card.style.opacity = '1';
+                    card.style.transform = 'none';
+                }
+            } catch {
+                card.style.opacity = '1';
+                card.style.transform = 'none';
+            }
+        }
 
         function setLoading(loading) {
             const btn = document.getElementById('analyze-btn');
@@ -816,10 +1018,9 @@
             setTimeout(() => modal.classList.add('hidden'), 300);
         }
 
-
-
         document.getElementById('instructions-modal').addEventListener('click', function(e) {
             if (e.target === this) closeInstructions();
         });
     </script>
 @endsection
+
