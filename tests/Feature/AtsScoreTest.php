@@ -62,13 +62,15 @@ class AtsScoreTest extends TestCase
             ]
         ]);
 
-        $score = AtsScoreService::calculate($cv);
+        $result = AtsScoreService::calculate($cv);
 
         // Calculate expected:
         // Job words: software, engineer, php, laravel, mysql, experience, looking (maybe stopwords removed)
         // Resume words: software, engineer, skilled, php, laravel, tech, corp, developer, worked, mysql
         // Match should be quite high
-        $this->assertGreaterThan(50, $score);
-        $this->assertLessThanOrEqual(100, $score);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('score', $result);
+        $this->assertGreaterThan(50, $result['score']);
+        $this->assertLessThanOrEqual(100, $result['score']);
     }
 }
