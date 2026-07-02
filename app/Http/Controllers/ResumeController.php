@@ -9,6 +9,7 @@ use App\Http\Requests\StoreResumeRequest;
 use App\Http\Requests\UpdateResumeRequest;
 use App\Http\Requests\UpdateSectionRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class ResumeController extends Controller
@@ -180,16 +181,31 @@ class ResumeController extends Controller
     public function duplicate(Cv $cv)
     {
         Gate::authorize('view', $cv);
-        // Clone the resume
-        $newCv = $cv->replicate();
-        $newCv->title = $cv->title . ' (Copy)';
-        $newCv->save();
-        // Clone each section
-        foreach ($cv->sections as $section) {
-            $newSection = $section->replicate();
-            $newSection->cv_id = $newCv->id;
-            $newSection->save();
+
+        if (!$cv->user->canCreateResume()) {
+            return redirect()->route('user.upgrade-quota')
+                ->with('error', 'Basic accounts can create 1 resume. Upgrade to Premium for unlimited resumes.');
         }
+
+        $cv->load('sections');
+
+        $newCv = DB::transaction(function () use ($cv) {
+            // Clone the resume
+            $newCv = $cv->replicate();
+            $newCv->user_id = $cv->user_id;
+            $newCv->title = $cv->title . ' (Copy)';
+            $newCv->save();
+
+            // Clone each section
+            foreach ($cv->sections as $section) {
+                $newSection = $section->replicate();
+                $newSection->cv_id = $newCv->id;
+                $newSection->save();
+            }
+
+            return $newCv;
+        });
+
         return redirect()->route('user.manuscript', ['cv_id' => $newCv->id])
                          ->with('success', 'Resume duplicated successfully!');
     }
