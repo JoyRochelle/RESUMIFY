@@ -15,6 +15,7 @@ class InterviewService
 {
     private const GEMINI_URL        = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
     private const GEMINI_STREAM_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent';
+    public const RECENT_MESSAGE_LIMIT = 20;
 
     /**
      * Create an interview session and ask Bu Sari's opening question.
@@ -64,14 +65,7 @@ class InterviewService
         $session->load('cv.sections');
         $systemPrompt = $this->buildSystemPrompt($session->cv, $session->job_target);
 
-        // Build full conversation history for Gemini (seed + all saved turns)
-        $contents = [['role' => 'user', 'parts' => [['text' => 'Please begin the interview session.']]]];
-        foreach ($session->messages as $msg) {
-            $contents[] = [
-                'role'  => $msg->role === 'assistant' ? 'model' : 'user',
-                'parts' => [['text' => $msg->content]],
-            ];
-        }
+        $contents = $this->buildRecentConversationContents($session);
 
         $reply = $this->callGemini($systemPrompt, $contents);
 
@@ -271,6 +265,29 @@ PROMPT;
         }
 
         return implode("\n\n", $lines);
+    }
+
+    public function buildRecentConversationContents(InterviewSession $session): array
+    {
+        $messages = $session->messages()
+            ->reorder()
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->limit(self::RECENT_MESSAGE_LIMIT)
+            ->get()
+            ->reverse()
+            ->values();
+
+        $contents = [['role' => 'user', 'parts' => [['text' => 'Please begin the interview session.']]]];
+
+        foreach ($messages as $msg) {
+            $contents[] = [
+                'role'  => $msg->role === 'assistant' ? 'model' : 'user',
+                'parts' => [['text' => $msg->content]],
+            ];
+        }
+
+        return $contents;
     }
 
     /**

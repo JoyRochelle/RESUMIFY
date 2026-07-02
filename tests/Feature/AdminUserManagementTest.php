@@ -317,6 +317,22 @@ class AdminUserManagementTest extends TestCase
         $this->assertStringContainsString('adjust_credits', $log->action);
     }
 
+    public function test_adjust_credits_admin_log_has_structured_mutation_metadata(): void
+    {
+        $this->basicUser->update(['ai_quota_used' => 1]);
+
+        $this->actingAs($this->admin)
+            ->patch(route('admin.users.credits', $this->basicUser), ['ai_quota_used' => 8])
+            ->assertRedirect();
+
+        $log = AdminLog::where('target_id', $this->basicUser->id)->latest()->firstOrFail();
+
+        $this->assertSame('adjust_credits', $log->action);
+        $this->assertSame('ai_quota_used', $log->metadata['field'] ?? null);
+        $this->assertSame(1, $log->metadata['old'] ?? null);
+        $this->assertSame(8, $log->metadata['new'] ?? null);
+    }
+
     public function test_adjust_credits_rejects_negative_value(): void
     {
         $this->actingAs($this->admin)

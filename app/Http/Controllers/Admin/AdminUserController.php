@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\AdjustUserCreditsAction;
+use App\Actions\Admin\DeleteUserAction;
+use App\Actions\Admin\OverrideUserPlanAction;
+use App\Actions\Admin\ToggleUserSuspensionAction;
 use App\Http\Controllers\Controller;
-use App\Models\AdminLog;
-use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -60,39 +62,19 @@ class AdminUserController extends Controller
         ));
     }
 
-    public function overridePlan(Request $request, User $user): RedirectResponse
+    public function overridePlan(Request $request, User $user, OverrideUserPlanAction $overrideUserPlan): RedirectResponse
     {
         abort_if($user->isAdmin(), 403);
 
         $request->validate(['plan' => 'required|in:basic,premium']);
 
-        $oldRole = $user->role;
         $newRole = $request->plan;
-
-        $user->update(['role' => $newRole]);
-
-        if ($newRole === 'premium') {
-            Subscription::create([
-                'user_id'   => $user->id,
-                'plan'      => 'premium',
-                'status'    => 'active',
-                'starts_at' => now(),
-                'ends_at'   => now()->addMonth(),
-            ]);
-            $user->update(['ai_quota_used' => 0]);
-        }
-
-        AdminLog::create([
-            'admin_id'    => auth()->id(),
-            'action'      => "override_plan:{$oldRole}→{$newRole}",
-            'target_type' => 'user',
-            'target_id'   => $user->id,
-        ]);
+        $overrideUserPlan->execute(auth()->user(), $user, $newRole);
 
         return back()->with('success', "Plan updated to {$newRole} for {$user->name}.");
     }
 
-    public function adjustCredits(Request $request, User $user): RedirectResponse
+    public function adjustCredits(Request $request, User $user, AdjustUserCreditsAction $adjustUserCredits): RedirectResponse
     {
         abort_if($user->isAdmin(), 403);
 
@@ -100,51 +82,27 @@ class AdminUserController extends Controller
             'ai_quota_used' => 'required|integer|min:0',
         ]);
 
-        $user->update(['ai_quota_used' => $request->ai_quota_used]);
-
-        AdminLog::create([
-            'admin_id'    => auth()->id(),
-            'action'      => "adjust_credits:{$request->ai_quota_used}",
-            'target_type' => 'user',
-            'target_id'   => $user->id,
-        ]);
+        $adjustUserCredits->execute(auth()->user(), $user, (int) $request->ai_quota_used);
 
         return back()->with('success', "AI credits adjusted for {$user->name}.");
     }
 
-    public function toggleSuspend(User $user): RedirectResponse
+    public function toggleSuspend(User $user, ToggleUserSuspensionAction $toggleUserSuspension): RedirectResponse
     {
         abort_if($user->isAdmin(), 403, 'Admin accounts cannot be suspended.');
 
-        $wasSuspended = $user->is_suspended;
-        $user->update(['is_suspended' => ! $wasSuspended]);
-
-        AdminLog::create([
-            'admin_id'    => auth()->id(),
-            'action'      => $wasSuspended ? 'activate_user' : 'suspend_user',
-            'target_type' => 'user',
-            'target_id'   => $user->id,
-        ]);
-
-        $action = $wasSuspended ? 'activated' : 'suspended';
+        $isSuspended = $toggleUserSuspension->execute(auth()->user(), $user);
+        $action = $isSuspended ? 'suspended' : 'activated';
         return back()->with('success', "{$user->name} has been {$action}.");
     }
 
-    public function destroy(User $user): RedirectResponse
+    public function destroy(User $user, DeleteUserAction $deleteUser): RedirectResponse
     {
         abort_if($user->isAdmin(), 403, 'Admin accounts cannot be deleted.');
         abort_if($user->id === auth()->id(), 403, 'You cannot delete your own account.');
 
         $name = $user->name;
-
-        AdminLog::create([
-            'admin_id'    => auth()->id(),
-            'action'      => 'hard_delete_user',
-            'target_type' => 'user',
-            'target_id'   => $user->id,
-        ]);
-
-        $user->forceDelete();
+        $deleteUser->execute(auth()->user(), $user);
 
         return redirect()->route('admin.users')
             ->with('success', "{$name} has been permanently deleted.");
