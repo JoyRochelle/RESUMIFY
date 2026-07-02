@@ -39,7 +39,7 @@ class SocialAuthController extends Controller
 
         if ($oauthProvider) {
             // Existing OAuth link — update token and login
-            $oauthProvider->update(['token' => $socialUser->token]);
+            $oauthProvider->updateToken($socialUser->token);
             $user = $oauthProvider->user;
         } else {
             // Find or create user by email
@@ -61,8 +61,7 @@ class SocialAuthController extends Controller
             $user->oauthProviders()->create([
                 'provider' => $provider,
                 'provider_id' => $socialUser->getId(),
-                'token' => $socialUser->token,
-            ]);
+            ])->updateToken($socialUser->token);
 
             // Update avatar if the user doesn't have one
             if (! $user->avatar_url && $socialUser->getAvatar()) {
