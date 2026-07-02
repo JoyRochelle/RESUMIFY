@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Jobs\SendTicketReplyJob;
 use App\Models\SupportTicket;
 use App\Models\TicketReply;
+use App\Models\User;
+use App\Notifications\NewSupportTicket;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\View\View;
 
 class HelpController extends Controller
@@ -36,6 +39,12 @@ class HelpController extends Controller
         ]);
 
         dispatch(new SendTicketReplyJob($ticket, $reply));
+
+        $admins = User::where('role', 'admin')->get();
+
+        if ($admins->isNotEmpty()) {
+            Notification::send($admins, new NewSupportTicket($ticket->loadMissing('user')));
+        }
 
         return redirect()->route('user.help')->with('success', 'Your message has been sent! We\'ll get back to you soon.');
     }

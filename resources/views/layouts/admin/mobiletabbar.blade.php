@@ -16,7 +16,7 @@
          x-transition:leave-end="opacity-0 translate-y-2"
          @click.away="moreOpen = false"
          style="display:none"
-         class="fixed bottom-[4.75rem] right-2 bg-white border border-primary/10 rounded-lg shadow-2xl p-2 z-50 w-60"
+         class="fixed bottom-[4.75rem] right-2 z-50 w-60 rounded-lg border border-primary/10 bg-tertiary p-2 shadow-2xl"
          role="menu"
          aria-label="More admin navigation">
         @foreach($moreItems as $item)
@@ -40,7 +40,7 @@
         </form>
     </div>
 
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-tertiary border-t border-primary/10 flex justify-around items-center py-2 px-1 z-40 pb-[env(safe-area-inset-bottom)]" aria-label="Admin navigation">
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-primary/10 bg-tertiary px-1 py-2 pb-[env(safe-area-inset-bottom)]" aria-label="Admin navigation">
         @foreach($primaryItems as $item)
             @php($active = request()->routeIs(...$item['match']))
             <a href="{{ route($item['route']) }}"

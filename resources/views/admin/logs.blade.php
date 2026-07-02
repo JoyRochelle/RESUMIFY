@@ -3,7 +3,7 @@
 @section('title', 'AI & Finance Logs - Admin Dashboard')
 
 @section('content')
-<div class="max-w-6xl mx-auto space-y-8 pb-10" x-data="{ tab: '{{ $tab }}' }">
+<div class="admin-shell" x-data="{ tab: '{{ $tab }}' }">
 
     <!-- Header -->
     <div class="flex items-center justify-between">
@@ -15,20 +15,20 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-3">AI COST (MTD)</h3>
+        <div class="admin-card-pad">
+            <h3 class="admin-section-title mb-3">AI COST (MTD)</h3>
             <p class="text-2xl font-headline text-primary">${{ number_format($totalAiCostMtd, 4) }}</p>
         </div>
-        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-3">REVENUE (MTD)</h3>
+        <div class="admin-card-pad">
+            <h3 class="admin-section-title mb-3">REVENUE (MTD)</h3>
             <p class="text-2xl font-headline text-secondary">Rp {{ number_format($totalRevenueMtd, 0, ',', '.') }}</p>
         </div>
-        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-3">TOTAL AI ACTIONS</h3>
+        <div class="admin-card-pad">
+            <h3 class="admin-section-title mb-3">TOTAL AI ACTIONS</h3>
             <p class="text-2xl font-headline text-primary">{{ number_format($totalAiActions) }}</p>
         </div>
-        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-3">TOTAL TRANSACTIONS</h3>
+        <div class="admin-card-pad">
+            <h3 class="admin-section-title mb-3">TOTAL TRANSACTIONS</h3>
             <p class="text-2xl font-headline text-primary">{{ number_format($totalTxCount) }}</p>
         </div>
     </div>
@@ -37,22 +37,19 @@
     <form method="GET" action="{{ route('admin.logs') }}" class="flex flex-wrap items-center gap-4">
         <input type="hidden" name="tab" :value="tab">
 
-        <div class="flex items-center space-x-2 bg-white border border-primary/10 rounded-xl px-4 h-11 shadow-sm">
+        <div class="flex items-center space-x-2 bg-tertiary border border-primary/10 rounded-lg px-4 h-11 shadow-sm">
             <span class="text-xs font-label text-primary/50">From</span>
             <input type="date" name="from" value="{{ $from }}"
                    class="bg-transparent border-none focus:outline-none text-sm font-label text-primary">
         </div>
 
-        <div class="flex items-center space-x-2 bg-white border border-primary/10 rounded-xl px-4 h-11 shadow-sm">
+        <div class="flex items-center space-x-2 bg-tertiary border border-primary/10 rounded-lg px-4 h-11 shadow-sm">
             <span class="text-xs font-label text-primary/50">To</span>
             <input type="date" name="to" value="{{ $to }}"
                    class="bg-transparent border-none focus:outline-none text-sm font-label text-primary">
         </div>
 
-        <button type="submit"
-                class="bg-primary text-white px-5 h-11 rounded-xl text-sm font-label hover:bg-primary/90 transition shadow-sm">
-            Apply
-        </button>
+        <x-ui.loading-button loading-text="Applying..." icon="event">Apply</x-ui.loading-button>
 
         @if($from || $to)
             <a href="{{ route('admin.logs', ['tab' => $tab]) }}"
@@ -61,7 +58,7 @@
     </form>
 
     <!-- Tabs -->
-    <div class="bg-white rounded-3xl shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5 overflow-hidden">
+    <div class="admin-card overflow-hidden">
 
         <!-- Tab header -->
         <div class="flex items-center border-b border-primary/5 px-6">
@@ -93,14 +90,14 @@
                 <!-- Export AI -->
                 <a x-show="tab === 'ai'"
                    href="{{ route('admin.logs.export.ai', array_filter(['from' => $from, 'to' => $to])) }}"
-                   class="flex items-center space-x-1.5 text-xs font-label text-secondary hover:text-secondary/80 bg-secondary/10 px-3 py-2 rounded-xl transition">
+                   class="flex items-center space-x-1.5 text-xs font-label text-secondary hover:text-secondary/80 bg-secondary/10 px-3 py-2 rounded-lg transition">
                     <span class="material-symbols-outlined text-[16px]">download</span>
                     <span>Export CSV</span>
                 </a>
                 <!-- Export Finance -->
                 <a x-show="tab === 'finance'"
                    href="{{ route('admin.logs.export.finance', array_filter(['from' => $from, 'to' => $to])) }}"
-                   class="flex items-center space-x-1.5 text-xs font-label text-secondary hover:text-secondary/80 bg-secondary/10 px-3 py-2 rounded-xl transition">
+                   class="flex items-center space-x-1.5 text-xs font-label text-secondary hover:text-secondary/80 bg-secondary/10 px-3 py-2 rounded-lg transition">
                     <span class="material-symbols-outlined text-[16px]">download</span>
                     <span>Export CSV</span>
                 </a>
@@ -146,27 +143,27 @@
             {{-- Desktop table --}}
             <div class="hidden md:block overflow-x-auto">
             <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                        <tr class="bg-surface/50 border-b border-primary/5">
-                            <th class="text-left text-[9px] font-label text-primary/40 uppercase tracking-widest py-3 px-6">Timestamp</th>
-                            <th class="text-left text-[9px] font-label text-primary/40 uppercase tracking-widest py-3 px-4">User</th>
-                            <th class="text-left text-[9px] font-label text-primary/40 uppercase tracking-widest py-3 px-4">Action</th>
-                            <th class="text-right text-[9px] font-label text-primary/40 uppercase tracking-widest py-3 px-4">Tokens</th>
-                            <th class="text-right text-[9px] font-label text-primary/40 uppercase tracking-widest py-3 px-6">Cost (USD)</th>
+                <table class="admin-table">
+                    <thead class="admin-table-head">
+                        <tr>
+                            <th class="admin-th text-left">Timestamp</th>
+                            <th class="admin-th text-left">User</th>
+                            <th class="admin-th text-left">Action</th>
+                            <th class="admin-th text-right">Tokens</th>
+                            <th class="admin-th text-right">Cost (USD)</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-primary/5">
+                    <tbody class="divide-y divide-primary/10">
                         @forelse($aiLogs as $log)
                         <tr class="hover:bg-surface/40 transition-colors text-xs font-label">
-                            <td class="py-4 px-6 text-primary/50 whitespace-nowrap">
+                            <td class="admin-td text-primary/50 whitespace-nowrap">
                                 {{ $log->created_at?->format('d M Y, H:i') }}
                             </td>
-                            <td class="py-4 px-4">
+                            <td class="admin-td">
                                 <p class="font-bold text-primary">{{ $log->user?->name ?? '—' }}</p>
                                 <p class="text-primary/40 text-[11px]">{{ $log->user?->email ?? '—' }}</p>
                             </td>
-                            <td class="py-4 px-4">
+                            <td class="admin-td">
                                 @php
                                     $actionColors = [
                                         'ats_analyze'        => 'bg-primary/10 text-primary',
@@ -176,22 +173,21 @@
                                     ];
                                     $colorClass = $actionColors[$log->action_type] ?? 'bg-primary/5 text-primary/60';
                                 @endphp
-                                <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $colorClass }}">
+                                <span class="admin-badge {{ $colorClass }}">
                                     {{ str_replace('_', ' ', $log->action_type) }}
                                 </span>
                             </td>
-                            <td class="py-4 px-4 text-right text-primary font-headline">
+                            <td class="admin-td text-right text-primary font-headline">
                                 {{ number_format($log->tokens_used) }}
                             </td>
-                            <td class="py-4 px-6 text-right font-headline text-primary font-bold">
+                            <td class="admin-td text-right font-headline text-primary font-bold">
                                 ${{ number_format($log->cost_usd, 4) }}
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="py-16 text-center">
-                                <span class="material-symbols-outlined text-primary/20 text-[48px] block mb-2">auto_awesome</span>
-                                <p class="text-sm font-label text-primary/40">No AI usage logs found</p>
+                            <td colspan="5" class="p-4">
+                                <x-ui.empty-state title="No AI usage logs found" description="Try a wider date range or clear filters." icon="auto_awesome" />
                             </td>
                         </tr>
                         @endforelse
@@ -242,37 +238,37 @@
             {{-- Desktop table --}}
             <div class="hidden md:block overflow-x-auto">
             <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                        <tr class="bg-surface/50 border-b border-primary/5">
-                            <th class="text-left text-[9px] font-label text-primary/40 uppercase tracking-widest py-3 px-6">Date</th>
-                            <th class="text-left text-[9px] font-label text-primary/40 uppercase tracking-widest py-3 px-4">User</th>
-                            <th class="text-left text-[9px] font-label text-primary/40 uppercase tracking-widest py-3 px-4">Order ID</th>
-                            <th class="text-right text-[9px] font-label text-primary/40 uppercase tracking-widest py-3 px-4">Amount</th>
-                            <th class="text-left text-[9px] font-label text-primary/40 uppercase tracking-widest py-3 px-4">Method</th>
-                            <th class="text-left text-[9px] font-label text-primary/40 uppercase tracking-widest py-3 px-6">Status</th>
+                <table class="admin-table">
+                    <thead class="admin-table-head">
+                        <tr>
+                            <th class="admin-th text-left">Date</th>
+                            <th class="admin-th text-left">User</th>
+                            <th class="admin-th text-left">Order ID</th>
+                            <th class="admin-th text-right">Amount</th>
+                            <th class="admin-th text-left">Method</th>
+                            <th class="admin-th text-left">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-primary/5">
+                    <tbody class="divide-y divide-primary/10">
                         @forelse($transactions as $tx)
                         <tr class="hover:bg-surface/40 transition-colors text-xs font-label">
-                            <td class="py-4 px-6 text-primary/50 whitespace-nowrap">
+                            <td class="admin-td text-primary/50 whitespace-nowrap">
                                 {{ $tx->created_at?->format('d M Y, H:i') }}
                             </td>
-                            <td class="py-4 px-4">
+                            <td class="admin-td">
                                 <p class="font-bold text-primary">{{ $tx->user?->name ?? '—' }}</p>
                                 <p class="text-primary/40 text-[11px]">{{ $tx->user?->email ?? '—' }}</p>
                             </td>
-                            <td class="py-4 px-4 text-primary/60 font-mono text-[11px]">
+                            <td class="admin-td text-primary/60 font-mono text-[11px]">
                                 {{ $tx->midtrans_order_id ?? '—' }}
                             </td>
-                            <td class="py-4 px-4 text-right font-headline text-primary font-bold">
+                            <td class="admin-td text-right font-headline text-primary font-bold">
                                 Rp {{ number_format($tx->amount, 0, ',', '.') }}
                             </td>
-                            <td class="py-4 px-4 text-primary/60 capitalize">
+                            <td class="admin-td text-primary/60 capitalize">
                                 {{ $tx->payment_method ?? '—' }}
                             </td>
-                            <td class="py-4 px-6">
+                            <td class="admin-td">
                                 @php
                                     $statusMap = [
                                         'success'  => 'bg-secondary/10 text-secondary',
@@ -281,16 +277,15 @@
                                         'expired'  => 'bg-primary/10 text-primary/40',
                                     ];
                                 @endphp
-                                <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $statusMap[$tx->status] ?? 'bg-primary/5 text-primary/50' }}">
+                                <span class="admin-badge {{ $statusMap[$tx->status] ?? 'bg-primary/5 text-primary/50' }}">
                                     {{ $tx->status }}
                                 </span>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="py-16 text-center">
-                                <span class="material-symbols-outlined text-primary/20 text-[48px] block mb-2">payments</span>
-                                <p class="text-sm font-label text-primary/40">No transactions found</p>
+                            <td colspan="6" class="p-4">
+                                <x-ui.empty-state title="No transactions found" description="Try a wider date range or clear filters." icon="payments" />
                             </td>
                         </tr>
                         @endforelse

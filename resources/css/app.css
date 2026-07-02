@@ -91,6 +91,62 @@
     box-shadow: 0 18px 42px rgba(161, 98, 7, 0.14), 0 0 0 1px rgba(161, 98, 7, 0.08);
 }
 
+@utility admin-shell {
+    @apply mx-auto w-full max-w-7xl space-y-8 pb-24 md:pb-12;
+}
+
+@utility admin-card {
+    @apply rounded-lg border border-primary/10 bg-tertiary shadow-sm;
+}
+
+@utility admin-card-pad {
+    @apply rounded-lg border border-primary/10 bg-tertiary p-6 shadow-sm;
+}
+
+@utility admin-section-title {
+    @apply text-[10px] font-label font-bold uppercase tracking-widest text-primary/60;
+}
+
+@utility admin-filter-field {
+    @apply min-h-11 rounded-lg border border-primary/10 bg-tertiary px-4 text-sm font-label text-primary shadow-sm transition focus:outline-none focus:ring-2 focus:ring-secondary/30;
+}
+
+@utility admin-btn-primary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-tertiary shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-secondary/40;
+}
+
+@utility admin-btn-secondary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-primary/15 bg-tertiary px-5 py-2.5 text-sm font-bold text-primary shadow-sm transition hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40;
+}
+
+@utility admin-btn-danger {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300;
+}
+
+@utility admin-icon-action {
+    @apply inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-primary/50 transition hover:bg-primary/5 hover:text-primary focus:outline-none focus:ring-2 focus:ring-secondary/40;
+}
+
+@utility admin-table {
+    @apply w-full text-left;
+}
+
+@utility admin-table-head {
+    @apply border-b border-primary/10 bg-surface-container-low/70;
+}
+
+@utility admin-th {
+    @apply px-4 py-3 text-[10px] font-label font-bold uppercase tracking-widest text-primary/60;
+}
+
+@utility admin-td {
+    @apply px-4 py-3 text-sm text-primary;
+}
+
+@utility admin-badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider;
+}
+
 @utility animate-bounce-subtle {
     animation: bounce-subtle 4s ease-in-out infinite;
 }

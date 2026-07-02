@@ -22,7 +22,7 @@ return [
         ],
         [
             'label' => 'Interview',
-            'route' => 'interview.history',
+            'route' => 'interview.index',
             'match' => ['interview.*'],
             'icon' => 'record_voice_over',
         ],

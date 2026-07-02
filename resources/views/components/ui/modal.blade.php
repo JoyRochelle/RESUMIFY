@@ -14,7 +14,7 @@
             this.trigger = document.activeElement;
             this.open = true;
             this.$nextTick(() => {
-                const first = this.$refs.panel.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex=\"-1\"])');
+                const first = this.$refs.panel.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex=\'-1\'])');
                 (first || this.$refs.panel).focus();
             });
         },
