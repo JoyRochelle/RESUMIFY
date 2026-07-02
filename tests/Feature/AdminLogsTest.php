@@ -6,6 +6,7 @@ use App\Models\AiUsageLog;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -440,5 +441,77 @@ class AdminLogsTest extends TestCase
         // Only the header line should be present (no data row)
         $lines = array_filter(explode("\n", trim($content)));
         $this->assertCount(1, $lines); // header only
+    }
+
+    public function test_ai_csv_export_does_not_lazy_load_user_for_each_row(): void
+    {
+        for ($i = 0; $i < 40; $i++) {
+            $user = User::factory()->create([
+                'role' => 'basic',
+                'email_verified_at' => now(),
+            ]);
+
+            AiUsageLog::create([
+                'user_id'     => $user->id,
+                'action_type' => 'ats_analyze',
+                'tokens_used' => 100 + $i,
+                'cost_usd'    => 0.001,
+            ]);
+        }
+
+        $response = $this->actingAs($this->admin)->get(route('admin.logs.export.ai'));
+
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $content = $response->streamedContent();
+
+        $userQueryCount = collect(DB::getQueryLog())
+            ->filter(fn (array $query) => str_contains($query['query'], 'from `users`'))
+            ->count();
+
+        $this->assertStringContainsString('Tokens Used', $content);
+        $this->assertLessThanOrEqual(
+            2,
+            $userQueryCount,
+            'AI CSV export should eager-load users in bounded queries instead of one user query per exported row.'
+        );
+    }
+
+    public function test_finance_csv_export_does_not_lazy_load_user_for_each_row(): void
+    {
+        for ($i = 0; $i < 40; $i++) {
+            $user = User::factory()->create([
+                'role' => 'basic',
+                'email_verified_at' => now(),
+            ]);
+
+            Transaction::create([
+                'user_id'           => $user->id,
+                'midtrans_order_id' => "ORD-N1-{$i}",
+                'amount'            => 49000 + $i,
+                'payment_method'    => 'gopay',
+                'status'            => 'success',
+                'paid_at'           => now(),
+            ]);
+        }
+
+        $response = $this->actingAs($this->admin)->get(route('admin.logs.export.finance'));
+
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $content = $response->streamedContent();
+
+        $userQueryCount = collect(DB::getQueryLog())
+            ->filter(fn (array $query) => str_contains($query['query'], 'from `users`'))
+            ->count();
+
+        $this->assertStringContainsString('Order ID', $content);
+        $this->assertLessThanOrEqual(
+            2,
+            $userQueryCount,
+            'Finance CSV export should eager-load users in bounded queries instead of one user query per exported row.'
+        );
     }
 }

@@ -67,17 +67,18 @@ class AdminLogController extends Controller
                 ->when($from, fn($q) => $q->where('created_at', '>=', $from . ' 00:00:00'))
                 ->when($to,   fn($q) => $q->where('created_at', '<=', $to   . ' 23:59:59'))
                 ->oldest()
-                ->cursor()
-                ->each(function ($log) use ($handle) {
-                    fputcsv($handle, [
-                        $log->id,
-                        $log->user?->name ?? 'N/A',
-                        $log->user?->email ?? 'N/A',
-                        $log->action_type,
-                        $log->tokens_used,
-                        number_format($log->cost_usd, 6),
-                        $log->created_at?->toDateTimeString(),
-                    ]);
+                ->chunk(500, function ($logs) use ($handle) {
+                    foreach ($logs as $log) {
+                        fputcsv($handle, [
+                            $log->id,
+                            $log->user?->name ?? 'N/A',
+                            $log->user?->email ?? 'N/A',
+                            $log->action_type,
+                            $log->tokens_used,
+                            number_format($log->cost_usd, 6),
+                            $log->created_at?->toDateTimeString(),
+                        ]);
+                    }
                 });
 
             fclose($handle);
@@ -107,19 +108,20 @@ class AdminLogController extends Controller
                 ->when($from, fn($q) => $q->where('created_at', '>=', $from . ' 00:00:00'))
                 ->when($to,   fn($q) => $q->where('created_at', '<=', $to   . ' 23:59:59'))
                 ->oldest()
-                ->cursor()
-                ->each(function ($tx) use ($handle) {
-                    fputcsv($handle, [
-                        $tx->id,
-                        $tx->user?->name ?? 'N/A',
-                        $tx->user?->email ?? 'N/A',
-                        $tx->midtrans_order_id,
-                        number_format($tx->amount, 2),
-                        $tx->payment_method,
-                        $tx->status,
-                        $tx->paid_at?->toDateTimeString(),
-                        $tx->created_at?->toDateTimeString(),
-                    ]);
+                ->chunk(500, function ($transactions) use ($handle) {
+                    foreach ($transactions as $tx) {
+                        fputcsv($handle, [
+                            $tx->id,
+                            $tx->user?->name ?? 'N/A',
+                            $tx->user?->email ?? 'N/A',
+                            $tx->midtrans_order_id,
+                            number_format($tx->amount, 2),
+                            $tx->payment_method,
+                            $tx->status,
+                            $tx->paid_at?->toDateTimeString(),
+                            $tx->created_at?->toDateTimeString(),
+                        ]);
+                    }
                 });
 
             fclose($handle);
