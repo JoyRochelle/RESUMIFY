@@ -13,6 +13,7 @@ use App\Http\Controllers\HelpController;
 use App\Http\Controllers\InterviewController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\ManuscriptAtsController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResumeController;
@@ -43,6 +44,11 @@ Route::middleware('guest')->group(function () {
 
 // Authenticated Routes
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('notifications')->controller(NotificationController::class)->name('notifications.')->group(function () {
+        Route::post('/read-all', 'readAll')->name('readAll');
+        Route::get('/{id}/read', 'read')->name('read');
+    });
+
     // Customer Routes (verified email required)
     Route::middleware(['role:basic,premium'])->group(function () {
 

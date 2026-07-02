@@ -98,9 +98,6 @@
                                         @endphp
                                         <option value="{{ $cv->id }}" data-job-target="{{ $prefill }}">
                                             {{ $cv->title }}
-                                            @if ($prefill)
-                                                · {{ $prefill }}
-                                            @endif
                                         </option>
                                     @endforeach
                                 </select>
@@ -146,6 +143,54 @@
 
                     </div>
                 @endif
+
+                {{-- Recent History Section --}}
+                @if(isset($recentSessions) && $recentSessions->isNotEmpty())
+                    <div class="mt-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-primary">Recent Interviews</h3>
+                            <a href="{{ route('interview.history') }}" class="text-sm font-medium text-secondary hover:underline">
+                                View Full History
+                            </a>
+                        </div>
+                        <div class="space-y-3">
+                            @foreach($recentSessions as $session)
+                                <a href="{{ route('interview.show', $session) }}"
+                                   class="block bg-surface-container-low rounded-xl p-4 border border-primary/10 hover:border-secondary/30 hover:shadow-sm transition group">
+                                    <div class="flex justify-between items-start">
+                                        <div class="min-w-0 flex-1 pr-4">
+                                            <p class="font-semibold text-primary text-sm truncate group-hover:text-secondary transition-colors">
+                                                {{ $session->job_target }}
+                                            </p>
+                                            <p class="text-xs text-primary/60 mt-1 truncate">
+                                                CV: {{ $session->cv->title ?? 'Deleted CV' }}
+                                            </p>
+                                        </div>
+                                        <div class="text-right shrink-0">
+                                            @if($session->status === 'completed' && $session->feedback)
+                                                <span class="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                                                    Score: {{ $session->feedback->overall_score ?? 0 }}/100
+                                                </span>
+                                            @elseif($session->status === 'active')
+                                                <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                                                    In Progress
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2 py-1 bg-primary/10 text-primary/60 rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                                                    Ended
+                                                </span>
+                                            @endif
+                                            <p class="text-[10px] text-primary/40 mt-2 font-medium">
+                                                {{ $session->started_at->diffForHumans() }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
 
             </div>
         </div>

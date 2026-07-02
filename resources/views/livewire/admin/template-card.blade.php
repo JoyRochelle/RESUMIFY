@@ -1,16 +1,16 @@
-<div class="bg-white rounded-3xl shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5 overflow-hidden flex flex-col">
+<div class="admin-card flex flex-col overflow-hidden">
 
     <!-- Status + Premium badges row (outside wire:ignore so they update on toggle) -->
     <div class="relative flex-shrink-0">
         <div class="absolute top-3 right-3 z-20" style="position:absolute">
-            <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-full
+            <span class="admin-badge
                 {{ $template->is_active ? 'bg-secondary/20 text-secondary' : 'bg-primary/10 text-primary/40' }}">
                 {{ $template->is_active ? 'Active' : 'Inactive' }}
             </span>
         </div>
         <div class="absolute top-3 left-3 z-20 flex items-center gap-2" style="position:absolute">
             @if($template->is_premium)
-                <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-amber-100 text-amber-700">Premium</span>
+                <span class="admin-badge bg-amber-100 text-amber-700">Premium</span>
             @endif
             @if($template->badge)
                 @php
@@ -21,7 +21,7 @@
                         'green'     => 'bg-green-100 text-green-700',
                     ];
                 @endphp
-                <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-full {{ $badgeColors[$template->badge_color] ?? 'bg-primary/10 text-primary/60' }}">
+                <span class="admin-badge {{ $badgeColors[$template->badge_color] ?? 'bg-primary/10 text-primary/60' }}">
                     {{ $template->badge }}
                 </span>
             @endif
@@ -60,30 +60,32 @@
         @endif
 
         <!-- Actions -->
-        <div class="flex items-center justify-between mt-3 pt-3 border-t border-primary/5"
-             x-data="{ showDelete: false }">
+        <div class="flex items-center justify-between mt-3 pt-3 border-t border-primary/5">
             <span class="text-[10px] font-label text-primary/40">Sort: {{ $template->sort_order }}</span>
             <div class="flex items-center gap-1">
 
                 <!-- Preview -->
                 <a href="{{ route('admin.templates.preview', $template) }}" target="_blank"
-                   class="p-1.5 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5 transition"
-                   title="Preview">
-                    <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                   class="admin-icon-action"
+                   title="Preview"
+                   aria-label="Preview {{ $template->name }}">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">open_in_new</span>
                 </a>
 
                 <!-- Edit -->
                 <a href="{{ route('admin.templates.edit', $template) }}"
-                   class="p-1.5 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5 transition"
-                   title="Edit">
-                    <span class="material-symbols-outlined text-[18px]">edit</span>
+                   class="admin-icon-action"
+                   title="Edit"
+                   aria-label="Edit {{ $template->name }}">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">edit</span>
                 </a>
 
                 <!-- Toggle (Livewire — no page refresh) -->
                 <button wire:click="toggle"
                         wire:loading.attr="disabled"
-                        class="p-1.5 rounded-lg transition {{ $template->is_active ? 'text-secondary/60 hover:text-secondary hover:bg-secondary/5' : 'text-primary/40 hover:text-primary hover:bg-primary/5' }}"
-                        title="{{ $template->is_active ? 'Deactivate' : 'Activate' }}">
+                        class="admin-icon-action {{ $template->is_active ? 'text-secondary/60 hover:text-secondary hover:bg-secondary/5' : 'text-primary/40 hover:text-primary hover:bg-primary/5' }}"
+                        title="{{ $template->is_active ? 'Deactivate' : 'Activate' }}"
+                        aria-label="{{ $template->is_active ? 'Deactivate' : 'Activate' }} {{ $template->name }}">
                     <span wire:loading.remove wire:target="toggle"
                           class="material-symbols-outlined text-[18px]">
                         {{ $template->is_active ? 'toggle_on' : 'toggle_off' }}
@@ -93,42 +95,30 @@
                 </button>
 
                 <!-- Delete -->
-                <button @click="showDelete = true"
-                        class="p-1.5 rounded-lg text-red-400/60 hover:text-red-500 hover:bg-red-50 transition"
-                        title="Delete">
-                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                <button type="button"
+                        x-data
+                        @click="$dispatch('open-modal', 'delete-template-{{ $template->id }}')"
+                        class="admin-icon-action text-red-500 hover:bg-red-50 hover:text-red-600"
+                        title="Delete"
+                        aria-label="Delete {{ $template->name }}">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span>
                 </button>
             </div>
 
-            <!-- Delete Confirmation Modal -->
-            <div x-show="showDelete" x-cloak
-                 class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
-                 @keydown.escape.window="showDelete = false">
-                <div class="bg-white rounded-3xl shadow-xl p-8 max-w-sm w-full" @click.outside="showDelete = false">
-                    <div class="text-center mb-6">
-                        <span class="material-symbols-outlined text-red-400 text-[48px] block mb-3">delete_forever</span>
-                        <h3 class="text-lg font-headline font-bold text-primary mb-2">Delete Template?</h3>
-                        <p class="text-sm font-label text-primary/60">
-                            Permanently delete
-                            <span class="font-semibold text-primary">{{ $template->name }}</span>?
-                            This cannot be undone.
-                        </p>
-                    </div>
-                    <div class="flex gap-3">
-                        <button type="button" @click="showDelete = false"
-                                class="flex-1 py-2.5 rounded-xl border border-primary/10 text-sm font-label text-primary/60 hover:text-primary transition">
-                            Cancel
-                        </button>
-                        <button wire:click="delete"
-                                wire:loading.attr="disabled"
-                                @click="showDelete = false"
-                                class="flex-1 py-2.5 rounded-xl bg-red-500 text-white text-sm font-label hover:bg-red-600 transition">
-                            <span wire:loading.remove wire:target="delete">Delete</span>
-                            <span wire:loading wire:target="delete">Deleting…</span>
-                        </button>
-                    </div>
+            <x-ui.modal id="delete-template-{{ $template->id }}" title="Delete Template" description="This destructive action cannot be undone.">
+                <x-ui.alert variant="error" title="Permanent deletion" class="mb-6">
+                    Permanently delete <span class="font-semibold text-primary">{{ $template->name }}</span>?
+                </x-ui.alert>
+                <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <button type="button" class="admin-btn-secondary" x-on:click="closeModal()">Cancel</button>
+                    <button wire:click="delete"
+                            wire:loading.attr="disabled"
+                            class="admin-btn-danger">
+                        <span wire:loading.remove wire:target="delete">Delete</span>
+                        <span wire:loading wire:target="delete">Deleting...</span>
+                    </button>
                 </div>
-            </div>
+            </x-ui.modal>
         </div>
     </div>
 

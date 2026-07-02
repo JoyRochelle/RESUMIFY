@@ -113,6 +113,45 @@ class HelpCenterTest extends TestCase
         );
     }
 
+    public function test_contact_notifies_admins_about_new_ticket(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin', 'email_verified_at' => now()]);
+
+        $this->actingAs($this->user)
+            ->post(route('help.contact'), [
+                'subject' => 'Admin notification test',
+                'message' => 'Please alert the admin.',
+            ]);
+
+        $ticket = SupportTicket::where('subject', 'Admin notification test')->first();
+        $notification = $admin->notifications()->first();
+
+        $this->assertNotNull($ticket);
+        $this->assertNotNull($notification);
+        $this->assertSame($ticket->id, $notification->data['admin_ticket_id']);
+        $this->assertStringContainsString('Admin notification test', $notification->data['message']);
+    }
+
+    public function test_admin_notification_read_redirects_to_admin_ticket_show(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin', 'email_verified_at' => now()]);
+
+        $this->actingAs($this->user)
+            ->post(route('help.contact'), [
+                'subject' => 'Admin redirect notification',
+                'message' => 'Open this from the admin navbar.',
+            ]);
+
+        $ticket = SupportTicket::where('subject', 'Admin redirect notification')->firstOrFail();
+        $notification = $admin->notifications()->firstOrFail();
+
+        $this->actingAs($admin)
+            ->get(route('notifications.read', $notification->id))
+            ->assertRedirect(route('admin.support.show', $ticket));
+
+        $this->assertNotNull($notification->fresh()->read_at);
+    }
+
     public function test_contact_redirects_with_success_flash(): void
     {
         $this->actingAs($this->user)

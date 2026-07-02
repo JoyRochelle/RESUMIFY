@@ -12,7 +12,7 @@
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         
         {{-- Page Header --}}
-        <x-user.page-header title="Editor: Senior Product Designer" backUrl="{{ route('dashboard') }}">
+        <x-user.page-header title="Editor: {{ $cv->title ?? 'Untitled Resume' }}" backUrl="{{ route('dashboard') }}">
             <x-user.button type="button" onclick="openCvVersionsModal()" variant="outline" icon="auto_awesome" class="text-sm px-3 hidden sm:flex text-secondary border-secondary hover:bg-secondary/10">Tailor CV</x-user.button>
             <x-user.button onclick="previewPdf('{{ $cv->id ?? '' }}')" variant="ghost" class="text-sm px-3 hidden sm:flex">Preview</x-user.button>
             @if($user->canUsePremiumFeature('pdf_export'))

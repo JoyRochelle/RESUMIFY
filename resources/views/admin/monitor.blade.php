@@ -3,7 +3,7 @@
 @section('title', 'System Monitor - Admin Dashboard')
 
 @section('content')
-<div class="max-w-6xl mx-auto space-y-8 pb-10">
+<div class="admin-shell">
 
     <!-- Header -->
     <div class="flex items-center justify-between">
@@ -12,7 +12,7 @@
             <p class="text-sm font-label text-primary/60">Queue health, disk usage, and error tracking.</p>
         </div>
         <a href="{{ route('admin.monitor') }}"
-           class="flex items-center space-x-2 text-sm font-label text-primary/60 hover:text-primary bg-white border border-primary/10 px-4 py-2 rounded-xl shadow-sm transition-colors">
+           class="flex items-center space-x-2 text-sm font-label text-primary/60 hover:text-primary bg-tertiary border border-primary/10 px-4 py-2 rounded-lg shadow-sm transition-colors">
             <span class="material-symbols-outlined text-[18px]">refresh</span>
             <span>Refresh</span>
         </a>
@@ -22,7 +22,7 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
 
         <!-- Pending Jobs -->
-        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
+        <div class="admin-card-pad">
             <div class="flex items-center justify-between mb-3">
                 <span class="material-symbols-outlined text-primary/40 text-[20px]">pending</span>
                 <span class="text-[9px] font-label text-primary/40 uppercase tracking-widest">QUEUE</span>
@@ -37,7 +37,7 @@
         </div>
 
         <!-- Failed Jobs -->
-        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
+        <div class="admin-card-pad">
             <div class="flex items-center justify-between mb-3">
                 <span class="material-symbols-outlined text-[20px] {{ $failedJobs > 0 ? 'text-red-400' : 'text-primary/40' }}">error</span>
                 <span class="text-[9px] font-label text-primary/40 uppercase tracking-widest">FAILED</span>
@@ -52,7 +52,7 @@
         </div>
 
         <!-- Disk Usage -->
-        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
+        <div class="admin-card-pad">
             <div class="flex items-center justify-between mb-3">
                 <span class="material-symbols-outlined text-primary/40 text-[20px]">storage</span>
                 <span class="text-[9px] font-label text-primary/40 uppercase tracking-widest">STORAGE</span>
@@ -75,7 +75,7 @@
         </div>
 
         <!-- Sentry Errors -->
-        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
+        <div class="admin-card-pad">
             <div class="flex items-center justify-between mb-3">
                 <span class="material-symbols-outlined text-[20px] {{ $sentryErrors > 0 ? 'text-red-400' : 'text-primary/40' }}">bug_report</span>
                 <span class="text-[9px] font-label text-primary/40 uppercase tracking-widest">SENTRY</span>
@@ -98,8 +98,8 @@
 
     <!-- Disk Usage Detail -->
     @if($diskTotal > 0)
-    <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-        <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-5">Disk Usage Detail</h3>
+    <div class="admin-card-pad">
+        <h3 class="admin-section-title mb-5">Disk Usage Detail</h3>
         <div class="flex items-center justify-between mb-3">
             <span class="text-sm font-label text-primary">Storage partition</span>
             <span class="text-sm font-label text-primary font-bold">{{ $diskPct }}% used</span>
@@ -130,13 +130,13 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         <!-- Queue Health -->
-        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-5">Queue Health</h3>
+        <div class="admin-card-pad">
+            <h3 class="admin-section-title mb-5">Queue Health</h3>
 
             <div class="space-y-4">
                 <div class="flex items-center justify-between py-3 border-b border-primary/5">
                     <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-xl bg-primary/5 flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center">
                             <span class="material-symbols-outlined text-primary/50 text-[16px]">schedule</span>
                         </div>
                         <span class="text-sm font-label text-primary">Pending</span>
@@ -146,7 +146,7 @@
 
                 <div class="flex items-center justify-between py-3 border-b border-primary/5">
                     <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-xl {{ $failedJobs > 0 ? 'bg-red-50' : 'bg-primary/5' }} flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-lg {{ $failedJobs > 0 ? 'bg-red-50' : 'bg-primary/5' }} flex items-center justify-center">
                             <span class="material-symbols-outlined text-[16px] {{ $failedJobs > 0 ? 'text-red-400' : 'text-primary/50' }}">close</span>
                         </div>
                         <span class="text-sm font-label text-primary">Failed</span>
@@ -158,7 +158,7 @@
 
                 <div class="flex items-center justify-between py-3">
                     <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-xl bg-primary/5 flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center">
                             <span class="material-symbols-outlined text-primary/50 text-[16px]">history</span>
                         </div>
                         <span class="text-sm font-label text-primary">Last queued</span>
@@ -185,8 +185,8 @@
         </div>
 
         <!-- Recent Failed Jobs -->
-        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-5">
+        <div class="admin-card-pad">
+            <h3 class="admin-section-title mb-5">
                 Recent Failed Jobs
                 @if($recentFailed->isNotEmpty())
                     <span class="ml-2 text-[10px] bg-red-100 text-red-500 px-2 py-0.5 rounded-full">{{ $recentFailed->count() }}</span>
@@ -216,16 +216,16 @@
     </div>
 
     <!-- Sentry Errors Detail -->
-    <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
+    <div class="admin-card-pad">
         <div class="flex items-center justify-between mb-5">
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest">Sentry Error Tracking</h3>
+            <h3 class="admin-section-title">Sentry Error Tracking</h3>
             @if(!is_null($sentryErrors))
                 <span class="text-[10px] font-label text-primary/40">Cached · refreshes every 5 min</span>
             @endif
         </div>
 
         @if(is_null($sentryErrors))
-            <div class="flex items-center space-x-4 p-4 bg-primary/5 rounded-2xl">
+            <div class="flex items-center space-x-4 p-4 bg-primary/5 rounded-lg">
                 <span class="material-symbols-outlined text-primary/40 text-[32px]">info</span>
                 <div>
                     <p class="text-sm font-label text-primary font-bold mb-1">Sentry not configured</p>
@@ -239,7 +239,7 @@
             </div>
         @else
             <div class="flex items-center space-x-4">
-                <div class="w-16 h-16 rounded-2xl {{ $sentryErrors > 0 ? 'bg-red-50' : 'bg-secondary/10' }} flex items-center justify-center flex-shrink-0">
+                <div class="w-16 h-16 rounded-lg {{ $sentryErrors > 0 ? 'bg-red-50' : 'bg-secondary/10' }} flex items-center justify-center flex-shrink-0">
                     <span class="material-symbols-outlined text-[28px] {{ $sentryErrors > 0 ? 'text-red-400' : 'text-secondary' }}">
                         {{ $sentryErrors > 0 ? 'bug_report' : 'check_circle' }}
                     </span>

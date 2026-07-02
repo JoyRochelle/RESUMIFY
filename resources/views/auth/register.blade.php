@@ -23,9 +23,14 @@
             <input class="mt-1 w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary" id="terms"
                 name="terms" type="checkbox" required />
             <label class="text-xs text-on-surface-variant leading-relaxed" for="terms">
-                I agree to the <a href="#" class="text-secondary font-bold hover:underline">Terms of
-                    Service</a> and <a href="#" class="text-secondary font-bold hover:underline">Privacy
-                    Policy</a>.
+                I agree to the
+                <button type="button" @click.stop.prevent="openModal('terms')" class="text-secondary font-bold hover:underline">
+                    Terms of Service
+                </button>
+                and
+                <button type="button" @click.stop.prevent="openModal('privacy')" class="text-secondary font-bold hover:underline">
+                    Privacy Policy
+                </button>.
             </label>
         </div>
 

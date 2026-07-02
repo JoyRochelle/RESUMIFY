@@ -3,7 +3,7 @@
 @section('title', 'Ticket #' . substr($ticket->id, -8) . ' - Support')
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-8 pb-10">
+<div class="mx-auto w-full max-w-4xl space-y-8 pb-24 md:pb-12">
 
     <!-- Breadcrumb -->
     <div class="flex items-center justify-between">
@@ -16,18 +16,11 @@
             <h1 class="text-2xl font-headline font-bold text-primary">{{ $ticket->subject }}</h1>
         </div>
         <a href="{{ route('admin.support') }}"
-           class="flex items-center space-x-2 text-sm font-label text-primary/60 hover:text-primary bg-white border border-primary/10 px-4 py-2 rounded-xl shadow-sm transition-colors">
+           class="admin-btn-secondary">
             <span class="material-symbols-outlined text-[18px]">arrow_back</span>
             <span>Back</span>
         </a>
     </div>
-
-    @if(session('success'))
-        <div class="bg-secondary/10 border border-secondary/20 text-secondary text-sm font-label px-5 py-3 rounded-xl flex items-center space-x-2">
-            <span class="material-symbols-outlined text-[18px]">check_circle</span>
-            <span>{{ session('success') }}</span>
-        </div>
-    @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -35,9 +28,9 @@
         <div class="lg:col-span-2 space-y-6">
 
             <!-- Conversation -->
-            <div class="bg-white rounded-3xl shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5 overflow-hidden">
+            <div class="admin-card overflow-hidden">
                 <div class="p-6 border-b border-primary/5">
-                    <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest">Conversation</h3>
+                    <h3 class="admin-section-title">Conversation</h3>
                 </div>
 
                 <div class="divide-y divide-primary/5">
@@ -72,26 +65,23 @@
 
             <!-- Reply Form -->
             @if($ticket->status !== 'closed')
-            <div class="bg-white rounded-3xl shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5 p-6">
-                <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-4">Send Reply</h3>
+            <div class="admin-card-pad">
+                <h3 class="admin-section-title mb-4">Send Reply</h3>
                 <form action="{{ route('admin.support.reply', $ticket) }}" method="POST">
                     @csrf
                     <textarea name="body" rows="5" required
                               placeholder="Type your reply..."
-                              class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-3 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30 resize-none">{{ old('body') }}</textarea>
+                              class="w-full bg-surface border border-primary/10 rounded-lg px-4 py-3 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30 resize-none">{{ old('body') }}</textarea>
                     @error('body')
                         <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                     @enderror
                     <div class="flex justify-end mt-4">
-                        <button type="submit"
-                                class="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-label hover:bg-primary/90 transition">
-                            Send Reply
-                        </button>
+                        <x-ui.loading-button loading-text="Sending..." icon="send">Send Reply</x-ui.loading-button>
                     </div>
                 </form>
             </div>
             @else
-            <div class="bg-primary/5 rounded-3xl p-6 text-center">
+            <div class="bg-primary/5 rounded-lg p-6 text-center">
                 <p class="text-sm font-label text-primary/60">This ticket is closed. Reopen it to reply.</p>
             </div>
             @endif
@@ -102,13 +92,13 @@
         <div class="space-y-6">
 
             <!-- Ticket Info -->
-            <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-                <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-4">Ticket Info</h3>
+            <div class="admin-card-pad">
+                <h3 class="admin-section-title mb-4">Ticket Info</h3>
                 <div class="space-y-3">
                     <div>
                         <p class="text-[10px] font-label text-primary/40 uppercase tracking-widest mb-0.5">Status</p>
                         @php $badgeMap = ['open' => 'bg-red-100 text-red-600', 'pending' => 'bg-amber-100 text-amber-600', 'closed' => 'bg-primary/10 text-primary/50']; @endphp
-                        <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $badgeMap[$ticket->status] ?? '' }}">
+                        <span class="admin-badge {{ $badgeMap[$ticket->status] ?? '' }}">
                             {{ $ticket->status }}
                         </span>
                     </div>
@@ -124,8 +114,8 @@
             </div>
 
             <!-- User Info -->
-            <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-                <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-4">User</h3>
+            <div class="admin-card-pad">
+                <h3 class="admin-section-title mb-4">User</h3>
                 <div class="flex items-center space-x-3 mb-3">
                     <div class="w-10 h-10 rounded-full overflow-hidden bg-primary/10 flex-shrink-0">
                         <img src="{{ $ticket->user?->avatar_url ?? 'https://ui-avatars.com/api/?name=?&background=fcdccb&color=4f3b2f' }}"
@@ -139,12 +129,12 @@
             </div>
 
             <!-- Assign -->
-            <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-                <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-4">Assign To</h3>
+            <div class="admin-card-pad">
+                <h3 class="admin-section-title mb-4">Assign To</h3>
                 <form action="{{ route('admin.support.assign', $ticket) }}" method="POST">
                     @csrf @method('PATCH')
                     <select name="assigned_to"
-                            class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary focus:outline-none focus:border-primary/30 mb-3">
+                            class="admin-filter-field mb-3 w-full">
                         <option value="">Unassigned</option>
                         @foreach($admins as $admin)
                             <option value="{{ $admin->id }}" {{ $ticket->assigned_to === $admin->id ? 'selected' : '' }}>
@@ -152,28 +142,22 @@
                             </option>
                         @endforeach
                     </select>
-                    <button type="submit"
-                            class="w-full bg-primary/10 text-primary py-2.5 rounded-xl text-sm font-label hover:bg-primary/20 transition">
-                        Update Assignment
-                    </button>
+                    <x-ui.loading-button variant="outline" loading-text="Updating..." icon="assignment_ind" class="w-full">Update Assignment</x-ui.loading-button>
                 </form>
             </div>
 
             <!-- Status Toggle -->
-            <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-                <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-4">Update Status</h3>
+            <div class="admin-card-pad">
+                <h3 class="admin-section-title mb-4">Update Status</h3>
                 <form action="{{ route('admin.support.status', $ticket) }}" method="POST">
                     @csrf @method('PATCH')
                     <select name="status"
-                            class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-2.5 text-sm font-label text-primary focus:outline-none focus:border-primary/30 mb-3">
+                            class="admin-filter-field mb-3 w-full">
                         <option value="open"    {{ $ticket->status === 'open'    ? 'selected' : '' }}>Open</option>
                         <option value="pending" {{ $ticket->status === 'pending' ? 'selected' : '' }}>Pending</option>
                         <option value="closed"  {{ $ticket->status === 'closed'  ? 'selected' : '' }}>Closed</option>
                     </select>
-                    <button type="submit"
-                            class="w-full bg-primary text-white py-2.5 rounded-xl text-sm font-label hover:bg-primary/90 transition">
-                        Update Status
-                    </button>
+                    <x-ui.loading-button loading-text="Updating..." icon="published_with_changes" class="w-full">Update Status</x-ui.loading-button>
                 </form>
             </div>
 

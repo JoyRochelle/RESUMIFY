@@ -11,10 +11,40 @@
         {{-- Page Header --}}
         <x-user.page-header title="Account Settings" backUrl="{{ route('dashboard') }}">
             <div class="flex items-center space-x-6 hidden md:flex">
-                <button class="text-primary/60 hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined">notifications</span>
-                </button>
-                <div class="flex items-center space-x-3 group cursor-pointer">
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" @click.away="open = false" class="relative text-primary/60 hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">notifications</span>
+                        @if($user->unreadNotifications->count() > 0)
+                            <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                                {{ $user->unreadNotifications->count() }}
+                            </span>
+                        @endif
+                    </button>
+
+                    <div x-show="open" style="display: none;"
+                         class="absolute right-0 mt-2 w-80 bg-surface border border-primary/10 rounded-xl shadow-lg z-50 overflow-hidden">
+                        <div class="p-4 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
+                            <h3 class="font-bold text-primary text-sm">Notifications</h3>
+                            @if($user->unreadNotifications->count() > 0)
+                                <form action="{{ route('notifications.readAll') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="text-xs text-secondary hover:underline font-medium">Mark all as read</button>
+                                </form>
+                            @endif
+                        </div>
+                        <div class="max-h-80 overflow-y-auto custom-scrollbar">
+                            @forelse($user->notifications as $notification)
+                                <a href="{{ route('notifications.read', $notification->id) }}" class="block p-4 border-b border-primary/5 hover:bg-surface-container-low transition-colors {{ $notification->read_at ? 'opacity-75' : 'bg-secondary/5' }}">
+                                    <p class="text-sm text-primary">{{ $notification->data['message'] ?? 'You have a new notification.' }}</p>
+                                    <span class="text-[10px] text-primary/40 mt-1 block">{{ $notification->created_at->diffForHumans() }}</span>
+                                </a>
+                            @empty
+                                <div class="p-4 text-center text-primary/60 text-sm">No notifications yet.</div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+                {{-- <div class="flex items-center space-x-3 group cursor-pointer">
                     <div class="text-right">
                         <p class="text-xs font-bold text-primary">{{ $user->name }}</p>
                         <x-user.plan-badge :user="$user" size="xs" />
@@ -28,7 +58,7 @@
                             </span>
                         @endif
                     </div>
-                </div>
+                </div> --}}
             </div>
         </x-user.page-header>
 

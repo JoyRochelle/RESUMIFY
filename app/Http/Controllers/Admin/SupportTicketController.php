@@ -71,6 +71,10 @@ class SupportTicketController extends Controller
 
         SendTicketReplyJob::dispatch($ticket, $reply);
 
+        if ($ticket->user) {
+            $ticket->user->notify(new \App\Notifications\SupportTicketReplied($ticket));
+        }
+
         AdminLog::create([
             'admin_id'    => auth()->id(),
             'action'      => 'reply_ticket',
