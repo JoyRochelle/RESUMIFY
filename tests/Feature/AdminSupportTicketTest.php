@@ -105,6 +105,32 @@ class AdminSupportTicketTest extends TestCase
         $this->assertTrue($subjects->contains('Unique searchable subject XYZ'));
     }
 
+    public function test_search_respects_status_filter_when_subject_matches(): void
+    {
+        $pendingTicket = SupportTicket::factory()->pending()->create([
+            'user_id' => $this->basicUser->id,
+            'subject' => 'Needle billing question',
+        ]);
+
+        $openTicket = SupportTicket::factory()->create([
+            'user_id' => $this->basicUser->id,
+            'subject' => 'Needle export question',
+            'status'  => 'open',
+        ]);
+
+        $response = $this->actingAs($this->admin)
+            ->get(route('admin.support', [
+                'status' => 'pending',
+                'search' => 'Needle',
+            ]));
+
+        $tickets = $response->viewData('tickets');
+
+        $this->assertTrue($tickets->pluck('id')->contains($pendingTicket->id));
+        $this->assertFalse($tickets->pluck('id')->contains($openTicket->id));
+        $tickets->each(fn($ticket) => $this->assertSame('pending', $ticket->status));
+    }
+
     public function test_index_paginates_at_20(): void
     {
         SupportTicket::factory()->count(25)->create(['user_id' => $this->basicUser->id]);

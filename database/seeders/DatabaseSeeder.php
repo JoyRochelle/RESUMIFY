@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             CvTemplateSeeder::class,
             DummyDataSeeder::class,
+            DatabaseNotificationSeeder::class,
         ]);
     }
 }

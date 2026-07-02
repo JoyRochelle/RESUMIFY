@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Interviews\EndInterviewSessionAction;
+use App\Actions\Interviews\SendInterviewMessageAction;
+use App\Actions\Interviews\StartInterviewAction;
 use App\Models\AiUsageLog;
 use App\Models\Cv;
 use App\Models\InterviewMessage;
@@ -10,6 +13,8 @@ use App\Services\InterviewService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -55,7 +60,11 @@ class InterviewController extends Controller
     /**
      * Mark the session as completed, generate AI feedback, and redirect to the report page.
      */
-    public function endSession(Request $request, InterviewSession $session): RedirectResponse
+    public function endSession(
+        Request $request,
+        InterviewSession $session,
+        EndInterviewSessionAction $endInterviewSession
+    ): RedirectResponse
     {
         if ($session->user_id !== auth()->id()) {
             abort(403);
@@ -65,41 +74,20 @@ class InterviewController extends Controller
             return redirect()->back()->with('error', 'This session has already ended.');
         }
 
-        $session->update([
-            'status'   => 'completed',
-            'ended_at' => now(),
-        ]);
+        $result = $endInterviewSession->execute(auth()->user(), $session);
 
-        $user = auth()->user();
-
-        // Premium and admin users bypass quota — skip check for them
-        if (!$user->isPremium() && !$user->isAdmin() && !$user->hasQuotaRemaining(1)) {
+        if ($result->feedbackUnavailableDueToQuota()) {
             return redirect()->route('interview.index')
                 ->with('success', 'Session ended! Feedback report is unavailable — your AI credits are exhausted.');
         }
 
-        $user->increment('ai_quota_used', 1);
-
-        try {
-            $this->interviewService->generateFeedback($session);
-
-            AiUsageLog::create([
-                'user_id'     => $user->id,
-                'action_type' => 'interview_feedback',
-                'resume_id'   => $session->resume_id,
-                'tokens_used' => 0,
-                'cost_usd'    => 0,
-            ]);
-
+        if ($result->feedbackGeneratedSuccessfully()) {
             return redirect()->route('interview.feedback', $session)
                 ->with('success', 'Session ended! Here is your interview report.');
-        } catch (\Exception $e) {
-            $user->decrement('ai_quota_used', 1);
-            Log::error('InterviewController@endSession feedback failed', ['error' => $e->getMessage()]);
-
-            return redirect()->route('interview.index')
-                ->with('success', 'Session ended. Feedback report could not be generated — please try again later.');
         }
+
+        return redirect()->route('interview.index')
+            ->with('success', 'Session ended. Feedback report could not be generated — please try again later.');
     }
 
     /**
@@ -146,24 +134,33 @@ class InterviewController extends Controller
 
         $sessions = $query->paginate(10)->withQueryString();
 
-        // Trend: score delta vs. the chronologically previous session with feedback
-        $trends    = [];
-        $prevScore = null;
-        $allWithFeedback = $user->interviewSessions()
-            ->whereHas('feedback')
-            ->with('feedback:session_id,overall_score')
-            ->orderBy('started_at')
-            ->get(['interview_sessions.id']);
-
-        foreach ($allWithFeedback as $s) {
-            $score = $s->feedback->overall_score;
-            if ($prevScore !== null) {
-                $trends[$s->id] = $score - $prevScore;
-            }
-            $prevScore = $score;
-        }
+        $trends = $this->calculateVisibleTrends($sessions, $user->id);
 
         return view('user.interview.history', compact('sessions', 'cvs', 'trends', 'sort', 'order'));
+    }
+
+    private function calculateVisibleTrends(LengthAwarePaginator $sessions, string $userId): array
+    {
+        $trends = [];
+
+        foreach ($sessions->getCollection() as $session) {
+            if (!$session->feedback) {
+                continue;
+            }
+
+            $previousScore = DB::table('interview_sessions')
+                ->join('interview_feedback', 'interview_sessions.id', '=', 'interview_feedback.session_id')
+                ->where('interview_sessions.user_id', $userId)
+                ->where('interview_sessions.started_at', '<', $session->started_at)
+                ->orderByDesc('interview_sessions.started_at')
+                ->value('interview_feedback.overall_score');
+
+            if ($previousScore !== null) {
+                $trends[$session->id] = $session->feedback->overall_score - (int) $previousScore;
+            }
+        }
+
+        return $trends;
     }
 
     /**
@@ -196,16 +193,9 @@ class InterviewController extends Controller
             'content'    => $content,
         ]);
 
-        $session->load(['cv.sections', 'messages']);
+        $session->load('cv.sections');
         $systemPrompt = $this->interviewService->buildSystemPrompt($session->cv, $session->job_target);
-
-        $contents = [['role' => 'user', 'parts' => [['text' => 'Please begin the interview session.']]]];
-        foreach ($session->messages as $msg) {
-            $contents[] = [
-                'role'  => $msg->role === 'assistant' ? 'model' : 'user',
-                'parts' => [['text' => $msg->content]],
-            ];
-        }
+        $contents = $this->interviewService->buildRecentConversationContents($session);
 
         return response()->stream(function () use ($user, $session, $systemPrompt, $contents) {
             try {
@@ -256,7 +246,7 @@ class InterviewController extends Controller
      * Start a new interview session and return Bu Sari's opening question.
      * Quota: 1 credit (handled by ai.quota middleware on the route).
      */
-    public function start(Request $request): JsonResponse
+    public function start(Request $request, StartInterviewAction $startInterview): JsonResponse
     {
         $request->validate([
             'cv_id'      => 'required|string|exists:cvs,id',
@@ -268,18 +258,8 @@ class InterviewController extends Controller
 
         $user = auth()->user();
 
-        $user->increment('ai_quota_used', 1);
-
         try {
-            $result = $this->interviewService->startSession($user, $cv, $request->job_target);
-
-            AiUsageLog::create([
-                'user_id'     => $user->id,
-                'action_type' => 'interview_question',
-                'resume_id'   => $cv->id,
-                'tokens_used' => 0,
-                'cost_usd'    => 0,
-            ]);
+            $result = $startInterview->execute($user, $cv, $request->job_target);
 
             return response()->json([
                 'success'    => true,
@@ -287,8 +267,6 @@ class InterviewController extends Controller
                 'message'    => $result['message'],
             ]);
         } catch (\Exception $e) {
-            $user->decrement('ai_quota_used', 1);
-            Log::error('InterviewController@start failed', ['error' => $e->getMessage()]);
             return response()->json(['success' => false, 'message' => 'Failed to start interview session.'], 500);
         }
     }
@@ -297,7 +275,11 @@ class InterviewController extends Controller
      * Send a user message and return Bu Sari's next question.
      * Quota: 1 credit per exchange (handled by ai.quota middleware on the route).
      */
-    public function message(Request $request, InterviewSession $session): JsonResponse
+    public function message(
+        Request $request,
+        InterviewSession $session,
+        SendInterviewMessageAction $sendInterviewMessage
+    ): JsonResponse
     {
         if ($session->user_id !== auth()->id()) {
             abort(403);
@@ -313,26 +295,14 @@ class InterviewController extends Controller
 
         $user = auth()->user();
 
-        $user->increment('ai_quota_used', 1);
-
         try {
-            $reply = $this->interviewService->sendMessage($session, $request->content);
-
-            AiUsageLog::create([
-                'user_id'     => $user->id,
-                'action_type' => 'interview_question',
-                'resume_id'   => $session->resume_id,
-                'tokens_used' => 0,
-                'cost_usd'    => 0,
-            ]);
+            $reply = $sendInterviewMessage->execute($user, $session, $request->content);
 
             return response()->json([
                 'success' => true,
                 'message' => $reply,
             ]);
         } catch (\Exception $e) {
-            $user->decrement('ai_quota_used', 1);
-            Log::error('InterviewController@message failed', ['error' => $e->getMessage()]);
             return response()->json(['success' => false, 'message' => 'Failed to get AI response.'], 500);
         }
     }

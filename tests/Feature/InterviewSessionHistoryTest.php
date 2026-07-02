@@ -9,6 +9,7 @@ use App\Models\InterviewFeedback;
 use App\Models\InterviewSession;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -168,5 +169,31 @@ class InterviewSessionHistoryTest extends TestCase
         $response->assertStatus(200)
                  ->assertSee('My Job Target')
                  ->assertDontSee('Other User Job');
+    }
+
+    public function test_history_trend_calculation_stays_bounded_for_large_accounts(): void
+    {
+        [$user, $cv] = $this->makeUserWithCv();
+
+        for ($i = 0; $i < 1200; $i++) {
+            $session = $this->makeSession($user, $cv);
+            $session->forceFill(['started_at' => now()->subMinutes(1200 - $i)])->save();
+            $this->makeFeedback($session, 40 + ($i % 60));
+        }
+
+        $retrievedSessions = 0;
+        Event::listen('eloquent.retrieved: ' . InterviewSession::class, function () use (&$retrievedSessions): void {
+            $retrievedSessions++;
+        });
+
+        $response = $this->actingAs($user)->get('/interview/history');
+
+        $response->assertStatus(200);
+        $this->assertLessThanOrEqual(
+            30,
+            $retrievedSessions,
+            'Interview history should not hydrate every historical session to calculate score trends.'
+        );
+        $this->assertLessThanOrEqual(10, count($response->viewData('trends')));
     }
 }

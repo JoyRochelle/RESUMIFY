@@ -126,7 +126,11 @@ class PaymentGatewayTest extends TestCase
 
     public function test_midtrans_webhook_rejects_invalid_signature()
     {
+        Queue::fake();
         config(['services.midtrans.server_key' => 'dummy_key']);
+
+        $user = User::factory()->create(['role' => 'basic']);
+        $transaction = $this->createPendingTransaction($user);
 
         $payload = [
             'order_id'           => 'TRX-123',
@@ -140,39 +144,49 @@ class PaymentGatewayTest extends TestCase
 
         $response->assertStatus(403);
         $response->assertJson(['error' => 'Invalid signature']);
+
+        $transaction->refresh();
+        $this->assertEquals('pending', $transaction->status);
+
+        $user->refresh();
+        $this->assertEquals('basic', $user->role);
+
+        Queue::assertNotPushed(SendPaymentConfirmationJob::class);
     }
 
     // ────────────────────────────────────────────────
     // WEBHOOK: Idempotency — Duplicate webhooks
     // ────────────────────────────────────────────────
 
-    public function test_duplicate_webhook_does_not_double_upgrade()
+    public function test_repeated_settlement_webhook_only_dispatches_payment_confirmation_once()
     {
         Queue::fake();
         config(['services.midtrans.server_key' => 'dummy_key']);
 
-        $user = User::factory()->create(['role' => 'basic']);
+        $user = User::factory()->create([
+            'role' => 'basic',
+            'ai_quota_used' => 7,
+        ]);
         $transaction = $this->createPendingTransaction($user);
 
         $payload = $this->buildWebhookPayload('TRX-123', 'settlement');
 
-        // First webhook — should process
-        $this->postJson('/payment/callback', $payload)->assertStatus(200);
+        for ($attempt = 0; $attempt < 5; $attempt++) {
+            $this->postJson('/payment/callback', $payload)
+                ->assertStatus(200)
+                ->assertJson(['message' => 'Callback handled']);
+        }
 
-        // Second webhook (duplicate) — should be idempotent
-        $response = $this->postJson('/payment/callback', $payload);
-        $response->assertStatus(200);
-
-        // Verify only 1 subscription exists (not 2)
         $this->assertDatabaseCount('subscriptions', 1);
 
-        // Verify job was dispatched only once
         Queue::assertPushed(SendPaymentConfirmationJob::class, 1);
 
-        // Verify user state is still correct
         $user->refresh();
         $this->assertEquals('premium', $user->role);
         $this->assertEquals(0, $user->ai_quota_used);
+
+        $transaction->refresh();
+        $this->assertEquals('success', $transaction->status);
     }
 
     // ────────────────────────────────────────────────
@@ -332,7 +346,7 @@ class PaymentGatewayTest extends TestCase
 
         // Either success (if Midtrans SDK mock is available) or 500 (SDK failure in test)
         if ($response->status() === 200) {
-            $response->assertJsonStructure(['snap_token']);
+            $response->assertJsonStructure(['snap_token', 'redirect_url']);
         } else {
             // Even if the Snap call fails, verify the transaction was created
             $this->assertDatabaseHas('transactions', [

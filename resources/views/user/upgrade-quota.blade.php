@@ -3,6 +3,13 @@
 @section('title', 'Pricing Plans - Resumify')
 
 @section('content')
+    @php
+        $user = auth()->user();
+        $isPremium = $user->isPremium();
+        $isCancelled = $subscription?->status === 'cancelled';
+        $hasActiveSubscription = $subscription?->status === 'active';
+    @endphp
+
     <main class="flex-1 overflow-y-auto custom-scrollbar bg-primary/5 pb-20 md:pb-0">
 
         <div class="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-16">
@@ -17,11 +24,41 @@
                 </p>
             </section>
 
+            @if ($isPremium && $subscription)
+                <section class="mb-8 md:mb-10 rounded-2xl border border-primary/10 bg-tertiary p-5 shadow-sm md:flex md:items-center md:justify-between md:gap-6">
+                    <div>
+                        <p class="font-label text-xs font-bold uppercase tracking-widest {{ $isCancelled ? 'text-amber-700' : 'text-secondary' }}">
+                            {{ $isCancelled ? 'Cancellation Scheduled' : 'Premium Active' }}
+                        </p>
+                        <h2 class="mt-2 font-headline text-2xl font-bold text-primary">Premium PRO</h2>
+                        <p class="mt-2 font-body text-sm text-primary/65">
+                            @if ($isCancelled && $subscription->ends_at)
+                                Your premium access remains active until {{ $subscription->ends_at->format('d M Y') }}.
+                            @elseif ($subscription->ends_at)
+                                Your current billing period ends on {{ $subscription->ends_at->format('d M Y') }}.
+                            @else
+                                Your premium access is active.
+                            @endif
+                        </p>
+                    </div>
+                    @if ($hasActiveSubscription)
+                        <form method="POST" action="{{ route('subscription.cancel') }}" class="mt-5 md:mt-0"
+                            onsubmit="return confirm('Cancel Premium PRO? Your premium access will stay active until the end of this billing period.');">
+                            @csrf
+                            <button type="submit"
+                                class="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-red-300 px-5 py-3 text-sm font-bold text-red-600 transition hover:bg-red-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-300/50 md:w-auto">
+                                Cancel Plan
+                            </button>
+                        </form>
+                    @endif
+                </section>
+            @endif
+
             {{-- Pricing Cards --}}
-            <section class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-12 md:mb-24 max-w-5xl mx-auto" x-data="paymentGateway()">
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-12 md:mb-24 max-w-5xl mx-auto">
 
                 <x-user.pricing-card plan="Starter" price="Rp 0" period="forever" :features="['1 Active Resume', 'Standard Templates']" :disabledFeatures="['No AI Enhancement']"
-                    :isCurrentPlan="!auth()->user()->isPremium()" />
+                    :isCurrentPlan="!$isPremium" />
 
                 <x-user.pricing-card plan="Premium PRO" price="Rp 49.000" period="month" :features="[
                     'Unlimited Resumes',
@@ -30,8 +67,8 @@
                     'Premium PDF Export',
                     'Priority Support',
                 ]" :isPremium="true"
-                    :isCurrentPlan="auth()->user()->isPremium()"
-                    buttonText="Activate Premium Now" @click="pay()" x-bind:disabled="isProcessing" x-text="isProcessing ? 'Processing...' : 'Activate Premium Now'" />
+                    :isCurrentPlan="$isPremium"
+                    buttonText="Activate Premium Now" type="button" aria-label="Activate Premium PRO plan" data-plan-action="purchase-premium" />
 
             </section>
 
@@ -97,57 +134,82 @@
         : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
         data-client-key="{{ config('services.midtrans.client_key') }}"></script>
     <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('paymentGateway', () => ({
-                isProcessing: false,
+        (() => {
+            const purchaseButtonSelector = '[data-plan-action="purchase-premium"]';
 
-                notify(message, type = 'success') {
-                    window.dispatchEvent(new CustomEvent('notify', { detail: { message, type } }));
-                },
+            function notify(message, type = 'success') {
+                window.dispatchEvent(new CustomEvent('notify', { detail: { message, type } }));
+            }
 
-                async pay() {
-                    if (this.isProcessing) return;
-                    this.isProcessing = true;
+            function setProcessing(button, isProcessing) {
+                button.disabled = isProcessing;
+                button.textContent = isProcessing ? 'Processing...' : 'Activate Premium Now';
+            }
 
-                    try {
-                        const response = await fetch('{{ route('payment.create') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            }
-                        });
+            async function handlePremiumPurchase(event) {
+                const button = event.currentTarget;
 
-                        const data = await response.json();
+                if (button.disabled) return;
 
-                        if (data.snap_token) {
-                            const self = this;
+                setProcessing(button, true);
+
+                try {
+                    const response = await fetch('{{ route('payment.create') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.snap_token) {
+                        if (window.snap && typeof window.snap.pay === 'function') {
                             window.snap.pay(data.snap_token, {
                                 onSuccess: function(result) {
-                                    self.notify("Payment success!");
+                                    notify("Payment success!");
                                     window.location.href = '{{ route('dashboard') }}';
                                 },
                                 onPending: function(result) {
-                                    self.notify("Waiting for your payment!", "info");
+                                    notify("Waiting for your payment!", "info");
                                 },
                                 onError: function(result) {
-                                    self.notify("Payment failed!", "error");
+                                    notify("Payment failed!", "error");
                                 },
                                 onClose: function() {
-                                    self.notify("You closed the popup without finishing the payment.", "info");
+                                    notify("You closed the popup without finishing the payment.", "info");
                                 }
                             });
+                        } else if (data.redirect_url) {
+                            window.location.href = data.redirect_url;
                         } else {
-                            this.notify("Failed to initialize payment. Please try again.", "error");
+                            notify("Midtrans payment popup is not ready. Please refresh the page and try again.", "error");
                         }
-                    } catch (error) {
-                        console.error("Payment error:", error);
-                        this.notify("An error occurred. Please try again later.", "error");
-                    } finally {
-                        this.isProcessing = false;
+                    } else {
+                        notify(data.error || "Failed to initialize payment. Please try again.", "error");
                     }
+                } catch (error) {
+                    console.error("Payment error:", error);
+                    notify("An error occurred. Please try again later.", "error");
+                } finally {
+                    setProcessing(button, false);
                 }
-            }));
-        });
+            }
+
+            function bindPremiumPurchaseButton() {
+                document.querySelectorAll(purchaseButtonSelector).forEach((button) => {
+                    if (button.dataset.boundPayment === 'true') return;
+
+                    button.dataset.boundPayment = 'true';
+                    button.addEventListener('click', handlePremiumPurchase);
+                });
+            }
+
+            bindPremiumPurchaseButton();
+            document.addEventListener('DOMContentLoaded', bindPremiumPurchaseButton);
+            document.addEventListener('livewire:navigated', bindPremiumPurchaseButton);
+        })();
     </script>
 @endpush

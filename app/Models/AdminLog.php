@@ -17,7 +17,15 @@ class AdminLog extends Model
         'action',
         'target_type',
         'target_id',
+        'metadata',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'metadata' => 'array',
+        ];
+    }
 
     public function admin(): BelongsTo
     {

@@ -125,7 +125,8 @@ class ButtonLoadingBugFixTest extends TestCase
             ->get(route('user.upgrade-quota'));
 
         $response->assertOk();
-        $response->assertSee('paymentGateway', false);
+        $response->assertSee('handlePremiumPurchase', false);
+        $response->assertSee('addEventListener(\'click\', handlePremiumPurchase)', false);
     }
 
     public function test_upgrade_quota_alpine_init_registered_before_livewire_scripts(): void

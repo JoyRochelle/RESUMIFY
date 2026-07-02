@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Resumes\DuplicateResumeAction;
+use App\Actions\Resumes\UpdateResumeSectionAction;
+use App\Exceptions\ResumeQuotaExceededException;
 use App\Models\Cv;
 use App\Models\CvSection;
 use App\Models\CvTemplate;
@@ -10,6 +13,7 @@ use App\Http\Requests\UpdateResumeRequest;
 use App\Http\Requests\UpdateSectionRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use InvalidArgumentException;
 
 class ResumeController extends Controller
 {
@@ -177,19 +181,17 @@ class ResumeController extends Controller
      /**
      * Duplicate a resume and all its sections.
      */
-    public function duplicate(Cv $cv)
+    public function duplicate(Cv $cv, DuplicateResumeAction $duplicateResume)
     {
         Gate::authorize('view', $cv);
-        // Clone the resume
-        $newCv = $cv->replicate();
-        $newCv->title = $cv->title . ' (Copy)';
-        $newCv->save();
-        // Clone each section
-        foreach ($cv->sections as $section) {
-            $newSection = $section->replicate();
-            $newSection->cv_id = $newCv->id;
-            $newSection->save();
+
+        try {
+            $newCv = $duplicateResume->execute($cv);
+        } catch (ResumeQuotaExceededException $e) {
+            return redirect()->route('user.upgrade-quota')
+                ->with('error', $e->getMessage());
         }
+
         return redirect()->route('user.manuscript', ['cv_id' => $newCv->id])
                          ->with('success', 'Resume duplicated successfully!');
     }
@@ -197,7 +199,12 @@ class ResumeController extends Controller
     /**
      * Update a single section's content.
      */
-    public function updateSection(UpdateSectionRequest $request, Cv $cv, CvSection $section)
+    public function updateSection(
+        UpdateSectionRequest $request,
+        Cv $cv,
+        CvSection $section,
+        UpdateResumeSectionAction $updateResumeSection
+    )
     {
         Gate::authorize('update', $cv);
         abort_unless($section->cv_id === $cv->id, 404);
@@ -206,36 +213,19 @@ class ResumeController extends Controller
             'title' => ['sometimes', 'string', 'max:100'],
         ]);
 
-        $data = [
-            'title' => $request->input('title', $section->title),
-            'last_saved_at' => now(),
-        ];
-
-        if ($request->has('content')) {
-            $contentInput = $request->input('content');
-            // Content is already validated & sanitized by UpdateSectionRequest
-            if (is_string($contentInput) && !empty($contentInput)) {
-                $decoded = json_decode($contentInput, true);
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    return $request->wantsJson()
-                        ? response()->json(['success' => false, 'message' => 'Invalid JSON format.'], 422)
-                        : back()->withErrors(['content' => 'Invalid JSON format.']);
-                }
-                $data['content'] = $decoded;
-            } else {
-                $data['content'] = $contentInput;
-            }
+        try {
+            $result = $updateResumeSection->execute(
+                $cv,
+                $section,
+                $request->input('title'),
+                $request->input('content'),
+                $request->has('content')
+            );
+        } catch (InvalidArgumentException) {
+            return $request->wantsJson()
+                ? response()->json(['success' => false, 'message' => 'Invalid JSON format.'], 422)
+                : back()->withErrors(['content' => 'Invalid JSON format.']);
         }
-
-        $section->update($data);
-
-        // Also update cvs.job_target if the section being saved is target_job
-        if ($section->type === 'target_job' && isset($data['content']['job_title'])) {
-            $cv->update(['job_target' => $data['content']['job_title']]);
-        }
-
-        $atsResult = \App\Services\AtsScoreService::calculate($cv);
-        $cv->update(['ats_score' => $atsResult['score']]);
 
         if ($request->ajax() || $request->wantsJson()) {
             $cv->refresh(); // ensure the latest data is loaded
@@ -243,9 +233,9 @@ class ResumeController extends Controller
             return response()->json([
                 'success' => true, 
                 'saved_at' => now()->format('H:i:s'),
-                'ats_score' => $atsResult['score'],
-                'ats_matched' => $atsResult['matched'],
-                'section' => $section,
+                'ats_score' => $result['ats_score'],
+                'ats_matched' => $result['ats_matched'],
+                'section' => $result['section'],
                 'html' => $html
             ]);
         }

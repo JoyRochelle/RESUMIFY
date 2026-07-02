@@ -81,4 +81,82 @@ class ResumeTest extends TestCase
             'title' => 'New Title',
         ]);
     }
+
+    public function test_basic_user_cannot_duplicate_resume_after_reaching_resume_limit(): void
+    {
+        $user = User::factory()->create(['role' => 'basic']);
+        $template = CvTemplate::first();
+
+        $cv = Cv::create([
+            'user_id' => $user->id,
+            'template_id' => $template->id,
+            'title' => 'Quota Limited Resume',
+            'status' => 'draft',
+        ]);
+
+        $response = $this->actingAs($user)->post(route('resumes.duplicate', $cv));
+
+        $response->assertRedirect(route('user.upgrade-quota'));
+        $response->assertSessionHas('error', 'Basic accounts can create 1 resume. Upgrade to Premium for unlimited resumes.');
+
+        $this->assertSame(1, $user->cvs()->count());
+        $this->assertDatabaseMissing('cvs', [
+            'user_id' => $user->id,
+            'title' => 'Quota Limited Resume (Copy)',
+        ]);
+    }
+
+    public function test_premium_user_can_duplicate_resume_with_sections(): void
+    {
+        $user = User::factory()->create(['role' => 'premium']);
+        $template = CvTemplate::first();
+
+        $cv = Cv::create([
+            'user_id' => $user->id,
+            'template_id' => $template->id,
+            'title' => 'Premium Resume',
+            'job_target' => 'Senior Laravel Engineer',
+            'company_target' => 'Resumify',
+            'status' => 'draft',
+        ]);
+
+        $cv->sections()->createMany([
+            [
+                'type' => 'personal_info',
+                'title' => 'Personal Info',
+                'content' => ['name' => 'Kenny'],
+                'order' => 1,
+            ],
+            [
+                'type' => 'skills',
+                'title' => 'Skills',
+                'content' => ['items' => ['Laravel', 'Testing']],
+                'order' => 2,
+            ],
+        ]);
+
+        $response = $this->actingAs($user)->post(route('resumes.duplicate', $cv));
+
+        $copy = Cv::where('user_id', $user->id)
+            ->where('title', 'Premium Resume (Copy)')
+            ->first();
+
+        $this->assertNotNull($copy);
+        $response->assertRedirect(route('user.manuscript', ['cv_id' => $copy->id]));
+        $response->assertSessionHas('success', 'Resume duplicated successfully!');
+
+        $copy->load('sections');
+
+        $this->assertSame($user->id, $copy->user_id);
+        $this->assertCount(2, $copy->sections);
+        $this->assertSame(
+            ['Personal Info', 'Skills'],
+            $copy->sections->pluck('title')->all()
+        );
+        $this->assertTrue(
+            $copy->sections->every(fn ($section) => $section->cv_id === $copy->id)
+        );
+        $this->assertDatabaseCount('cvs', 2);
+        $this->assertDatabaseCount('cv_sections', 4);
+    }
 }

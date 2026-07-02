@@ -7,6 +7,7 @@ use App\Models\SupportTicket;
 use App\Models\TicketReply;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
@@ -258,6 +259,35 @@ class HelpCenterTest extends TestCase
         $response = $this->actingAs($this->user)->get(route('help.tickets'));
 
         $this->assertLessThanOrEqual(10, $response->viewData('tickets')->count());
+    }
+
+    public function test_ticket_list_uses_bounded_queries_when_rendering_reply_counts(): void
+    {
+        SupportTicket::factory()
+            ->count(10)
+            ->create(['user_id' => $this->user->id])
+            ->each(function (SupportTicket $ticket): void {
+                TicketReply::create([
+                    'ticket_id' => $ticket->id,
+                    'user_id'   => $this->user->id,
+                    'body'      => 'Initial support message.',
+                ]);
+
+                TicketReply::create([
+                    'ticket_id' => $ticket->id,
+                    'user_id'   => $this->user->id,
+                    'body'      => 'Follow-up support message.',
+                ]);
+            });
+
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $this->actingAs($this->user)
+            ->get(route('help.tickets'))
+            ->assertOk();
+
+        $this->assertLessThanOrEqual(8, count(DB::getQueryLog()));
     }
 
     // =========================================================
