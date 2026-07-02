@@ -19,6 +19,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResumeController;
 use App\Http\Controllers\ResumeExportController;
 use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -70,6 +71,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Payment Routes
         Route::post('/payment/create', [PaymentController::class, 'create'])->name('payment.create');
+        Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');
 
         // Profile Management Routes
         Route::prefix('profile')->controller(ProfileController::class)->name('profile.')->group(function () {
