@@ -45,7 +45,7 @@
                    class="flex items-center justify-between px-6 py-5 border-b border-primary/5 hover:bg-surface/40 transition-colors last:border-b-0">
                     <div class="flex-1 min-w-0 mr-4">
                         <p class="text-sm font-label font-semibold text-primary truncate">{{ $ticket->subject }}</p>
-                        <p class="text-[11px] font-label text-primary/40 mt-0.5">{{ $ticket->created_at->diffForHumans() }} &middot; {{ $ticket->replies->count() }} {{ Str::plural('reply', $ticket->replies->count()) }}</p>
+                        <p class="text-[11px] font-label text-primary/40 mt-0.5">{{ $ticket->created_at->diffForHumans() }} &middot; {{ $ticket->replies_count }} {{ Str::plural('reply', $ticket->replies_count) }}</p>
                     </div>
                     <div class="flex items-center space-x-3 flex-shrink-0">
                         <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $badgeMap[$ticket->status] ?? '' }}">

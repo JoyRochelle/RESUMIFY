@@ -53,6 +53,7 @@ class HelpController extends Controller
     {
         $tickets = auth()->user()
             ->supportTickets()
+            ->withCount('replies')
             ->latest()
             ->paginate(10);
 

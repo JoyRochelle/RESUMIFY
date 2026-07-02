@@ -18,15 +18,20 @@ class SupportTicketController extends Controller
         $status  = $request->input('status');
         $search  = $request->input('search');
 
-        $tickets = SupportTicket::with(['user:id,name,email', 'assignedAdmin:id,name'])
+        $tickets = SupportTicket::query()
+            ->with(['user:id,name,email', 'assignedAdmin:id,name'])
             ->when($status, fn($q) => $q->where('status', $status))
-            ->when($search, fn($q, $s) =>
-                $q->whereHas('user', fn($q2) =>
-                    $q2->where('name', 'like', "%{$s}%")
-                       ->orWhere('email', 'like', "%{$s}%")
-                )
-                ->orWhere('subject', 'like', "%{$s}%")
-            )
+            ->when($search, function ($query, string $search): void {
+                $likeSearch = "%{$search}%";
+
+                $query->where(function ($query) use ($likeSearch): void {
+                    $query->whereHas('user', function ($userQuery) use ($likeSearch): void {
+                        $userQuery
+                            ->where('name', 'like', $likeSearch)
+                            ->orWhere('email', 'like', $likeSearch);
+                    })->orWhere('subject', 'like', $likeSearch);
+                });
+            })
             ->latest()
             ->paginate(20)
             ->withQueryString();
