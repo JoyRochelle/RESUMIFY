@@ -34,6 +34,7 @@ class ManuscriptAtsController extends Controller
         
         $targetJob = $cv->sections->where('type', 'target_job')->first();
         $jobTitle = $targetJob->content['job_title'] ?? null;
+        $jobCompany = $targetJob->content['job_company'] ?? null;
         $jobDescription = $targetJob->content['job_description'] ?? null;
 
         if (strlen(trim($resumeText)) < 30) {
@@ -41,7 +42,7 @@ class ManuscriptAtsController extends Controller
         }
 
         try {
-            $data = $this->aiService->scoreResume($resumeText, $jobTitle, $jobDescription);
+            $data = $this->aiService->scoreResume($resumeText, $jobTitle, $jobCompany, $jobDescription);
 
             // Clamp score to 0-100
             $data['score'] = max(0, min(100, (int) ($data['score'] ?? 0)));

@@ -38,7 +38,21 @@ class ResumeController extends Controller
      */
     public function store(StoreResumeRequest $request)
     {
-        $cv = auth()->user()->cvs()->create($request->validated());
+        $user = auth()->user();
+        $data = $request->validated();
+        $template = CvTemplate::findOrFail($data['template_id']);
+
+        if (!$user->canCreateResume()) {
+            return redirect()->route('user.upgrade-quota')
+                ->with('error', 'Basic accounts can create 1 resume. Upgrade to Premium for unlimited resumes.');
+        }
+
+        if ($template->is_premium && !$user->canUsePremiumFeature('premium_templates')) {
+            return redirect()->route('user.upgrade-quota')
+                ->with('error', 'Premium templates are locked on Basic. Upgrade to unlock this design.');
+        }
+
+        $cv = $user->cvs()->create($data);
 
         // auto create the 4 default sections
         $cv->sections()->createMany([
@@ -49,7 +63,7 @@ class ResumeController extends Controller
             ['type' => 'target_job',      'title' => 'Target Job',      'content' => null, 'order' => 5],
         ]);
 
-        return redirect()->route('user.manuscript')->with('success', 'Resume Created Successfully!');
+        return redirect()->route('user.manuscript', ['cv_id' => $cv->id])->with('success', 'Resume Created Successfully!');
     }
 
     /**
@@ -85,15 +99,36 @@ class ResumeController extends Controller
     public function update(UpdateResumeRequest $request, Cv $cv)
     {
         Gate::authorize('update', $cv);
+        $data = $request->validated();
+
+        if (isset($data['template_id'])) {
+            $template = CvTemplate::findOrFail($data['template_id']);
+
+            if ($template->is_premium && !auth()->user()->canUsePremiumFeature('premium_templates')) {
+                $payload = [
+                    'success' => false,
+                    'error' => 'premium_required',
+                    'message' => 'Upgrade to Premium to unlock this template.',
+                    'upgrade_url' => route('user.upgrade-quota'),
+                ];
+
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json($payload, 402);
+                }
+
+                return redirect()->route('user.upgrade-quota')->with('error', $payload['message']);
+            }
+        }
+
         if ($request->ajax()) {
-            $cv->update($request->validated());
+            $cv->update($data);
             return response()->json([
                 'success' => true,
                 'message' => 'Resume updated successfully.',
             ]);
         }
         // Regular form update
-        $cv->update($request->validated());
+        $cv->update($data);
         return redirect()->route('user.manuscript', ['cv_id' => $cv->id])
                          ->with('success', 'Resume updated successfully!');
 
@@ -110,6 +145,35 @@ class ResumeController extends Controller
                          ->with('success', 'Resume deleted successfully!');
     }
 
+    /**
+     * Update the resume's template.
+     */
+    public function updateTemplate(Request $request, Cv $cv)
+    {
+        Gate::authorize('update', $cv);
+        
+        $request->validate([
+            'template_id' => 'required|exists:cv_templates,id',
+        ]);
+
+        $template = CvTemplate::findOrFail($request->template_id);
+
+        if ($template->is_premium && !auth()->user()->canUsePremiumFeature('premium_templates')) {
+            return response()->json([
+                'success' => false,
+                'error' => 'premium_required',
+                'message' => 'Upgrade to Premium to unlock this template.',
+                'upgrade_url' => route('user.upgrade-quota'),
+            ], 402);
+        }
+        
+        $cv->update(['template_id' => $request->template_id]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Template updated successfully.'
+        ]);
+    }
      /**
      * Duplicate a resume and all its sections.
      */
@@ -170,8 +234,8 @@ class ResumeController extends Controller
             $cv->update(['job_target' => $data['content']['job_title']]);
         }
 
-        $atsScore = \App\Services\AtsScoreService::calculate($cv);
-        $cv->update(['ats_score' => $atsScore]);
+        $atsResult = \App\Services\AtsScoreService::calculate($cv);
+        $cv->update(['ats_score' => $atsResult['score']]);
 
         if ($request->ajax() || $request->wantsJson()) {
             $cv->refresh(); // ensure the latest data is loaded
@@ -179,7 +243,8 @@ class ResumeController extends Controller
             return response()->json([
                 'success' => true, 
                 'saved_at' => now()->format('H:i:s'),
-                'ats_score' => $atsScore,
+                'ats_score' => $atsResult['score'],
+                'ats_matched' => $atsResult['matched'],
                 'section' => $section,
                 'html' => $html
             ]);

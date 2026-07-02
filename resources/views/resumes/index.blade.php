@@ -3,50 +3,62 @@
 @section('title', 'My Resumes - Resumify')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-md-10">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>My Resumes</h2>
-            <a href="{{ route('resumes.create') }}" class="btn btn-primary">+ New Resume</a>
-        </div>
+    <main class="flex-1 p-4 sm:p-6 md:p-12 max-w-7xl mx-auto w-full pb-24 md:pb-12">
+        <x-user.page-header title="My Resumes" :back-url="route('dashboard')">
+            <a href="{{ route('resumes.create') }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-tertiary transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-secondary/40">
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">add</span>
+                New Resume
+            </a>
+        </x-user.page-header>
 
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
+        <section class="mt-8 space-y-6">
+            @if(session('success'))
+                <x-ui.alert variant="success">{{ session('success') }}</x-ui.alert>
+            @endif
 
-        @if($resumes->isEmpty())
-            <p class="text-muted">You haven't created any resumes yet.</p>
-        @else
-            <div class="row">
-                @foreach($resumes as $resume)
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $resume->title }}</h5>
-                            <p class="text-muted small">
-                                Updated {{ $resume->updated_at->diffForHumans() }}
-                            </p>
-                        </div>
-                        <div class="card-footer bg-transparent d-flex gap-2">
-                            <a href="{{ route('resumes.show', $resume) }}" class="btn btn-sm btn-outline-secondary">View</a>
-                            <a href="{{ route('resumes.edit', $resume) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+            @if($resumes->isEmpty())
+                <x-ui.empty-state
+                    icon="description"
+                    title="Create your first resume"
+                    description="Start with a template, then tailor your content for the role you want."
+                    :action-url="route('resumes.create')"
+                    action-label="Create Resume"
+                />
+            @else
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    @foreach($resumes as $resume)
+                        <article class="rounded-lg border border-primary/10 bg-tertiary p-5 shadow-sm transition hover:shadow-lg">
+                            <div class="flex items-start justify-between gap-4">
+                                <div>
+                                    <h2 class="font-headline text-xl font-bold text-primary">{{ $resume->title }}</h2>
+                                    <p class="mt-1 text-sm text-primary/60">Updated {{ $resume->updated_at->diffForHumans() }}</p>
+                                </div>
+                                <span class="rounded-full bg-secondary/10 px-3 py-1 text-xs font-bold text-secondary">
+                                    {{ $resume->template->name ?? 'No template' }}
+                                </span>
+                            </div>
 
-                            <form action="{{ route('resumes.duplicate', $resume) }}" method="POST">
-                                @csrf
-                                <button class="btn btn-sm btn-outline-info">Duplicate</button>
-                            </form>
-
-                            <form action="{{ route('resumes.destroy', $resume) }}" method="POST"
-                                  onsubmit="return confirm('Delete this resume?')">
-                                @csrf @method('DELETE')
-                                <button class="btn btn-sm btn-outline-danger">Delete</button>
-                            </form>
-                        </div>
-                    </div>
+                            <div class="mt-6 flex flex-wrap items-center gap-2 border-t border-primary/10 pt-4">
+                                <a href="{{ route('resumes.show', $resume) }}" class="inline-flex min-h-11 items-center rounded-lg border border-primary/15 px-4 py-2 text-sm font-bold text-primary transition hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">View</a>
+                                <a href="{{ route('resumes.edit', $resume) }}" class="inline-flex min-h-11 items-center rounded-lg bg-primary px-4 py-2 text-sm font-bold text-tertiary transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-secondary/40">Edit</a>
+                                <form action="{{ route('resumes.duplicate', $resume) }}" method="POST">
+                                    @csrf
+                                    <x-ui.loading-button variant="outline" loading-text="Duplicating...">Duplicate</x-ui.loading-button>
+                                </form>
+                                <form action="{{ route('resumes.destroy', $resume) }}" method="POST" x-data="{ confirming: false }">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" x-show="!confirming" x-on:click="confirming = true" class="inline-flex min-h-11 items-center rounded-lg border border-red-200 px-4 py-2 text-sm font-bold text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-300">Delete</button>
+                                    <div x-show="confirming" class="flex items-center gap-2" style="display:none">
+                                        <button type="button" x-on:click="confirming = false" class="inline-flex min-h-11 items-center rounded-lg px-3 py-2 text-sm font-bold text-primary/60 hover:bg-primary/5">Cancel</button>
+                                        <x-ui.loading-button variant="danger" loading-text="Deleting...">Confirm</x-ui.loading-button>
+                                    </div>
+                                </form>
+                            </div>
+                        </article>
+                    @endforeach
                 </div>
-                @endforeach
-            </div>
-        @endif
-    </div>
-</div>
+            @endif
+        </section>
+    </main>
 @endsection

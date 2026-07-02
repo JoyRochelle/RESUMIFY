@@ -19,6 +19,7 @@ class CvTemplate extends Model
         'name',
         'blade_path',
         'category',
+        'experience_level',
         'description',
         'badge',
         'badge_color',

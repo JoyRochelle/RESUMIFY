@@ -9,8 +9,8 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
 
         <!-- Total Revenue -->
-        <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-4">Total Revenue</h3>
+        <div class="admin-card-pad">
+            <h3 class="admin-section-title mb-4">Total Revenue</h3>
             <div class="text-3xl font-headline text-primary mb-4">
                 Rp {{ number_format($totalRevenue, 0, ',', '.') }}
             </div>
@@ -31,8 +31,8 @@
         </div>
 
         <!-- AI API Costs -->
-        <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-4">AI API Costs</h3>
+        <div class="admin-card-pad">
+            <h3 class="admin-section-title mb-4">AI API Costs</h3>
             <div class="flex items-end mb-4">
                 <span class="text-3xl font-headline text-primary mr-2">${{ number_format($aiCostUsd, 2) }}</span>
                 <span class="text-sm font-label text-primary/40 mb-1">this month</span>
@@ -46,8 +46,8 @@
         </div>
 
         <!-- Open Support Tickets -->
-        <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-4">Open Support Tickets</h3>
+        <div class="admin-card-pad">
+            <h3 class="admin-section-title mb-4">Open Support Tickets</h3>
             <div class="text-3xl font-headline text-primary mb-4">{{ $openTickets }}</div>
             <div class="flex items-center">
                 @if($openTickets === 0)
@@ -60,7 +60,7 @@
         </div>
 
         <!-- System Health -->
-        <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
+        <div class="admin-card-pad">
             <h3 class="text-[10px] font-label text-secondary uppercase tracking-widest mb-4">System Health</h3>
             @if($sentryErrors === null)
                 <div class="flex items-center text-3xl font-headline text-primary mb-4">
@@ -89,7 +89,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         <!-- Main Chart -->
-        <div class="lg:col-span-2 bg-white rounded-3xl p-8 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
+        <div class="lg:col-span-2 bg-tertiary rounded-lg p-8 shadow-sm border border-primary/10">
             <div class="flex justify-between items-center mb-8">
                 <div>
                     <h2 class="text-xl font-headline font-bold text-primary">New Users vs AI Calls</h2>
@@ -97,11 +97,11 @@
                 </div>
                 <div class="flex space-x-4">
                     <div class="flex items-center">
-                        <div class="w-2 h-2 rounded-full bg-[#4f3b2f] mr-2"></div>
+                        <div class="w-2 h-2 rounded-full bg-primary mr-2"></div>
                         <span class="text-[10px] font-label font-bold text-primary">New Users</span>
                     </div>
                     <div class="flex items-center">
-                        <div class="w-2 h-2 rounded-full bg-[#0F6E56] mr-2"></div>
+                        <div class="w-2 h-2 rounded-full bg-secondary mr-2"></div>
                         <span class="text-[10px] font-label font-bold text-primary">AI Calls</span>
                     </div>
                 </div>
@@ -112,11 +112,11 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-surface-container-low rounded-3xl p-8 border border-primary/5">
+        <div class="bg-surface-container-low rounded-lg p-8 border border-primary/10">
             <h2 class="text-xl font-headline text-primary mb-6">Quick Actions</h2>
             <div class="space-y-4 mb-8">
                 <a href="{{ Route::has('admin.reports') ? route('admin.reports') : '#' }}"
-                   class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
+                   class="w-full bg-tertiary rounded-lg p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
                     <div class="flex items-center space-x-3 text-primary">
                         <span class="material-symbols-outlined text-[20px]">description</span>
                         <span class="text-sm font-label font-bold">Generate Report</span>
@@ -124,7 +124,7 @@
                     <span class="material-symbols-outlined text-primary/40 group-hover:text-primary transition-colors text-[20px]">chevron_right</span>
                 </a>
                 <a href="{{ route('admin.templates.create') }}"
-                   class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
+                   class="w-full bg-tertiary rounded-lg p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
                     <div class="flex items-center space-x-3 text-primary">
                         <span class="material-symbols-outlined text-[20px]">add_circle</span>
                         <span class="text-sm font-label font-bold">Add New Template</span>
@@ -132,7 +132,7 @@
                     <span class="material-symbols-outlined text-primary/40 group-hover:text-primary transition-colors text-[20px]">chevron_right</span>
                 </a>
                 <a href="{{ Route::has('admin.monitor') ? route('admin.monitor') : '#' }}"
-                   class="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
+                   class="w-full bg-tertiary rounded-lg p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
                     <div class="flex items-center space-x-3 text-primary">
                         <span class="material-symbols-outlined text-[20px]">monitor_heart</span>
                         <span class="text-sm font-label font-bold">System Monitor</span>
@@ -140,7 +140,7 @@
                     <span class="material-symbols-outlined text-primary/40 group-hover:text-primary transition-colors text-[20px]">chevron_right</span>
                 </a>
             </div>
-            <div class="bg-white p-5 rounded-xl text-[11px] font-headline text-primary/60 italic leading-relaxed border border-primary/5">
+            <div class="bg-tertiary p-5 rounded-lg text-[11px] font-headline text-primary/60 italic leading-relaxed border border-primary/10">
                 "{{ $premiumUsers }} premium users are trusting Resumify right now."
             </div>
         </div>
@@ -151,7 +151,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pb-10">
 
         <!-- Recent User Activity -->
-        <div class="bg-white rounded-3xl p-8 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
+        <div class="bg-tertiary rounded-lg p-8 shadow-sm border border-primary/10">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-lg font-headline text-primary">Recent Signups</h2>
                 <a href="{{ route('admin.users') }}" class="text-[10px] font-label text-secondary hover:underline">View all</a>
@@ -181,7 +181,7 @@
         </div>
 
         <!-- Support Queue -->
-        <div class="bg-white rounded-3xl p-8 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
+        <div class="bg-tertiary rounded-lg p-8 shadow-sm border border-primary/10">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-lg font-headline text-primary">Support Queue</h2>
                 <a href="{{ route('admin.support') }}" class="text-[10px] font-label text-secondary hover:underline">View all</a>
@@ -189,7 +189,7 @@
             <div class="space-y-4">
                 @forelse($recentTickets as $ticket)
                     <a href="{{ Route::has('admin.support.show') ? route('admin.support.show', $ticket) : '#' }}"
-                       class="block bg-surface p-4 rounded-xl border border-primary/5 hover:border-primary/20 transition-colors">
+                       class="block bg-surface p-4 rounded-lg border border-primary/10 hover:border-primary/20 transition-colors">
                         <div class="flex justify-between items-start mb-1">
                             <p class="text-xs font-label font-bold text-primary truncate max-w-[160px]">{{ $ticket->subject }}</p>
                             <span class="text-[9px] text-primary/40 ml-2 shrink-0">{{ $ticket->created_at->diffForHumans(null, true) }}</span>
@@ -206,7 +206,7 @@
         </div>
 
         <!-- Template Performance -->
-        <div class="bg-white rounded-3xl p-8 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
+        <div class="bg-tertiary rounded-lg p-8 shadow-sm border border-primary/10">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-lg font-headline text-primary">Template Usage</h2>
                 <a href="{{ route('admin.templates.index') }}" class="text-[10px] font-label text-secondary hover:underline">Manage</a>

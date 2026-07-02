@@ -5,6 +5,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Resumify')</title>
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/logo.jpg') }}">
     
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
@@ -17,7 +18,9 @@
     
     @include('layouts.user.sidenavbar')
 
-    @yield('content')
+    <div class="flex-1 w-full md:pl-64 min-h-screen flex flex-col">
+        @yield('content')
+    </div>
 
     @include('layouts.user.mobilenavbar')
 

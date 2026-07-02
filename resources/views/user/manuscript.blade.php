@@ -5,13 +5,29 @@
 @section('body_class', 'h-screen flex overflow-hidden')
 
 @section('content')
+    @php
+        $user = auth()->user();
+    @endphp
+
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         
         {{-- Page Header --}}
-        <x-user.page-header title="Editor: Senior Product Designer">
+        <x-user.page-header title="Editor: {{ $cv->title ?? 'Untitled Resume' }}" backUrl="{{ route('dashboard') }}">
             <x-user.button type="button" onclick="openCvVersionsModal()" variant="outline" icon="auto_awesome" class="text-sm px-3 hidden sm:flex text-secondary border-secondary hover:bg-secondary/10">Tailor CV</x-user.button>
-            <x-user.button onclick="previewPdf('{{ auth()->user()->cvs()->latest()->first()->id ?? 1 }}')" variant="ghost" class="text-sm px-3 hidden sm:flex">Preview</x-user.button>
-            <x-user.button id="download-btn" onclick="downloadPdf('{{ auth()->user()->cvs()->latest()->first()->id ?? 1 }}')" variant="primary" icon="download" iconClass="text-[18px]" class="text-sm px-3 w-full sm:w-auto justify-center">Download PDF</x-user.button>
+            <x-user.button onclick="previewPdf('{{ $cv->id ?? '' }}')" variant="ghost" class="text-sm px-3 hidden sm:flex">Preview</x-user.button>
+            @if($user->canUsePremiumFeature('pdf_export'))
+                <x-user.button id="download-btn" onclick="downloadPdf('{{ $cv->id ?? '' }}')" variant="primary" icon="download" iconClass="text-[18px]" class="text-sm px-3 w-full sm:w-auto justify-center">Download PDF</x-user.button>
+            @else
+                <x-user.premium-lock
+                    title="Premium PDF export"
+                    description="Export polished, high-quality PDFs for applications and recruiter sharing."
+                    align="right">
+                    <span class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-[#A16207]/25 bg-[#A16207]/10 px-4 py-2 text-sm font-bold text-[#7C4A03] sm:w-auto">
+                        <span class="material-symbols-outlined text-[18px] icon-filled" aria-hidden="true">lock</span>
+                        Download PDF
+                    </span>
+                </x-user.premium-lock>
+            @endif
         </x-user.page-header>
 
         {{-- Mobile tab bar (hidden on lg+) --}}
@@ -50,8 +66,24 @@
                         $langsContent = $languages ? ($languages->content ?? []) : [];
                     @endphp
 
+                    <!-- Target Job (for ATS scoring) -->
+                    <x-user.editor-accordion title="Target Job" icon="target" :isOpen="true">
+                        <form class="section-form" data-section-id="{{ $targetJob->id ?? '' }}">
+                            <div class="grid grid-cols-1 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <x-user.form-input label="Target Job Title" name="job_title" value="{{ $targetJobContent['job_title'] ?? '' }}" class="auto-save" placeholder="e.g. Senior Software Engineer" />
+                                    <x-user.form-input label="Target Company" name="job_company" value="{{ $targetJobContent['job_company'] ?? '' }}" class="auto-save" placeholder="e.g. Acme Corp" />
+                                </div>
+                                <div class="relative group mt-2">
+                                    <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Job Description</label>
+                                    <textarea name="job_description" class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="6" placeholder="Paste the job description here to see how well your resume matches...">{{ $targetJobContent['job_description'] ?? '' }}</textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </x-user.editor-accordion>
+                    
                     <!-- Personal Info -->
-                    <x-user.editor-accordion title="Personal Info" icon="person" :isOpen="true">
+                    <x-user.editor-accordion title="Personal Info" icon="person">
                         <form class="section-form" data-section-id="{{ $personal->id ?? '' }}">
                             <div class="grid grid-cols-1 gap-4">
                                 <x-user.form-input label="Full Name" name="name" value="{{ $personalContent['name'] ?? '' }}" class="auto-save" :required="true" placeholder="e.g. John Doe" />
@@ -97,19 +129,39 @@
                                     <textarea name="summary" placeholder="Write 2–4 sentences about your background, key skills, and career goals..." class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="5">{{ $personalContent['summary'] ?? '' }}</textarea>
                                     <button type="button" onclick="openRefineModal(this)" class="absolute bottom-3 right-3 text-[10px] font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-2 py-1 rounded transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[12px]">auto_awesome</span>Refine</button>
                                 </div>
-                            </div>
-                        </form>
-                    </x-user.editor-accordion>
-                    
-                    <!-- Target Job (for ATS scoring) -->
-                    <x-user.editor-accordion title="Target Job" icon="target">
-                        <form class="section-form" data-section-id="{{ $targetJob->id ?? '' }}">
-                            <div class="grid grid-cols-1 gap-4">
-                                <x-user.form-input label="Target Job Title" name="job_title" value="{{ $targetJobContent['job_title'] ?? '' }}" class="auto-save" placeholder="e.g. Senior Software Engineer" />
-                                <div class="relative group mt-2">
-                                    <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Job Description</label>
-                                    <textarea name="job_description" class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="6" placeholder="Paste the job description here to see how well your resume matches...">{{ $targetJobContent['job_description'] ?? '' }}</textarea>
+
+                                {{-- Photo Upload: only shown when template supports show_photo --}}
+                                @if($cv && !empty($cv->template->style_config['show_photo']))
+                                <div id="photo-upload-section" class="mt-2">
+                                    <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[14px]">photo_camera</span>
+                                        Profile Photo
+                                    </label>
+                                    <div class="flex items-center gap-4">
+                                        <div id="photo-preview-wrap" class="w-20 h-20 rounded-full overflow-hidden border-2 border-primary/15 bg-surface-container-low flex items-center justify-center shrink-0">
+                                            @if(!empty($personalContent['photo']))
+                                                <img id="photo-preview-img" src="{{ $personalContent['photo'] }}" class="w-full h-full object-cover" alt="Profile">
+                                            @else
+                                                <span id="photo-placeholder-icon" class="material-symbols-outlined text-[32px] text-primary/20">person</span>
+                                                <img id="photo-preview-img" src="" class="w-full h-full object-cover hidden" alt="Profile">
+                                            @endif
+                                        </div>
+                                        <div class="flex-1">
+                                            <label for="photo-file-input" class="block w-full cursor-pointer text-center py-2.5 px-3 rounded-xl border border-dashed border-secondary/40 text-secondary hover:bg-secondary/5 text-xs font-bold transition-colors">
+                                                <span class="material-symbols-outlined text-[14px] align-middle mr-1">upload</span>
+                                                {{ !empty($personalContent['photo']) ? 'Change Photo' : 'Upload Photo' }}
+                                            </label>
+                                            <input id="photo-file-input" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" onchange="handlePhotoUpload(this)">
+                                            <input type="hidden" name="photo" id="photo-hidden-input" value="{{ $personalContent['photo'] ?? '' }}">
+                                            @if(!empty($personalContent['photo']))
+                                            <button type="button" onclick="removePhoto()" class="mt-2 w-full text-[11px] text-red-400 hover:text-red-500 transition-colors text-center">Remove photo</button>
+                                            @else
+                                            <p class="text-[11px] text-primary/40 mt-1.5 text-center leading-tight">JPG, PNG, WebP · Max 2MB</p>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
+                                @endif
                             </div>
                         </form>
                     </x-user.editor-accordion>
@@ -221,8 +273,12 @@
                         <form class="section-form" data-section-id="{{ $skills->id ?? '' }}">
                             <div class="grid grid-cols-1 gap-4" id="skills-list">
                                 @forelse($skillsContent as $index => $skill)
-                                <div class="list-item flex gap-4 items-center group">
-                                    <div class="flex-1">
+                                <div class="list-item border border-primary/10 p-4 rounded-xl bg-surface relative group transition-all hover:border-primary/20">
+                                    <button type="button" onclick="removeListItem(this)" class="absolute -top-3 -right-3 bg-tertiary border border-primary/20 text-primary rounded-full w-7 h-7 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:text-red-500 hover:border-red-200 z-10">
+                                        <span class="material-symbols-outlined text-[16px]">close</span>
+                                    </button>
+                                    <div class="flex gap-4 items-center w-full">
+                                        <div class="flex-1">
                                         <x-user.form-input label="Skill Name" name="name" value="{{ $skill['name'] ?? '' }}" class="auto-save" />
                                     </div>
                                     <div class="flex-1">
@@ -236,13 +292,15 @@
                                         </select>
                                     </div>
                                     </div>
-                                    <button type="button" onclick="removeListItem(this)" class="text-primary/30 hover:text-red-500 transition-colors mt-6 opacity-0 group-hover:opacity-100">
-                                        <span class="material-symbols-outlined text-[24px]">delete</span>
-                                    </button>
+                                    </div>
                                 </div>
                                 @empty
-                                <div class="list-item flex gap-4 items-center group">
-                                    <div class="flex-1">
+                                <div class="list-item border border-primary/10 p-4 rounded-xl bg-surface relative group transition-all hover:border-primary/20">
+                                    <button type="button" onclick="removeListItem(this)" class="absolute -top-3 -right-3 bg-tertiary border border-primary/20 text-primary rounded-full w-7 h-7 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:text-red-500 hover:border-red-200 z-10">
+                                        <span class="material-symbols-outlined text-[16px]">close</span>
+                                    </button>
+                                    <div class="flex gap-4 items-center w-full">
+                                        <div class="flex-1">
                                         <x-user.form-input label="Skill Name" name="name" value="" class="auto-save" />
                                     </div>
                                     <div class="flex-1">
@@ -256,9 +314,7 @@
                                         </select>
                                     </div>
                                     </div>
-                                    <button type="button" onclick="removeListItem(this)" class="text-primary/30 hover:text-red-500 transition-colors mt-6 opacity-0 group-hover:opacity-100">
-                                        <span class="material-symbols-outlined text-[24px]">delete</span>
-                                    </button>
+                                    </div>
                                 </div>
                                 @endforelse
                             </div>
@@ -275,26 +331,26 @@
                         <form class="section-form" data-section-id="{{ $certifications->id }}">
                             <div class="space-y-6" id="certifications-list">
                                 @forelse($certsContent as $index => $cert)
-                                <div class="list-item group relative pl-4 border-l-2 border-primary/10 hover:border-secondary transition-colors">
+                                <div class="list-item border border-primary/10 p-4 rounded-xl bg-surface relative group transition-all hover:border-primary/20">
+                                    <button type="button" onclick="removeListItem(this)" class="absolute -top-3 -right-3 bg-tertiary border border-primary/20 text-primary rounded-full w-7 h-7 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:text-red-500 hover:border-red-200 z-10">
+                                        <span class="material-symbols-outlined text-[16px]">close</span>
+                                    </button>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <x-user.form-input label="Certification Name" name="name" value="{{ $cert['name'] ?? '' }}" class="auto-save" />
                                         <x-user.form-input label="Issuer" name="issuer" value="{{ $cert['issuer'] ?? '' }}" class="auto-save" />
                                         <x-user.form-input label="Date" name="date" value="{{ $cert['date'] ?? '' }}" class="auto-save" type="month" />
                                     </div>
-                                    <button type="button" onclick="removeListItem(this)" class="absolute -left-3 top-0 bg-surface rounded-full text-primary/30 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
-                                        <span class="material-symbols-outlined text-[20px]">remove_circle</span>
-                                    </button>
                                 </div>
                                 @empty
-                                <div class="list-item group relative pl-4 border-l-2 border-primary/10 hover:border-secondary transition-colors">
+                                <div class="list-item border border-primary/10 p-4 rounded-xl bg-surface relative group transition-all hover:border-primary/20">
+                                    <button type="button" onclick="removeListItem(this)" class="absolute -top-3 -right-3 bg-tertiary border border-primary/20 text-primary rounded-full w-7 h-7 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:text-red-500 hover:border-red-200 z-10">
+                                        <span class="material-symbols-outlined text-[16px]">close</span>
+                                    </button>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <x-user.form-input label="Certification Name" name="name" value="" class="auto-save" />
                                         <x-user.form-input label="Issuer" name="issuer" value="" class="auto-save" />
                                         <x-user.form-input label="Date" name="date" value="" class="auto-save" type="month" />
                                     </div>
-                                    <button type="button" onclick="removeListItem(this)" class="absolute -left-3 top-0 bg-surface rounded-full text-primary/30 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
-                                        <span class="material-symbols-outlined text-[20px]">remove_circle</span>
-                                    </button>
                                 </div>
                                 @endforelse
                             </div>
@@ -316,7 +372,10 @@
                         <form class="section-form" data-section-id="{{ $projects->id }}">
                             <div class="space-y-6" id="projects-list">
                                 @forelse($projectsContent as $index => $project)
-                                <div class="list-item group relative pl-4 border-l-2 border-primary/10 hover:border-secondary transition-colors">
+                                <div class="list-item border border-primary/10 p-4 rounded-xl bg-surface relative group transition-all hover:border-primary/20">
+                                    <button type="button" onclick="removeListItem(this)" class="absolute -top-3 -right-3 bg-tertiary border border-primary/20 text-primary rounded-full w-7 h-7 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:text-red-500 hover:border-red-200 z-10">
+                                        <span class="material-symbols-outlined text-[16px]">close</span>
+                                    </button>
                                     <div class="grid grid-cols-1 gap-4">
                                         <x-user.form-input label="Project Name" name="name" value="{{ $project['name'] ?? '' }}" class="auto-save" />
                                         <x-user.form-input label="Project URL (Optional)" name="url" value="{{ $project['url'] ?? '' }}" class="auto-save" />
@@ -326,12 +385,12 @@
                                             <button type="button" onclick="openRefineModal(this)" class="absolute bottom-3 right-3 text-[10px] font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-2 py-1 rounded transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[12px]">auto_awesome</span>Refine</button>
                                         </div>
                                     </div>
-                                    <button type="button" onclick="removeListItem(this)" class="absolute -left-3 top-0 bg-surface rounded-full text-primary/30 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
-                                        <span class="material-symbols-outlined text-[20px]">remove_circle</span>
-                                    </button>
                                 </div>
                                 @empty
-                                <div class="list-item group relative pl-4 border-l-2 border-primary/10 hover:border-secondary transition-colors">
+                                <div class="list-item border border-primary/10 p-4 rounded-xl bg-surface relative group transition-all hover:border-primary/20">
+                                    <button type="button" onclick="removeListItem(this)" class="absolute -top-3 -right-3 bg-tertiary border border-primary/20 text-primary rounded-full w-7 h-7 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:text-red-500 hover:border-red-200 z-10">
+                                        <span class="material-symbols-outlined text-[16px]">close</span>
+                                    </button>
                                     <div class="grid grid-cols-1 gap-4">
                                         <x-user.form-input label="Project Name" name="name" value="" class="auto-save" />
                                         <x-user.form-input label="Project URL (Optional)" name="url" value="" class="auto-save" />
@@ -341,9 +400,6 @@
                                             <button type="button" onclick="openRefineModal(this)" class="absolute bottom-3 right-3 text-[10px] font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-2 py-1 rounded transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[12px]">auto_awesome</span>Refine</button>
                                         </div>
                                     </div>
-                                    <button type="button" onclick="removeListItem(this)" class="absolute -left-3 top-0 bg-surface rounded-full text-primary/30 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
-                                        <span class="material-symbols-outlined text-[20px]">remove_circle</span>
-                                    </button>
                                 </div>
                                 @endforelse
                             </div>
@@ -365,8 +421,12 @@
                         <form class="section-form" data-section-id="{{ $languages->id }}">
                             <div class="grid grid-cols-1 gap-4" id="languages-list">
                                 @forelse($langsContent as $index => $lang)
-                                <div class="list-item flex gap-4 items-center group">
-                                    <div class="flex-1">
+                                <div class="list-item border border-primary/10 p-4 rounded-xl bg-surface relative group transition-all hover:border-primary/20">
+                                    <button type="button" onclick="removeListItem(this)" class="absolute -top-3 -right-3 bg-tertiary border border-primary/20 text-primary rounded-full w-7 h-7 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:text-red-500 hover:border-red-200 z-10">
+                                        <span class="material-symbols-outlined text-[16px]">close</span>
+                                    </button>
+                                    <div class="flex gap-4 items-center w-full">
+                                        <div class="flex-1">
                                         <x-user.form-input label="Language" name="name" value="{{ $lang['name'] ?? '' }}" class="auto-save" />
                                     </div>
                                     <div class="flex-1">
@@ -380,13 +440,15 @@
                                         </select>
                                     </div>
                                     </div>
-                                    <button type="button" onclick="removeListItem(this)" class="text-primary/30 hover:text-red-500 transition-colors mt-6 opacity-0 group-hover:opacity-100">
-                                        <span class="material-symbols-outlined text-[24px]">delete</span>
-                                    </button>
+                                    </div>
                                 </div>
                                 @empty
-                                <div class="list-item flex gap-4 items-center group">
-                                    <div class="flex-1">
+                                <div class="list-item border border-primary/10 p-4 rounded-xl bg-surface relative group transition-all hover:border-primary/20">
+                                    <button type="button" onclick="removeListItem(this)" class="absolute -top-3 -right-3 bg-tertiary border border-primary/20 text-primary rounded-full w-7 h-7 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:text-red-500 hover:border-red-200 z-10">
+                                        <span class="material-symbols-outlined text-[16px]">close</span>
+                                    </button>
+                                    <div class="flex gap-4 items-center w-full">
+                                        <div class="flex-1">
                                         <x-user.form-input label="Language" name="name" value="" class="auto-save" />
                                     </div>
                                     <div class="flex-1">
@@ -400,9 +462,7 @@
                                         </select>
                                     </div>
                                     </div>
-                                    <button type="button" onclick="removeListItem(this)" class="text-primary/30 hover:text-red-500 transition-colors mt-6 opacity-0 group-hover:opacity-100">
-                                        <span class="material-symbols-outlined text-[24px]">delete</span>
-                                    </button>
+                                    </div>
                                 </div>
                                 @endforelse
                             </div>
@@ -454,11 +514,12 @@
             </aside>
 
             <main id="ms-panel-preview" class="w-full lg:w-[60%] lg:h-full bg-primary/5 flex-col items-center p-4 lg:p-8 lg:overflow-y-auto relative custom-scrollbar hidden lg:flex">
-                
-                <div class="w-full max-w-[794px] relative flex flex-col lg:my-auto shrink-0 mb-10 lg:mb-0">
-                    {{-- ATS Score Panel (Gemini-powered) --}}
-                    @if($cv)
-                    <div id="ats-panel" class="absolute -top-4 -right-4 bg-tertiary/95 backdrop-blur-xl px-4 pt-4 pb-3 rounded-2xl shadow-xl border border-primary/10 z-20 flex flex-col items-center min-w-[110px] transition-all duration-300 cursor-pointer" onclick="toggleAtsTip()">
+                {{-- ATS Score Panel (Gemini-powered) --}}
+                @if($cv)
+                <div id="ats-widget" class="absolute top-2 right-2 lg:top-2 lg:right-4 bg-tertiary/95 backdrop-blur-xl p-4 rounded-2xl shadow-xl border border-primary/10 z-30 flex flex-col items-center w-fit transition-all duration-300">
+                    
+                    {{-- Maximized Content --}}
+                    <div id="ats-maximized" class="flex flex-col items-center cursor-pointer w-full" onclick="toggleAtsMinimize(event)" title="Minimize">
                         <div class="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2 flex items-center gap-1">
                             <span class="material-symbols-outlined text-[12px]">analytics</span>ATS Score
                         </div>
@@ -469,21 +530,28 @@
                             </svg>
                             <span id="ats-score-num" class="absolute inset-0 flex items-center justify-center text-lg font-bold text-primary">—</span>
                         </div>
-                        <div id="ats-label" class="text-[10px] font-semibold mt-2 text-primary/50">—</div>
+                        <div id="ats-label" class="text-[10px] font-semibold mt-2 text-primary/50 text-center max-w-[120px]">—</div>
                         <div id="ats-loading" class="hidden mt-1">
                             <span class="material-symbols-outlined text-[16px] text-secondary animate-spin">progress_activity</span>
                         </div>
-                        <div id="ats-tip-card" class="hidden mt-3 pt-2 border-t border-primary/10 w-full max-w-[180px] text-left space-y-2">
-                            <p id="ats-tip-text" class="text-[11px] text-primary/70 leading-relaxed italic"></p>
-                            <div id="ats-improvements" class="space-y-1 text-[11px] text-primary/60"></div>
-                        </div>
                     </div>
-                    @else
-                    <div class="absolute -top-4 -right-4 bg-tertiary/90 backdrop-blur-xl p-4 rounded-2xl shadow-xl border border-primary/10 z-20 flex flex-col items-center">
-                        <div class="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">ATS Score</div>
-                        <x-user.score-circle :score="0" size="sm" :showPercent="false"/>
+
+                    {{-- Minimized Content --}}
+                    <div id="ats-minimized" class="hidden flex items-center gap-2 cursor-pointer px-2 py-1" onclick="toggleAtsMinimize(event)" title="Maximize">
+                        <span class="material-symbols-outlined text-secondary text-[20px]">analytics</span>
+                        <span id="ats-min-score" class="font-bold text-primary text-sm">—</span>
                     </div>
-                    @endif
+
+                </div>
+                @else
+                <div class="absolute top-2 right-2 lg:top-2 lg:right-4 bg-tertiary/90 backdrop-blur-xl p-4 rounded-2xl shadow-xl border border-primary/10 z-30 flex flex-col items-center w-fit">
+                    <div class="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">ATS Score</div>
+                    <x-user.score-circle :score="0" size="sm" :showPercent="false"/>
+                </div>
+                @endif
+                
+                <div class="w-full max-w-[794px] relative flex flex-col lg:my-auto shrink-0 mb-10 lg:mb-0 mt-20 lg:mt-0">
+
                     @if($cv)
                         <div class="w-full relative bg-tertiary shadow-xl rounded-sm border border-primary/10 z-10 overflow-hidden" id="preview-container" style="aspect-ratio: 210/297;">
                             <iframe id="resume-preview-iframe" src="{{ route('resumes.preview', $cv) }}" style="width: 794px; height: 1123px; transform-origin: 0 0; border: none; overflow: hidden;" class="pointer-events-none absolute top-0 left-0"></iframe>
@@ -581,19 +649,31 @@
     </div>
 
     {{-- Template Selection Modal --}}
-    <div id="template-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="opacity: 0; pointer-events: none;">
+    <div id="template-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="opacity: 0; pointer-events: none;"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="template-modal-title">
         <div class="bg-surface w-full max-w-4xl max-h-[80vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden mx-4 transform scale-95 transition-transform duration-300" id="template-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
-                <h3 class="text-xl font-headline font-bold text-primary flex items-center gap-2">
+                <h3 id="template-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
                     <span class="material-symbols-outlined text-secondary">layers</span> Select Template
                 </h3>
-                <button id="close-modal-btn" onclick="closeTemplateModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
+                <button id="close-modal-btn" type="button" onclick="closeTemplateModal()" aria-label="Close template selection" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div class="p-6 overflow-y-auto custom-scrollbar bg-surface flex-1">
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     @foreach($templates as $template)
+                    @php
+                        $isLockedTemplate = $template->is_premium && !$user->canUsePremiumFeature('premium_templates');
+                    @endphp
                     @if($cv)
-                        <div id="template-card-{{ $template->id }}" onclick="selectTemplate('{{ $template->id }}')" onmouseenter="previewTemplate('{{ $template->id }}')" onmouseleave="resetPreview()" class="template-card cursor-pointer group relative border @if($cv && $cv->template_id === $template->id) border-secondary bg-secondary/5 @else border-primary/10 @endif rounded-xl overflow-hidden hover:border-secondary transition-all hover:shadow-lg hover:-translate-y-1">
+                        <button type="button" id="template-card-{{ $template->id }}"
+                            @if($isLockedTemplate)
+                                aria-describedby="template-lock-{{ $template->id }}"
+                            @else
+                                onclick="selectTemplate('{{ $template->id }}')"
+                            @endif
+                            onmouseenter="previewTemplate('{{ $template->id }}')" onmouseleave="resetPreview()" class="template-card {{ $isLockedTemplate ? 'cursor-not-allowed border-[#A16207]/30 bg-[#A16207]/[0.03]' : 'cursor-pointer hover:border-secondary hover:shadow-lg hover:-translate-y-1' }} group relative border @if(!$isLockedTemplate && $cv && $cv->template_id === $template->id) border-secondary bg-secondary/5 @elseif(!$isLockedTemplate) border-primary/10 @endif rounded-xl overflow-hidden transition-all duration-200 text-left focus:outline-none focus:ring-2 focus:ring-secondary/40" aria-pressed="{{ $cv && $cv->template_id === $template->id ? 'true' : 'false' }}">
                             <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
                                 <iframe src="{{ route('resumes.preview', $cv) }}?template_id={{ $template->id }}" 
                                         style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
@@ -601,44 +681,90 @@
                                         loading="lazy" tabindex="-1">
                                 </iframe>
                                 <div class="absolute inset-0 bg-transparent z-10"></div>
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
-                                    <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
-                                </div>
+                                @if($template->is_premium)
+                                    <div class="absolute left-3 top-3 z-30 inline-flex items-center gap-1 rounded-full border border-[#A16207]/25 bg-tertiary/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#7C4A03] shadow-sm backdrop-blur">
+                                        <span class="material-symbols-outlined text-[13px] icon-filled" aria-hidden="true">workspace_premium</span>
+                                        Premium
+                                    </div>
+                                @endif
+                                @if($isLockedTemplate)
+                                    <div id="template-lock-{{ $template->id }}" class="absolute inset-0 z-20 flex items-center justify-center bg-white/70 p-4 text-center backdrop-blur-[2px]">
+                                        <div class="rounded-lg border border-[#A16207]/20 bg-tertiary/95 p-4 shadow-lg">
+                                            <span class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#A16207]/10 text-[#7C4A03]">
+                                                <span class="material-symbols-outlined icon-filled" aria-hidden="true">lock</span>
+                                            </span>
+                                            <p class="text-sm font-bold text-primary">Locked Premium Template</p>
+                                            <p class="mt-1 text-xs leading-relaxed text-primary/60">Upgrade to apply this layout to your resume.</p>
+                                            <a href="{{ route('user.upgrade-quota') }}"
+                                               class="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-tertiary transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-[#A16207]/40"
+                                               onclick="event.stopPropagation()">
+                                                <span class="material-symbols-outlined text-[15px] icon-filled" aria-hidden="true">workspace_premium</span>
+                                                Upgrade to Unlock
+                                            </a>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
+                                        <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
+                                    </div>
+                                @endif
                             </div>
                             <div class="p-4">
-                                <h4 class="font-bold text-sm text-primary group-hover:text-secondary transition-colors">{{ $template->name }}</h4>
+                                <h4 class="font-bold text-sm text-primary {{ $isLockedTemplate ? '' : 'group-hover:text-secondary' }} transition-colors">{{ $template->name }}</h4>
                                 <p class="text-[11px] text-primary/60 mt-1 line-clamp-2 leading-relaxed">{{ $template->description }}</p>
                             </div>
-                            @if($cv && $cv->template_id === $template->id)
+                            @if(!$isLockedTemplate && $cv && $cv->template_id === $template->id)
                             <div class="absolute top-3 right-3 bg-secondary text-white rounded-full w-6 h-6 shadow-md flex items-center justify-center checkmark">
                                 <span class="material-symbols-outlined text-[14px]">check</span>
                             </div>
                             @endif
-                        </div>
+                        </button>
                     @else
-                        <form action="{{ route('resumes.store') }}" method="POST" class="cursor-pointer group relative border border-primary/10 rounded-xl overflow-hidden hover:border-secondary transition-all hover:shadow-lg hover:-translate-y-1 bg-tertiary">
+                        <form action="{{ route('resumes.store') }}" method="POST" onsubmit="{{ $isLockedTemplate ? 'return false' : '' }}" class="{{ $isLockedTemplate ? 'cursor-not-allowed border-[#A16207]/30 bg-[#A16207]/[0.03]' : 'cursor-pointer border-primary/10 bg-tertiary hover:border-secondary hover:shadow-lg hover:-translate-y-1' }} group relative border rounded-xl overflow-hidden transition-all duration-200">
                             @csrf
                             <input type="hidden" name="title" value="My Professional Resume">
                             <input type="hidden" name="template_id" value="{{ $template->id }}">
                             
                             <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
-                                <iframe src="{{ route('templates.preview', $template) }}" 
+                                <iframe src="{{ route('templates.demo', $template) }}" 
                                         style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
                                         class="template-thumbnail-iframe pointer-events-none transition-transform duration-500 origin-top-left"
                                         loading="lazy" tabindex="-1">
                                 </iframe>
                                 <div class="absolute inset-0 bg-transparent z-10"></div>
-                                
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
-                                    <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
-                                </div>
+                                @if($template->is_premium)
+                                    <div class="absolute left-3 top-3 z-30 inline-flex items-center gap-1 rounded-full border border-[#A16207]/25 bg-tertiary/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#7C4A03] shadow-sm backdrop-blur">
+                                        <span class="material-symbols-outlined text-[13px] icon-filled" aria-hidden="true">workspace_premium</span>
+                                        Premium
+                                    </div>
+                                @endif
+                                @if($isLockedTemplate)
+                                    <div class="absolute inset-0 z-20 flex items-center justify-center bg-white/70 p-4 text-center backdrop-blur-[2px]">
+                                        <div class="rounded-lg border border-[#A16207]/20 bg-tertiary/95 p-4 shadow-lg">
+                                            <span class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#A16207]/10 text-[#7C4A03]">
+                                                <span class="material-symbols-outlined icon-filled" aria-hidden="true">lock</span>
+                                            </span>
+                                            <p class="text-sm font-bold text-primary">Locked Premium Template</p>
+                                            <a href="{{ route('user.upgrade-quota') }}" class="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-tertiary transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-[#A16207]/40">
+                                                <span class="material-symbols-outlined text-[15px] icon-filled" aria-hidden="true">workspace_premium</span>
+                                                Upgrade to Unlock
+                                            </a>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
+                                        <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
+                                    </div>
+                                @endif
                             </div>
                             <div class="p-4">
-                                <h4 class="font-bold text-sm text-primary group-hover:text-secondary transition-colors">{{ $template->name }}</h4>
+                                <h4 class="font-bold text-sm text-primary {{ $isLockedTemplate ? '' : 'group-hover:text-secondary' }} transition-colors">{{ $template->name }}</h4>
                                 <p class="text-[11px] text-primary/60 mt-1 line-clamp-2 leading-relaxed">{{ $template->description }}</p>
                             </div>
                             
-                            <button type="submit" class="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer"></button>
+                            @unless($isLockedTemplate)
+                                <button type="submit" class="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer" aria-label="Use {{ $template->name }} template"></button>
+                            @endunless
                         </form>
                     @endif
                     @endforeach
@@ -648,13 +774,17 @@
     </div>
 
     {{-- Refine Modal --}}
-    <div id="refine-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;">
+    <div id="refine-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="refine-modal-title"
+         aria-describedby="refine-loading">
         <div class="bg-surface w-full max-w-lg rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300" id="refine-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
-                <h3 class="text-xl font-headline font-bold text-primary flex items-center gap-2">
+                <h3 id="refine-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
                     <span class="material-symbols-outlined text-secondary">auto_awesome</span> Refine with AI
                 </h3>
-                <button onclick="closeRefineModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
+                <button type="button" onclick="closeRefineModal()" aria-label="Close AI refinement" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div class="p-6 bg-surface">
                 <div id="refine-loading" class="flex flex-col items-center justify-center py-8">
@@ -667,13 +797,16 @@
     </div>
 
     {{-- CV Versions Modal --}}
-    <div id="cv-versions-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;">
+    <div id="cv-versions-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="cv-versions-modal-title">
         <div class="bg-surface w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300 overflow-hidden" id="cv-versions-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
-                <h3 class="text-xl font-headline font-bold text-primary flex items-center gap-2">
+                <h3 id="cv-versions-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
                     <span class="material-symbols-outlined text-secondary">auto_awesome</span> Tailored CV Versions
                 </h3>
-                <button onclick="closeCvVersionsModal()" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-1 hover:bg-primary/5">close</button>
+                <button type="button" onclick="closeCvVersionsModal()" aria-label="Close tailored CV versions" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div class="p-6 overflow-y-auto custom-scrollbar bg-surface flex-1">
                 <div id="cv-versions-setup" class="flex flex-col gap-4 max-w-2xl mx-auto py-8 text-center">
@@ -694,10 +827,56 @@
 
     <script>
         function previewPdf(resumeId) {
+            if (!resumeId) return;
             window.open(`/resumes/${resumeId}/preview`, '_blank');
         }
 
+        // ── Photo Upload ───────────────────────────────────────────
+        function handlePhotoUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Ukuran foto maksimal 2MB. Silakan pilih file yang lebih kecil.');
+                input.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                // Update preview
+                const img = document.getElementById('photo-preview-img');
+                const placeholder = document.getElementById('photo-placeholder-icon');
+                if (img) { img.src = dataUrl; img.classList.remove('hidden'); }
+                if (placeholder) placeholder.classList.add('hidden');
+                // Store in hidden input and trigger save
+                const hiddenInput = document.getElementById('photo-hidden-input');
+                if (hiddenInput) {
+                    hiddenInput.value = dataUrl;
+                    hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+                // Auto-save the personal info section
+                const form = document.querySelector('.section-form[data-section-id]');
+                if (form) saveSection(form);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removePhoto() {
+            const img = document.getElementById('photo-preview-img');
+            const placeholder = document.getElementById('photo-placeholder-icon');
+            const hiddenInput = document.getElementById('photo-hidden-input');
+            if (img) { img.src = ''; img.classList.add('hidden'); }
+            if (placeholder) placeholder.classList.remove('hidden');
+            if (hiddenInput) {
+                hiddenInput.value = '';
+                const form = document.querySelector('.section-form[data-section-id]');
+                if (form) saveSection(form);
+            }
+        }
+        // ── End Photo Upload ───────────────────────────────────────
+
         async function downloadPdf(resumeId) {
+            if (!resumeId) return;
             const btn = document.getElementById('download-btn');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> <span class="ml-1">Generating...</span>';
@@ -705,7 +884,20 @@
             btn.classList.add('opacity-75', 'cursor-not-allowed');
 
             try {
-                const response = await fetch(`/resumes/${resumeId}/pdf`);
+                const response = await fetch(`/resumes/${resumeId}/pdf`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.status === 402) {
+                    const data = await response.json();
+                    showToast(data.message || 'Premium is required for PDF export.', 'error');
+                    if (data.upgrade_url) window.location.href = data.upgrade_url;
+                    return;
+                }
+
                 if (!response.ok) throw new Error('Network response was not ok');
                 
                 const blob = await response.blob();
@@ -797,6 +989,13 @@
                     body: JSON.stringify({ template_id: templateId })
                 });
                 
+                if (response.status === 402) {
+                    const data = await response.json();
+                    showToast(data.message || 'Premium is required for this template.', 'error');
+                    if (data.upgrade_url) window.location.href = data.upgrade_url;
+                    return;
+                }
+
                 if (!response.ok) throw new Error('Network response was not ok');
                 
                 const data = await response.json();
@@ -994,7 +1193,7 @@
                     if (iframe) iframe.style.opacity = '1';
                     showToast(result.saved_at ? `✓ Saved · ${result.saved_at}` : 'Changes saved!', 'success');
                     if (result.ats_score !== undefined) {
-                        updateAtsUi(result.ats_score, 'Keyword Match', result.ats_score === 0 ? 'Add a target job to get an ATS keyword match score.' : '', []);
+                        updateAtsUi(result.ats_score, 'Keyword Match');
                     }
                 } else {
                     console.error('Failed to save section');
@@ -1092,18 +1291,17 @@
         let atsTipOpen = false;
         let atsDebounce;
 
-        function toggleAtsTip() {
-            atsTipOpen = !atsTipOpen;
+        function toggleAtsDetails() {
             const card = document.getElementById('ats-tip-card');
-            if (card) card.classList.toggle('hidden', !atsTipOpen);
+            if(card) {
+                card.classList.toggle('hidden');
+            }
         }
 
-        function updateAtsUi(score, label, tip, improvements) {
+        function updateAtsUi(score, label) {
             const arc    = document.getElementById('ats-arc');
             const num    = document.getElementById('ats-score-num');
             const lbl    = document.getElementById('ats-label');
-            const tipEl  = document.getElementById('ats-tip-text');
-            const impEl  = document.getElementById('ats-improvements');
             const loader = document.getElementById('ats-loading');
 
             if (loader) loader.classList.add('hidden');
@@ -1120,8 +1318,10 @@
                 else arc.classList.add('text-red-400');
             }
             if (num) num.textContent = score;
+            const minScore = document.getElementById('ats-min-score');
+            if (minScore) minScore.textContent = score;
             if (lbl) {
-                lbl.textContent = label || '—';
+                lbl.textContent = score === 0 ? 'No Target Job' : label;
                 lbl.className = 'text-[10px] font-semibold mt-2 ' +
                     (score >= 75 ? 'text-emerald-500' : score >= 50 ? 'text-amber-400' : 'text-red-400');
             }
@@ -1137,9 +1337,29 @@
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const initialScore = {{ $cv->ats_score ?? 0 }};
-                updateAtsUi(initialScore, 'Keyword Match', initialScore === 0 ? 'Add a target job to get an ATS keyword match score.' : '', []);
+                updateAtsUi(initialScore, 'Keyword Match');
             }, 800);
         });
+        function toggleAtsMinimize(e) {
+            e.stopPropagation();
+            const max = document.getElementById('ats-maximized');
+            const min = document.getElementById('ats-minimized');
+            const widget = document.getElementById('ats-widget');
+            
+            if (max.classList.contains('hidden')) {
+                // Restore to max
+                max.classList.remove('hidden');
+                min.classList.replace('flex', 'hidden');
+                widget.classList.remove('p-2', 'rounded-full');
+                widget.classList.add('p-4', 'rounded-2xl');
+            } else {
+                // Minimize
+                max.classList.add('hidden');
+                min.classList.replace('hidden', 'flex');
+                widget.classList.add('p-2', 'rounded-full');
+                widget.classList.remove('p-4', 'rounded-2xl');
+            }
+        }
         @endif
 
         // ── Client-side validation before save ────────────────────────
@@ -1367,5 +1587,3 @@
         }
     </script>
 @endsection
-
-

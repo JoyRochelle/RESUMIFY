@@ -99,32 +99,32 @@ class ResponsiveUserPagesTest extends TestCase
 
     public function test_manuscript_has_mobile_edit_tab_button(): void
     {
-        $this->createCvForUser();
-        $response = $this->actingAs($this->user)->get(route('user.manuscript'));
+        $cv = $this->createCvForUser();
+        $response = $this->actingAs($this->user)->get(route('user.manuscript', ['cv_id' => $cv->id]));
         $response->assertOk();
         $response->assertSee('ms-tab-edit', false);
     }
 
     public function test_manuscript_has_mobile_preview_tab_button(): void
     {
-        $this->createCvForUser();
-        $response = $this->actingAs($this->user)->get(route('user.manuscript'));
+        $cv = $this->createCvForUser();
+        $response = $this->actingAs($this->user)->get(route('user.manuscript', ['cv_id' => $cv->id]));
         $response->assertOk();
         $response->assertSee('ms-tab-preview', false);
     }
 
     public function test_manuscript_tab_bar_is_hidden_on_large_screens(): void
     {
-        $this->createCvForUser();
-        $response = $this->actingAs($this->user)->get(route('user.manuscript'));
+        $cv = $this->createCvForUser();
+        $response = $this->actingAs($this->user)->get(route('user.manuscript', ['cv_id' => $cv->id]));
         $response->assertOk();
         $response->assertSee('flex lg:hidden', false);
     }
 
     public function test_manuscript_preview_panel_hidden_on_mobile_initially(): void
     {
-        $this->createCvForUser();
-        $response = $this->actingAs($this->user)->get(route('user.manuscript'));
+        $cv = $this->createCvForUser();
+        $response = $this->actingAs($this->user)->get(route('user.manuscript', ['cv_id' => $cv->id]));
         $response->assertOk();
         $response->assertSee('ms-panel-preview', false);
         $response->assertSee('hidden lg:flex', false);
@@ -132,8 +132,8 @@ class ResponsiveUserPagesTest extends TestCase
 
     public function test_manuscript_has_switchMsTab_js_function(): void
     {
-        $this->createCvForUser();
-        $response = $this->actingAs($this->user)->get(route('user.manuscript'));
+        $cv = $this->createCvForUser();
+        $response = $this->actingAs($this->user)->get(route('user.manuscript', ['cv_id' => $cv->id]));
         $response->assertOk();
         $response->assertSee('switchMsTab', false);
     }

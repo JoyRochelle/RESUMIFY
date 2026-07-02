@@ -14,6 +14,7 @@ class TemplateCard extends Component
     {
         $this->template->update(['is_active' => !$this->template->is_active]);
         $this->dispatch('template-toggled');
+        $this->dispatch('notify', message: 'Template status updated.', type: 'success');
     }
 
     public function delete(): void
@@ -25,6 +26,7 @@ class TemplateCard extends Component
         $this->template->delete();
 
         $this->dispatch('template-deleted');
+        $this->dispatch('notify', message: 'Template deleted successfully.', type: 'success');
     }
 
     public function render(): View

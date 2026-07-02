@@ -48,13 +48,15 @@
                         @endphp
                         @foreach($gettingStarted as $i => $faq)
                         <div class="bg-white rounded-2xl border border-primary/5 shadow-sm overflow-hidden">
-                            <button @click="open = (open === 'gs_{{ $i }}') ? null : 'gs_{{ $i }}'"
+                            <button type="button" @click="open = (open === 'gs_{{ $i }}') ? null : 'gs_{{ $i }}'"
+                                    aria-controls="faq-gs-{{ $i }}"
+                                    x-bind:aria-expanded="(open === 'gs_{{ $i }}').toString()"
                                     class="w-full flex items-center justify-between px-6 py-4 text-left">
                                 <span class="text-sm font-label font-semibold text-primary">{{ $faq['q'] }}</span>
                                 <span class="material-symbols-outlined text-primary/40 text-[20px] transition-transform"
                                       :class="open === 'gs_{{ $i }}' ? 'rotate-180' : ''">expand_more</span>
                             </button>
-                            <div x-show="open === 'gs_{{ $i }}'" x-collapse>
+                            <div id="faq-gs-{{ $i }}" x-show="open === 'gs_{{ $i }}'" x-collapse>
                                 <p class="px-6 pb-4 text-sm font-label text-primary/70 leading-relaxed">{{ $faq['a'] }}</p>
                             </div>
                         </div>
@@ -75,13 +77,15 @@
                         @endphp
                         @foreach($resumeBuilder as $i => $faq)
                         <div class="bg-white rounded-2xl border border-primary/5 shadow-sm overflow-hidden">
-                            <button @click="open = (open === 'rb_{{ $i }}') ? null : 'rb_{{ $i }}'"
+                            <button type="button" @click="open = (open === 'rb_{{ $i }}') ? null : 'rb_{{ $i }}'"
+                                    aria-controls="faq-rb-{{ $i }}"
+                                    x-bind:aria-expanded="(open === 'rb_{{ $i }}').toString()"
                                     class="w-full flex items-center justify-between px-6 py-4 text-left">
                                 <span class="text-sm font-label font-semibold text-primary">{{ $faq['q'] }}</span>
                                 <span class="material-symbols-outlined text-primary/40 text-[20px] transition-transform"
                                       :class="open === 'rb_{{ $i }}' ? 'rotate-180' : ''">expand_more</span>
                             </button>
-                            <div x-show="open === 'rb_{{ $i }}'" x-collapse>
+                            <div id="faq-rb-{{ $i }}" x-show="open === 'rb_{{ $i }}'" x-collapse>
                                 <p class="px-6 pb-4 text-sm font-label text-primary/70 leading-relaxed">{{ $faq['a'] }}</p>
                             </div>
                         </div>
@@ -102,13 +106,15 @@
                         @endphp
                         @foreach($aiFeatures as $i => $faq)
                         <div class="bg-white rounded-2xl border border-primary/5 shadow-sm overflow-hidden">
-                            <button @click="open = (open === 'ai_{{ $i }}') ? null : 'ai_{{ $i }}'"
+                            <button type="button" @click="open = (open === 'ai_{{ $i }}') ? null : 'ai_{{ $i }}'"
+                                    aria-controls="faq-ai-{{ $i }}"
+                                    x-bind:aria-expanded="(open === 'ai_{{ $i }}').toString()"
                                     class="w-full flex items-center justify-between px-6 py-4 text-left">
                                 <span class="text-sm font-label font-semibold text-primary">{{ $faq['q'] }}</span>
                                 <span class="material-symbols-outlined text-primary/40 text-[20px] transition-transform"
                                       :class="open === 'ai_{{ $i }}' ? 'rotate-180' : ''">expand_more</span>
                             </button>
-                            <div x-show="open === 'ai_{{ $i }}'" x-collapse>
+                            <div id="faq-ai-{{ $i }}" x-show="open === 'ai_{{ $i }}'" x-collapse>
                                 <p class="px-6 pb-4 text-sm font-label text-primary/70 leading-relaxed">{{ $faq['a'] }}</p>
                             </div>
                         </div>
@@ -128,13 +134,15 @@
                         @endphp
                         @foreach($billing as $i => $faq)
                         <div class="bg-white rounded-2xl border border-primary/5 shadow-sm overflow-hidden">
-                            <button @click="open = (open === 'bi_{{ $i }}') ? null : 'bi_{{ $i }}'"
+                            <button type="button" @click="open = (open === 'bi_{{ $i }}') ? null : 'bi_{{ $i }}'"
+                                    aria-controls="faq-bi-{{ $i }}"
+                                    x-bind:aria-expanded="(open === 'bi_{{ $i }}').toString()"
                                     class="w-full flex items-center justify-between px-6 py-4 text-left">
                                 <span class="text-sm font-label font-semibold text-primary">{{ $faq['q'] }}</span>
                                 <span class="material-symbols-outlined text-primary/40 text-[20px] transition-transform"
                                       :class="open === 'bi_{{ $i }}' ? 'rotate-180' : ''">expand_more</span>
                             </button>
-                            <div x-show="open === 'bi_{{ $i }}'" x-collapse>
+                            <div id="faq-bi-{{ $i }}" x-show="open === 'bi_{{ $i }}'" x-collapse>
                                 <p class="px-6 pb-4 text-sm font-label text-primary/70 leading-relaxed">{{ $faq['a'] }}</p>
                             </div>
                         </div>
@@ -154,13 +162,15 @@
                         @endphp
                         @foreach($technical as $i => $faq)
                         <div class="bg-white rounded-2xl border border-primary/5 shadow-sm overflow-hidden">
-                            <button @click="open = (open === 'te_{{ $i }}') ? null : 'te_{{ $i }}'"
+                            <button type="button" @click="open = (open === 'te_{{ $i }}') ? null : 'te_{{ $i }}'"
+                                    aria-controls="faq-te-{{ $i }}"
+                                    x-bind:aria-expanded="(open === 'te_{{ $i }}').toString()"
                                     class="w-full flex items-center justify-between px-6 py-4 text-left">
                                 <span class="text-sm font-label font-semibold text-primary">{{ $faq['q'] }}</span>
                                 <span class="material-symbols-outlined text-primary/40 text-[20px] transition-transform"
                                       :class="open === 'te_{{ $i }}' ? 'rotate-180' : ''">expand_more</span>
                             </button>
-                            <div x-show="open === 'te_{{ $i }}'" x-collapse>
+                            <div id="faq-te-{{ $i }}" x-show="open === 'te_{{ $i }}'" x-collapse>
                                 <p class="px-6 pb-4 text-sm font-label text-primary/70 leading-relaxed">{{ $faq['a'] }}</p>
                             </div>
                         </div>
@@ -176,29 +186,32 @@
 
                 <form action="{{ route('help.contact') }}" method="POST" class="space-y-4">
                     @csrf
+                    <x-ui.error-summary />
                     <div>
-                        <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1">Subject</label>
-                        <input type="text" name="subject" value="{{ old('subject') }}" required
+                        <label for="support-subject" class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1">Subject <span class="text-red-500" aria-hidden="true">*</span></label>
+                        <input id="support-subject" type="text" name="subject" value="{{ old('subject') }}" required
                                placeholder="Briefly describe your issue..."
+                               autocomplete="off"
+                               aria-invalid="{{ $errors->has('subject') ? 'true' : 'false' }}"
+                               aria-describedby="{{ $errors->has('subject') ? 'support-subject-error' : '' }}"
                                class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-3 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30">
                         @error('subject')
-                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            <p id="support-subject-error" class="text-xs text-red-600 mt-1" role="alert">{{ $message }}</p>
                         @enderror
                     </div>
                     <div>
-                        <label class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1">Message</label>
-                        <textarea name="message" rows="5" required
+                        <label for="support-message" class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1">Message <span class="text-red-500" aria-hidden="true">*</span></label>
+                        <textarea id="support-message" name="message" rows="5" required
                                   placeholder="Describe your issue in detail..."
+                                  aria-invalid="{{ $errors->has('message') ? 'true' : 'false' }}"
+                                  aria-describedby="{{ $errors->has('message') ? 'support-message-error' : '' }}"
                                   class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-3 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30 resize-none">{{ old('message') }}</textarea>
                         @error('message')
-                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            <p id="support-message-error" class="text-xs text-red-600 mt-1" role="alert">{{ $message }}</p>
                         @enderror
                     </div>
                     <div class="flex justify-end">
-                        <button type="submit"
-                                class="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-label hover:bg-primary/90 transition">
-                            Send Message
-                        </button>
+                        <x-ui.loading-button loading-text="Sending...">Send Message</x-ui.loading-button>
                     </div>
                 </form>
             </section>

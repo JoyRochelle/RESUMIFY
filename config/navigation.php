@@ -1,0 +1,108 @@
+<?php
+
+return [
+    'user' => [
+        [
+            'label' => 'Dashboard',
+            'route' => 'dashboard',
+            'match' => ['dashboard'],
+            'icon' => 'dashboard',
+        ],
+        [
+            'label' => 'Manuscripts',
+            'route' => 'user.manuscript',
+            'match' => ['user.manuscript', 'resumes.*'],
+            'icon' => 'description',
+        ],
+        [
+            'label' => 'ATS Analyzer',
+            'route' => 'user.ai-assistant',
+            'match' => ['user.ai-assistant', 'ats.*'],
+            'icon' => 'analytics',
+        ],
+        [
+            'label' => 'Interview',
+            'route' => 'interview.index',
+            'match' => ['interview.*'],
+            'icon' => 'record_voice_over',
+        ],
+        [
+            'label' => 'Settings',
+            'route' => 'user.settings',
+            'match' => ['user.settings', 'profile.*'],
+            'icon' => 'settings',
+        ],
+        [
+            'label' => 'Help',
+            'route' => 'user.help',
+            'match' => ['user.help', 'help.*'],
+            'icon' => 'help_outline',
+        ],
+        [
+            'label' => 'Upgrade Quota',
+            'route' => 'user.upgrade-quota',
+            'match' => ['user.upgrade-quota'],
+            'icon' => 'workspace_premium',
+            'emphasis' => true,
+        ],
+    ],
+
+    'admin' => [
+        [
+            'label' => 'Core Statistics',
+            'short_label' => 'Stats',
+            'route' => 'admin.dashboard',
+            'match' => ['admin.dashboard'],
+            'icon' => 'grid_view',
+        ],
+        [
+            'label' => 'User Management',
+            'short_label' => 'Users',
+            'route' => 'admin.users',
+            'match' => ['admin.users*'],
+            'icon' => 'group',
+        ],
+        [
+            'label' => 'Support Center',
+            'short_label' => 'Support',
+            'route' => 'admin.support',
+            'match' => ['admin.support*'],
+            'icon' => 'help_outline',
+        ],
+        [
+            'label' => 'Template Catalog',
+            'short_label' => 'Templates',
+            'route' => 'admin.templates.index',
+            'match' => ['admin.templates.*'],
+            'icon' => 'style',
+        ],
+        [
+            'label' => 'AI & Finance Logs',
+            'short_label' => 'Logs',
+            'route' => 'admin.logs',
+            'match' => ['admin.logs*'],
+            'icon' => 'science',
+        ],
+        [
+            'label' => 'System Monitor',
+            'short_label' => 'Monitor',
+            'route' => 'admin.monitor',
+            'match' => ['admin.monitor'],
+            'icon' => 'monitor_heart',
+        ],
+        [
+            'label' => 'Revenue Report',
+            'short_label' => 'Reports',
+            'route' => 'admin.reports',
+            'match' => ['admin.reports*'],
+            'icon' => 'bar_chart_4_bars',
+        ],
+        [
+            'label' => 'System Settings',
+            'short_label' => 'Settings',
+            'route' => 'admin.settings',
+            'match' => ['admin.settings'],
+            'icon' => 'settings',
+        ],
+    ],
+];

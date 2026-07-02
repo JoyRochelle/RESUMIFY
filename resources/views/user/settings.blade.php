@@ -3,21 +3,62 @@
 @section('title', 'Resumify - Settings')
 
 @section('content')
+    @php
+        $user = auth()->user();
+    @endphp
+
     <div class="flex-1 flex flex-col min-w-0">
         {{-- Page Header --}}
-        <x-user.page-header title="Account Settings">
+        <x-user.page-header title="Account Settings" backUrl="{{ route('dashboard') }}">
             <div class="flex items-center space-x-6 hidden md:flex">
-                <button class="text-primary/60 hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined">notifications</span>
-                </button>
-                <div class="flex items-center space-x-3 group cursor-pointer">
-                    <div class="text-right">
-                        <p class="text-xs font-bold text-primary">{{ auth()->user()->name }}</p>
-                        <p class="text-[10px] text-primary/60">{{ auth()->user()->isPremium() ? 'Premium Member' : 'Basic Member' }}</p>
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" @click.away="open = false" class="relative text-primary/60 hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">notifications</span>
+                        @if($user->unreadNotifications->count() > 0)
+                            <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                                {{ $user->unreadNotifications->count() }}
+                            </span>
+                        @endif
+                    </button>
+
+                    <div x-show="open" style="display: none;"
+                         class="absolute right-0 mt-2 w-80 bg-surface border border-primary/10 rounded-xl shadow-lg z-50 overflow-hidden">
+                        <div class="p-4 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
+                            <h3 class="font-bold text-primary text-sm">Notifications</h3>
+                            @if($user->unreadNotifications->count() > 0)
+                                <form action="{{ route('notifications.readAll') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="text-xs text-secondary hover:underline font-medium">Mark all as read</button>
+                                </form>
+                            @endif
+                        </div>
+                        <div class="max-h-80 overflow-y-auto custom-scrollbar">
+                            @forelse($user->notifications as $notification)
+                                <a href="{{ route('notifications.read', $notification->id) }}" class="block p-4 border-b border-primary/5 hover:bg-surface-container-low transition-colors {{ $notification->read_at ? 'opacity-75' : 'bg-secondary/5' }}">
+                                    <p class="text-sm text-primary">{{ $notification->data['message'] ?? 'You have a new notification.' }}</p>
+                                    <span class="text-[10px] text-primary/40 mt-1 block">{{ $notification->created_at->diffForHumans() }}</span>
+                                </a>
+                            @empty
+                                <div class="p-4 text-center text-primary/60 text-sm">No notifications yet.</div>
+                            @endforelse
+                        </div>
                     </div>
-                    <img alt="User Profile" class="w-8 h-8 rounded-full border border-primary/10 object-cover"
-                        src="{{ auth()->user()->avatar_url }}" />
                 </div>
+                {{-- <div class="flex items-center space-x-3 group cursor-pointer">
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-primary">{{ $user->name }}</p>
+                        <x-user.plan-badge :user="$user" size="xs" />
+                    </div>
+                    <div class="relative">
+                        <img alt="{{ $user->name }} profile avatar" class="w-8 h-8 rounded-full border border-primary/10 object-cover {{ $user->isPremium() ? 'ring-2 ring-[#A16207]/40 ring-offset-2 ring-offset-surface' : '' }}"
+                            src="{{ $user->avatar_url }}" />
+                        @if($user->isPremium())
+                            <span class="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#A16207] text-white" aria-label="Premium member">
+                                <span class="material-symbols-outlined text-[10px] icon-filled" aria-hidden="true">workspace_premium</span>
+                            </span>
+                        @endif
+                    </div>
+                </div> --}}
             </div>
         </x-user.page-header>
 
@@ -25,11 +66,10 @@
 
             {{-- Flash Messages --}}
             @if (session('status') === 'avatar-updated')
-                <div class="mb-6 p-4 bg-green-100 text-green-700 rounded-xl text-sm font-body">✅ Avatar updated
-                    successfully.</div>
+                <div class="mb-6 flex items-center gap-2 rounded-xl bg-green-100 p-4 text-sm font-body text-green-700"><span class="material-symbols-outlined text-[18px] icon-filled" aria-hidden="true">check_circle</span> Avatar updated successfully.</div>
             @endif
             @if (session('status') === 'avatar-deleted')
-                <div class="mb-6 p-4 bg-green-100 text-green-700 rounded-xl text-sm font-body">✅ Avatar removed.</div>
+                <div class="mb-6 flex items-center gap-2 rounded-xl bg-green-100 p-4 text-sm font-body text-green-700"><span class="material-symbols-outlined text-[18px] icon-filled" aria-hidden="true">check_circle</span> Avatar removed.</div>
             @endif
             @if ($errors->updateProfileInformation->any())
                 <div class="mb-6 p-4 bg-red-100 text-red-700 rounded-xl text-sm font-body">
@@ -50,13 +90,11 @@
                 </div>
             @endif
             @if (session('status') === 'profile-information-updated')
-                <div class="mb-6 p-4 bg-green-100 text-green-700 rounded-xl text-sm font-body">✅ Profile updated
-                    successfully.</div>
+                <div class="mb-6 flex items-center gap-2 rounded-xl bg-green-100 p-4 text-sm font-body text-green-700"><span class="material-symbols-outlined text-[18px] icon-filled" aria-hidden="true">check_circle</span> Profile updated successfully.</div>
             @endif
 
             @if (session('status') === 'password-updated')
-                <div class="mb-6 p-4 bg-green-100 text-green-700 rounded-xl text-sm font-body">✅ Password updated
-                    successfully.</div>
+                <div class="mb-6 flex items-center gap-2 rounded-xl bg-green-100 p-4 text-sm font-body text-green-700"><span class="material-symbols-outlined text-[18px] icon-filled" aria-hidden="true">check_circle</span> Password updated successfully.</div>
             @endif
 
             <div class="max-w-4xl mx-auto space-y-8">
@@ -140,26 +178,14 @@
                     <div class="p-8 relative z-10">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                             <div>
-                                <div class="flex items-center gap-3 mb-2">
+                                <div class="flex flex-wrap items-center gap-3 mb-2">
                                     <h3 class="font-headline text-3xl">Subscription & Billing</h3>
                                     {{-- role badge --}}
-                                    @if (auth()->user()->isPremium())
-                                        <span
-                                            class="bg-secondary text-tertiary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
-                                            Premium Member
-                                        </span>
-                                    @else
-                                        <span
-                                            class="bg-secondary text-tertiary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
-                                            Basic Member
-                                        </span>
-                                    @endif
+                                    <x-user.plan-badge :user="$user" surface="dark" />
                                 </div>
-                                {{-- <p class="text-tertiary/80 font-body">Your subscription will automatically renew on October
-                                    12, 2026.</p> --}}
                             </div>
-                            <a href="{{ route('user.upgrade-quota') }}"
-                                class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-label font-bold bg-secondary/10 text-secondary hover:bg-secondary/20 transition-all duration-300">
+                                <a href="{{ route('user.upgrade-quota') }}"
+                                class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-label font-bold bg-secondary text-tertiary hover:brightness-110 shadow-md transition-all duration-300">
                                 <span class="material-symbols-outlined text-sm icon-filled">bolt</span>
                                 Upgrade Quota
                             </a>
@@ -182,9 +208,11 @@
                                 <p class="mt-4 text-xs italic opacity-60">Optimized by Resumify Editorial Engine.</p>
                             </div>
                             <div class="flex flex-col justify-end items-start md:items-end">
-                                <a class="text-sm font-bold text-secondary border-b border-secondary/30 hover:border-secondary transition-all flex items-center gap-2"
-                                    href="#">View Transaction History <span
-                                        class="material-symbols-outlined text-sm">arrow_forward</span></a>
+                                <a class="text-sm font-bold text-tertiary hover:text-secondary border-b border-tertiary/30 hover:border-secondary transition-all flex items-center gap-2 cursor-pointer"
+                                    onclick="alert('Transaction history feature is currently in development. Please check back later.')">
+                                    View Transaction History <span
+                                        class="material-symbols-outlined text-sm">arrow_forward</span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -192,25 +220,29 @@
 
                 {{-- Security & Password --}}
                 <section class="bg-tertiary rounded-2xl p-8 border border-primary/10 shadow-sm">
-                    <h3 class="font-headline text-2xl text-primary mb-8">Security & Password</h3>
+                    <div class="mb-8">
+                        <h3 class="font-headline text-2xl text-primary mb-2">Security & Password</h3>
+                        <p class="text-sm text-primary/60 font-body">Ensure your account is using a long, random password to stay secure.</p>
+                    </div>
                     <form action="{{ route('user-password.update') }}" method="POST">
                         @csrf
                         @method('PUT')
-                        <div class="max-w-2xl space-y-8">
-                            <x-user.settings-input label="Current Password" name="current_password" type="password"
-                                placeholder="••••••••" :showToggle="true" />
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="w-full space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="md:col-span-2">
+                                    <x-user.settings-input label="Current Password" name="current_password" type="password"
+                                        placeholder="••••••••" :showToggle="true" />
+                                </div>
                                 <x-user.settings-input label="New Password" name="password" type="password" />
                                 <x-user.settings-input label="Confirm New Password" name="password_confirmation"
                                     type="password" />
                             </div>
-                            <div class="bg-primary/5 p-4 rounded-xl flex items-start gap-3">
-                                <span class="material-symbols-outlined text-secondary text-lg">info</span>
-                                <p class="text-xs text-primary/80 font-body leading-relaxed">Use at least 8 characters with
-                                    a combination of numbers and symbols.</p>
+                            <div class="bg-primary/5 p-4 rounded-xl flex items-start gap-3 mt-2">
+                                <span class="material-symbols-outlined text-secondary text-xl">info</span>
+                                <p class="text-sm text-primary/80 font-body leading-relaxed">Use at least 8 characters with a combination of numbers and symbols.</p>
                             </div>
-                            <div class="flex justify-start">
-                                <x-user.button type="submit" variant="outline">Update Password</x-user.button>
+                            <div class="flex justify-end pt-4 border-t border-primary/10 mt-6">
+                                <x-user.button type="submit" variant="primary" icon="save" iconClass="text-sm">Update Password</x-user.button>
                             </div>
                         </div>
                     </form>

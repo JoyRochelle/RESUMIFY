@@ -3,34 +3,38 @@
 @section('title', 'Resumify | Write Your Success Story')
 
 @section('content')
+    {{-- ======================== HERO SECTION ======================== --}}
     <section class="min-h-[85vh] flex flex-col md:flex-row bg-surface">
+
         {{-- Hero Left: Content --}}
-        {{-- Perbaikan: Mengubah items-center menjadi items-start agar sejajar dengan kanan --}}
-        {{-- Menyesuaikan py agar sinkron dengan padding kanan --}}
-        <div class="w-full md:w-[40%] flex items-start px-8 md:px-16 py-12 md:py-20">
-            <div class="max-w-md w-full">
-                <h1 class="text-6xl md:text-7xl font-headline text-primary leading-tight tracking-tighter mb-8">
-                    Write Your Success Story <span class="inline-block text-5xl">✨</span>
+        <div class="w-full md:w-[40%] flex items-start justify-center md:justify-start px-4 sm:px-8 md:px-16 py-12 md:py-20">
+            <div class="max-w-md w-full text-center md:text-left">
+                <h1
+                    class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary leading-tight tracking-tighter mb-6 md:mb-8">
+                    Write Your Success Story <span class="inline-block text-3xl sm:text-4xl md:text-5xl">✨</span>
                 </h1>
-                <p class="text-xl text-outline mb-10 leading-relaxed font-body">
+                <p class="text-base sm:text-lg md:text-xl text-outline mb-8 md:mb-10 leading-relaxed font-body">
                     Adapt your resume to job openings with artificial intelligence.
                 </p>
-                <x-landing_page.button variant="primary" icon="arrow_forward" href="{{ route('register') }}">
-                    Upgrade Your Resume
-                </x-landing_page.button>
+                <div class="flex justify-center md:justify-start">
+                    <x-landing_page.button variant="primary" icon="arrow_forward" href="{{ route('register') }}">
+                        Upgrade Your Resume
+                    </x-landing_page.button>
+                </div>
             </div>
         </div>
 
         {{-- Hero Right: Visual Preview --}}
-        {{-- Menjaga items-start untuk layout preview yang mengalir ke bawah --}}
-        <div class="w-full md:w-[60%] bg-[#f0f4f8] relative flex items-start justify-center px-8 md:px-16 py-12 md:py-20">
-            <div class="relative w-full max-w-md">
+        <div
+            class="w-full md:w-[60%] bg-[#f0f4f8] relative flex items-start justify-center px-4 sm:px-8 md:px-16 py-10 md:py-20">
+            <div class="relative w-full max-w-sm md:max-w-md">
 
                 {{-- Resume Card Preview --}}
-                <div class="bg-white p-8 pb-96 rounded-sm shadow-2xl relative z-10 border border-primary/5 min-h-[700px]">
-                    <div class="flex justify-between items-start mb-8">
+                <div class="bg-white p-6 md:p-8 rounded-sm shadow-2xl relative z-10 border border-primary/5">
+                    <div class="flex justify-between items-start mb-6 md:mb-8">
                         <div>
-                            <h2 class="text-2xl font-serif text-primary tracking-tighter leading-none">Theofrolic</h2>
+                            <h2 class="text-xl md:text-2xl font-serif text-primary tracking-tighter leading-none">Theofrolic
+                            </h2>
                             <p class="text-[#00c9a7] font-bold font-body tracking-widest uppercase text-[10px] mt-2">Senior
                                 Product Designer</p>
                         </div>
@@ -40,12 +44,13 @@
                         </div>
                     </div>
 
-                    <div class="space-y-6">
+                    <div class="space-y-4 md:space-y-6">
                         <div class="h-px bg-gray-100 w-full mb-2"></div>
                         <div>
-                            <h3 class="text-[10px] font-bold text-primary font-body mb-4 uppercase tracking-widest">WORK
+                            <h3 class="text-[10px] font-bold text-primary font-body mb-3 md:mb-4 uppercase tracking-widest">
+                                WORK
                                 EXPERIENCE</h3>
-                            <div class="space-y-5">
+                            <div class="space-y-4 md:space-y-5">
                                 <div>
                                     <div class="flex justify-between items-start mb-1">
                                         <div>
@@ -57,7 +62,7 @@
                                     </div>
                                 </div>
 
-                                <div class="bg-[#f0faf7] p-5 rounded-sm border-l-4 border-[#00c9a7]">
+                                <div class="bg-[#f0faf7] p-4 md:p-5 rounded-sm border-l-4 border-[#00c9a7]">
                                     <div class="flex items-center gap-2 mb-2">
                                         <span class="material-symbols-outlined text-[16px] text-[#00c9a7]"
                                             style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
@@ -74,9 +79,9 @@
                     </div>
                 </div>
 
-                {{-- ATS Match Score - Posisi tetap konsisten --}}
+                {{-- ATS Match Score — Desktop only (absolute positioned) --}}
                 <div
-                    class="absolute -right-10 top-[350px] bg-white/95 backdrop-blur-xl p-5 rounded-md shadow-xl w-56 z-20 border border-gray-100 transform rotate-1">
+                    class="hidden md:block absolute -right-10 top-[280px] bg-white/95 backdrop-blur-xl p-5 rounded-md shadow-xl w-56 z-20 border border-gray-100 transform rotate-1">
                     <p class="text-[9px] text-gray-400 mb-3 tracking-widest uppercase font-bold">ATS MATCH SCORE</p>
                     <div class="flex items-end gap-1.5 h-10 mb-3">
                         <div class="w-full bg-[#f4c4c4] h-1/4 rounded-sm"></div>
@@ -91,8 +96,8 @@
                     </div>
                 </div>
 
-                {{-- INPUT EDITOR --}}
-                <div class="absolute top-[480px] -left-16 bg-[#44362d] p-7 rounded-md shadow-2xl w-72 z-30">
+                {{-- INPUT EDITOR — Desktop only (absolute positioned) --}}
+                <div class="hidden md:block absolute top-[400px] -left-16 bg-[#44362d] p-7 rounded-md shadow-2xl w-72 z-30">
                     <p class="text-[9px] text-white/40 mb-5 tracking-widest uppercase font-bold">INPUT EDITOR</p>
                     <div class="space-y-5">
                         <div>
@@ -116,14 +121,33 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Mobile-only: ATS Score badge (inline, not absolute) --}}
+                <div
+                    class="md:hidden mt-4 bg-white/95 p-4 rounded-lg shadow-md border border-gray-100 flex items-center gap-4">
+                    <div>
+                        <p class="text-[9px] text-gray-400 mb-2 tracking-widest uppercase font-bold">ATS MATCH SCORE</p>
+                        <div class="flex items-end gap-1 h-8">
+                            <div class="w-4 bg-[#f4c4c4] h-1/4 rounded-sm"></div>
+                            <div class="w-4 bg-[#e89d9d] h-2/5 rounded-sm"></div>
+                            <div class="w-4 bg-[#a7e2cc] h-3/5 rounded-sm"></div>
+                            <div class="w-4 bg-[#00c9a7] h-4/5 rounded-sm opacity-80"></div>
+                            <div class="w-4 bg-[#00c9a7] h-full rounded-sm"></div>
+                        </div>
+                    </div>
+                    <div class="flex-1 text-right">
+                        <p class="text-[10px] text-gray-400">Your resume quality</p>
+                        <p class="text-lg font-headline font-bold text-[#00c9a7]">High Match</p>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
 
-    {{-- Features Section --}}
-    <section class="py-32 px-8">
-        <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
-            {{-- Perbaikan Path: x-landing_page.feature-card --}}
+    {{-- ======================== FEATURES SECTION ======================== --}}
+    <section class="py-16 sm:py-24 md:py-32 px-4 sm:px-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
             <x-landing_page.feature-card title="AI Bullet Point Generator" icon="auto_awesome" :filled="true">
                 Write your achievements instantly with data-driven suggestions that stand out to recruiters.
             </x-landing_page.feature-card>
@@ -138,19 +162,20 @@
         </div>
     </section>
 
-    {{-- Call to Action --}}
-    <section class="py-24 px-8">
+    {{-- ======================== CALL TO ACTION ======================== --}}
+    <section class="py-12 sm:py-16 md:py-24 px-4 sm:px-8">
         <div
-            class="max-w-5xl mx-auto bg-primary rounded-2xl relative min-h-[400px] flex items-center p-12 md:p-20 overflow-hidden">
+            class="max-w-5xl mx-auto bg-primary rounded-2xl relative min-h-[320px] md:min-h-[400px] flex items-center p-8 sm:p-12 md:p-20 overflow-hidden">
             <div class="relative z-10 max-w-2xl text-left">
-                <h2 class="text-4xl md:text-5xl text-white mb-6 leading-tight font-headline tracking-tighter">Ready to build
+                <h2
+                    class="text-3xl sm:text-4xl md:text-5xl text-white mb-4 md:mb-6 leading-tight font-headline tracking-tighter">
+                    Ready to build
                     your story?</h2>
-                <p class="text-lg text-white/80 mb-10 leading-relaxed font-body">
+                <p class="text-base md:text-lg text-white/80 mb-8 md:mb-10 leading-relaxed font-body">
                     Join thousands of professionals who have accelerated their career with Resumify.
                 </p>
-                {{-- Perbaikan: Button putih sesuai mockup --}}
                 <a href="{{ route('register') }}"
-                    class="inline-block bg-white text-primary px-8 py-3 rounded-sm font-bold font-body text-sm hover:bg-white/90 transition-all active:scale-95 shadow-sm">
+                    class="inline-block bg-white text-primary px-6 sm:px-8 py-3 rounded-sm font-bold font-body text-sm hover:bg-white/90 transition-all active:scale-95 shadow-sm">
                     Start for Free Now
                 </a>
             </div>

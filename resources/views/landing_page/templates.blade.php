@@ -3,18 +3,17 @@
 @section('title', 'Templates | Choose a Template that Fits Your Career')
 
 @section('content')
-<section class="max-w-7xl mx-auto px-8 pt-20 pb-8 text-center">
-    {{-- Header: font-headline dan tracking-tighter sesuai DESIGN.md --}}
-    <h1 class="text-5xl md:text-6xl font-headline font-bold tracking-tighter mb-6 text-primary leading-tight">
-        Choose a Template that Fits<br>Your Career
+<section class="max-w-7xl mx-auto px-4 sm:px-8 pt-14 sm:pt-20 pb-8 text-center">
+    <h1 class="text-4xl sm:text-5xl md:text-6xl font-headline font-bold tracking-tighter mb-4 sm:mb-6 text-primary leading-tight">
+        Choose a Template<br>that Fits Your Career
     </h1>
-    <p class="text-lg text-outline leading-relaxed font-body max-w-2xl mx-auto">
+    <p class="text-base sm:text-lg text-outline leading-relaxed font-body max-w-2xl mx-auto">
         From minimalist to creative, all our templates are optimized to pass ATS filters with a high-end editorial touch.
     </p>
 </section>
 
 {{-- Category Filter Tabs + Template Grid + Preview Overlay --}}
-<section class="max-w-7xl mx-auto px-8 pb-16" x-data="templateLibrary()">
+<section class="max-w-7xl mx-auto px-4 sm:px-8 pb-16" x-data="templateLibrary()">
     <div class="flex flex-wrap justify-center gap-3 mb-16">
         <template x-for="tab in tabs" :key="tab.key">
             <button @click="activeCategory = tab.key"
@@ -32,17 +31,23 @@
         <div x-show="activeCategory === 'all' || activeCategory === '{{ $template->category }}'"
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 scale-95"
-             x-transition:enter-end="opacity-100 scale-100">
-            <x-landing_page.template-card 
-                title="{{ $template->name }}" 
-                category="{{ strtoupper(str_replace('_', ' ', $template->category)) }}" 
-                badge="{{ $template->badge }}" 
+             x-transition:enter-end="opacity-100 scale-100"
+             @click="openPreview('{{ $template->id }}', '{{ $template->name }}', '{{ addslashes($template->description) }}', '{{ route('templates.demo', $template) }}')"
+             class="cursor-pointer">
+            <x-landing_page.template-card
+                title="{{ $template->name }}"
+                category="{{ strtoupper(str_replace('_', ' ', $template->category)) }}"
+                badge="{{ $template->badge }}"
                 badgeColor="{{ $template->badge_color }}">
-                
-                <div class="w-full h-80 bg-[#f4f4f5] flex items-center justify-center rounded-sm overflow-hidden relative group/img cursor-pointer"
-                     @click="openPreview('{{ $template->id }}', '{{ $template->name }}', '{{ addslashes($template->description) }}', '{{ route('templates.preview', $template) }}')">
-                    <img src="{{ $template->thumbnail }}" alt="{{ $template->name }}" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover/img:scale-105">
-                </div>
+
+                {{-- Live iframe preview dengan data dummy John Doe --}}
+                <iframe
+                    src="{{ route('templates.demo', $template) }}"
+                    class="pointer-events-none absolute top-0 left-0 template-card-iframe"
+                    style="width: 794px; height: 1123px; border: none; transform-origin: top left;"
+                    loading="lazy"
+                    tabindex="-1">
+                </iframe>
 
             </x-landing_page.template-card>
         </div>
@@ -71,15 +76,16 @@
              class="bg-surface w-full max-w-4xl my-8 mx-4 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
 
             {{-- Modal Header --}}
-            <div class="px-6 py-4 border-b border-primary/10 bg-surface-container-low flex items-center justify-between shrink-0">
+            <div class="px-4 sm:px-6 py-4 border-b border-primary/10 bg-surface-container-low flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0">
                 <div>
-                    <h3 class="text-xl font-headline font-bold text-primary" x-text="previewName"></h3>
-                    <p class="text-xs text-primary/60 mt-1 font-body" x-text="previewDescription"></p>
+                    <h3 class="text-lg sm:text-xl font-headline font-bold text-primary" x-text="previewName"></h3>
+                    <p class="text-xs text-primary/60 mt-1 font-body hidden sm:block" x-text="previewDescription"></p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <a :href="'{{ route('register') }}'" class="inline-flex items-center gap-2 bg-secondary text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-secondary/90 transition-all shadow-sm hover:shadow-md">
+                    <a :href="'{{ route('register') }}'" class="inline-flex items-center gap-2 bg-secondary text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm font-bold hover:bg-secondary/90 transition-all shadow-sm hover:shadow-md">
                         <span class="material-symbols-outlined text-[16px]">edit_document</span>
-                        Use This Template
+                        <span class="hidden sm:inline">Use This Template</span>
+                        <span class="sm:hidden">Use Template</span>
                     </a>
                     <button @click="closePreview()" class="text-primary/60 hover:text-primary transition-colors p-1.5 rounded-full hover:bg-primary/5">
                         <span class="material-symbols-outlined">close</span>
@@ -106,7 +112,7 @@
 </section>
 
 {{-- CTA Section: Haven't found the right fit? --}}
-<section class="max-w-5xl mx-auto px-8 py-16">
+<section class="max-w-5xl mx-auto px-4 sm:px-8 py-12 sm:py-16">
     <div class="relative rounded-2xl overflow-hidden min-h-[320px] flex flex-col items-center justify-center text-center p-12 md:p-16">
         {{-- Background gradient overlay --}}
         <div class="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-primary/70"></div>
@@ -128,6 +134,17 @@
 </section>
 
 <script>
+function scaleCardIframes() {
+    document.querySelectorAll('.template-card-iframe').forEach(iframe => {
+        // iframe.parentElement = aspect-[210/297] container (sama seperti dashboard)
+        const container = iframe.parentElement;
+        if (container && container.offsetWidth > 0) {
+            const scale = container.offsetWidth / 794;
+            iframe.style.transform = `scale(${scale})`;
+        }
+    });
+}
+
 function templateLibrary() {
     return {
         activeCategory: 'all',
@@ -137,10 +154,9 @@ function templateLibrary() {
         previewUrl: '',
         tabs: [
             { key: 'all', label: 'All' },
-            { key: 'professional', label: 'Professional' },
-            { key: 'creative', label: 'Creative' },
-            { key: 'technology', label: 'Technology' },
-            { key: 'managerial', label: 'Managerial' },
+            @foreach($templates->pluck('category')->unique() as $cat)
+            { key: '{{ $cat }}', label: '{{ ucfirst($cat) }}' },
+            @endforeach
         ],
         openPreview(id, name, description, url) {
             this.previewName = name;
@@ -164,5 +180,10 @@ function templateLibrary() {
         }
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    scaleCardIframes();
+});
+window.addEventListener('resize', scaleCardIframes);
 </script>
 @endsection

@@ -3,7 +3,7 @@
 @section('title', 'User Detail — ' . $user->name . ' - Admin')
 
 @section('content')
-<div class="max-w-6xl mx-auto space-y-8 pb-10">
+<div class="admin-shell">
 
     <!-- Breadcrumb + Header -->
     <div class="flex items-center justify-between">
@@ -16,27 +16,19 @@
             <h1 class="text-3xl font-headline font-bold text-primary">User Detail</h1>
         </div>
         <a href="{{ route('admin.users') }}"
-           class="flex items-center space-x-2 text-sm font-label text-primary/60 hover:text-primary bg-white border border-primary/10 px-4 py-2 rounded-xl shadow-sm transition-colors">
+           class="admin-btn-secondary">
             <span class="material-symbols-outlined text-[18px]">arrow_back</span>
             <span>Back to Users</span>
         </a>
     </div>
 
-    <!-- Flash messages -->
-    @if(session('success'))
-        <div class="bg-secondary/10 border border-secondary/20 text-secondary text-sm font-label px-5 py-3 rounded-xl flex items-center space-x-2">
-            <span class="material-symbols-outlined text-[18px]">check_circle</span>
-            <span>{{ session('success') }}</span>
-        </div>
-    @endif
-
     <!-- Profile Card + Quick Actions -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         <!-- Profile Card -->
-        <div class="lg:col-span-2 bg-white rounded-3xl p-8 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
+        <div class="lg:col-span-2 admin-card-pad p-8">
             <div class="flex items-start space-x-6">
-                <div class="w-20 h-20 rounded-2xl overflow-hidden bg-primary/10 flex-shrink-0">
+                <div class="w-20 h-20 rounded-lg overflow-hidden bg-primary/10 flex-shrink-0">
                     <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}"
                          class="w-full h-full object-cover"
                          onerror="this.outerHTML='<div class=\'w-full h-full flex items-center justify-center text-2xl font-bold text-primary/50\'>{{ strtoupper(substr($user->name, 0, 2)) }}</div>'">
@@ -45,9 +37,9 @@
                     <div class="flex items-center space-x-3 mb-1">
                         <h2 class="text-2xl font-headline font-bold text-primary truncate">{{ $user->name }}</h2>
                         @if($user->is_suspended)
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-label bg-red-100 text-red-600">Suspended</span>
+                            <span class="admin-badge bg-red-50 text-red-600">Suspended</span>
                         @else
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-label bg-secondary/10 text-secondary">Active</span>
+                            <span class="admin-badge bg-secondary/10 text-secondary">Active</span>
                         @endif
                     </div>
                     <p class="text-sm font-label text-primary/60 mb-4">{{ $user->email }}</p>
@@ -56,12 +48,12 @@
                         <div>
                             <p class="text-[10px] font-label text-primary/40 uppercase tracking-widest mb-1">Plan</p>
                             @if($user->role === 'premium')
-                                <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-label bg-amber-100 text-amber-700">
+                                <span class="admin-badge bg-amber-100 text-amber-700">
                                     <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1">star</span>
                                     <span>Premium</span>
                                 </span>
                             @else
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-label bg-primary/10 text-primary/60">Free</span>
+                                <span class="admin-badge bg-primary/10 text-primary/60">Free</span>
                             @endif
                         </div>
                         <div>
@@ -86,27 +78,27 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5 space-y-3" x-data="userActions()">
+        <div class="admin-card-pad space-y-3" x-data="userActions()">
 
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-4">Quick Actions</h3>
+            <h3 class="admin-section-title mb-4">Quick Actions</h3>
 
             <!-- Override Plan -->
-            <button @click="openPlanModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->role }}')"
-                    class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl border border-primary/10 hover:bg-primary/5 transition-colors text-left">
+            <button type="button" @click="openPlanModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->role }}')"
+                    class="flex min-h-11 w-full items-center space-x-3 rounded-lg border border-primary/10 px-4 py-3 text-left transition-colors hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">
                 <span class="material-symbols-outlined text-primary/50 text-[20px]">card_membership</span>
                 <span class="text-sm font-label text-primary">Override Plan</span>
             </button>
 
             <!-- Adjust Credits -->
-            <button @click="openCreditsModal('{{ $user->id }}', '{{ $user->name }}', {{ $user->ai_quota_used }})"
-                    class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl border border-primary/10 hover:bg-primary/5 transition-colors text-left">
+            <button type="button" @click="openCreditsModal('{{ $user->id }}', '{{ $user->name }}', {{ $user->ai_quota_used }})"
+                    class="flex min-h-11 w-full items-center space-x-3 rounded-lg border border-primary/10 px-4 py-3 text-left transition-colors hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">
                 <span class="material-symbols-outlined text-primary/50 text-[20px]">toll</span>
                 <span class="text-sm font-label text-primary">Adjust AI Credits</span>
             </button>
 
             <!-- Suspend / Activate -->
-            <button @click="openSuspendModal('{{ $user->id }}', '{{ $user->name }}', {{ $user->is_suspended ? 'true' : 'false' }})"
-                    class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl border border-primary/10 hover:bg-primary/5 transition-colors text-left">
+            <button type="button" @click="openSuspendModal('{{ $user->id }}', '{{ $user->name }}', {{ $user->is_suspended ? 'true' : 'false' }})"
+                    class="flex min-h-11 w-full items-center space-x-3 rounded-lg border border-primary/10 px-4 py-3 text-left transition-colors hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">
                 <span class="material-symbols-outlined text-[20px] {{ $user->is_suspended ? 'text-secondary' : 'text-amber-500' }}">
                     {{ $user->is_suspended ? 'lock_open' : 'block' }}
                 </span>
@@ -114,111 +106,79 @@
             </button>
 
             <!-- Delete -->
-            <button @click="openDeleteModal('{{ $user->id }}', '{{ $user->name }}')"
-                    class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl border border-red-100 hover:bg-red-50 transition-colors text-left">
+            <button type="button" @click="openDeleteModal('{{ $user->id }}', '{{ $user->name }}')"
+                    class="flex min-h-11 w-full items-center space-x-3 rounded-lg border border-red-100 px-4 py-3 text-left transition-colors hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-300">
                 <span class="material-symbols-outlined text-red-400 text-[20px]">delete_forever</span>
                 <span class="text-sm font-label text-red-600">Delete Account</span>
             </button>
 
-            <!-- ——— Modals ——— -->
-
-            <!-- Override Plan Modal -->
-            <div x-show="planModal.open" x-cloak
-                 class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-                 @keydown.escape.window="planModal.open = false">
-                <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl mx-4" @click.stop>
-                    <h3 class="text-xl font-headline font-bold text-primary mb-1">Override Plan</h3>
-                    <p class="text-sm font-label text-primary/60 mb-6">Changing plan for <strong x-text="planModal.name"></strong></p>
+            <x-ui.modal id="admin-user-show-plan-modal" title="Override Plan" description="Change plan access for this user.">
                     <form :action="planModal.url" method="POST">
                         @csrf @method('PATCH')
                         <div class="mb-6">
-                            <label class="text-xs font-label text-primary/60 uppercase tracking-widest block mb-2">New Plan</label>
-                            <select name="plan" class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-3 text-sm font-label text-primary focus:outline-none focus:border-primary/30">
+                            <p class="mb-4 text-sm text-primary/60">Changing plan for <strong x-text="planModal.name"></strong></p>
+                            <label for="admin-user-plan" class="admin-section-title mb-2 block">New Plan</label>
+                            <select id="admin-user-plan" name="plan" class="admin-filter-field w-full">
                                 <option value="basic" :selected="planModal.current === 'basic'">Free (Basic)</option>
                                 <option value="premium" :selected="planModal.current === 'premium'">Premium</option>
                             </select>
                         </div>
-                        <div class="flex space-x-3">
-                            <button type="submit" class="flex-1 bg-primary text-white py-3 rounded-xl text-sm font-label hover:bg-primary/90 transition">Apply</button>
-                            <button type="button" @click="planModal.open = false" class="flex-1 border border-primary/10 text-primary py-3 rounded-xl text-sm font-label hover:bg-primary/5 transition">Cancel</button>
+                        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                            <button type="button" class="admin-btn-secondary" x-on:click="closeModal()">Cancel</button>
+                            <x-ui.loading-button loading-text="Applying..." icon="workspace_premium">Apply</x-ui.loading-button>
                         </div>
                     </form>
-                </div>
-            </div>
+            </x-ui.modal>
 
-            <!-- Adjust Credits Modal -->
-            <div x-show="creditsModal.open" x-cloak
-                 class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-                 @keydown.escape.window="creditsModal.open = false">
-                <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl mx-4" @click.stop>
-                    <h3 class="text-xl font-headline font-bold text-primary mb-1">Adjust AI Credits</h3>
-                    <p class="text-sm font-label text-primary/60 mb-6">Set used credits for <strong x-text="creditsModal.name"></strong></p>
+            <x-ui.modal id="admin-user-show-credits-modal" title="Adjust AI Credits" description="Set this user's consumed AI credit count.">
                     <form :action="creditsModal.url" method="POST">
                         @csrf @method('PATCH')
                         <div class="mb-6">
-                            <label class="text-xs font-label text-primary/60 uppercase tracking-widest block mb-2">AI Quota Used</label>
-                            <input type="number" name="ai_quota_used" :value="creditsModal.current" min="0"
-                                   class="w-full bg-surface border border-primary/10 rounded-xl px-4 py-3 text-sm font-label text-primary focus:outline-none focus:border-primary/30">
+                            <p class="mb-4 text-sm text-primary/60">Set used credits for <strong x-text="creditsModal.name"></strong></p>
+                            <label for="admin-user-ai-quota-used" class="admin-section-title mb-2 block">AI Quota Used</label>
+                            <input id="admin-user-ai-quota-used" type="number" name="ai_quota_used" :value="creditsModal.current" min="0"
+                                   class="admin-filter-field w-full">
                         </div>
-                        <div class="flex space-x-3">
-                            <button type="submit" class="flex-1 bg-primary text-white py-3 rounded-xl text-sm font-label hover:bg-primary/90 transition">Update</button>
-                            <button type="button" @click="creditsModal.open = false" class="flex-1 border border-primary/10 text-primary py-3 rounded-xl text-sm font-label hover:bg-primary/5 transition">Cancel</button>
+                        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                            <button type="button" class="admin-btn-secondary" x-on:click="closeModal()">Cancel</button>
+                            <x-ui.loading-button loading-text="Updating..." icon="token">Update</x-ui.loading-button>
                         </div>
                     </form>
-                </div>
-            </div>
+            </x-ui.modal>
 
-            <!-- Suspend/Activate Modal -->
-            <div x-show="suspendModal.open" x-cloak
-                 class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-                 @keydown.escape.window="suspendModal.open = false">
-                <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl mx-4" @click.stop>
-                    <h3 class="text-xl font-headline font-bold text-primary mb-1" x-text="suspendModal.isSuspended ? 'Activate Account' : 'Suspend Account'"></h3>
-                    <p class="text-sm font-label text-primary/60 mb-6">
+            <x-ui.modal id="admin-user-show-suspend-modal" title="Confirm Account Access" description="Review this account status change before applying it.">
+                    <p class="mb-6 text-sm font-label text-primary/60">
                         <span x-text="suspendModal.isSuspended ? 'Restore access for' : 'Block access for'"></span>
                         <strong x-text="suspendModal.name"></strong>?
                     </p>
                     <form :action="suspendModal.url" method="POST">
                         @csrf @method('PATCH')
-                        <div class="flex space-x-3">
-                            <button type="submit"
-                                    class="flex-1 py-3 rounded-xl text-sm font-label transition"
-                                    :class="suspendModal.isSuspended ? 'bg-secondary text-white hover:bg-secondary/90' : 'bg-amber-500 text-white hover:bg-amber-600'"
-                                    x-text="suspendModal.isSuspended ? 'Activate' : 'Suspend'">
-                            </button>
-                            <button type="button" @click="suspendModal.open = false" class="flex-1 border border-primary/10 text-primary py-3 rounded-xl text-sm font-label hover:bg-primary/5 transition">Cancel</button>
+                        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                            <button type="button" class="admin-btn-secondary" x-on:click="closeModal()">Cancel</button>
+                            <x-ui.loading-button x-show="suspendModal.isSuspended" variant="secondary" loading-text="Activating..." icon="lock_open">Activate</x-ui.loading-button>
+                            <x-ui.loading-button x-show="!suspendModal.isSuspended" variant="danger" loading-text="Suspending..." icon="block">Suspend</x-ui.loading-button>
                         </div>
                     </form>
-                </div>
-            </div>
+            </x-ui.modal>
 
-            <!-- Delete Modal -->
-            <div x-show="deleteModal.open" x-cloak
-                 class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-                 @keydown.escape.window="deleteModal.open = false">
-                <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl mx-4" @click.stop>
-                    <div class="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <span class="material-symbols-outlined text-red-500 text-[24px]">warning</span>
-                    </div>
-                    <h3 class="text-xl font-headline font-bold text-primary mb-1 text-center">Delete Account</h3>
-                    <p class="text-sm font-label text-primary/60 mb-6 text-center">
+            <x-ui.modal id="admin-user-show-delete-modal" title="Delete Account" description="This destructive action cannot be undone.">
+                    <x-ui.alert variant="error" title="Permanent deletion" class="mb-6">
                         Permanently delete <strong x-text="deleteModal.name"></strong>? This cannot be undone.
-                    </p>
+                    </x-ui.alert>
                     <form :action="deleteModal.url" method="POST">
                         @csrf @method('DELETE')
-                        <div class="flex space-x-3">
-                            <button type="submit" class="flex-1 bg-red-500 text-white py-3 rounded-xl text-sm font-label hover:bg-red-600 transition">Delete</button>
-                            <button type="button" @click="deleteModal.open = false" class="flex-1 border border-primary/10 text-primary py-3 rounded-xl text-sm font-label hover:bg-primary/5 transition">Cancel</button>
+                        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                            <button type="button" class="admin-btn-secondary" x-on:click="closeModal()">Cancel</button>
+                            <x-ui.loading-button variant="danger" loading-text="Deleting..." icon="delete_forever">Delete</x-ui.loading-button>
                         </div>
                     </form>
-                </div>
-            </div>
+            </x-ui.modal>
         </div>
     </div>
 
     <!-- AI Quota -->
-    <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-        <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-5">AI Quota Usage</h3>
+    <div class="admin-card-pad">
+        <h3 class="admin-section-title mb-5">AI Quota Usage</h3>
         @php
             $limit = $user->getQuotaLimit();
             $used  = $user->ai_quota_used;
@@ -253,8 +213,8 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         <!-- Resumes -->
-        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-5">Resumes ({{ $user->cvs->count() }} recent)</h3>
+        <div class="admin-card-pad">
+            <h3 class="admin-section-title mb-5">Resumes ({{ $user->cvs->count() }} recent)</h3>
             @forelse($user->cvs as $cv)
                 <div class="flex items-center justify-between py-3 {{ !$loop->last ? 'border-b border-primary/5' : '' }}">
                     <div class="min-w-0 flex-1">
@@ -272,8 +232,8 @@
         </div>
 
         <!-- Subscription -->
-        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-5">Subscription</h3>
+        <div class="admin-card-pad">
+            <h3 class="admin-section-title mb-5">Subscription</h3>
             @if($subscription)
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
@@ -311,8 +271,8 @@
         </div>
 
         <!-- Recent Transactions -->
-        <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-            <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-5">Transactions</h3>
+        <div class="admin-card-pad">
+            <h3 class="admin-section-title mb-5">Transactions</h3>
             @forelse($transactions as $tx)
                 <div class="flex items-center justify-between py-3 {{ !$loop->last ? 'border-b border-primary/5' : '' }}">
                     <div class="min-w-0 flex-1">
@@ -342,8 +302,8 @@
 
     <!-- Recent AI Usage Logs -->
     @if($user->aiUsageLogs->isNotEmpty())
-    <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_rgba(79,59,47,0.03)] border border-primary/5">
-        <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest mb-5">Recent AI Usage (last 10)</h3>
+    <div class="admin-card-pad">
+        <h3 class="admin-section-title mb-5">Recent AI Usage (last 10)</h3>
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
@@ -391,15 +351,19 @@ function userActions() {
 
         openPlanModal(id, name, current) {
             this.planModal = { open: true, url: `/admin/users/${id}/plan`, name, current };
+            window.dispatchEvent(new CustomEvent('open-modal', { detail: 'admin-user-show-plan-modal' }));
         },
         openCreditsModal(id, name, current) {
             this.creditsModal = { open: true, url: `/admin/users/${id}/credits`, name, current };
+            window.dispatchEvent(new CustomEvent('open-modal', { detail: 'admin-user-show-credits-modal' }));
         },
         openSuspendModal(id, name, isSuspended) {
             this.suspendModal = { open: true, url: `/admin/users/${id}/suspend`, name, isSuspended };
+            window.dispatchEvent(new CustomEvent('open-modal', { detail: 'admin-user-show-suspend-modal' }));
         },
         openDeleteModal(id, name) {
             this.deleteModal = { open: true, url: `/admin/users/${id}`, name };
+            window.dispatchEvent(new CustomEvent('open-modal', { detail: 'admin-user-show-delete-modal' }));
         },
     };
 }

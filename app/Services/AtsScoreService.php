@@ -9,18 +9,19 @@ class AtsScoreService {
      * Calculate basic ATS score based on keyword match.
      *
      * @param Cv $cv
-     * @return int
+     * @return array
      */
-    public static function calculate(Cv $cv): int
+    public static function calculate(Cv $cv): array
     {
         $jobTargetSection = $cv->sections()->where('type', 'target_job')->first();
         
         $jobTitle = $cv->job_target ?? ($jobTargetSection ? ($jobTargetSection->content['job_title'] ?? '') : '');
+        $jobCompany = $jobTargetSection ? ($jobTargetSection->content['job_company'] ?? '') : '';
         $jobDesc = $jobTargetSection ? ($jobTargetSection->content['job_description'] ?? '') : '';
-        $jobText = $jobTitle . ' ' . $jobDesc;
+        $jobText = $jobTitle . ' ' . $jobCompany . ' ' . $jobDesc;
         
         if (empty(trim($jobText))) {
-            return 0;
+            return ['score' => 0, 'matched' => []];
         }
 
         $personalInfo = $cv->sections()->where('type', 'personal_info')->first();
@@ -39,7 +40,7 @@ class AtsScoreService {
         $summaryWords = self::getKeywords($summary);
 
         if (empty($jobWords)) {
-            return 0;
+            return ['score' => 0, 'matched' => []];
         }
 
         $resumeIntersect = array_intersect($jobWords, $resumeWords);
@@ -49,7 +50,10 @@ class AtsScoreService {
 
         $score = $coreScore + $summaryBonus;
         
-        return (int) min(100, round($score));
+        return [
+            'score' => (int) min(100, round($score)),
+            'matched' => array_values(array_unique($resumeIntersect))
+        ];
     }
 
     private static function getKeywords(string $text): array

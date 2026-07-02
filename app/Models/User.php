@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\AtsScan;
+
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -93,6 +95,52 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Check if the user is on the Basic plan.
+     */
+    public function isBasic(): bool
+    {
+        return $this->role === 'basic';
+    }
+
+    /**
+     * Get the maximum number of active resumes allowed for the user's plan.
+     */
+    public function getResumeLimit(): ?int
+    {
+        return config('plans.resume_limits.' . $this->role);
+    }
+
+    /**
+     * Count active resumes for quota display and enforcement.
+     */
+    public function getResumeQuotaUsed(): int
+    {
+        return $this->cvs()->count();
+    }
+
+    /**
+     * Check if the user can create another resume.
+     */
+    public function canCreateResume(): bool
+    {
+        $limit = $this->getResumeLimit();
+
+        return $limit === null || $this->getResumeQuotaUsed() < $limit;
+    }
+
+    /**
+     * Check if the user can use a named Premium feature.
+     */
+    public function canUsePremiumFeature(string $feature): bool
+    {
+        if ($this->isPremium() || $this->isAdmin()) {
+            return true;
+        }
+
+        return !in_array($feature, config('plans.premium_features', []), true);
+    }
+
+    /**
      * Prevent admin from receiving password reset emails.
      */
     public function sendPasswordResetNotification($token)
@@ -126,7 +174,11 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getAvatarUrlAttribute($value)
     {
-        return $value ? asset('storage/' . $value) : 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+        if ($value) {
+            return str_starts_with($value, 'http') ? $value : asset('storage/' . $value);
+        }
+        
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
     }
 
     // Returns the max quota for this user based on their role
@@ -187,6 +239,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function interviewSessions(): HasMany
     {
         return $this->hasMany(InterviewSession::class);
+    }
+
+    /**
+     * Get the ATS scans run by this user, newest first.
+     */
+    public function atsScans(): HasMany
+    {
+        return $this->hasMany(AtsScan::class)->latest('created_at');
     }
 
 }
