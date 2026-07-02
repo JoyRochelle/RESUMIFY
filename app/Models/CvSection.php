@@ -30,7 +30,7 @@ class CvSection extends Model
         ];
     }
 
-    protected function cv(): BelongsTo
+    public function cv(): BelongsTo
     {
         return $this->belongsTo(Cv::class);
     }

@@ -162,6 +162,48 @@ class InterviewServiceTest extends TestCase
         });
     }
 
+    public function test_message_prompt_uses_bounded_recent_conversation_history(): void
+    {
+        [$user, $cv] = $this->makeUserWithCv();
+
+        Http::fake([self::GEMINI_PATTERN => Http::response($this->geminiResponse('Pertanyaan lanjutan.'))]);
+
+        $session = InterviewSession::create([
+            'id'         => Str::ulid(),
+            'user_id'    => $user->id,
+            'resume_id'  => $cv->id,
+            'job_target' => 'Backend Engineer',
+            'status'     => 'active',
+            'started_at' => now(),
+        ]);
+
+        for ($i = 0; $i < 30; $i++) {
+            InterviewMessage::create([
+                'id'         => Str::ulid(),
+                'session_id' => $session->id,
+                'role'       => $i % 2 === 0 ? 'assistant' : 'user',
+                'content'    => "Historical turn {$i}",
+                'created_at' => now()->subMinutes(30 - $i),
+                'updated_at' => now()->subMinutes(30 - $i),
+            ]);
+        }
+
+        $this->actingAs($user)->postJson("/interview/sessions/{$session->id}/message", [
+            'content' => 'This is the newest candidate answer.',
+        ])->assertOk();
+
+        Http::assertSentCount(1);
+
+        $request = Http::recorded()->first()[0];
+        $body = json_decode($request->body(), true);
+        $contents = $body['contents'] ?? [];
+        $encodedContents = json_encode($contents);
+
+        $this->assertLessThanOrEqual(21, count($contents));
+        $this->assertStringNotContainsString('Historical turn 0', $encodedContents);
+        $this->assertStringContainsString('This is the newest candidate answer.', $encodedContents);
+    }
+
     // ── 4. Cannot message another user's session ──────────────────────────────
 
     public function test_user_cannot_message_another_users_session(): void

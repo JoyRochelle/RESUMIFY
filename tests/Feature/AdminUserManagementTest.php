@@ -8,6 +8,7 @@ use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -315,6 +316,24 @@ class AdminUserManagementTest extends TestCase
         $log = AdminLog::where('target_id', $this->basicUser->id)->latest()->first();
         $this->assertNotNull($log);
         $this->assertStringContainsString('adjust_credits', $log->action);
+    }
+
+    public function test_adjust_credits_admin_log_has_structured_mutation_metadata(): void
+    {
+        $this->basicUser->update(['ai_quota_used' => 1]);
+
+        $this->actingAs($this->admin)
+            ->patch(route('admin.users.credits', $this->basicUser), ['ai_quota_used' => 8])
+            ->assertRedirect();
+
+        $log = AdminLog::where('target_id', $this->basicUser->id)->latest()->firstOrFail();
+
+        $this->assertSame('adjust_credits', $log->action);
+        $this->assertSame([
+            'field' => 'ai_quota_used',
+            'old' => 1,
+            'new' => 8,
+        ], Arr::only($log->metadata ?? [], ['field', 'old', 'new']));
     }
 
     public function test_adjust_credits_rejects_negative_value(): void

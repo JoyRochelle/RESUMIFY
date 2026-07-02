@@ -13,6 +13,8 @@ use App\Services\InterviewService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -132,24 +134,33 @@ class InterviewController extends Controller
 
         $sessions = $query->paginate(10)->withQueryString();
 
-        // Trend: score delta vs. the chronologically previous session with feedback
-        $trends    = [];
-        $prevScore = null;
-        $allWithFeedback = $user->interviewSessions()
-            ->whereHas('feedback')
-            ->with('feedback:session_id,overall_score')
-            ->orderBy('started_at')
-            ->get(['interview_sessions.id']);
-
-        foreach ($allWithFeedback as $s) {
-            $score = $s->feedback->overall_score;
-            if ($prevScore !== null) {
-                $trends[$s->id] = $score - $prevScore;
-            }
-            $prevScore = $score;
-        }
+        $trends = $this->calculateVisibleTrends($sessions, $user->id);
 
         return view('user.interview.history', compact('sessions', 'cvs', 'trends', 'sort', 'order'));
+    }
+
+    private function calculateVisibleTrends(LengthAwarePaginator $sessions, string $userId): array
+    {
+        $trends = [];
+
+        foreach ($sessions->getCollection() as $session) {
+            if (!$session->feedback) {
+                continue;
+            }
+
+            $previousScore = DB::table('interview_sessions')
+                ->join('interview_feedback', 'interview_sessions.id', '=', 'interview_feedback.session_id')
+                ->where('interview_sessions.user_id', $userId)
+                ->where('interview_sessions.started_at', '<', $session->started_at)
+                ->orderByDesc('interview_sessions.started_at')
+                ->value('interview_feedback.overall_score');
+
+            if ($previousScore !== null) {
+                $trends[$session->id] = $session->feedback->overall_score - (int) $previousScore;
+            }
+        }
+
+        return $trends;
     }
 
     /**
@@ -182,16 +193,9 @@ class InterviewController extends Controller
             'content'    => $content,
         ]);
 
-        $session->load(['cv.sections', 'messages']);
+        $session->load('cv.sections');
         $systemPrompt = $this->interviewService->buildSystemPrompt($session->cv, $session->job_target);
-
-        $contents = [['role' => 'user', 'parts' => [['text' => 'Please begin the interview session.']]]];
-        foreach ($session->messages as $msg) {
-            $contents[] = [
-                'role'  => $msg->role === 'assistant' ? 'model' : 'user',
-                'parts' => [['text' => $msg->content]],
-            ];
-        }
+        $contents = $this->interviewService->buildRecentConversationContents($session);
 
         return response()->stream(function () use ($user, $session, $systemPrompt, $contents) {
             try {
