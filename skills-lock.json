@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "refactoring-ui": {
+      "source": "wondelai/skills",
+      "sourceType": "github",
+      "skillPath": "refactoring-ui/SKILL.md",
+      "computedHash": "0c4f141cfd7e2d2d3b7dfd819bec15d0e9980b433b6376e6fbac3d33ff05c7d8"
+    },
     "ux-heuristics": {
       "source": "wondelai/skills",
       "sourceType": "github",

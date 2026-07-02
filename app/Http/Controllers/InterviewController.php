@@ -29,7 +29,13 @@ class InterviewController extends Controller
         $trialUsed = !$user->isPremium() && !$user->isAdmin()
                      && $user->interviewSessions()->exists();
 
-        return view('user.interview.index', compact('cvs', 'trialUsed'));
+        $recentSessions = $user->interviewSessions()
+            ->with(['cv', 'feedback'])
+            ->orderByDesc('started_at')
+            ->take(3)
+            ->get();
+
+        return view('user.interview.index', compact('cvs', 'trialUsed', 'recentSessions'));
     }
 
     /**
