@@ -59,7 +59,9 @@ class AtsController extends Controller
      */
     public function analyze(Request $request): JsonResponse
     {
-        if (!$request->user()->canUsePremiumFeature('ats_analyze')) {
+        $user = $request->user();
+
+        if (!$user->canUsePremiumFeature('ats_analyze')) {
             return response()->json([
                 'error' => 'premium_required',
                 'message' => 'Upgrade to Premium to unlock full ATS analysis.',
@@ -75,9 +77,13 @@ class AtsController extends Controller
             'job_company'     => ['nullable', 'string', 'max:255'],
         ]);
 
+        abort_if(
+            $request->filled('cv_id') && !$user->cvs()->whereKey($request->input('cv_id'))->exists(),
+            404
+        );
+
         $resumeText = $request->input('resume');
         $jdText     = $request->input('job_description');
-        $user       = $request->user();
 
         // Deduct credit BEFORE the AI call
         $user->increment('ai_quota_used', 1);
