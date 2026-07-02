@@ -63,6 +63,22 @@ class UserController extends Controller
 
     public function upgradeQuota()
     {
-        return view('user.upgrade-quota');
+        $subscription = auth()->user()
+            ->subscriptions()
+            ->where('plan', 'premium')
+            ->whereIn('status', ['active', 'cancelled'])
+            ->where(function ($query) {
+                $query->whereNull('ends_at')
+                    ->orWhere('ends_at', '>', now());
+            })
+            ->latest('created_at')
+            ->first()
+            ?? auth()->user()
+                ->subscriptions()
+                ->where('plan', 'premium')
+                ->latest('created_at')
+                ->first();
+
+        return view('user.upgrade-quota', compact('subscription'));
     }
 }
