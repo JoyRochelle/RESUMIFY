@@ -1,4 +1,5 @@
 <section
+    x-data="authFooterData()"
     class="w-full md:w-2/5 flex-1 bg-surface-container-lowest flex flex-col items-center p-6 md:p-8 lg:p-12 relative md:overflow-y-auto">
     <div class="w-full max-w-md">
         {{-- Brand Anchor --}}
@@ -41,8 +42,7 @@
         </div>
 
         {{-- Secondary Footer --}}
-        <div x-data="authFooterData()"
-            class="mt-8 flex justify-center gap-6 text-[10px] uppercase tracking-widest text-on-surface-variant/60 font-bold">
+        <div class="mt-8 flex justify-center gap-6 text-[10px] uppercase tracking-widest text-on-surface-variant/60 font-bold">
             <button type="button" @click="openModal('terms')" class="hover:text-primary transition-colors uppercase tracking-widest">TERMS & CONDITIONS</button>
             <button type="button" @click="openModal('privacy')" class="hover:text-primary transition-colors uppercase tracking-widest">PRIVACY POLICY</button>
             <button type="button" @click="openModal('help')" class="hover:text-primary transition-colors uppercase tracking-widest">HELP CENTER</button>
