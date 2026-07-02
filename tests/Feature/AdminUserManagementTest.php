@@ -8,7 +8,6 @@ use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -329,11 +328,9 @@ class AdminUserManagementTest extends TestCase
         $log = AdminLog::where('target_id', $this->basicUser->id)->latest()->firstOrFail();
 
         $this->assertSame('adjust_credits', $log->action);
-        $this->assertSame([
-            'field' => 'ai_quota_used',
-            'old' => 1,
-            'new' => 8,
-        ], Arr::only($log->metadata ?? [], ['field', 'old', 'new']));
+        $this->assertSame('ai_quota_used', $log->metadata['field'] ?? null);
+        $this->assertSame(1, $log->metadata['old'] ?? null);
+        $this->assertSame(8, $log->metadata['new'] ?? null);
     }
 
     public function test_adjust_credits_rejects_negative_value(): void
