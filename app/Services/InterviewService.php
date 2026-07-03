@@ -136,7 +136,7 @@ PROMPT;
 
     /**
      * Convert CV sections to structured plain text for prompt injection.
-     * Adapted from ManuscriptAtsController::flattenCv().
+     * Adapted from User\Resume\ManuscriptAtsController::flattenCv().
      */
     private function flattenSections(Cv $cv): string
     {

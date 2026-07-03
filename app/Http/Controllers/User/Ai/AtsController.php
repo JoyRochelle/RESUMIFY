@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User\Ai;
 
 use App\Actions\Ai\RunAtsAnalysisAction;
 use App\Exceptions\AiQuotaExceededException;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\AnalyzeAtsRequest;
 use App\Models\AtsScan;
 use App\Support\ApiResponse;

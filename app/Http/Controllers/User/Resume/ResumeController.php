@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User\Resume;
 
 use App\Actions\Resumes\DuplicateResumeAction;
 use App\Actions\Resumes\UpdateResumeSectionAction;
 use App\Exceptions\ResumeQuotaExceededException;
+use App\Http\Controllers\Controller;
 use App\Models\Cv;
 use App\Models\CvSection;
 use App\Models\CvTemplate;
