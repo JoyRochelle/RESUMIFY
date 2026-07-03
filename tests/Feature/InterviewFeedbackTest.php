@@ -10,6 +10,7 @@ use App\Models\InterviewMessage;
 use App\Models\InterviewSession;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -206,7 +207,7 @@ class InterviewFeedbackTest extends TestCase
 
     public function test_end_session_still_completes_if_ai_fails(): void
     {
-        [$user, $cv] = $this->makeUserWithCv();
+        [$user, $cv] = $this->makeUserWithCv('basic');
         $session     = $this->makeSession($user, $cv);
 
         Http::fake([
@@ -226,5 +227,16 @@ class InterviewFeedbackTest extends TestCase
         $this->assertDatabaseMissing('interview_feedback', [
             'session_id' => $session->id,
         ]);
+
+        $this->assertSame(0, $user->fresh()->ai_quota_used);
+
+        $reservation = DB::table('ai_credit_reservations')
+            ->where('user_id', $user->id)
+            ->where('context', 'interview_feedback')
+            ->first();
+
+        $this->assertNotNull($reservation, 'Interview feedback should reserve credit through AiCreditService.');
+        $this->assertSame('reserved', $reservation->status);
+        $this->assertNotNull($reservation->refunded_at, 'Failed feedback generation should refund the reservation.');
     }
 }

@@ -5,19 +5,28 @@ namespace App\Actions\Interviews;
 use App\Models\AiUsageLog;
 use App\Models\Cv;
 use App\Models\User;
+use App\Services\AiCreditService;
 use App\Services\InterviewService;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class StartInterviewAction
 {
-    public function __construct(private InterviewService $interviewService) {}
+    public function __construct(
+        private InterviewService $interviewService,
+        private AiCreditService $aiCreditService,
+    ) {}
 
     /**
      * @return array{session: \App\Models\InterviewSession, message: string}
      */
     public function execute(User $user, Cv $resume, string $jobTarget): array
     {
-        $user->increment('ai_quota_used', 1);
+        $reservation = $this->aiCreditService->reserve($user, 1, 'interview_start');
+
+        if ($reservation->isDenied()) {
+            throw new HttpException(402, 'AI quota exceeded.');
+        }
 
         try {
             $result = $this->interviewService->startSession($user, $resume, $jobTarget);
@@ -32,7 +41,7 @@ class StartInterviewAction
 
             return $result;
         } catch (\Exception $e) {
-            $user->decrement('ai_quota_used', 1);
+            $this->aiCreditService->refund($reservation);
             Log::error('StartInterviewAction failed', ['error' => $e->getMessage()]);
 
             throw $e;
