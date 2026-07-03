@@ -9,6 +9,7 @@ use App\Models\InterviewMessage;
 use App\Models\InterviewSession;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -249,6 +250,12 @@ class InterviewServiceTest extends TestCase
 
         $response->assertStatus(422)
                  ->assertJsonFragment(['success' => false]);
+
+        $this->assertSame(0, $user->fresh()->ai_quota_used);
+        $this->assertDatabaseMissing('ai_credit_reservations', [
+            'user_id' => $user->id,
+            'context' => 'interview_message',
+        ]);
     }
 
     // ── 6. Quota is refunded on Gemini failure ────────────────────────────────
@@ -269,5 +276,49 @@ class InterviewServiceTest extends TestCase
 
         // Credit must be refunded — quota unchanged
         $this->assertEquals(0, $user->fresh()->ai_quota_used);
+    }
+
+    public function test_message_provider_failure_refunds_reserved_credit(): void
+    {
+        [$user, $cv] = $this->makeUserWithCv('basic');
+
+        $session = InterviewSession::create([
+            'id'         => Str::ulid(),
+            'user_id'    => $user->id,
+            'resume_id'  => $cv->id,
+            'job_target' => 'Backend Engineer',
+            'status'     => 'active',
+            'started_at' => now(),
+        ]);
+
+        InterviewMessage::create([
+            'id'         => Str::ulid(),
+            'session_id' => $session->id,
+            'role'       => 'assistant',
+            'content'    => 'Ceritakan pengalaman Anda.',
+        ]);
+
+        Http::fake([self::GEMINI_PATTERN => Http::response(null, 500)]);
+
+        $response = $this->actingAs($user)->postJson("/interview/sessions/{$session->id}/message", [
+            'content' => 'Saya membangun REST API.',
+        ]);
+
+        $response->assertStatus(500);
+
+        $this->assertSame(0, $user->fresh()->ai_quota_used);
+        $this->assertDatabaseHas('ai_credit_reservations', [
+            'user_id' => $user->id,
+            'credits' => 1,
+            'context' => 'interview_message',
+            'status' => 'reserved',
+        ]);
+
+        $reservation = DB::table('ai_credit_reservations')
+            ->where('user_id', $user->id)
+            ->where('context', 'interview_message')
+            ->first();
+
+        $this->assertNotNull($reservation->refunded_at);
     }
 }
