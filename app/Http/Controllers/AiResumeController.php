@@ -5,16 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Cv;
 use App\Models\ChameleonAdaptation;
+use App\Services\AiCreditService;
 use App\Services\AiService;
 use Illuminate\Support\Facades\Gate;
 
 class AiResumeController extends Controller
 {
-    protected $aiService;
+    protected AiService $aiService;
+    protected AiCreditService $aiCreditService;
 
-    public function __construct(AiService $aiService)
+    public function __construct(AiService $aiService, AiCreditService $aiCreditService)
     {
         $this->aiService = $aiService;
+        $this->aiCreditService = $aiCreditService;
     }
 
     /**
@@ -32,8 +35,16 @@ class AiResumeController extends Controller
 
         $user = auth()->user();
 
-        // Deduct credit BEFORE the AI call
-        $user->increment('ai_quota_used', 1);
+        $reservation = $this->aiCreditService->reserve($user, 1, 'bullet_optimize');
+
+        if ($reservation->isDenied()) {
+            return response()->json([
+                'error'     => 'quota_exceeded',
+                'message'   => 'You have used all your AI credits. Upgrade to Premium for 50 credits/month.',
+                'remaining' => $reservation->remainingCredits(),
+                'limit'     => $reservation->quotaLimit,
+            ], 402);
+        }
 
         try {
             $options = $this->aiService->refineBullet($request->text, $request->job_context);
@@ -43,8 +54,7 @@ class AiResumeController extends Controller
 
             return response()->json(['success' => true, 'options' => $options]);
         } catch (\Exception $e) {
-            // Refund the credit on failure
-            $user->decrement('ai_quota_used', 1);
+            $this->aiCreditService->refund($reservation);
             return response()->json(['success' => false, 'message' => 'Failed to refine bullet.'], 500);
         }
     }
@@ -82,8 +92,16 @@ class AiResumeController extends Controller
 
         $user = auth()->user();
 
-        // Deduct 3 credits BEFORE the AI call
-        $user->increment('ai_quota_used', 3);
+        $reservation = $this->aiCreditService->reserve($user, 3, 'generate_versions');
+
+        if ($reservation->isDenied()) {
+            return response()->json([
+                'error'     => 'quota_exceeded',
+                'message'   => 'You have used all your AI credits. Upgrade to Premium for 50 credits/month.',
+                'remaining' => $reservation->remainingCredits(),
+                'limit'     => $reservation->quotaLimit,
+            ], 402);
+        }
 
         try {
             $versions = $this->aiService->generateCvVersions($sections, $request->job_description);
@@ -109,8 +127,7 @@ class AiResumeController extends Controller
 
             return response()->json(['success' => true, 'versions' => $savedVersions]);
         } catch (\Exception $e) {
-            // Refund 3 credits on failure
-            $user->decrement('ai_quota_used', 3);
+            $this->aiCreditService->refund($reservation);
             return response()->json(['success' => false, 'message' => 'Failed to generate CV versions.'], 500);
         }
     }
