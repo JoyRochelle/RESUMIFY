@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User\Resume;
 
+use App\Http\Controllers\Controller;
 use App\Models\Cv;
 use App\Models\CvSection;
 use App\Models\ChameleonAdaptation;

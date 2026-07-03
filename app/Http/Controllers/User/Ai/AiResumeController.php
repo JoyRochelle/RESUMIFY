@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User\Ai;
 
 use App\Actions\Ai\GenerateResumeVersionsAction;
 use App\Actions\Ai\RefineResumeBulletAction;
 use App\Exceptions\AiQuotaExceededException;
 use App\Exceptions\InsufficientResumeContentException;
 use App\Exceptions\InvalidAiProviderResponseException;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\GenerateResumeVersionsRequest;
 use App\Http\Requests\RefineResumeBulletRequest;
 use App\Models\Cv;

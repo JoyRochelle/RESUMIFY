@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User\Interview;
 
 use App\Actions\Interviews\EndInterviewSessionAction;
 use App\Actions\Interviews\SendInterviewMessageAction;
 use App\Actions\Interviews\StartInterviewAction;
+use App\Http\Controllers\Controller;
 use App\Models\AiUsageLog;
 use App\Models\Cv;
 use App\Models\InterviewMessage;

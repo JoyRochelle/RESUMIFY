@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Support;
 
+use App\Http\Controllers\Controller;
 use App\Jobs\SendTicketReplyJob;
 use App\Models\SupportTicket;
 use App\Models\TicketReply;
