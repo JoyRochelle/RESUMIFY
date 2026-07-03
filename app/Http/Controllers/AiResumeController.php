@@ -2,69 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Ai\GenerateResumeVersionsAction;
+use App\Actions\Ai\RefineResumeBulletAction;
+use App\Exceptions\AiQuotaExceededException;
+use App\Exceptions\InsufficientResumeContentException;
 use App\Exceptions\InvalidAiProviderResponseException;
-use Illuminate\Http\Request;
+use App\Http\Requests\GenerateResumeVersionsRequest;
+use App\Http\Requests\RefineResumeBulletRequest;
 use App\Models\Cv;
-use App\Models\ChameleonAdaptation;
-use App\Services\AiCreditService;
-use App\Services\AiService;
 use App\Support\ApiResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
 
 class AiResumeController extends Controller
 {
-    protected AiService $aiService;
-    protected AiCreditService $aiCreditService;
-
-    public function __construct(AiService $aiService, AiCreditService $aiCreditService)
-    {
-        $this->aiService = $aiService;
-        $this->aiCreditService = $aiCreditService;
-    }
-
     /**
      * Refine a single resume bullet point using AI.
      * Premium gating + quota check handled by 'ai.quota' middleware on the route.
      */
-    public function refineBullet(Request $request, Cv $cv)
-    {
+    public function refineBullet(
+        RefineResumeBulletRequest $request,
+        Cv $cv,
+        RefineResumeBulletAction $refineResumeBullet,
+    ): JsonResponse {
         Gate::authorize('update', $cv);
-        
-        $request->validate([
-            'text' => 'required|string|min:10|max:1000',
-            'job_context' => 'nullable|string|max:2000'
-        ]);
-
-        $user = auth()->user();
-
-        $reservation = $this->aiCreditService->reserve($user, 1, 'bullet_optimize');
-
-        if ($reservation->isDenied()) {
-            return response()->json([
-                'error'     => 'quota_exceeded',
-                'message'   => 'You have used all your AI credits. Upgrade to Premium for 50 credits/month.',
-                'remaining' => $reservation->remainingCredits(),
-                'limit'     => $reservation->quotaLimit,
-            ], 402);
-        }
 
         try {
-            $options = $this->aiService->refineBullet($request->text, $request->job_context);
+            $options = $refineResumeBullet->execute(
+                user: $request->user(),
+                cv: $cv,
+                text: $request->validated('text'),
+                jobContext: $request->validated('job_context'),
+            );
 
-            // Log usage on success
-            $this->aiService->logUsage($user->id, 'bullet_optimize', $cv->id);
-
-            return response()->json(['success' => true, 'options' => $options]);
+            return ApiResponse::success(['options' => $options]);
+        } catch (AiQuotaExceededException $e) {
+            return $this->quotaExceededResponse($e);
         } catch (InvalidAiProviderResponseException $e) {
-            $this->aiCreditService->refund($reservation);
             return ApiResponse::error(
                 code: ApiResponse::AI_PROVIDER_INVALID_RESPONSE,
                 message: 'The AI provider returned an invalid response.',
                 status: 500,
             );
         } catch (\Exception $e) {
-            $this->aiCreditService->refund($reservation);
-            return response()->json(['success' => false, 'message' => 'Failed to refine bullet.'], 500);
+            return ApiResponse::legacyError(
+                legacyCode: 'ai_provider_failed',
+                message: 'Failed to refine bullet.',
+                status: 500,
+            );
         }
     }
 
@@ -72,79 +57,55 @@ class AiResumeController extends Controller
      * Generate 3 CV versions in parallel using different angles.
      * Premium gating + quota check handled by 'ai.quota:3' middleware on the route.
      */
-    public function generateVersions(Request $request, Cv $cv)
-    {
+    public function generateVersions(
+        GenerateResumeVersionsRequest $request,
+        Cv $cv,
+        GenerateResumeVersionsAction $generateResumeVersions,
+    ): JsonResponse {
         Gate::authorize('update', $cv);
 
-        $request->validate([
-            'job_description' => 'required|string|min:50|max:10000',
-        ]);
-
-        $sections = $cv->sections()->orderBy('order')->get()->map(function($s) {
-            return [
-                'type' => $s->type,
-                'title' => $s->title,
-                'content' => $s->content
-            ];
-        })->toArray();
-
-        $contentLength = 0;
-        array_walk_recursive($sections, function($item, $key) use (&$contentLength) {
-            if ($key !== 'type' && $key !== 'title' && is_string($item)) {
-                $contentLength += strlen(trim($item));
-            }
-        });
-
-        if ($contentLength < 200) {
-            return response()->json(['success' => false, 'message' => 'Your CV does not have enough content to tailor. Please fill in your resume sections with more details first (at least 200 characters).'], 422);
-        }
-
-        $user = auth()->user();
-
-        $reservation = $this->aiCreditService->reserve($user, 3, 'generate_versions');
-
-        if ($reservation->isDenied()) {
-            return response()->json([
-                'error'     => 'quota_exceeded',
-                'message'   => 'You have used all your AI credits. Upgrade to Premium for 50 credits/month.',
-                'remaining' => $reservation->remainingCredits(),
-                'limit'     => $reservation->quotaLimit,
-            ], 402);
-        }
-
         try {
-            $versions = $this->aiService->generateCvVersions($sections, $request->job_description);
-            
-            $savedVersions = [];
-            foreach ($versions as $angle => $adaptedContent) {
-                $adaptation = ChameleonAdaptation::create([
-                    'cv_id' => $cv->id,
-                    'tone_style' => $angle,
-                    'adapted_content' => $adaptedContent,
-                    'ai_prompt_used' => 'Generated parallel CV version for ' . $angle
-                ]);
-                
-                $savedVersions[] = [
-                    'id' => $adaptation->id,
-                    'angle' => $angle,
-                    'content' => $adaptedContent
-                ];
-            }
+            $versions = $generateResumeVersions->execute(
+                user: $request->user(),
+                cv: $cv,
+                jobDescription: $request->validated('job_description'),
+            );
 
-            // Log usage on success
-            $this->aiService->logUsage($user->id, 'generate_versions', $cv->id);
-
-            return response()->json(['success' => true, 'versions' => $savedVersions]);
+            return ApiResponse::success(['versions' => $versions]);
+        } catch (InsufficientResumeContentException $e) {
+            return ApiResponse::legacyError(
+                legacyCode: 'insufficient_resume_content',
+                message: $e->getMessage(),
+                status: 422,
+            );
+        } catch (AiQuotaExceededException $e) {
+            return $this->quotaExceededResponse($e);
         } catch (InvalidAiProviderResponseException $e) {
-            $this->aiCreditService->refund($reservation);
             return ApiResponse::error(
                 code: ApiResponse::AI_PROVIDER_INVALID_RESPONSE,
                 message: 'The AI provider returned an invalid response.',
                 status: 500,
             );
         } catch (\Exception $e) {
-            $this->aiCreditService->refund($reservation);
-            return response()->json(['success' => false, 'message' => 'Failed to generate CV versions.'], 500);
+            return ApiResponse::legacyError(
+                legacyCode: 'ai_provider_failed',
+                message: 'Failed to generate CV versions.',
+                status: 500,
+            );
         }
+    }
+
+    private function quotaExceededResponse(AiQuotaExceededException $exception): JsonResponse
+    {
+        return ApiResponse::legacyError(
+            legacyCode: 'quota_exceeded',
+            message: $exception->getMessage(),
+            status: 402,
+            legacy: [
+                'remaining' => $exception->remainingCredits,
+                'limit' => $exception->quotaLimit,
+            ],
+            standardCode: ApiResponse::QUOTA_EXCEEDED,
+        );
     }
 }

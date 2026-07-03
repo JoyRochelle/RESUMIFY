@@ -53,4 +53,24 @@ class ApiResponse
 
         return response()->json($payload, $status);
     }
+
+    public static function legacyError(
+        string $legacyCode,
+        string $message,
+        int $status = 400,
+        array $legacy = [],
+        ?string $standardCode = null,
+    ): JsonResponse {
+        $payload = array_merge($legacy, [
+            'success' => false,
+            'message' => $message,
+            'error' => $legacyCode,
+        ]);
+
+        if ($standardCode !== null) {
+            $payload['error_code'] = $standardCode;
+        }
+
+        return response()->json($payload, $status);
+    }
 }
