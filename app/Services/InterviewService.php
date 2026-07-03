@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Domain\Ai\Data\InterviewFeedbackResponse;
+use App\Exceptions\InvalidAiProviderResponseException;
 use App\Models\Cv;
 use App\Models\InterviewFeedback;
 use App\Models\InterviewMessage;
@@ -119,20 +121,14 @@ PROMPT;
         $prompt     = $this->buildFeedbackPrompt($session->job_target, $transcript);
 
         $data = $this->callGeminiJson($prompt, 45);
-
-        $score = max(0, min(100, (int) ($data['overall_score'] ?? 0)));
-        $badge = match (true) {
-            $score >= 75 => 'ready',
-            $score >= 50 => 'almost_ready',
-            default      => 'needs_practice',
-        };
+        $data = InterviewFeedbackResponse::fromProvider($data);
 
         return InterviewFeedback::create([
             'session_id'       => $session->id,
-            'question_scores'  => $data['question_scores'] ?? [],
-            'missing_keywords' => $data['missing_keywords'] ?? [],
-            'overall_score'    => $score,
-            'readiness_badge'  => $badge,
+            'question_scores'  => $data['question_scores'],
+            'missing_keywords' => $data['missing_keywords'],
+            'overall_score'    => $data['overall_score'],
+            'readiness_badge'  => $data['readiness_badge'],
         ]);
     }
 
@@ -390,8 +386,8 @@ PROMPT;
         $content = preg_replace('/^```json\s*|\s*```$/i', '', trim($content));
         $decoded = json_decode($content, true);
 
-        if ($decoded === null) {
-            throw new \Exception('Invalid JSON feedback from AI service');
+        if (!is_array($decoded) || json_last_error() !== JSON_ERROR_NONE) {
+            throw new InvalidAiProviderResponseException('Invalid JSON feedback from AI service');
         }
 
         return $decoded;

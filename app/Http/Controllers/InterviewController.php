@@ -9,7 +9,9 @@ use App\Models\AiUsageLog;
 use App\Models\Cv;
 use App\Models\InterviewMessage;
 use App\Models\InterviewSession;
+use App\Services\AiCreditService;
 use App\Services\InterviewService;
+use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,11 +20,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class InterviewController extends Controller
 {
-    public function __construct(protected InterviewService $interviewService) {}
+    public function __construct(
+        protected InterviewService $interviewService,
+        protected AiCreditService $aiCreditService,
+    ) {}
 
     /**
      * Show the resume-picker / job-target form to start a new interview.
@@ -84,6 +90,11 @@ class InterviewController extends Controller
         if ($result->feedbackGeneratedSuccessfully()) {
             return redirect()->route('interview.feedback', $session)
                 ->with('success', 'Session ended! Here is your interview report.');
+        }
+
+        if ($result->feedbackInvalidProviderResponse()) {
+            return redirect()->route('interview.index')
+                ->with('error', ApiResponse::AI_PROVIDER_INVALID_RESPONSE);
         }
 
         return redirect()->route('interview.index')
@@ -184,8 +195,6 @@ class InterviewController extends Controller
         $user    = auth()->user();
         $content = $request->content;
 
-        $user->increment('ai_quota_used', 1);
-
         // Save user message before stream so tests can assert on it without triggering the closure
         InterviewMessage::create([
             'session_id' => $session->id,
@@ -198,6 +207,16 @@ class InterviewController extends Controller
         $contents = $this->interviewService->buildRecentConversationContents($session);
 
         return response()->stream(function () use ($user, $session, $systemPrompt, $contents) {
+            $reservation = $this->aiCreditService->reserve($user, 1, 'interview_stream');
+
+            if ($reservation->isDenied()) {
+                echo 'data: ' . json_encode(['error' => 'You have used all your AI credits. Upgrade to Premium for 50 credits/month.']) . "\n\n";
+                ob_flush();
+                flush();
+
+                return;
+            }
+
             try {
                 $fullText = $this->interviewService->callGeminiStreaming(
                     $systemPrompt,
@@ -228,7 +247,7 @@ class InterviewController extends Controller
                 flush();
 
             } catch (\Exception $e) {
-                $user->decrement('ai_quota_used', 1);
+                $this->aiCreditService->refund($reservation);
                 Log::error('InterviewController@stream failed', ['error' => $e->getMessage()]);
                 echo 'data: ' . json_encode(['error' => 'Failed to get AI response.']) . "\n\n";
                 ob_flush();
@@ -266,6 +285,17 @@ class InterviewController extends Controller
                 'session_id' => $result['session']->id,
                 'message'    => $result['message'],
             ]);
+        } catch (HttpExceptionInterface $e) {
+            if ($e->getStatusCode() === 402) {
+                return response()->json([
+                    'error'     => 'quota_exceeded',
+                    'message'   => 'You have used all your AI credits. Upgrade to Premium for 50 credits/month.',
+                    'remaining' => $user->getQuotaRemaining(),
+                    'limit'     => $user->getQuotaLimit(),
+                ], 402);
+            }
+
+            throw $e;
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Failed to start interview session.'], 500);
         }
@@ -302,6 +332,17 @@ class InterviewController extends Controller
                 'success' => true,
                 'message' => $reply,
             ]);
+        } catch (HttpExceptionInterface $e) {
+            if ($e->getStatusCode() === 402) {
+                return response()->json([
+                    'error'     => 'quota_exceeded',
+                    'message'   => 'You have used all your AI credits. Upgrade to Premium for 50 credits/month.',
+                    'remaining' => $user->getQuotaRemaining(),
+                    'limit'     => $user->getQuotaLimit(),
+                ], 402);
+            }
+
+            throw $e;
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Failed to get AI response.'], 500);
         }

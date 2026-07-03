@@ -5,16 +5,25 @@ namespace App\Actions\Interviews;
 use App\Models\AiUsageLog;
 use App\Models\InterviewSession;
 use App\Models\User;
+use App\Services\AiCreditService;
 use App\Services\InterviewService;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SendInterviewMessageAction
 {
-    public function __construct(private InterviewService $interviewService) {}
+    public function __construct(
+        private InterviewService $interviewService,
+        private AiCreditService $aiCreditService,
+    ) {}
 
     public function execute(User $user, InterviewSession $session, string $content): string
     {
-        $user->increment('ai_quota_used', 1);
+        $reservation = $this->aiCreditService->reserve($user, 1, 'interview_message');
+
+        if ($reservation->isDenied()) {
+            throw new HttpException(402, 'AI quota exceeded.');
+        }
 
         try {
             $reply = $this->interviewService->sendMessage($session, $content);
@@ -29,7 +38,7 @@ class SendInterviewMessageAction
 
             return $reply;
         } catch (\Exception $e) {
-            $user->decrement('ai_quota_used', 1);
+            $this->aiCreditService->refund($reservation);
             Log::error('SendInterviewMessageAction failed', ['error' => $e->getMessage()]);
 
             throw $e;

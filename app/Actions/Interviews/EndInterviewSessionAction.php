@@ -2,15 +2,20 @@
 
 namespace App\Actions\Interviews;
 
+use App\Exceptions\InvalidAiProviderResponseException;
 use App\Models\AiUsageLog;
 use App\Models\InterviewSession;
 use App\Models\User;
+use App\Services\AiCreditService;
 use App\Services\InterviewService;
 use Illuminate\Support\Facades\Log;
 
 class EndInterviewSessionAction
 {
-    public function __construct(private InterviewService $interviewService) {}
+    public function __construct(
+        private InterviewService $interviewService,
+        private AiCreditService $aiCreditService,
+    ) {}
 
     public function execute(User $user, InterviewSession $session): EndInterviewSessionResult
     {
@@ -19,11 +24,11 @@ class EndInterviewSessionAction
             'ended_at' => now(),
         ]);
 
-        if (!$user->isPremium() && !$user->isAdmin() && !$user->hasQuotaRemaining(1)) {
+        $reservation = $this->aiCreditService->reserve($user, 1, 'interview_feedback');
+
+        if ($reservation->isDenied()) {
             return EndInterviewSessionResult::feedbackUnavailable();
         }
-
-        $user->increment('ai_quota_used', 1);
 
         try {
             $this->interviewService->generateFeedback($session);
@@ -37,8 +42,13 @@ class EndInterviewSessionAction
             ]);
 
             return EndInterviewSessionResult::feedbackGenerated();
+        } catch (InvalidAiProviderResponseException $e) {
+            $this->aiCreditService->refund($reservation);
+            Log::warning('EndInterviewSessionAction invalid AI feedback response', ['error' => $e->getMessage()]);
+
+            return EndInterviewSessionResult::invalidProviderResponse();
         } catch (\Exception $e) {
-            $user->decrement('ai_quota_used', 1);
+            $this->aiCreditService->refund($reservation);
             Log::error('EndInterviewSessionAction feedback failed', ['error' => $e->getMessage()]);
 
             return EndInterviewSessionResult::feedbackFailed();
