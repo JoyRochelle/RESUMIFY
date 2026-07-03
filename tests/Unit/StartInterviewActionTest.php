@@ -18,7 +18,7 @@ class StartInterviewActionTest extends TestCase
     {
         $user = User::factory()->create(['role' => 'basic', 'ai_quota_used' => 0]);
         $template = CvTemplate::factory()->create();
-        $resume = Cv::create([
+        $resume = Cv::forceCreate([
             'user_id' => $user->id,
             'template_id' => $template->id,
             'title' => 'Backend Resume',

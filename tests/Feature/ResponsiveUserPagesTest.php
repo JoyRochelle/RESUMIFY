@@ -26,8 +26,8 @@ class ResponsiveUserPagesTest extends TestCase
     private function createCvForUser(): Cv
     {
         $template = CvTemplate::factory()->create(['is_active' => true]);
-        return Cv::create([
-            'id'          => Str::ulid(),
+        return Cv::forceCreate([
+            'id'          => (string) Str::ulid(),
             'user_id'     => $this->user->id,
             'template_id' => $template->id,
             'title'       => 'Test Resume',

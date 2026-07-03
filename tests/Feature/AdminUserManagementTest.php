@@ -144,7 +144,7 @@ class AdminUserManagementTest extends TestCase
 
     public function test_filter_by_suspended_status_returns_only_suspended(): void
     {
-        $this->basicUser->update(['is_suspended' => true]);
+        $this->basicUser->forceFill(['is_suspended' => true])->save();
 
         $response = $this->actingAs($this->admin)
             ->get(route('admin.users', ['status' => 'suspended']));
@@ -156,7 +156,7 @@ class AdminUserManagementTest extends TestCase
 
     public function test_filter_by_active_status_excludes_suspended(): void
     {
-        $this->basicUser->update(['is_suspended' => true]);
+        $this->basicUser->forceFill(['is_suspended' => true])->save();
 
         $response = $this->actingAs($this->admin)
             ->get(route('admin.users', ['status' => 'active']));
@@ -245,7 +245,7 @@ class AdminUserManagementTest extends TestCase
 
     public function test_override_plan_to_premium_resets_quota_used(): void
     {
-        $this->basicUser->update(['ai_quota_used' => 3]);
+        $this->basicUser->forceFill(['ai_quota_used' => 3])->save();
 
         $this->actingAs($this->admin)
             ->patch(route('admin.users.plan', $this->basicUser), ['plan' => 'premium']);
@@ -319,7 +319,7 @@ class AdminUserManagementTest extends TestCase
 
     public function test_adjust_credits_admin_log_has_structured_mutation_metadata(): void
     {
-        $this->basicUser->update(['ai_quota_used' => 1]);
+        $this->basicUser->forceFill(['ai_quota_used' => 1])->save();
 
         $this->actingAs($this->admin)
             ->patch(route('admin.users.credits', $this->basicUser), ['ai_quota_used' => 8])
@@ -366,7 +366,7 @@ class AdminUserManagementTest extends TestCase
 
     public function test_activate_sets_is_suspended_to_false(): void
     {
-        $this->basicUser->update(['is_suspended' => true]);
+        $this->basicUser->forceFill(['is_suspended' => true])->save();
 
         $this->actingAs($this->admin)
             ->patch(route('admin.users.suspend', $this->basicUser))
@@ -386,7 +386,7 @@ class AdminUserManagementTest extends TestCase
 
     public function test_activate_logs_activate_action(): void
     {
-        $this->basicUser->update(['is_suspended' => true]);
+        $this->basicUser->forceFill(['is_suspended' => true])->save();
 
         $this->actingAs($this->admin)
             ->patch(route('admin.users.suspend', $this->basicUser));
@@ -462,7 +462,7 @@ class AdminUserManagementTest extends TestCase
 
     public function test_suspended_user_is_logged_out_and_redirected_to_login(): void
     {
-        $this->basicUser->update(['is_suspended' => true]);
+        $this->basicUser->forceFill(['is_suspended' => true])->save();
 
         $this->actingAs($this->basicUser)
             ->get(route('dashboard'))
@@ -471,7 +471,7 @@ class AdminUserManagementTest extends TestCase
 
     public function test_suspended_user_sees_suspension_error_message(): void
     {
-        $this->basicUser->update(['is_suspended' => true]);
+        $this->basicUser->forceFill(['is_suspended' => true])->save();
 
         $response = $this->actingAs($this->basicUser)
             ->followingRedirects()
@@ -482,7 +482,7 @@ class AdminUserManagementTest extends TestCase
 
     public function test_suspended_admin_is_not_logged_out(): void
     {
-        $this->admin->update(['is_suspended' => true]);
+        $this->admin->forceFill(['is_suspended' => true])->save();
 
         $this->actingAs($this->admin)
             ->get(route('admin.dashboard'))

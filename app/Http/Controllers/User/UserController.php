@@ -29,12 +29,12 @@ class UserController extends Controller
         
         if (!empty($missing)) {
             foreach ($missing as $type) {
-                $cv->sections()->create([
+                $section = $cv->sections()->create([
                     'type' => $type,
                     'title' => ucwords(str_replace('_', ' ', $type)),
-                    'order' => array_search($type, $required) + 1,
                     'content' => null
                 ]);
+                $section->forceFill(['order' => array_search($type, $required) + 1])->save();
             }
             $cv->load('sections');
         }

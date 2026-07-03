@@ -139,7 +139,7 @@ class AtsScanOwnershipTest extends TestCase
 
     private function cvFor(User $user, array $attributes = []): Cv
     {
-        return Cv::create(array_merge([
+        return Cv::forceCreate(array_merge([
             'id' => (string) Str::ulid(),
             'user_id' => $user->id,
             'template_id' => $this->template->id,
