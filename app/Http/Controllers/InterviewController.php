@@ -11,6 +11,7 @@ use App\Models\InterviewMessage;
 use App\Models\InterviewSession;
 use App\Services\AiCreditService;
 use App\Services\InterviewService;
+use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -89,6 +90,11 @@ class InterviewController extends Controller
         if ($result->feedbackGeneratedSuccessfully()) {
             return redirect()->route('interview.feedback', $session)
                 ->with('success', 'Session ended! Here is your interview report.');
+        }
+
+        if ($result->feedbackInvalidProviderResponse()) {
+            return redirect()->route('interview.index')
+                ->with('error', ApiResponse::AI_PROVIDER_INVALID_RESPONSE);
         }
 
         return redirect()->route('interview.index')

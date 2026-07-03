@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\InvalidAiProviderResponseException;
 use Illuminate\Http\Request;
 use App\Models\Cv;
 use App\Models\ChameleonAdaptation;
 use App\Services\AiCreditService;
 use App\Services\AiService;
+use App\Support\ApiResponse;
 use Illuminate\Support\Facades\Gate;
 
 class AiResumeController extends Controller
@@ -53,6 +55,13 @@ class AiResumeController extends Controller
             $this->aiService->logUsage($user->id, 'bullet_optimize', $cv->id);
 
             return response()->json(['success' => true, 'options' => $options]);
+        } catch (InvalidAiProviderResponseException $e) {
+            $this->aiCreditService->refund($reservation);
+            return ApiResponse::error(
+                code: ApiResponse::AI_PROVIDER_INVALID_RESPONSE,
+                message: 'The AI provider returned an invalid response.',
+                status: 500,
+            );
         } catch (\Exception $e) {
             $this->aiCreditService->refund($reservation);
             return response()->json(['success' => false, 'message' => 'Failed to refine bullet.'], 500);
@@ -126,6 +135,13 @@ class AiResumeController extends Controller
             $this->aiService->logUsage($user->id, 'generate_versions', $cv->id);
 
             return response()->json(['success' => true, 'versions' => $savedVersions]);
+        } catch (InvalidAiProviderResponseException $e) {
+            $this->aiCreditService->refund($reservation);
+            return ApiResponse::error(
+                code: ApiResponse::AI_PROVIDER_INVALID_RESPONSE,
+                message: 'The AI provider returned an invalid response.',
+                status: 500,
+            );
         } catch (\Exception $e) {
             $this->aiCreditService->refund($reservation);
             return response()->json(['success' => false, 'message' => 'Failed to generate CV versions.'], 500);
