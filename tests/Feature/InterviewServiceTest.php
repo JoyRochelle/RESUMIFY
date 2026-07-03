@@ -43,7 +43,7 @@ class InterviewServiceTest extends TestCase
 
         $user = User::factory()->create(['role' => $role, 'ai_quota_used' => 0]);
 
-        $cv = Cv::create([
+        $cv = Cv::forceCreate([
             'id'          => Str::ulid(),
             'user_id'     => $user->id,
             'template_id' => $template->id,
@@ -52,7 +52,7 @@ class InterviewServiceTest extends TestCase
         ]);
 
         // Work experience with a specific company name for prompt-injection assertions
-        CvSection::create([
+        CvSection::forceCreate([
             'id'     => Str::ulid(),
             'cv_id'  => $cv->id,
             'type'   => 'work_experience',
@@ -63,7 +63,7 @@ class InterviewServiceTest extends TestCase
             ],
         ]);
 
-        CvSection::create([
+        CvSection::forceCreate([
             'id'     => Str::ulid(),
             'cv_id'  => $cv->id,
             'type'   => 'personal_info',
@@ -263,7 +263,7 @@ class InterviewServiceTest extends TestCase
     public function test_quota_is_refunded_on_gemini_failure(): void
     {
         [$user, $cv] = $this->makeUserWithCv('basic');
-        $user->update(['ai_quota_used' => 0]);
+        $user->forceFill(['ai_quota_used' => 0])->save();
 
         Http::fake([self::GEMINI_PATTERN => Http::response(null, 500)]);
 

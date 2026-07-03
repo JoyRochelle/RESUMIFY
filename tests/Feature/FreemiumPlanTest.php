@@ -30,7 +30,7 @@ class FreemiumPlanTest extends TestCase
 
     private function cv(User $user, CvTemplate $template, array $attributes = []): Cv
     {
-        $cv = Cv::create(array_merge([
+        $cv = Cv::forceCreate(array_merge([
             'id' => (string) Str::ulid(),
             'user_id' => $user->id,
             'template_id' => $template->id,
@@ -38,7 +38,7 @@ class FreemiumPlanTest extends TestCase
             'status' => 'draft',
         ], $attributes));
 
-        CvSection::create([
+        CvSection::forceCreate([
             'id' => (string) Str::ulid(),
             'cv_id' => $cv->id,
             'type' => 'personal_info',

@@ -21,21 +21,22 @@ class UpdateResumeSectionAction
     ): array {
         $data = [
             'title' => $title ?? $section->title,
-            'last_saved_at' => now(),
         ];
 
         if ($replaceContent) {
             $data['content'] = $this->normalizeContent($content);
         }
 
-        $section->update($data);
+        $section->fill($data);
+        $section->forceFill(['last_saved_at' => now()]);
+        $section->save();
 
         if ($section->type === 'target_job' && isset($data['content']['job_title'])) {
             $resume->update(['job_target' => $data['content']['job_title']]);
         }
 
         $atsResult = AtsScoreService::calculate($resume);
-        $resume->update(['ats_score' => $atsResult['score']]);
+        $resume->forceFill(['ats_score' => $atsResult['score']])->save();
 
         return [
             'section' => $section,

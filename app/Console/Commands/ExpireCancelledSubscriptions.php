@@ -36,7 +36,7 @@ class ExpireCancelledSubscriptions extends Command
                     ->exists();
 
                 if (!$hasActivePremium && $user->role === 'premium') {
-                    $user->update(['role' => 'basic']);
+                    $user->forceFill(['role' => 'basic'])->save();
                 }
 
                 $count++;

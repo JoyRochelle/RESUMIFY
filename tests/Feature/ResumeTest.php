@@ -63,7 +63,7 @@ class ResumeTest extends TestCase
         $user = User::factory()->create(['role' => 'basic']);
         $template = CvTemplate::first();
         
-        $cv = Cv::create([
+        $cv = Cv::forceCreate([
             'id' => \Illuminate\Support\Str::ulid(),
             'user_id' => $user->id,
             'template_id' => $template->id,
@@ -87,7 +87,7 @@ class ResumeTest extends TestCase
         $user = User::factory()->create(['role' => 'basic']);
         $template = CvTemplate::first();
 
-        $cv = Cv::create([
+        $cv = Cv::forceCreate([
             'user_id' => $user->id,
             'template_id' => $template->id,
             'title' => 'Quota Limited Resume',
@@ -111,7 +111,7 @@ class ResumeTest extends TestCase
         $user = User::factory()->create(['role' => 'premium']);
         $template = CvTemplate::first();
 
-        $cv = Cv::create([
+        $cv = Cv::forceCreate([
             'user_id' => $user->id,
             'template_id' => $template->id,
             'title' => 'Premium Resume',

@@ -102,7 +102,7 @@ class AiProviderValidationTest extends TestCase
         $user = User::factory()->create(['role' => 'premium', 'ai_quota_used' => 0]);
         $cv = $this->cvFor($user);
 
-        CvSection::create([
+        CvSection::forceCreate([
             'id' => (string) Str::ulid(),
             'cv_id' => $cv->id,
             'type' => 'personal_info',
@@ -180,7 +180,7 @@ class AiProviderValidationTest extends TestCase
 
     private function cvFor(User $user): Cv
     {
-        return Cv::create([
+        return Cv::forceCreate([
             'id' => (string) Str::ulid(),
             'user_id' => $user->id,
             'template_id' => $this->template->id,

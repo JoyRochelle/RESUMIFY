@@ -141,7 +141,7 @@ class OwnershipAuthorizationPolicyTest extends TestCase
             'is_premium' => false,
         ]);
 
-        return Cv::create([
+        return Cv::forceCreate([
             'id' => (string) Str::ulid(),
             'user_id' => $user->id,
             'template_id' => $template->id,

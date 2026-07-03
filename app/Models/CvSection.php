@@ -15,18 +15,16 @@ class CvSection extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'cv_id',
         'type',
         'title',
         'content',
-        'order',
-        'last_saved_at',
     ];
 
     protected function casts(): array
     {
         return [
             'content' => 'array',
+            'last_saved_at' => 'datetime',
         ];
     }
 

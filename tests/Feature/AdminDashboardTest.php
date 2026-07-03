@@ -263,7 +263,7 @@ class AdminDashboardTest extends TestCase
     public function test_suspended_admin_can_still_access_dashboard(): void
     {
         // Admins bypass suspension checks per spec
-        $this->admin->update(['is_suspended' => true]);
+        $this->admin->forceFill(['is_suspended' => true])->save();
 
         $this->actingAs($this->admin)
             ->get(route('admin.dashboard'))

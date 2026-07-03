@@ -18,7 +18,7 @@ class DuplicateResumeActionTest extends TestCase
         $user = User::factory()->create(['role' => 'premium']);
         $template = CvTemplate::factory()->create();
 
-        $resume = Cv::create([
+        $resume = Cv::forceCreate([
             'user_id' => $user->id,
             'template_id' => $template->id,
             'title' => 'Backend Resume',

@@ -39,7 +39,7 @@ class InterviewFeedbackTest extends TestCase
 
         $user = User::factory()->create(['role' => $role, 'ai_quota_used' => 0]);
 
-        $cv = Cv::create([
+        $cv = Cv::forceCreate([
             'id'          => Str::ulid(),
             'user_id'     => $user->id,
             'template_id' => $template->id,
@@ -47,7 +47,7 @@ class InterviewFeedbackTest extends TestCase
             'job_target'  => 'Backend Engineer',
         ]);
 
-        CvSection::create([
+        CvSection::forceCreate([
             'id'      => Str::ulid(),
             'cv_id'   => $cv->id,
             'type'    => 'target_job',
