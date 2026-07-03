@@ -10,6 +10,7 @@ use App\Models\AtsScan;
 use App\Support\ApiResponse;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class AtsController extends Controller
@@ -43,7 +44,8 @@ class AtsController extends Controller
      */
     public function showHistory(AtsScan $scan): JsonResponse
     {
-        abort_if($scan->user_id !== auth()->id(), 403);
+        Gate::authorize('view', $scan);
+
         return response()->json($scan->result_json ?? []);
     }
 
@@ -106,8 +108,10 @@ class AtsController extends Controller
      */
     public function destroyHistory(AtsScan $scan): JsonResponse
     {
-        abort_if($scan->user_id !== auth()->id(), 403);
+        Gate::authorize('delete', $scan);
+
         $scan->delete();
+
         return response()->json(['success' => true]);
     }
 }
