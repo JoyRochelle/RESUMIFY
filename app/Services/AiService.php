@@ -2,6 +2,10 @@
 
 namespace App\Services;
 
+use App\Domain\Ai\Data\AtsAnalysisResponse;
+use App\Domain\Ai\Data\CvVersionsResponse;
+use App\Domain\Ai\Data\ResumeBulletOptionsResponse;
+use App\Exceptions\InvalidAiProviderResponseException;
 use App\Models\AiUsageLog;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -27,7 +31,7 @@ class AiService
         $prompt .= "Original Bullet:\n{$text}\n\n";
         $prompt .= "Return ONLY a JSON array of strings containing exactly 3 alternative rewrites.";
 
-        return $this->callGemini($prompt);
+        return ResumeBulletOptionsResponse::fromProvider($this->callGemini($prompt));
     }
 
     /**
@@ -71,10 +75,15 @@ class AiService
                 // Clean markdown block if present
                 $content = preg_replace('/^```json\s*|\s*```$/i', '', trim($content));
                 
-                $results[$angle] = json_decode($content, true) ?: $currentSections;
+                $decoded = json_decode($content, true);
+                if (!is_array($decoded) || json_last_error() !== JSON_ERROR_NONE) {
+                    throw new InvalidAiProviderResponseException('Invalid JSON from AI service: ' . json_last_error_msg());
+                }
+
+                $results[$angle] = CvVersionsResponse::fromProvider($decoded);
             } else {
                 Log::error("AiService generateCvVersions failed for angle {$angle}");
-                $results[$angle] = $currentSections; // Fallback to original
+                throw new \Exception("AI service failed for {$angle} CV version.");
             }
         }
 
@@ -88,7 +97,7 @@ class AiService
     public function analyzeAts(string $resumeText, string $jobDescription): array
     {
         $prompt = $this->buildAtsAnalysisPrompt($resumeText, $jobDescription);
-        return $this->callGemini($prompt, 30);
+        return AtsAnalysisResponse::fromProvider($this->callGemini($prompt, 30));
     }
 
     /**
@@ -153,11 +162,11 @@ class AiService
         $content = preg_replace('/^```json\s*|\s*```$/i', '', trim($content));
 
         $decoded = json_decode($content, true);
-        if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception('Invalid JSON from AI service: ' . json_last_error_msg());
+        if (!is_array($decoded) || json_last_error() !== JSON_ERROR_NONE) {
+            throw new InvalidAiProviderResponseException('Invalid JSON from AI service: ' . json_last_error_msg());
         }
 
-        return $decoded ?: [];
+        return $decoded;
     }
 
     /**

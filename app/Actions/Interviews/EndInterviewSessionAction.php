@@ -2,6 +2,7 @@
 
 namespace App\Actions\Interviews;
 
+use App\Exceptions\InvalidAiProviderResponseException;
 use App\Models\AiUsageLog;
 use App\Models\InterviewSession;
 use App\Models\User;
@@ -41,6 +42,11 @@ class EndInterviewSessionAction
             ]);
 
             return EndInterviewSessionResult::feedbackGenerated();
+        } catch (InvalidAiProviderResponseException $e) {
+            $this->aiCreditService->refund($reservation);
+            Log::warning('EndInterviewSessionAction invalid AI feedback response', ['error' => $e->getMessage()]);
+
+            return EndInterviewSessionResult::invalidProviderResponse();
         } catch (\Exception $e) {
             $this->aiCreditService->refund($reservation);
             Log::error('EndInterviewSessionAction feedback failed', ['error' => $e->getMessage()]);

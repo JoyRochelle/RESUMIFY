@@ -21,6 +21,11 @@ class EndInterviewSessionResult
         return new self('feedback_failed');
     }
 
+    public static function invalidProviderResponse(): self
+    {
+        return new self('feedback_invalid_provider_response');
+    }
+
     public function feedbackGeneratedSuccessfully(): bool
     {
         return $this->status === 'feedback_generated';
@@ -29,5 +34,10 @@ class EndInterviewSessionResult
     public function feedbackUnavailableDueToQuota(): bool
     {
         return $this->status === 'feedback_unavailable';
+    }
+
+    public function feedbackInvalidProviderResponse(): bool
+    {
+        return $this->status === 'feedback_invalid_provider_response';
     }
 }
