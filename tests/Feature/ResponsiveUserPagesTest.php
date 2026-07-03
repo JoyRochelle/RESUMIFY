@@ -228,6 +228,13 @@ class ResponsiveUserPagesTest extends TestCase
         $response->assertSee('text-3xl md:text-5xl', false);
     }
 
+    public function test_settings_page_loads_for_authenticated_user(): void
+    {
+        $this->actingAs($this->user)
+            ->get(route('user.settings'))
+            ->assertOk();
+    }
+
     // =========================================================
     // Tickets list + show — padding
     // =========================================================
