@@ -35,7 +35,7 @@ class ResumeController extends Controller
     {
         $templates = CvTemplate::where('is_active', true)->get();
 
-        return view('resumes.create', compact('templates'));
+        return view('user.resume.create', compact('templates'));
     }
 
     /**
@@ -81,7 +81,7 @@ class ResumeController extends Controller
 
         $cv->load('sections', 'template');
 
-        return view('resumes.show', compact('cv'));
+        return view('user.resume.show', compact('cv'));
     }
 
     /**
