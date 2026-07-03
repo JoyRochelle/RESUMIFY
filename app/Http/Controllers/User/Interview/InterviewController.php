@@ -55,9 +55,7 @@ class InterviewController extends Controller
      */
     public function show(InterviewSession $session): View
     {
-        if ($session->user_id !== auth()->id()) {
-            abort(403);
-        }
+        Gate::authorize('view', $session);
 
         $session->load('messages');
 
@@ -73,9 +71,7 @@ class InterviewController extends Controller
         EndInterviewSessionAction $endInterviewSession
     ): RedirectResponse
     {
-        if ($session->user_id !== auth()->id()) {
-            abort(403);
-        }
+        Gate::authorize('endSession', $session);
 
         if ($session->status !== 'active') {
             return redirect()->back()->with('error', 'This session has already ended.');
@@ -107,9 +103,7 @@ class InterviewController extends Controller
      */
     public function feedback(InterviewSession $session): View|RedirectResponse
     {
-        if ($session->user_id !== auth()->id()) {
-            abort(403);
-        }
+        Gate::authorize('feedback', $session);
 
         $session->load('feedback');
 
@@ -181,9 +175,7 @@ class InterviewController extends Controller
      */
     public function stream(Request $request, InterviewSession $session): StreamedResponse
     {
-        if ($session->user_id !== auth()->id()) {
-            abort(403);
-        }
+        Gate::authorize('stream', $session);
 
         $request->validate(['content' => 'required|string|max:2000']);
 
@@ -312,9 +304,7 @@ class InterviewController extends Controller
         SendInterviewMessageAction $sendInterviewMessage
     ): JsonResponse
     {
-        if ($session->user_id !== auth()->id()) {
-            abort(403);
-        }
+        Gate::authorize('message', $session);
 
         $request->validate([
             'content' => 'required|string|max:2000',
