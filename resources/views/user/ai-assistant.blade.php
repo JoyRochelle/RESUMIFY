@@ -74,13 +74,13 @@
                     <x-user.editor-accordion title="Target Job" icon="target" :isOpen="true">
                         <div class="grid grid-cols-1 gap-4">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <x-user.form-input
+                                <x-ui.form-input
                                     id="ats-job-title"
                                     label="Target Job Title"
                                     name="job_title"
                                     value=""
                                     placeholder="e.g. Senior Software Engineer" />
-                                <x-user.form-input
+                                <x-ui.form-input
                                     id="ats-job-company"
                                     label="Target Company"
                                     name="job_company"

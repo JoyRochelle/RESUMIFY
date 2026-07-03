@@ -69,15 +69,15 @@
     </ul>
 
     @if ($isCurrentPlan)
-        <x-user.button variant="ghost"
+        <x-ui.button variant="ghost"
             class="w-full py-4 rounded-xl cursor-not-allowed opacity-60 border border-primary/10" disabled>
             Current Plan
-        </x-user.button>
+        </x-ui.button>
     @else
-        <x-user.button variant="primary"
+        <x-ui.button variant="primary"
             class="w-full py-4 rounded-xl shadow-lg {{ $isPremium ? '!bg-secondary hover:opacity-90' : '' }}"
             {{ $attributes }}>
             {{ $buttonText }}
-        </x-user.button>
+        </x-ui.button>
     @endif
 </div>

@@ -13,10 +13,10 @@
         
         {{-- Page Header --}}
         <x-user.page-header title="Editor: {{ $cv->title ?? 'Untitled Resume' }}" backUrl="{{ route('dashboard') }}">
-            <x-user.button type="button" onclick="openCvVersionsModal()" variant="outline" icon="auto_awesome" class="text-sm px-3 hidden sm:flex text-secondary border-secondary hover:bg-secondary/10">Tailor CV</x-user.button>
-            <x-user.button onclick="previewPdf('{{ $cv->id ?? '' }}')" variant="ghost" class="text-sm px-3 hidden sm:flex">Preview</x-user.button>
+            <x-ui.button type="button" onclick="openCvVersionsModal()" variant="outline" icon="auto_awesome" class="text-sm px-3 hidden sm:flex text-secondary border-secondary hover:bg-secondary/10">Tailor CV</x-ui.button>
+            <x-ui.button onclick="previewPdf('{{ $cv->id ?? '' }}')" variant="ghost" class="text-sm px-3 hidden sm:flex">Preview</x-ui.button>
             @if($user->canUsePremiumFeature('pdf_export'))
-                <x-user.button id="download-btn" onclick="downloadPdf('{{ $cv->id ?? '' }}')" variant="primary" icon="download" iconClass="text-[18px]" class="text-sm px-3 w-full sm:w-auto justify-center">Download PDF</x-user.button>
+                <x-ui.button id="download-btn" onclick="downloadPdf('{{ $cv->id ?? '' }}')" variant="primary" icon="download" iconClass="text-[18px]" class="text-sm px-3 w-full sm:w-auto justify-center">Download PDF</x-ui.button>
             @else
                 <x-user.premium-lock
                     title="Premium PDF export"
@@ -71,8 +71,8 @@
                         <form class="section-form" data-section-id="{{ $targetJob->id ?? '' }}">
                             <div class="grid grid-cols-1 gap-4">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <x-user.form-input label="Target Job Title" name="job_title" value="{{ $targetJobContent['job_title'] ?? '' }}" class="auto-save" placeholder="e.g. Senior Software Engineer" />
-                                    <x-user.form-input label="Target Company" name="job_company" value="{{ $targetJobContent['job_company'] ?? '' }}" class="auto-save" placeholder="e.g. Acme Corp" />
+                                    <x-ui.form-input label="Target Job Title" name="job_title" value="{{ $targetJobContent['job_title'] ?? '' }}" class="auto-save" placeholder="e.g. Senior Software Engineer" />
+                                    <x-ui.form-input label="Target Company" name="job_company" value="{{ $targetJobContent['job_company'] ?? '' }}" class="auto-save" placeholder="e.g. Acme Corp" />
                                 </div>
                                 <div class="relative group mt-2">
                                     <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Job Description</label>
@@ -86,10 +86,10 @@
                     <x-user.editor-accordion title="Personal Info" icon="person">
                         <form class="section-form" data-section-id="{{ $personal->id ?? '' }}">
                             <div class="grid grid-cols-1 gap-4">
-                                <x-user.form-input label="Full Name" name="name" value="{{ $personalContent['name'] ?? '' }}" class="auto-save" :required="true" placeholder="e.g. John Doe" />
-                                <x-user.form-input label="Professional Title" name="title" value="{{ $personalContent['title'] ?? '' }}" class="auto-save" :required="true" placeholder="e.g. Senior Product Designer" />
+                                <x-ui.form-input label="Full Name" name="name" value="{{ $personalContent['name'] ?? '' }}" class="auto-save" :required="true" placeholder="e.g. John Doe" />
+                                <x-ui.form-input label="Professional Title" name="title" value="{{ $personalContent['title'] ?? '' }}" class="auto-save" :required="true" placeholder="e.g. Senior Product Designer" />
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <x-user.form-input label="Email" name="email" type="email" value="{{ $personalContent['email'] ?? '' }}" class="auto-save" :required="true" placeholder="you@example.com" />
+                                    <x-ui.form-input label="Email" name="email" type="email" value="{{ $personalContent['email'] ?? '' }}" class="auto-save" :required="true" placeholder="you@example.com" />
                                     <div class="relative group/input" x-data="{ focused: false, error: '' }">
                                         <label class="text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 mb-1 flex items-center gap-1"
                                                :class="error ? 'text-red-500' : (focused ? 'text-secondary' : 'text-primary/60')">
@@ -123,7 +123,7 @@
                                         <p class="text-[11px] text-red-400 mt-1 leading-tight" x-show="error" x-text="error" style="display:none"></p>
                                     </div>
                                 </div>
-                                <x-user.form-input label="Location" name="location" value="{{ $personalContent['location'] ?? '' }}" class="auto-save" />
+                                <x-ui.form-input label="Location" name="location" value="{{ $personalContent['location'] ?? '' }}" class="auto-save" />
                                 <div class="relative group mt-2">
                                     <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Professional Summary</label>
                                     <textarea name="summary" placeholder="Write 2–4 sentences about your background, key skills, and career goals..." class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="5">{{ $personalContent['summary'] ?? '' }}</textarea>
@@ -176,12 +176,12 @@
                                         <span class="material-symbols-outlined text-[16px]">close</span>
                                     </button>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                                        <x-user.form-input label="Job Title" name="title" value="{{ $job['title'] ?? '' }}" class="auto-save" :required="true" placeholder="e.g. Software Engineer" />
-                                        <x-user.form-input label="Company" name="company" value="{{ $job['company'] ?? '' }}" class="auto-save" :required="true" placeholder="e.g. Acme Corp" />
+                                        <x-ui.form-input label="Job Title" name="title" value="{{ $job['title'] ?? '' }}" class="auto-save" :required="true" placeholder="e.g. Software Engineer" />
+                                        <x-ui.form-input label="Company" name="company" value="{{ $job['company'] ?? '' }}" class="auto-save" :required="true" placeholder="e.g. Acme Corp" />
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                                        <x-user.form-input label="Start Date" name="start_date" type="month" value="{{ $job['start_date'] ?? '' }}" class="auto-save" />
-                                        <x-user.form-input label="End Date" name="end_date" type="month" value="{{ $job['end_date'] ?? '' }}" class="auto-save" hint="Leave blank if current" />
+                                        <x-ui.form-input label="Start Date" name="start_date" type="month" value="{{ $job['start_date'] ?? '' }}" class="auto-save" />
+                                        <x-ui.form-input label="End Date" name="end_date" type="month" value="{{ $job['end_date'] ?? '' }}" class="auto-save" hint="Leave blank if current" />
                                     </div>
                                     <div class="relative mt-2">
                                         <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
@@ -195,12 +195,12 @@
                                         <span class="material-symbols-outlined text-[16px]">close</span>
                                     </button>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                                        <x-user.form-input label="Job Title" name="title" value="" class="auto-save" />
-                                        <x-user.form-input label="Company" name="company" value="" class="auto-save" />
+                                        <x-ui.form-input label="Job Title" name="title" value="" class="auto-save" />
+                                        <x-ui.form-input label="Company" name="company" value="" class="auto-save" />
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                                        <x-user.form-input label="Start Date" name="start_date" type="month" value="" class="auto-save" />
-                                        <x-user.form-input label="End Date" name="end_date" type="month" value="" class="auto-save" hint="Leave blank if current" />
+                                        <x-ui.form-input label="Start Date" name="start_date" type="month" value="" class="auto-save" />
+                                        <x-ui.form-input label="End Date" name="end_date" type="month" value="" class="auto-save" hint="Leave blank if current" />
                                     </div>
                                     <div class="relative mt-2">
                                         <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
@@ -228,12 +228,12 @@
                                         <span class="material-symbols-outlined text-[16px]">close</span>
                                     </button>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                                        <x-user.form-input label="Degree/Course" name="degree" value="{{ $edu['degree'] ?? '' }}" class="auto-save" :required="true" placeholder="e.g. Bachelor of Science" />
-                                        <x-user.form-input label="School/University" name="school" value="{{ $edu['school'] ?? '' }}" class="auto-save" :required="true" placeholder="e.g. University of Indonesia" />
+                                        <x-ui.form-input label="Degree/Course" name="degree" value="{{ $edu['degree'] ?? '' }}" class="auto-save" :required="true" placeholder="e.g. Bachelor of Science" />
+                                        <x-ui.form-input label="School/University" name="school" value="{{ $edu['school'] ?? '' }}" class="auto-save" :required="true" placeholder="e.g. University of Indonesia" />
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                                        <x-user.form-input label="Start Date" name="start_date" type="month" value="{{ $edu['start_date'] ?? '' }}" class="auto-save" />
-                                        <x-user.form-input label="End Date" name="end_date" type="month" value="{{ $edu['end_date'] ?? '' }}" class="auto-save" hint="Leave blank if current" />
+                                        <x-ui.form-input label="Start Date" name="start_date" type="month" value="{{ $edu['start_date'] ?? '' }}" class="auto-save" />
+                                        <x-ui.form-input label="End Date" name="end_date" type="month" value="{{ $edu['end_date'] ?? '' }}" class="auto-save" hint="Leave blank if current" />
                                     </div>
                                     <div class="relative mt-2">
                                         <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Additional Info</label>
@@ -246,12 +246,12 @@
                                         <span class="material-symbols-outlined text-[16px]">close</span>
                                     </button>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                                        <x-user.form-input label="Degree/Course" name="degree" value="" class="auto-save" />
-                                        <x-user.form-input label="School/University" name="school" value="" class="auto-save" />
+                                        <x-ui.form-input label="Degree/Course" name="degree" value="" class="auto-save" />
+                                        <x-ui.form-input label="School/University" name="school" value="" class="auto-save" />
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                                        <x-user.form-input label="Start Date" name="start_date" type="month" value="" class="auto-save" />
-                                        <x-user.form-input label="End Date" name="end_date" type="month" value="" class="auto-save" hint="Leave blank if current" />
+                                        <x-ui.form-input label="Start Date" name="start_date" type="month" value="" class="auto-save" />
+                                        <x-ui.form-input label="End Date" name="end_date" type="month" value="" class="auto-save" hint="Leave blank if current" />
                                     </div>
                                     <div class="relative mt-2">
                                         <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Additional Info</label>
@@ -279,7 +279,7 @@
                                     </button>
                                     <div class="flex gap-4 items-center w-full">
                                         <div class="flex-1">
-                                        <x-user.form-input label="Skill Name" name="name" value="{{ $skill['name'] ?? '' }}" class="auto-save" />
+                                        <x-ui.form-input label="Skill Name" name="name" value="{{ $skill['name'] ?? '' }}" class="auto-save" />
                                     </div>
                                     <div class="flex-1">
                                         <div class="relative">
@@ -301,7 +301,7 @@
                                     </button>
                                     <div class="flex gap-4 items-center w-full">
                                         <div class="flex-1">
-                                        <x-user.form-input label="Skill Name" name="name" value="" class="auto-save" />
+                                        <x-ui.form-input label="Skill Name" name="name" value="" class="auto-save" />
                                     </div>
                                     <div class="flex-1">
                                         <div class="relative">
@@ -336,9 +336,9 @@
                                         <span class="material-symbols-outlined text-[16px]">close</span>
                                     </button>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <x-user.form-input label="Certification Name" name="name" value="{{ $cert['name'] ?? '' }}" class="auto-save" />
-                                        <x-user.form-input label="Issuer" name="issuer" value="{{ $cert['issuer'] ?? '' }}" class="auto-save" />
-                                        <x-user.form-input label="Date" name="date" value="{{ $cert['date'] ?? '' }}" class="auto-save" type="month" />
+                                        <x-ui.form-input label="Certification Name" name="name" value="{{ $cert['name'] ?? '' }}" class="auto-save" />
+                                        <x-ui.form-input label="Issuer" name="issuer" value="{{ $cert['issuer'] ?? '' }}" class="auto-save" />
+                                        <x-ui.form-input label="Date" name="date" value="{{ $cert['date'] ?? '' }}" class="auto-save" type="month" />
                                     </div>
                                 </div>
                                 @empty
@@ -347,9 +347,9 @@
                                         <span class="material-symbols-outlined text-[16px]">close</span>
                                     </button>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <x-user.form-input label="Certification Name" name="name" value="" class="auto-save" />
-                                        <x-user.form-input label="Issuer" name="issuer" value="" class="auto-save" />
-                                        <x-user.form-input label="Date" name="date" value="" class="auto-save" type="month" />
+                                        <x-ui.form-input label="Certification Name" name="name" value="" class="auto-save" />
+                                        <x-ui.form-input label="Issuer" name="issuer" value="" class="auto-save" />
+                                        <x-ui.form-input label="Date" name="date" value="" class="auto-save" type="month" />
                                     </div>
                                 </div>
                                 @endforelse
@@ -377,8 +377,8 @@
                                         <span class="material-symbols-outlined text-[16px]">close</span>
                                     </button>
                                     <div class="grid grid-cols-1 gap-4">
-                                        <x-user.form-input label="Project Name" name="name" value="{{ $project['name'] ?? '' }}" class="auto-save" />
-                                        <x-user.form-input label="Project URL (Optional)" name="url" value="{{ $project['url'] ?? '' }}" class="auto-save" />
+                                        <x-ui.form-input label="Project Name" name="name" value="{{ $project['name'] ?? '' }}" class="auto-save" />
+                                        <x-ui.form-input label="Project URL (Optional)" name="url" value="{{ $project['url'] ?? '' }}" class="auto-save" />
                                         <div class="relative group mt-2">
                                             <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
                                             <textarea name="description" class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="3">{{ $project['description'] ?? '' }}</textarea>
@@ -392,8 +392,8 @@
                                         <span class="material-symbols-outlined text-[16px]">close</span>
                                     </button>
                                     <div class="grid grid-cols-1 gap-4">
-                                        <x-user.form-input label="Project Name" name="name" value="" class="auto-save" />
-                                        <x-user.form-input label="Project URL (Optional)" name="url" value="" class="auto-save" />
+                                        <x-ui.form-input label="Project Name" name="name" value="" class="auto-save" />
+                                        <x-ui.form-input label="Project URL (Optional)" name="url" value="" class="auto-save" />
                                         <div class="relative group mt-2">
                                             <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">Description</label>
                                             <textarea name="description" class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="3"></textarea>
@@ -427,7 +427,7 @@
                                     </button>
                                     <div class="flex gap-4 items-center w-full">
                                         <div class="flex-1">
-                                        <x-user.form-input label="Language" name="name" value="{{ $lang['name'] ?? '' }}" class="auto-save" />
+                                        <x-ui.form-input label="Language" name="name" value="{{ $lang['name'] ?? '' }}" class="auto-save" />
                                     </div>
                                     <div class="flex-1">
                                         <div class="relative">
@@ -449,7 +449,7 @@
                                     </button>
                                     <div class="flex gap-4 items-center w-full">
                                         <div class="flex-1">
-                                        <x-user.form-input label="Language" name="name" value="" class="auto-save" />
+                                        <x-ui.form-input label="Language" name="name" value="" class="auto-save" />
                                     </div>
                                     <div class="flex-1">
                                         <div class="relative">
@@ -631,17 +631,17 @@
                 </div>
 
                 <div class="sticky bottom-24 lg:bottom-10 z-40 bg-tertiary/80 backdrop-blur-md border border-primary/10 px-6 py-3 rounded-full shadow-lg flex items-center gap-6 shrink-0 mx-auto">
-                    <x-user.button variant="text" icon="zoom_in" class="hidden sm:flex">
+                    <x-ui.button variant="text" icon="zoom_in" class="hidden sm:flex">
                         <span class="text-xs uppercase tracking-widest">Zoom</span>
-                    </x-user.button>
+                    </x-ui.button>
                     <div class="w-px h-4 bg-primary/20 hidden sm:block"></div>
-                    <x-user.button variant="text" icon="layers" onclick="openTemplateModal()">
+                    <x-ui.button variant="text" icon="layers" onclick="openTemplateModal()">
                         <span class="text-xs uppercase tracking-widest">Layout</span>
-                    </x-user.button>
+                    </x-ui.button>
                     <div class="w-px h-4 bg-primary/20"></div>
-                    <x-user.button variant="text" icon="history">
+                    <x-ui.button variant="text" icon="history">
                         <span class="text-xs uppercase tracking-widest">History</span>
-                    </x-user.button>
+                    </x-ui.button>
                 </div>
                 
             </main>

@@ -162,7 +162,7 @@
                                     </div>
                                 </div>
                                 <div class="pt-4 flex justify-end">
-                                    <x-user.button type="submit" variant="primary">Save Changes</x-user.button>
+                                    <x-ui.button type="submit" variant="primary">Save Changes</x-ui.button>
                                 </div>
                             </form>
                         </div>
@@ -242,7 +242,7 @@
                                 <p class="text-sm text-primary/80 font-body leading-relaxed">Use at least 8 characters with a combination of numbers and symbols.</p>
                             </div>
                             <div class="flex justify-end pt-4 border-t border-primary/10 mt-6">
-                                <x-user.button type="submit" variant="primary" icon="save" iconClass="text-sm">Update Password</x-user.button>
+                                <x-ui.button type="submit" variant="primary" icon="save" iconClass="text-sm">Update Password</x-ui.button>
                             </div>
                         </div>
                     </form>
@@ -263,8 +263,8 @@
                             <div class="flex flex-col gap-3">
                                 <input type="password" name="password" required placeholder="Confirm your password"
                                     class="border-b border-red-300 bg-transparent outline-none text-red-800 placeholder-red-400 py-2 text-sm w-full" />
-                                <x-user.button type="submit" variant="danger" icon="delete_forever"
-                                    iconClass="text-lg">Delete Account</x-user.button>
+                                <x-ui.button type="submit" variant="danger" icon="delete_forever"
+                                    iconClass="text-lg">Delete Account</x-ui.button>
                             </div>
                         </form>
                     </div>
