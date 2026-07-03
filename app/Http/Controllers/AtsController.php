@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AtsScan;
 use App\Models\Cv;
+use App\Services\AiCreditService;
 use App\Services\AiService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
@@ -14,10 +15,12 @@ use Illuminate\View\View;
 class AtsController extends Controller
 {
     protected AiService $aiService;
+    protected AiCreditService $aiCreditService;
 
-    public function __construct(AiService $aiService)
+    public function __construct(AiService $aiService, AiCreditService $aiCreditService)
     {
         $this->aiService = $aiService;
+        $this->aiCreditService = $aiCreditService;
     }
 
     /**
@@ -85,8 +88,16 @@ class AtsController extends Controller
         $resumeText = $request->input('resume');
         $jdText     = $request->input('job_description');
 
-        // Deduct credit BEFORE the AI call
-        $user->increment('ai_quota_used', 1);
+        $reservation = $this->aiCreditService->reserve($user, 1, 'ats_analyze');
+
+        if ($reservation->isDenied()) {
+            return response()->json([
+                'error'     => 'quota_exceeded',
+                'message'   => 'You have used all your AI credits. Upgrade to Premium for 50 credits/month.',
+                'remaining' => $reservation->remainingCredits(),
+                'limit'     => $reservation->quotaLimit,
+            ], 402);
+        }
 
         try {
             $analysis = $this->aiService->analyzeAts($resumeText, $jdText);
@@ -116,14 +127,12 @@ class AtsController extends Controller
             return response()->json($analysis);
 
         } catch (ConnectionException $e) {
-            // Refund the credit on timeout
-            $user->decrement('ai_quota_used', 1);
+            $this->aiCreditService->refund($reservation);
             Log::error('ATS Connection Timeout', ['message' => $e->getMessage()]);
             return response()->json(['message' => 'The AI service did not respond in time. Please try again.'], 504);
 
         } catch (\Exception $e) {
-            // Refund the credit on failure
-            $user->decrement('ai_quota_used', 1);
+            $this->aiCreditService->refund($reservation);
             Log::error('ATS Analysis Exception', ['message' => $e->getMessage()]);
             return response()->json(['message' => 'An error occurred during analysis.'], 500);
         }

@@ -7,6 +7,7 @@ use App\Models\Cv;
 use App\Models\CvTemplate;
 use App\Services\AiService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
@@ -82,7 +83,6 @@ class AiResumeFeatureTest extends TestCase
                      'options' => ['Option 1', 'Option 2', 'Option 3']
                  ]);
 
-        // Credit deducted BEFORE the call
         $this->assertEquals(1, $user->fresh()->ai_quota_used);
     }
 
@@ -112,7 +112,7 @@ class AiResumeFeatureTest extends TestCase
                      'options' => ['Option 1', 'Option 2', 'Option 3']
                  ]);
                  
-        $this->assertEquals(1, $user->fresh()->ai_quota_used);
+        $this->assertEquals(0, $user->fresh()->ai_quota_used);
     }
 
     // ────────────────────────────────────────────────
@@ -138,6 +138,40 @@ class AiResumeFeatureTest extends TestCase
 
         // Credit should be refunded
         $this->assertEquals(0, $user->fresh()->ai_quota_used);
+    }
+
+    public function test_refine_bullet_refunds_reserved_credit_with_ai_credit_service_when_provider_fails(): void
+    {
+        $user = User::factory()->create(['role' => 'basic', 'ai_quota_used' => 0]);
+        $cv = $this->createCvForUser($user);
+
+        $this->mock(AiService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('refineBullet')
+                 ->once()
+                 ->andThrow(new \Exception('AI service failed'));
+            $mock->shouldNotReceive('logUsage');
+        });
+
+        $response = $this->actingAs($user)->postJson("/resumes/{$cv->id}/ai/refine-bullet", [
+            'text' => 'Did some work at the company',
+            'job_context' => 'Software Engineer'
+        ]);
+
+        $response->assertStatus(500);
+
+        $this->assertSame(0, $user->fresh()->ai_quota_used);
+
+        $reservation = DB::table('ai_credit_reservations')
+            ->where('user_id', $user->id)
+            ->where('context', 'bullet_optimize')
+            ->first();
+
+        $this->assertNotNull($reservation, 'Refine bullet should reserve credit through AiCreditService.');
+        $this->assertSame('reserved', $reservation->status);
+        $this->assertSame(1, (int) $reservation->credits);
+        $this->assertSame(0, (int) $reservation->usage_before);
+        $this->assertSame(1, (int) $reservation->usage_after);
+        $this->assertNotNull($reservation->refunded_at, 'Failed provider calls should refund the reservation.');
     }
 
     // ────────────────────────────────────────────────
@@ -219,8 +253,7 @@ class AiResumeFeatureTest extends TestCase
             'tone_style' => 'ownership',
         ]);
 
-        // 3 credits deducted
-        $this->assertEquals(3, $user->fresh()->ai_quota_used);
+        $this->assertEquals(0, $user->fresh()->ai_quota_used);
     }
 
     // ────────────────────────────────────────────────
@@ -253,6 +286,46 @@ class AiResumeFeatureTest extends TestCase
 
         // All 3 credits should be refunded
         $this->assertEquals(0, $user->fresh()->ai_quota_used);
+    }
+
+    public function test_generate_versions_refunds_reserved_credits_with_ai_credit_service_when_provider_fails(): void
+    {
+        $user = User::factory()->create(['role' => 'basic', 'ai_quota_used' => 0]);
+        $cv = $this->createCvForUser($user);
+
+        $cv->sections()->create([
+            'type' => 'personal_info',
+            'title' => 'Personal Info',
+            'order' => 1,
+            'content' => ['summary' => str_repeat('Long enough content for testing. ', 10)]
+        ]);
+
+        $this->mock(AiService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('generateCvVersions')
+                 ->once()
+                 ->andThrow(new \Exception('AI service failed'));
+            $mock->shouldNotReceive('logUsage');
+        });
+
+        $response = $this->actingAs($user)->postJson("/resumes/{$cv->id}/ai/generate-versions", [
+            'job_description' => str_repeat('This is a test job description that meets length. ', 5)
+        ]);
+
+        $response->assertStatus(500);
+
+        $this->assertSame(0, $user->fresh()->ai_quota_used);
+
+        $reservation = DB::table('ai_credit_reservations')
+            ->where('user_id', $user->id)
+            ->where('context', 'generate_versions')
+            ->first();
+
+        $this->assertNotNull($reservation, 'Generate versions should reserve credits through AiCreditService.');
+        $this->assertSame('reserved', $reservation->status);
+        $this->assertSame(3, (int) $reservation->credits);
+        $this->assertSame(0, (int) $reservation->usage_before);
+        $this->assertSame(3, (int) $reservation->usage_after);
+        $this->assertNotNull($reservation->refunded_at, 'Failed provider calls should refund the reservation.');
     }
 
     // ────────────────────────────────────────────────
@@ -333,7 +406,7 @@ class AiResumeFeatureTest extends TestCase
         $response->assertStatus(200)
                  ->assertJsonStructure(['score', 'rating', 'word_count']);
 
-        $this->assertEquals(1, $user->fresh()->ai_quota_used);
+        $this->assertEquals(0, $user->fresh()->ai_quota_used);
     }
 
     public function test_ats_analyze_refunds_credit_on_failure(): void

@@ -7,6 +7,8 @@ use App\Models\CvTemplate;
 use App\Models\User;
 use App\Services\AiService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Mockery\MockInterface;
 use Tests\TestCase;
@@ -95,7 +97,44 @@ class AtsScanOwnershipTest extends TestCase
             'job_title' => 'Laravel Engineer',
             'job_company' => 'Acme',
         ]);
-        $this->assertEquals(1, $user->fresh()->ai_quota_used);
+        $this->assertEquals(0, $user->fresh()->ai_quota_used);
+    }
+
+    public function test_ats_analyze_refunds_reserved_credit_when_provider_fails(): void
+    {
+        Config::set('plans.premium_features', []);
+
+        $user = User::factory()->create(['role' => 'basic', 'ai_quota_used' => 0]);
+        $cv = $this->cvFor($user, ['title' => 'My Resume']);
+
+        $this->mock(AiService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('analyzeAts')
+                ->once()
+                ->andThrow(new \Exception('AI service failed'));
+            $mock->shouldNotReceive('logUsage');
+        });
+
+        $response = $this->actingAs($user)->postJson(route('ats.analyze'), [
+            'resume' => str_repeat('Experienced Laravel developer with production hiring platform results. ', 5),
+            'job_description' => str_repeat('We need a Laravel developer with API and database experience. ', 5),
+            'cv_id' => $cv->id,
+        ]);
+
+        $response->assertStatus(500);
+
+        $this->assertSame(0, $user->fresh()->ai_quota_used);
+
+        $reservation = DB::table('ai_credit_reservations')
+            ->where('user_id', $user->id)
+            ->where('context', 'ats_analyze')
+            ->first();
+
+        $this->assertNotNull($reservation, 'ATS analyze should reserve credit through AiCreditService.');
+        $this->assertSame('reserved', $reservation->status);
+        $this->assertSame(1, (int) $reservation->credits);
+        $this->assertSame(0, (int) $reservation->usage_before);
+        $this->assertSame(1, (int) $reservation->usage_after);
+        $this->assertNotNull($reservation->refunded_at, 'Failed provider calls should refund the reservation.');
     }
 
     private function cvFor(User $user, array $attributes = []): Cv
