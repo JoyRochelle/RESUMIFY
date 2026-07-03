@@ -6,6 +6,7 @@ use App\Models\AtsScan;
 use App\Models\Cv;
 use App\Services\AiCreditService;
 use App\Services\AiService;
+use App\Support\ApiResponse;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -91,12 +92,19 @@ class AtsController extends Controller
         $reservation = $this->aiCreditService->reserve($user, 1, 'ats_analyze');
 
         if ($reservation->isDenied()) {
-            return response()->json([
-                'error'     => 'quota_exceeded',
-                'message'   => 'You have used all your AI credits. Upgrade to Premium for 50 credits/month.',
-                'remaining' => $reservation->remainingCredits(),
-                'limit'     => $reservation->quotaLimit,
-            ], 402);
+            return ApiResponse::error(
+                code: ApiResponse::QUOTA_EXCEEDED,
+                message: 'You have used all your AI credits. Upgrade to Premium for 50 credits/month.',
+                details: [
+                    'remaining' => $reservation->remainingCredits(),
+                    'limit' => $reservation->quotaLimit,
+                ],
+                status: 402,
+                legacy: [
+                    'remaining' => $reservation->remainingCredits(),
+                    'limit' => $reservation->quotaLimit,
+                ],
+            );
         }
 
         try {
@@ -124,17 +132,25 @@ class AtsController extends Controller
             $analysis['_scan_id']      = $scan->id;
             $analysis['_scan_created'] = $scan->created_at->toISOString();
 
-            return response()->json($analysis);
+            return ApiResponse::success($analysis);
 
         } catch (ConnectionException $e) {
             $this->aiCreditService->refund($reservation);
             Log::error('ATS Connection Timeout', ['message' => $e->getMessage()]);
-            return response()->json(['message' => 'The AI service did not respond in time. Please try again.'], 504);
+            return ApiResponse::error(
+                code: ApiResponse::AI_PROVIDER_TIMEOUT,
+                message: 'The AI service did not respond in time. Please try again.',
+                status: 504,
+            );
 
         } catch (\Exception $e) {
             $this->aiCreditService->refund($reservation);
             Log::error('ATS Analysis Exception', ['message' => $e->getMessage()]);
-            return response()->json(['message' => 'An error occurred during analysis.'], 500);
+            return ApiResponse::error(
+                code: ApiResponse::AI_PROVIDER_INVALID_RESPONSE,
+                message: 'An error occurred during analysis.',
+                status: 500,
+            );
         }
     }
 
