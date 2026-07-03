@@ -10,6 +10,7 @@ use App\Models\AiUsageLog;
 use App\Models\Cv;
 use App\Models\InterviewMessage;
 use App\Models\InterviewSession;
+use App\Queries\InterviewTrendQuery;
 use App\Services\AiCreditService;
 use App\Services\InterviewService;
 use App\Support\ApiResponse;
@@ -29,6 +30,7 @@ class InterviewController extends Controller
     public function __construct(
         protected InterviewService $interviewService,
         protected AiCreditService $aiCreditService,
+        protected InterviewTrendQuery $trendQuery,
     ) {}
 
     /**
@@ -140,34 +142,12 @@ class InterviewController extends Controller
 
         $sessions = $query->paginate(10)->withQueryString();
 
-        $trends = $this->calculateVisibleTrends($sessions, $user->id);
+        $trends = $this->trendQuery->getTrendsForSessions($sessions->getCollection(), $user->id);
 
         return view('user.interview.history', compact('sessions', 'cvs', 'trends', 'sort', 'order'));
     }
 
-    private function calculateVisibleTrends(LengthAwarePaginator $sessions, string $userId): array
-    {
-        $trends = [];
 
-        foreach ($sessions->getCollection() as $session) {
-            if (!$session->feedback) {
-                continue;
-            }
-
-            $previousScore = DB::table('interview_sessions')
-                ->join('interview_feedback', 'interview_sessions.id', '=', 'interview_feedback.session_id')
-                ->where('interview_sessions.user_id', $userId)
-                ->where('interview_sessions.started_at', '<', $session->started_at)
-                ->orderByDesc('interview_sessions.started_at')
-                ->value('interview_feedback.overall_score');
-
-            if ($previousScore !== null) {
-                $trends[$session->id] = $session->feedback->overall_score - (int) $previousScore;
-            }
-        }
-
-        return $trends;
-    }
 
     /**
      * Stream Ms. Sarah's reply token-by-token via SSE.
