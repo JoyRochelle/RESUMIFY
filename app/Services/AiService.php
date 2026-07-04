@@ -31,7 +31,11 @@ class AiService
         $prompt .= "Original Bullet:\n{$text}\n\n";
         $prompt .= "Return ONLY a JSON array of strings containing exactly 3 alternative rewrites.";
 
-        return ResumeBulletOptionsResponse::fromProvider($this->callGemini($prompt));
+        return $this->callGeminiValidated(
+            $prompt,
+            [ResumeBulletOptionsResponse::class, 'fromProvider'],
+            self::resumeBulletOptionsSchema(),
+        );
     }
 
     /**
@@ -48,18 +52,23 @@ class AiService
             'ownership' => "Focus on end-to-end responsibility, initiative, startup mindset, autonomy, and measurable business impact."
         ];
 
-        $responses = Http::pool(function (Pool $pool) use ($apiKey, $angles, $currentSections, $jobDescription) {
+        $prompts = [];
+        foreach ($angles as $angle => $instruction) {
+            $prompt = "You are an expert ATS resume writer. Rewrite the provided resume sections to tailor them for the given job description.\n";
+            $prompt .= "ANGLE TO FOCUS ON: {$instruction}\n\n";
+            $prompt .= "JOB DESCRIPTION:\n{$jobDescription}\n\n";
+            $prompt .= "CURRENT RESUME JSON (Array of sections):\n" . json_encode($currentSections) . "\n\n";
+            $prompt .= "Return ONLY the modified JSON array representing the new resume sections. DO NOT change the structure, just update the text values in descriptions/bullets to fit the angle. MUST return a valid JSON array.";
+
+            $prompts[$angle] = $prompt;
+        }
+
+        $responses = Http::pool(function (Pool $pool) use ($apiKey, $angles, $prompts) {
             $reqs = [];
             foreach ($angles as $angle => $instruction) {
-                $prompt = "You are an expert ATS resume writer. Rewrite the provided resume sections to tailor them for the given job description.\n";
-                $prompt .= "ANGLE TO FOCUS ON: {$instruction}\n\n";
-                $prompt .= "JOB DESCRIPTION:\n{$jobDescription}\n\n";
-                $prompt .= "CURRENT RESUME JSON (Array of sections):\n" . json_encode($currentSections) . "\n\n";
-                $prompt .= "Return ONLY the modified JSON array representing the new resume sections. DO NOT change the structure, just update the text values in descriptions/bullets to fit the angle. MUST return a valid JSON array.";
-
                 $reqs[] = $pool->as($angle)->timeout(60)->post(self::GEMINI_URL . "?key={$apiKey}", [
-                    'contents' => [['parts' => [['text' => $prompt]]]],
-                    'generationConfig' => ['response_mime_type' => 'application/json'],
+                    'contents' => [['parts' => [['text' => $prompts[$angle]]]]],
+                    'generationConfig' => self::jsonGenerationConfig(self::cvVersionsSchema()),
                 ]);
             }
             return $reqs;
@@ -70,17 +79,19 @@ class AiService
             $response = $responses[$angle];
             if ($response instanceof \Illuminate\Http\Client\Response && $response->ok()) {
                 $result = $response->json();
-                $content = $result['candidates'][0]['content']['parts'][0]['text'] ?? 'null';
-                
-                // Clean markdown block if present
-                $content = preg_replace('/^```json\s*|\s*```$/i', '', trim($content));
-                
-                $decoded = json_decode($content, true);
-                if (!is_array($decoded) || json_last_error() !== JSON_ERROR_NONE) {
-                    throw new InvalidAiProviderResponseException('Invalid JSON from AI service: ' . json_last_error_msg());
+                $content = $result['candidates'][0]['content']['parts'][0]['text'] ?? null;
+
+                if (!$content) {
+                    throw new \Exception("Empty response from AI service for {$angle} CV version.");
                 }
 
-                $results[$angle] = CvVersionsResponse::fromProvider($decoded);
+                $results[$angle] = $this->decodeValidateOrRepair(
+                    $prompts[$angle],
+                    $content,
+                    self::cvVersionsSchema(),
+                    [CvVersionsResponse::class, 'fromProvider'],
+                    60,
+                );
             } else {
                 Log::error("AiService generateCvVersions failed for angle {$angle}");
                 throw new \Exception("AI service failed for {$angle} CV version.");
@@ -97,7 +108,12 @@ class AiService
     public function analyzeAts(string $resumeText, string $jobDescription): array
     {
         $prompt = $this->buildAtsAnalysisPrompt($resumeText, $jobDescription);
-        return AtsAnalysisResponse::fromProvider($this->callGemini($prompt, 30));
+        return $this->callGeminiValidated(
+            $prompt,
+            [AtsAnalysisResponse::class, 'fromProvider'],
+            self::atsAnalysisSchema(),
+            30,
+        );
     }
 
     /**
@@ -107,7 +123,7 @@ class AiService
     public function scoreResume(string $resumeText, ?string $jobTitle = null, ?string $jobCompany = null, ?string $jobDescription = null): array
     {
         $prompt = $this->buildScorePrompt($resumeText, $jobTitle, $jobCompany, $jobDescription);
-        return $this->callGemini($prompt, 25);
+        return $this->callGeminiJson($prompt, self::scoreSchema(), 25);
     }
 
     /**
@@ -132,17 +148,36 @@ class AiService
     // ─── Private Helpers ──────────────────────────────────────
 
     /**
+     * Make a single call to the Gemini API and return a validated JSON result.
+     *
+     * @throws \Exception if the API key is missing, the call fails, or the response is empty.
+     */
+    private function callGeminiValidated(string $prompt, callable $validator, array $schema, int $timeout = 30): array
+    {
+        $content = $this->requestGeminiText($prompt, $schema, $timeout);
+
+        return $this->decodeValidateOrRepair($prompt, $content, $schema, $validator, $timeout);
+    }
+
+    /**
      * Make a single call to the Gemini API and return the parsed JSON result.
      *
      * @throws \Exception if the API key is missing, the call fails, or the response is empty.
      */
-    private function callGemini(string $prompt, int $timeout = 30): array
+    private function callGeminiJson(string $prompt, array $schema, int $timeout = 30): array
+    {
+        $content = $this->requestGeminiText($prompt, $schema, $timeout);
+
+        return $this->decodeValidateOrRepair($prompt, $content, $schema, null, $timeout);
+    }
+
+    private function requestGeminiText(string $prompt, array $schema, int $timeout = 30): string
     {
         $apiKey = $this->getApiKey();
 
         $response = Http::timeout($timeout)->connectTimeout(5)->post(self::GEMINI_URL . "?key={$apiKey}", [
             'contents' => [['parts' => [['text' => $prompt]]]],
-            'generationConfig' => ['response_mime_type' => 'application/json'],
+            'generationConfig' => self::jsonGenerationConfig($schema),
         ]);
 
         if ($response->failed()) {
@@ -158,6 +193,35 @@ class AiService
             throw new \Exception('Empty response from AI service');
         }
 
+        return $content;
+    }
+
+    private function decodeValidateOrRepair(
+        string $prompt,
+        string $content,
+        array $schema,
+        ?callable $validator,
+        int $timeout,
+    ): array {
+        try {
+            return $this->decodeAndValidate($content, $validator);
+        } catch (InvalidAiProviderResponseException $e) {
+            Log::warning('AiService Gemini JSON response invalid; retrying repair once', [
+                'error' => $e->getMessage(),
+            ]);
+
+            $repairContent = $this->requestGeminiText(
+                $this->buildRepairPrompt($prompt, $content, $e->getMessage()),
+                $schema,
+                $timeout,
+            );
+
+            return $this->decodeAndValidate($repairContent, $validator);
+        }
+    }
+
+    private function decodeAndValidate(string $content, ?callable $validator = null): array
+    {
         // Clean markdown code blocks if present
         $content = preg_replace('/^```json\s*|\s*```$/i', '', trim($content));
 
@@ -166,7 +230,29 @@ class AiService
             throw new InvalidAiProviderResponseException('Invalid JSON from AI service: ' . json_last_error_msg());
         }
 
+        if ($validator) {
+            return $validator($decoded);
+        }
+
         return $decoded;
+    }
+
+    private function buildRepairPrompt(string $originalPrompt, string $invalidJson, string $error): string
+    {
+        return <<<PROMPT
+The previous response did not satisfy the required JSON contract.
+
+Validation error:
+{$error}
+
+Original task:
+{$originalPrompt}
+
+Invalid response:
+{$invalidJson}
+
+Return ONLY corrected valid JSON that satisfies the original task and schema. Do not include markdown or explanation.
+PROMPT;
     }
 
     /**
@@ -181,6 +267,161 @@ class AiService
             throw new \Exception('Gemini API key not configured.');
         }
         return $apiKey;
+    }
+
+    private static function jsonGenerationConfig(array $schema): array
+    {
+        return [
+            'response_mime_type' => 'application/json',
+            'response_schema' => $schema,
+        ];
+    }
+
+    private static function resumeBulletOptionsSchema(): array
+    {
+        return [
+            'type' => 'array',
+            'minItems' => 3,
+            'maxItems' => 3,
+            'items' => [
+                'type' => 'string',
+                'maxLength' => 500,
+            ],
+        ];
+    }
+
+    private static function cvVersionsSchema(): array
+    {
+        return [
+            'type' => 'array',
+            'maxItems' => 30,
+            'items' => [
+                'type' => 'object',
+                'properties' => [
+                    'type' => [
+                        'type' => 'string',
+                        'enum' => [
+                            'personal_info',
+                            'work_experience',
+                            'education',
+                            'skills',
+                            'target_job',
+                            'certifications',
+                            'projects',
+                            'languages',
+                        ],
+                    ],
+                    'title' => ['type' => 'string', 'maxLength' => 100],
+                    'content' => [
+                        'anyOf' => [
+                            [
+                                'type' => 'object',
+                                'additionalProperties' => true,
+                            ],
+                            [
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => 'object',
+                                    'additionalProperties' => true,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                'required' => ['type', 'title', 'content'],
+            ],
+        ];
+    }
+
+    private static function atsAnalysisSchema(): array
+    {
+        return [
+            'type' => 'object',
+            'properties' => [
+                'score' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
+                'rating' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'label' => ['type' => 'string', 'enum' => ['Excellent', 'Very Good', 'Fair', 'Weak']],
+                        'sublabel' => ['type' => 'string', 'enum' => ['ATS-Ready', 'Needs Minor Polish', 'Room to Improve', 'Needs Rework']],
+                        'color' => ['type' => 'string', 'enum' => ['success', 'warning', 'danger']],
+                    ],
+                    'required' => ['label', 'sublabel', 'color'],
+                ],
+                'keyword_score' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
+                'matched' => ['type' => 'array', 'maxItems' => 15, 'items' => ['type' => 'string']],
+                'missing' => [
+                    'type' => 'array',
+                    'maxItems' => 20,
+                    'items' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'keyword' => ['type' => 'string', 'maxLength' => 100],
+                            'context' => ['type' => 'string', 'maxLength' => 500],
+                        ],
+                        'required' => ['keyword', 'context'],
+                    ],
+                ],
+                'section_breakdown' => [
+                    'type' => 'array',
+                    'maxItems' => 12,
+                    'items' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'section' => ['type' => 'string', 'maxLength' => 100],
+                            'strength' => ['type' => 'string', 'enum' => ['Strong', 'Adequate', 'Weak']],
+                            'feedback' => ['type' => 'string', 'maxLength' => 700],
+                        ],
+                        'required' => ['section', 'strength', 'feedback'],
+                    ],
+                ],
+                'action_verbs' => ['type' => 'array', 'maxItems' => 20, 'items' => ['type' => 'string']],
+                'missing_verbs' => ['type' => 'array', 'maxItems' => 10, 'items' => ['type' => 'string']],
+                'has_numbers' => ['type' => 'boolean'],
+                'length_tip' => ['type' => 'string', 'maxLength' => 500],
+                'insights' => [
+                    'type' => 'array',
+                    'minItems' => 4,
+                    'maxItems' => 4,
+                    'items' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'title' => ['type' => 'string', 'maxLength' => 100],
+                            'body' => ['type' => 'string', 'maxLength' => 700],
+                        ],
+                        'required' => ['title', 'body'],
+                    ],
+                ],
+            ],
+            'required' => [
+                'score',
+                'rating',
+                'keyword_score',
+                'matched',
+                'missing',
+                'section_breakdown',
+                'action_verbs',
+                'missing_verbs',
+                'has_numbers',
+                'length_tip',
+                'insights',
+            ],
+        ];
+    }
+
+    private static function scoreSchema(): array
+    {
+        return [
+            'type' => 'object',
+            'properties' => [
+                'score' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
+                'label' => ['type' => 'string', 'enum' => ['Excellent', 'Very Good', 'Fair', 'Weak']],
+                'tip' => ['type' => 'string'],
+                'strengths' => ['type' => 'array', 'maxItems' => 3, 'items' => ['type' => 'string']],
+                'improvements' => ['type' => 'array', 'maxItems' => 3, 'items' => ['type' => 'string']],
+            ],
+            'required' => ['score', 'label', 'tip', 'strengths', 'improvements'],
+        ];
     }
 
     /**

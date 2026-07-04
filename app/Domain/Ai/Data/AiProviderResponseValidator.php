@@ -15,11 +15,10 @@ abstract class AiProviderResponseValidator
     protected static function assertExactKeys(array $data, array $keys, string $path): void
     {
         $actual = array_keys($data);
-        sort($actual);
-        sort($keys);
+        $missing = array_diff($keys, $actual);
 
-        if ($actual !== $keys) {
-            self::invalid("{$path} has unexpected or missing fields.");
+        if ($missing !== []) {
+            self::invalid("{$path} is missing required fields: " . implode(', ', $missing) . '.');
         }
     }
 
