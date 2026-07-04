@@ -81,7 +81,7 @@ class ButtonLoadingBugFixTest extends TestCase
 
     public function test_ats_analyzer_spinner_starts_hidden(): void
     {
-        $response = $this->actingAs($this->basicUser)
+        $response = $this->actingAs($this->premiumUser)
             ->get(route('user.ai-assistant'));
 
         $response->assertOk();
