@@ -120,4 +120,23 @@ class InterviewSessionScrollLayoutTest extends TestCase
             'The input bar must be rendered after the #messages div closes, not inside the scrollable region.'
         );
     }
+
+    /**
+     * Regression guard (verified with a headless-Chrome layout probe): a flex
+     * item with flex-basis:0% (flex-1) makes the browser IGNORE the height
+     * property on the main axis, so pairing flex-1 with h-dvh silently
+     * disabled the fixed-height chat shell — the page grew to content height,
+     * body-level scroll took over, and the header/input bar scrolled away.
+     */
+    public function test_root_container_does_not_pair_flex_grow_with_fixed_height(): void
+    {
+        [$user, $cv] = $this->makeUserWithCv();
+        $session     = $this->makeSession($user, $cv);
+
+        $response = $this->actingAs($user)->get("/interview/sessions/{$session->id}");
+
+        $response->assertStatus(200);
+        $response->assertDontSee('flex-1 flex flex-col min-w-0 overflow-hidden h-dvh', false);
+        $response->assertSee('class="flex flex-col min-w-0 overflow-hidden h-dvh', false);
+    }
 }

@@ -3,7 +3,11 @@
 @section('title', 'Resumify — Interview with Ms. Sarah')
 
 @section('content')
-<div class="flex-1 flex flex-col min-w-0 overflow-hidden h-dvh">
+{{-- NOTE: no flex-1 here — as a flex item with flex-basis:0% the browser
+     ignores the height property, so h-dvh never took effect and the page
+     grew to content height (body-level scroll). flex-basis must stay auto. --}}
+<div class="flex flex-col min-w-0 overflow-hidden h-dvh overscroll-none
+            pb-[calc(4.75rem+env(safe-area-inset-bottom))] md:pb-0">
 
     {{-- Header bar --}}
     <header class="shrink-0 flex items-center justify-between px-4 md:px-6 py-3
@@ -46,7 +50,7 @@
 
     {{-- Message list --}}
     <div id="messages"
-         class="flex-1 overflow-y-auto px-4 md:px-6 py-5 space-y-4 custom-scrollbar">
+         class="flex-1 overflow-y-auto overscroll-contain px-4 md:px-6 py-5 space-y-4 custom-scrollbar">
 
         @foreach($session->messages as $msg)
             @if($msg->role === 'assistant')
