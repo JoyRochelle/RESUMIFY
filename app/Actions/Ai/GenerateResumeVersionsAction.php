@@ -9,12 +9,15 @@ use App\Models\Cv;
 use App\Models\User;
 use App\Services\AiCreditService;
 use App\Services\AiService;
+use App\Services\CvFactualityValidator;
+use Illuminate\Support\Str;
 
 class GenerateResumeVersionsAction
 {
     public function __construct(
         private AiService $aiService,
         private AiCreditService $aiCreditService,
+        private CvFactualityValidator $factualityValidator,
     ) {}
 
     public function execute(User $user, Cv $cv, string $jobDescription): array
@@ -37,19 +40,24 @@ class GenerateResumeVersionsAction
         try {
             $versions = $this->aiService->generateCvVersions($sections, $jobDescription);
             $savedVersions = [];
+            $batchId = (string) Str::ulid();
 
             foreach ($versions as $angle => $adaptedContent) {
                 $adaptation = ChameleonAdaptation::create([
                     'cv_id' => $cv->id,
+                    'batch_id' => $batchId,
                     'tone_style' => $angle,
                     'adapted_content' => $adaptedContent,
                     'ai_prompt_used' => 'Generated parallel CV version for ' . $angle,
                 ]);
 
+                $factuality = $this->factualityValidator->validate($sections, $adaptedContent);
+
                 $savedVersions[] = [
                     'id' => $adaptation->id,
                     'angle' => $angle,
                     'content' => $adaptedContent,
+                    'warning' => $factuality['flagged'] ? $factuality : null,
                 ];
             }
 

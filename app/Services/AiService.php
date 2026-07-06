@@ -19,23 +19,46 @@ class AiService
     private const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
     /**
+     * Anti-fabrication grounding rules shared by prompts that rewrite resume
+     * content. Gemini has previously invented companies/skills/metrics when
+     * asked to "quantify results" or "tailor" content — these rules constrain
+     * it to only rephrase facts that are already present in the source.
+     */
+    private const ANTI_FABRICATION_RULES = <<<RULES
+    STRICT GROUNDING RULES (mandatory, do not violate):
+    - Only rewrite, reorder, and rephrase facts that already exist in the source content below.
+    - NEVER invent or add a company, employer, job title, school, tool, technology, skill, or certification that is not already present in the source.
+    - NEVER invent or add a number, percentage, metric, date, or duration that is not already present in the source.
+    - If a detail could be strengthened with a metric that is not in the source, improve the wording instead of fabricating a number.
+    - If you relocate or condense content from elsewhere, keep it recognizable as the same underlying fact, not a new one.
+    RULES;
+
+    /**
      * Refine a resume bullet point.
      * Returns an array of 3 alternative rewrites.
      */
     public function refineBullet(string $text, string $jobContext = null): array
     {
-        $prompt = "You are an expert resume writer. Rewrite the following resume bullet point to make it more impactful using strong action verbs and quantifying results where plausible. Maintain the user's authentic voice.\n\n";
-        if ($jobContext) {
-            $prompt .= "Context (Job Description / Title):\n{$jobContext}\n\n";
-        }
-        $prompt .= "Original Bullet:\n{$text}\n\n";
-        $prompt .= "Return ONLY a JSON array of strings containing exactly 3 alternative rewrites.";
+        $prompt = $this->buildRefineBulletPrompt($text, $jobContext);
 
         return $this->callGeminiValidated(
             $prompt,
             [ResumeBulletOptionsResponse::class, 'fromProvider'],
             self::resumeBulletOptionsSchema(),
         );
+    }
+
+    private function buildRefineBulletPrompt(string $text, ?string $jobContext): string
+    {
+        $prompt = "You are an expert resume writer. Rewrite the following resume bullet point to make it more impactful using strong action verbs. Maintain the user's authentic voice.\n\n";
+        $prompt .= self::ANTI_FABRICATION_RULES . "\n\n";
+        if ($jobContext) {
+            $prompt .= "Context (Job Description / Title):\n{$jobContext}\n\n";
+        }
+        $prompt .= "Original Bullet:\n{$text}\n\n";
+        $prompt .= "Return ONLY a JSON array of strings containing exactly 3 alternative rewrites.";
+
+        return $prompt;
     }
 
     /**
@@ -54,13 +77,7 @@ class AiService
 
         $prompts = [];
         foreach ($angles as $angle => $instruction) {
-            $prompt = "You are an expert ATS resume writer. Rewrite the provided resume sections to tailor them for the given job description.\n";
-            $prompt .= "ANGLE TO FOCUS ON: {$instruction}\n\n";
-            $prompt .= "JOB DESCRIPTION:\n{$jobDescription}\n\n";
-            $prompt .= "CURRENT RESUME JSON (Array of sections):\n" . json_encode($currentSections) . "\n\n";
-            $prompt .= "Return ONLY the modified JSON array representing the new resume sections. DO NOT change the structure, just update the text values in descriptions/bullets to fit the angle. MUST return a valid JSON array.";
-
-            $prompts[$angle] = $prompt;
+            $prompts[$angle] = $this->buildCvVersionPrompt($instruction, $jobDescription, $currentSections);
         }
 
         $responses = Http::pool(function (Pool $pool) use ($apiKey, $angles, $prompts) {
@@ -93,7 +110,10 @@ class AiService
                     60,
                 );
             } else {
-                Log::error("AiService generateCvVersions failed for angle {$angle}");
+                Log::error("AiService generateCvVersions failed for angle {$angle}", [
+                    'status' => $response instanceof \Illuminate\Http\Client\Response ? $response->status() : null,
+                    'body' => $response instanceof \Illuminate\Http\Client\Response ? $response->body() : (string) $response,
+                ]);
                 throw new \Exception("AI service failed for {$angle} CV version.");
             }
         }
@@ -143,6 +163,18 @@ class AiService
             // Logging should never break the main flow
             Log::warning('Failed to log AI usage', ['error' => $e->getMessage()]);
         }
+    }
+
+    private function buildCvVersionPrompt(string $angleInstruction, string $jobDescription, array $currentSections): string
+    {
+        $prompt = "You are an expert ATS resume writer. Rewrite the provided resume sections to tailor them for the given job description.\n";
+        $prompt .= "ANGLE TO FOCUS ON: {$angleInstruction}\n\n";
+        $prompt .= self::ANTI_FABRICATION_RULES . "\n\n";
+        $prompt .= "JOB DESCRIPTION:\n{$jobDescription}\n\n";
+        $prompt .= "CURRENT RESUME JSON (Array of sections):\n" . json_encode($currentSections) . "\n\n";
+        $prompt .= "Return ONLY the modified JSON array representing the new resume sections. DO NOT change the structure, just update the text values in descriptions/bullets to fit the angle. MUST return a valid JSON array.";
+
+        return $prompt;
     }
 
     // ─── Private Helpers ──────────────────────────────────────
@@ -271,10 +303,13 @@ PROMPT;
 
     private static function jsonGenerationConfig(array $schema): array
     {
-        return [
-            'response_mime_type' => 'application/json',
-            'response_schema' => $schema,
-        ];
+        $config = ['response_mime_type' => 'application/json'];
+
+        if ($schema !== []) {
+            $config['response_schema'] = $schema;
+        }
+
+        return $config;
     }
 
     private static function resumeBulletOptionsSchema(): array
@@ -290,47 +325,21 @@ PROMPT;
         ];
     }
 
+    /**
+     * Gemini's structured-output engine rejects this shape outright — the
+     * combination of a 30-item array, an 8-value enum, and a polymorphic
+     * (object|array) `content` field is either an unsupported keyword
+     * (`additionalProperties` inside `anyOf`) or, once that's stripped,
+     * "too many states for serving" (its constrained-decoding grammar limit).
+     * Returning an empty schema here makes jsonGenerationConfig() omit
+     * `response_schema` entirely; correctness is instead enforced PHP-side by
+     * CvVersionsResponse::fromProvider, with the existing repair-retry loop
+     * in decodeValidateOrRepair() re-prompting Gemini if it returns invalid
+     * JSON — see AiProviderValidationTest.
+     */
     private static function cvVersionsSchema(): array
     {
-        return [
-            'type' => 'array',
-            'maxItems' => 30,
-            'items' => [
-                'type' => 'object',
-                'properties' => [
-                    'type' => [
-                        'type' => 'string',
-                        'enum' => [
-                            'personal_info',
-                            'work_experience',
-                            'education',
-                            'skills',
-                            'target_job',
-                            'certifications',
-                            'projects',
-                            'languages',
-                        ],
-                    ],
-                    'title' => ['type' => 'string', 'maxLength' => 100],
-                    'content' => [
-                        'anyOf' => [
-                            [
-                                'type' => 'object',
-                                'additionalProperties' => true,
-                            ],
-                            [
-                                'type' => 'array',
-                                'items' => [
-                                    'type' => 'object',
-                                    'additionalProperties' => true,
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                'required' => ['type', 'title', 'content'],
-            ],
-        ];
+        return [];
     }
 
     private static function atsAnalysisSchema(): array

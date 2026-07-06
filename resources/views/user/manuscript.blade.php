@@ -156,8 +156,8 @@
                 <div class="w-full max-w-[794px] relative flex flex-col lg:my-auto shrink-0 mb-10 lg:mb-0 mt-20 lg:mt-0">
 
                     @if($cv)
-                        <div class="w-full relative bg-tertiary shadow-xl rounded-sm border border-primary/10 z-10 overflow-hidden" id="preview-container" style="aspect-ratio: 210/297;">
-                            <iframe id="resume-preview-iframe" src="{{ route('resumes.preview', $cv) }}" style="width: 794px; height: 1123px; transform-origin: 0 0; border: none; overflow: hidden;" class="pointer-events-none absolute top-0 left-0"></iframe>
+                        <div class="w-full relative bg-tertiary shadow-xl rounded-sm border border-primary/10 z-10" id="preview-container" style="min-height: 1123px;">
+                            <iframe id="resume-preview-iframe" src="{{ route('resumes.preview', $cv) }}" style="width: 794px; height: 1123px; transform-origin: 0 0; border: none;" class="pointer-events-none absolute top-0 left-0"></iframe>
                         </div>
                     @else
                         <div class="bg-tertiary w-full h-full min-h-[842px] shadow-xl rounded-sm p-6 lg:p-16 z-10 flex flex-col">
@@ -242,7 +242,7 @@
                         <span class="text-xs uppercase tracking-widest">Layout</span>
                     </x-ui.button>
                     <div class="w-px h-4 bg-primary/20"></div>
-                    <x-ui.button variant="text" icon="history">
+                    <x-ui.button variant="text" icon="history" onclick="openHistoryModal()">
                         <span class="text-xs uppercase tracking-widest">History</span>
                     </x-ui.button>
                 </div>
@@ -424,6 +424,44 @@
                     <p class="text-sm text-primary/60 mt-2">This usually takes about 10-20 seconds.</p>
                 </div>
                 <div id="cv-versions-results" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+            </div>
+        </div>
+    </div>
+
+    {{-- CV History Modal --}}
+    <div id="history-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="history-modal-title">
+        <div class="bg-surface w-full max-w-lg max-h-[80vh] rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300 overflow-hidden" id="history-modal-content">
+            <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
+                <h3 id="history-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary">history</span> CV History
+                </h3>
+                <button type="button" onclick="closeHistoryModal()" aria-label="Close CV history" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scrollbar bg-surface flex-1">
+                <div id="history-list" class="flex flex-col gap-3">
+                    <p class="text-sm text-primary/60 text-center py-8">Loading…</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Apply Version Confirmation Modal --}}
+    <div id="apply-version-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="apply-version-modal-title">
+        <div class="bg-surface w-full max-w-md rounded-2xl shadow-2xl p-6 mx-4 transform scale-95 transition-transform duration-300" id="apply-version-modal-content">
+            <h3 id="apply-version-modal-title" class="text-lg font-headline font-bold text-primary flex items-center gap-2 mb-3">
+                <span class="material-symbols-outlined text-secondary">auto_awesome</span> Apply this version?
+            </h3>
+            <p class="text-sm text-primary/70 mb-4">This will overwrite your current CV content. A backup of your current content is saved to History, so you can restore it later.</p>
+            <div id="apply-version-warning" class="hidden mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs"></div>
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="closeApplyVersionModal()" class="py-2.5 px-5 rounded-xl border border-primary/20 hover:bg-primary/5 text-primary font-bold text-sm transition-colors">Cancel</button>
+                <button type="button" id="apply-version-confirm-btn" class="py-2.5 px-5 rounded-xl bg-secondary hover:bg-secondary/90 text-white font-bold text-sm transition-colors">Apply &amp; Overwrite</button>
             </div>
         </div>
     </div>

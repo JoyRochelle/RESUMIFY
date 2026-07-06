@@ -53,4 +53,9 @@ class Cv extends Model
         return $this->hasMany(InterviewSession::class, 'resume_id');
     }
 
+    public function snapshots(): HasMany
+    {
+        return $this->hasMany(CvSectionSnapshot::class);
+    }
+
 }

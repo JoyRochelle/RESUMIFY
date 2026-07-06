@@ -20,6 +20,7 @@ use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\Resume\ManuscriptAtsController;
 use App\Http\Controllers\User\Resume\ResumeController;
 use App\Http\Controllers\User\Resume\ResumeExportController;
+use App\Http\Controllers\User\Resume\ResumeSnapshotController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -112,6 +113,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/pdf', 'downloadPdf')->name('pdf');
             });
 
+            // Section history (snapshots) actions
+            Route::prefix('history')->controller(ResumeSnapshotController::class)->name('history.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/{snapshot}/restore', 'restore')->name('restore');
+            });
+
             // AI Features actions
             Route::prefix('ai')->controller(AiResumeController::class)->name('ai.')->group(function () {
                 Route::post('/refine-bullet', 'refineBullet')
@@ -121,6 +128,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::post('/generate-versions', 'generateVersions')
                     ->middleware(['ai.quota:3', 'throttle:3,1'])
                     ->name('generateVersions');
+
+                Route::post('/versions/{adaptation}/apply', 'applyVersion')
+                    ->name('applyVersion');
             });
         });
 
