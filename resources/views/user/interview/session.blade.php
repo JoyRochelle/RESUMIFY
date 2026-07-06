@@ -3,7 +3,11 @@
 @section('title', 'Resumify — Interview with Ms. Sarah')
 
 @section('content')
-<div class="flex-1 flex flex-col min-w-0 overflow-hidden h-screen">
+{{-- NOTE: no flex-1 here — as a flex item with flex-basis:0% the browser
+     ignores the height property, so h-dvh never took effect and the page
+     grew to content height (body-level scroll). flex-basis must stay auto. --}}
+<div class="flex flex-col min-w-0 overflow-hidden h-dvh overscroll-none
+            pb-[calc(4.75rem+env(safe-area-inset-bottom))] md:pb-0">
 
     {{-- Header bar --}}
     <header class="shrink-0 flex items-center justify-between px-4 md:px-6 py-3
@@ -39,14 +43,33 @@
     {{-- Session completed banner --}}
     @if($session->status !== 'active')
     <div class="shrink-0 px-4 py-2.5 bg-primary/5 border-b border-primary/10
-                text-primary/60 text-sm text-center">
-        This session ended on {{ $session->ended_at?->format('d M Y, H:i') }}.
+                text-primary/60 text-sm flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-center">
+        <span>This session ended on {{ $session->ended_at?->format('d M Y, H:i') }}.</span>
+
+        @if($session->feedback)
+            <a href="{{ route('interview.feedback', $session) }}"
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary/10
+                      text-secondary text-xs font-semibold hover:bg-secondary/20 transition-all">
+                <span class="material-symbols-outlined text-[15px]">analytics</span>
+                View Report
+            </a>
+        @else
+            <form method="POST" action="{{ route('interview.feedback.generate', $session) }}">
+                @csrf
+                <button type="submit"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary
+                               text-white text-xs font-semibold hover:bg-secondary/90 active:scale-[.98] transition-all">
+                    <span class="material-symbols-outlined text-[15px]">analytics</span>
+                    Generate Report (1 credit)
+                </button>
+            </form>
+        @endif
     </div>
     @endif
 
     {{-- Message list --}}
     <div id="messages"
-         class="flex-1 overflow-y-auto px-4 md:px-6 py-5 space-y-4 custom-scrollbar">
+         class="flex-1 overflow-y-auto overscroll-contain px-4 md:px-6 py-5 space-y-4 custom-scrollbar">
 
         @foreach($session->messages as $msg)
             @if($msg->role === 'assistant')
@@ -258,7 +281,7 @@
         scrollToBottom();
 
         const controller = new AbortController();
-        const timeoutId  = setTimeout(() => controller.abort(), 60000);
+        const timeoutId  = setTimeout(() => controller.abort(), 100000);
 
         try {
             const res = await fetch(STREAM_URL, {

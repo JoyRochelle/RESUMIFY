@@ -130,6 +130,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/history', 'history')->name('history');
             Route::get('/sessions/{session}', 'show')->name('show');
             Route::get('/sessions/{session}/feedback', 'feedback')->name('feedback');
+            Route::post('/sessions/{session}/feedback/generate', 'generateFeedback')->name('feedback.generate');
             Route::post('/sessions/{session}/end', 'endSession')->name('end');
 
             // API routes

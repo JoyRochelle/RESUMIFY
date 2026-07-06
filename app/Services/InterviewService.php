@@ -20,6 +20,20 @@ class InterviewService
     public const RECENT_MESSAGE_LIMIT = 20;
 
     /**
+     * Ceiling for the conversational (non-JSON) Gemini calls. Ms. Sarah is
+     * instructed to ask elaborate, CV-referencing questions; 30s/60s proved
+     * too tight and aborted otherwise-successful long replies.
+     */
+    private const GEMINI_CONVERSATION_TIMEOUT_SECONDS = 90;
+
+    /**
+     * Ceiling for the end-of-session feedback call. Analyzing a full
+     * transcript is the most reasoning-heavy call in the system, yet it
+     * previously had the tightest timeout (45s) of any Gemini call here.
+     */
+    private const GEMINI_FEEDBACK_TIMEOUT_SECONDS = 90;
+
+    /**
      * Create an interview session and ask Bu Sari's opening question.
      *
      * @return array{session: InterviewSession, message: string}
@@ -120,7 +134,7 @@ PROMPT;
         $transcript = $this->buildTranscript($session->messages);
         $prompt     = $this->buildFeedbackPrompt($session->job_target, $transcript);
 
-        $data = $this->callGeminiJson($prompt, 45, [InterviewFeedbackResponse::class, 'fromProvider']);
+        $data = $this->callGeminiJson($prompt, self::GEMINI_FEEDBACK_TIMEOUT_SECONDS, [InterviewFeedbackResponse::class, 'fromProvider']);
 
         return InterviewFeedback::create([
             'session_id'       => $session->id,
@@ -178,7 +192,7 @@ PROMPT;
      *
      * @throws \Exception on API failure or empty response.
      */
-    private function callGemini(string $systemPrompt, array $messages, int $timeout = 30): string
+    private function callGemini(string $systemPrompt, array $messages, int $timeout = self::GEMINI_CONVERSATION_TIMEOUT_SECONDS): string
     {
         $apiKey = config('services.gemini.key');
         if (!$apiKey) {
@@ -190,7 +204,7 @@ PROMPT;
             [
                 'system_instruction' => ['parts' => [['text' => $systemPrompt]]],
                 'contents'           => $messages,
-                'generationConfig'   => ['maxOutputTokens' => 600, 'temperature' => 0.7],
+                'generationConfig'   => self::conversationGenerationConfig(),
             ]
         );
 
@@ -301,14 +315,14 @@ PROMPT;
         }
 
         $response = Http::withOptions(['stream' => true])
-            ->timeout(60)
+            ->timeout(self::GEMINI_CONVERSATION_TIMEOUT_SECONDS)
             ->connectTimeout(5)
             ->post(
                 self::GEMINI_STREAM_URL . "?key={$apiKey}&alt=sse",
                 [
                     'system_instruction' => ['parts' => [['text' => $systemPrompt]]],
                     'contents'           => $messages,
-                    'generationConfig'   => ['maxOutputTokens' => 600, 'temperature' => 0.7],
+                    'generationConfig'   => self::conversationGenerationConfig(),
                 ]
             );
 
@@ -350,7 +364,7 @@ PROMPT;
      *
      * @throws \Exception on API failure, empty response, or invalid JSON.
      */
-    private function callGeminiJson(string $prompt, int $timeout = 45, ?callable $validator = null): array
+    private function callGeminiJson(string $prompt, int $timeout = self::GEMINI_FEEDBACK_TIMEOUT_SECONDS, ?callable $validator = null): array
     {
         $content = $this->requestGeminiJsonText($prompt, self::feedbackSchema(), $timeout);
 
@@ -371,7 +385,7 @@ PROMPT;
         }
     }
 
-    private function requestGeminiJsonText(string $prompt, array $schema, int $timeout = 45): string
+    private function requestGeminiJsonText(string $prompt, array $schema, int $timeout = self::GEMINI_FEEDBACK_TIMEOUT_SECONDS): string
     {
         $apiKey = config('services.gemini.key');
         if (!$apiKey) {
@@ -436,6 +450,29 @@ Return ONLY corrected valid JSON that satisfies the original task and schema. Do
 PROMPT;
     }
 
+    /**
+     * Generation config for the conversational (non-JSON) Ms. Sarah calls.
+     * thinkingBudget is set to 0 because this persona needs a direct
+     * conversational reply, not hidden chain-of-thought — otherwise Gemini
+     * 2.5 Flash can spend the whole token/time budget on reasoning before
+     * emitting any visible text, especially for longer, elaborate replies.
+     */
+    private static function conversationGenerationConfig(): array
+    {
+        return [
+            'maxOutputTokens' => 600,
+            'temperature'     => 0.7,
+            'thinkingConfig'  => ['thinkingBudget' => 0],
+        ];
+    }
+
+    /**
+     * thinkingBudget is set to 0 for the same reason as
+     * conversationGenerationConfig(): analyzing a full interview transcript
+     * for STAR-method feedback is the most reasoning-heavy call in this
+     * service, so it was the most exposed to hidden thinking silently
+     * consuming the entire token/time budget before any JSON was emitted.
+     */
     private static function jsonGenerationConfig(array $schema): array
     {
         return [
@@ -443,40 +480,46 @@ PROMPT;
             'maxOutputTokens' => 2000,
             'temperature' => 0.3,
             'response_schema' => $schema,
+            'thinkingConfig' => ['thinkingBudget' => 0],
         ];
     }
 
+    /**
+     * Structural schema only — no minimum/maximum, maxLength, or maxItems.
+     * Gemini rejects response_schemas whose combined constraints have "too
+     * many states for serving" (400 INVALID_ARGUMENT, observed 2026-07-06),
+     * and every one of those bounds is already enforced app-side by
+     * InterviewFeedbackResponse::fromProvider with a repair retry.
+     */
     private static function feedbackSchema(): array
     {
         return [
             'type' => 'object',
             'properties' => [
-                'overall_score' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
+                'overall_score' => ['type' => 'integer'],
                 'readiness_badge' => ['type' => 'string', 'enum' => ['ready', 'almost_ready', 'needs_practice']],
                 'missing_keywords' => [
                     'type' => 'array',
-                    'maxItems' => 30,
-                    'items' => ['type' => 'string', 'maxLength' => 100],
+                    'items' => ['type' => 'string'],
                 ],
                 'question_scores' => [
                     'type' => 'array',
-                    'maxItems' => 30,
                     'items' => [
                         'type' => 'object',
                         'properties' => [
-                            'question' => ['type' => 'string', 'maxLength' => 500],
-                            'answer_summary' => ['type' => 'string', 'maxLength' => 700],
+                            'question' => ['type' => 'string'],
+                            'answer_summary' => ['type' => 'string'],
                             'star_scores' => [
                                 'type' => 'object',
                                 'properties' => [
-                                    'situation' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
-                                    'task' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
-                                    'action' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
-                                    'result' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
+                                    'situation' => ['type' => 'integer'],
+                                    'task' => ['type' => 'integer'],
+                                    'action' => ['type' => 'integer'],
+                                    'result' => ['type' => 'integer'],
                                 ],
                                 'required' => ['situation', 'task', 'action', 'result'],
                             ],
-                            'feedback' => ['type' => 'string', 'maxLength' => 1000],
+                            'feedback' => ['type' => 'string'],
                         ],
                         'required' => ['question', 'answer_summary', 'star_scores', 'feedback'],
                     ],
