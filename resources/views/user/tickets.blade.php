@@ -38,6 +38,7 @@
                     $badgeMap = [
                         'open'    => 'bg-red-100 text-red-600',
                         'pending' => 'bg-amber-100 text-amber-600',
+                        'awaiting_closure' => 'bg-blue-100 text-blue-600',
                         'closed'  => 'bg-primary/10 text-primary/50',
                     ];
                 @endphp
@@ -49,7 +50,7 @@
                     </div>
                     <div class="flex items-center space-x-3 flex-shrink-0">
                         <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $badgeMap[$ticket->status] ?? '' }}">
-                            {{ $ticket->status }}
+                            {{ str_replace('_', ' ', $ticket->status) }}
                         </span>
                         <span class="material-symbols-outlined text-primary/30 text-[20px]">chevron_right</span>
                     </div>

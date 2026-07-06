@@ -6,9 +6,9 @@
 
         <div class="p-6 border-b border-primary/5 flex items-center justify-between">
             <h3 class="text-[10px] font-label text-primary/60 uppercase tracking-widest">Conversation</h3>
-            @php $badgeMap = ['open' => 'bg-red-100 text-red-600', 'pending' => 'bg-amber-100 text-amber-600', 'closed' => 'bg-primary/10 text-primary/50']; @endphp
+            @php $badgeMap = ['open' => 'bg-red-100 text-red-600', 'pending' => 'bg-amber-100 text-amber-600', 'awaiting_closure' => 'bg-blue-100 text-blue-600', 'closed' => 'bg-primary/10 text-primary/50']; @endphp
             <span class="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $badgeMap[$ticket->status] ?? '' }}">
-                {{ $ticket->status }}
+                {{ str_replace('_', ' ', $ticket->status) }}
             </span>
         </div>
 
@@ -42,6 +42,41 @@
             @endforelse
         </div>
     </div>
+
+    {{-- Close flow --}}
+    @error('close')
+        <p class="text-xs text-red-500 mb-3">{{ $message }}</p>
+    @enderror
+
+    @if(in_array($ticket->status, ['open', 'pending']) && auth()->user()->isAdmin())
+        <div class="{{ $cardClass }} p-4 mb-6 flex items-center justify-between">
+            <p class="text-sm font-label text-primary/60">Ready to close this ticket?</p>
+            <button type="button" wire:click="requestClose" wire:loading.attr="disabled" wire:target="requestClose"
+                    class="admin-btn-secondary text-sm">
+                Request Close
+            </button>
+        </div>
+    @elseif($ticket->status === 'awaiting_closure')
+        @if($ticket->close_requested_by === auth()->id())
+            <div class="{{ $cardClass }} p-4 mb-6">
+                <p class="text-sm font-label text-primary/60">Waiting for the other party to confirm or reject your close request.</p>
+            </div>
+        @else
+            <div class="{{ $cardClass }} p-4 mb-6 flex items-center justify-between">
+                <p class="text-sm font-label text-primary/60">The other party requested to close this ticket.</p>
+                <div class="flex gap-2">
+                    <button type="button" wire:click="rejectClose" wire:loading.attr="disabled" wire:target="rejectClose"
+                            class="admin-btn-secondary text-sm">
+                        Reject
+                    </button>
+                    <button type="button" wire:click="confirmClose" wire:loading.attr="disabled" wire:target="confirmClose"
+                            class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-bold bg-primary text-tertiary hover:bg-primary/90 transition">
+                        Confirm Close
+                    </button>
+                </div>
+            </div>
+        @endif
+    @endif
 
     {{-- Reply form --}}
     @if($ticket->status !== 'closed')

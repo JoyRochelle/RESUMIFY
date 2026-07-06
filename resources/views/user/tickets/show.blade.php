@@ -19,9 +19,9 @@
                     </div>
                     <h1 class="text-xl font-headline font-bold text-primary">{{ $ticket->subject }}</h1>
                 </div>
-                @php $badgeMap = ['open' => 'bg-red-100 text-red-600', 'pending' => 'bg-amber-100 text-amber-600', 'closed' => 'bg-primary/10 text-primary/50']; @endphp
+                @php $badgeMap = ['open' => 'bg-red-100 text-red-600', 'pending' => 'bg-amber-100 text-amber-600', 'awaiting_closure' => 'bg-blue-100 text-blue-600', 'closed' => 'bg-primary/10 text-primary/50']; @endphp
                 <span class="inline-block px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $badgeMap[$ticket->status] ?? '' }} flex-shrink-0">
-                    {{ $ticket->status }}
+                    {{ str_replace('_', ' ', $ticket->status) }}
                 </span>
             </div>
 

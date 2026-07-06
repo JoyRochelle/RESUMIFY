@@ -5,6 +5,9 @@ namespace App\Livewire;
 use App\Jobs\SendTicketReplyJob;
 use App\Models\AdminLog;
 use App\Models\SupportTicket;
+use App\Notifications\SupportTicketCloseConfirmed;
+use App\Notifications\SupportTicketCloseRejected;
+use App\Notifications\SupportTicketCloseRequested;
 use App\Notifications\SupportTicketReplied;
 use App\Notifications\SupportTicketUserReplied;
 use Illuminate\Support\Facades\Gate;
@@ -67,6 +70,92 @@ class TicketChat extends Component
         }
 
         $this->body = '';
+        $this->ticket->refresh();
+    }
+
+    public function requestClose(): void
+    {
+        Gate::authorize('requestClose', $this->ticket);
+
+        if (in_array($this->ticket->status, ['awaiting_closure', 'closed'], true)) {
+            $this->addError('close', 'A close request is already pending or the ticket is already closed.');
+
+            return;
+        }
+
+        $author = auth()->user();
+
+        $this->ticket->requestClose($author);
+
+        $this->ticket->otherParty($author)?->notify(new SupportTicketCloseRequested($this->ticket));
+
+        if ($author->isAdmin()) {
+            AdminLog::create([
+                'admin_id'    => $author->id,
+                'action'      => 'request_close_ticket',
+                'target_type' => 'support_ticket',
+                'target_id'   => $this->ticket->id,
+            ]);
+        }
+
+        $this->ticket->refresh();
+    }
+
+    public function confirmClose(): void
+    {
+        Gate::authorize('confirmClose', $this->ticket);
+
+        if ($this->ticket->status !== 'awaiting_closure') {
+            $this->addError('close', 'There is no pending close request to confirm.');
+
+            return;
+        }
+
+        $author = auth()->user();
+        $requester = $this->ticket->closeRequestedBy;
+
+        $this->ticket->confirmClose();
+
+        $requester?->notify(new SupportTicketCloseConfirmed($this->ticket));
+
+        if ($author->isAdmin()) {
+            AdminLog::create([
+                'admin_id'    => $author->id,
+                'action'      => 'confirm_close_ticket',
+                'target_type' => 'support_ticket',
+                'target_id'   => $this->ticket->id,
+            ]);
+        }
+
+        $this->ticket->refresh();
+    }
+
+    public function rejectClose(): void
+    {
+        Gate::authorize('rejectClose', $this->ticket);
+
+        if ($this->ticket->status !== 'awaiting_closure') {
+            $this->addError('close', 'There is no pending close request to reject.');
+
+            return;
+        }
+
+        $author = auth()->user();
+        $requester = $this->ticket->closeRequestedBy;
+
+        $this->ticket->rejectClose();
+
+        $requester?->notify(new SupportTicketCloseRejected($this->ticket));
+
+        if ($author->isAdmin()) {
+            AdminLog::create([
+                'admin_id'    => $author->id,
+                'action'      => 'reject_close_ticket',
+                'target_type' => 'support_ticket',
+                'target_id'   => $this->ticket->id,
+            ]);
+        }
+
         $this->ticket->refresh();
     }
 

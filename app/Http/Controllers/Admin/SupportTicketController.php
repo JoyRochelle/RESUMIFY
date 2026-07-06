@@ -7,8 +7,12 @@ use App\Jobs\SendTicketReplyJob;
 use App\Models\AdminLog;
 use App\Models\SupportTicket;
 use App\Models\User;
+use App\Notifications\SupportTicketCloseConfirmed;
+use App\Notifications\SupportTicketCloseRejected;
+use App\Notifications\SupportTicketCloseRequested;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class SupportTicketController extends Controller
@@ -130,5 +134,77 @@ class SupportTicketController extends Controller
         ]);
 
         return back()->with('success', 'Status updated to ' . $request->status . '.');
+    }
+
+    public function requestClose(SupportTicket $ticket): RedirectResponse
+    {
+        Gate::authorize('requestClose', $ticket);
+
+        abort_if(
+            in_array($ticket->status, ['awaiting_closure', 'closed'], true),
+            422,
+            'A close request is already pending or the ticket is already closed.'
+        );
+
+        $admin = auth()->user();
+
+        $ticket->requestClose($admin);
+
+        $ticket->otherParty($admin)?->notify(new SupportTicketCloseRequested($ticket));
+
+        AdminLog::create([
+            'admin_id'    => $admin->id,
+            'action'      => 'request_close_ticket',
+            'target_type' => 'support_ticket',
+            'target_id'   => $ticket->id,
+        ]);
+
+        return back()->with('success', 'Close requested.');
+    }
+
+    public function confirmClose(SupportTicket $ticket): RedirectResponse
+    {
+        Gate::authorize('confirmClose', $ticket);
+
+        abort_if($ticket->status !== 'awaiting_closure', 422, 'There is no pending close request to confirm.');
+
+        $admin = auth()->user();
+        $requester = $ticket->closeRequestedBy;
+
+        $ticket->confirmClose();
+
+        $requester?->notify(new SupportTicketCloseConfirmed($ticket));
+
+        AdminLog::create([
+            'admin_id'    => $admin->id,
+            'action'      => 'confirm_close_ticket',
+            'target_type' => 'support_ticket',
+            'target_id'   => $ticket->id,
+        ]);
+
+        return back()->with('success', 'Ticket closed.');
+    }
+
+    public function rejectClose(SupportTicket $ticket): RedirectResponse
+    {
+        Gate::authorize('rejectClose', $ticket);
+
+        abort_if($ticket->status !== 'awaiting_closure', 422, 'There is no pending close request to reject.');
+
+        $admin = auth()->user();
+        $requester = $ticket->closeRequestedBy;
+
+        $ticket->rejectClose();
+
+        $requester?->notify(new SupportTicketCloseRejected($ticket));
+
+        AdminLog::create([
+            'admin_id'    => $admin->id,
+            'action'      => 'reject_close_ticket',
+            'target_type' => 'support_ticket',
+            'target_id'   => $ticket->id,
+        ]);
+
+        return back()->with('success', 'Close request rejected.');
     }
 }
