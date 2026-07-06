@@ -1,11 +1,11 @@
 @extends('layouts.user.app')
 
-@section('title', 'Resumify — Mock Interview')
+@section('title', 'Resumify — ' . __('messages.interview.index.page_title'))
 
 @section('content')
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-        <x-user.page-header title="Mock Interview HRD" backUrl="{{ route('dashboard') }}" />
+        <x-user.page-header title="{{ __('messages.interview.index.heading') }}" backUrl="{{ route('dashboard') }}" />
 
         {{-- Flash messages --}}
         @if (session('success'))
@@ -24,10 +24,9 @@
                             <span class="material-symbols-outlined text-secondary text-[20px]">smart_toy</span>
                         </div>
                         <div>
-                            <p class="font-semibold text-primary text-sm">Hello! I'm Ms. Sarah</p>
+                            <p class="font-semibold text-primary text-sm">{{ __('messages.interview.index.greeting') }}</p>
                             <p class="text-primary/60 text-sm mt-1">
-                                I'll interview you based on your actual CV content —
-                                not generic questions. Choose a CV and the position you'd like to practice.
+                                {{ __('messages.interview.index.intro') }}
                             </p>
                         </div>
                     </div>
@@ -37,22 +36,21 @@
                     {{-- Upgrade wall --}}
                     <div class="bg-surface rounded-2xl border border-primary/10 p-8 text-center space-y-4">
                         <span class="material-symbols-outlined text-primary/30 text-[48px] block">lock</span>
-                        <p class="font-semibold text-primary">Your Free Trial Has Been Used</p>
+                        <p class="font-semibold text-primary">{{ __('messages.interview.index.trial_used_title') }}</p>
                         <p class="text-primary/60 text-sm leading-relaxed">
-                            You've used your 1 free interview session.<br>
-                            Upgrade to Premium for unlimited sessions.
+                            {!! __('messages.interview.index.trial_used_body') !!}
                         </p>
                         <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
                             <a href="{{ route('user.upgrade-quota') }}"
                                 class="px-5 py-2.5 rounded-xl bg-secondary text-white font-semibold text-sm
                               hover:bg-secondary/90 active:scale-[.98] transition">
-                                Upgrade to Premium
+                                {{ __('messages.interview.index.upgrade_to_premium') }}
                             </a>
                             @if ($lastSession = auth()->user()->interviewSessions()->latest()->first())
                                 <a href="{{ route('interview.show', $lastSession) }}"
                                     class="px-5 py-2.5 rounded-xl border border-primary/20 text-primary/70
                               font-medium text-sm hover:border-primary/40 transition">
-                                    View Last Session
+                                    {{ __('messages.interview.index.view_last_session') }}
                                 </a>
                             @endif
                         </div>
@@ -64,7 +62,7 @@
                         {{-- Quota bar --}}
                         @php $user = auth()->user(); @endphp
                         <div class="flex items-center justify-between text-xs text-primary/50 pb-1">
-                            <span>AI Credits Remaining</span>
+                            <span>{{ __('messages.interview.index.ai_credits_remaining') }}</span>
                             <div class="flex items-center gap-2">
                                 <div class="w-24 h-1.5 bg-primary/10 rounded-full overflow-hidden">
                                     <div class="h-full bg-secondary rounded-full transition-all"
@@ -79,13 +77,12 @@
                         {{-- Resume selector --}}
                         <div class="space-y-1.5">
                             <label for="cv-select" class="text-sm font-medium text-primary">
-                                Select CV
+                                {{ __('messages.interview.index.select_cv') }}
                             </label>
                             @if ($cvs->isEmpty())
                                 <p class="text-sm text-primary/50 py-2">
-                                    You don't have a CV yet.
-                                    <a href="{{ route('dashboard') }}" class="text-secondary underline">Create a CV
-                                        first</a>.
+                                    {{ __('messages.interview.index.no_cv_yet') }}
+                                    <a href="{{ route('dashboard') }}" class="text-secondary underline">{{ __('messages.interview.index.create_cv_first') }}</a>.
                                 </p>
                             @else
                                 <select id="cv-select"
@@ -107,10 +104,10 @@
                         {{-- Job target --}}
                         <div class="space-y-1.5">
                             <label for="job-target" class="text-sm font-medium text-primary">
-                                Position Applied For
+                                {{ __('messages.interview.index.position_applied_for') }}
                             </label>
                             <input id="job-target" type="text" maxlength="200"
-                                placeholder="e.g. Backend Engineer, Product Manager…"
+                                placeholder="{{ __('messages.interview.index.position_placeholder') }}"
                                 class="w-full px-4 py-2.5 rounded-xl border border-primary/20 bg-surface text-primary text-sm
                                   placeholder:text-primary/30 focus:outline-none focus:ring-2 focus:ring-secondary/30
                                   focus:border-secondary/50 transition" />
@@ -122,7 +119,7 @@
                                 class="flex items-center gap-2 px-4 py-2.5 rounded-xl
                             bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs">
                                 <span class="material-symbols-outlined text-[16px] shrink-0">info</span>
-                                <span>You have <strong>1 free trial session</strong> as a Basic user.</span>
+                                <span>{{ __('messages.interview.index.trial_banner_before') }} <strong>{{ __('messages.interview.index.trial_banner_bold') }}</strong> {{ __('messages.interview.index.trial_banner_after') }}</span>
                             </div>
                         @endif
 
@@ -138,7 +135,7 @@
                                disabled:opacity-50 disabled:cursor-not-allowed">
                             <span id="start-icon" class="material-symbols-outlined text-[18px]">play_arrow</span>
                             <span id="start-spinner" style="display:none" class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
-                            <span id="start-label">Start Interview</span>
+                            <span id="start-label">{{ __('messages.interview.index.start_interview') }}</span>
                         </button>
 
                     </div>
@@ -148,9 +145,9 @@
                 @if(isset($recentSessions) && $recentSessions->isNotEmpty())
                     <div class="mt-8">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-semibold text-primary">Recent Interviews</h3>
+                            <h3 class="font-semibold text-primary">{{ __('messages.interview.index.recent_interviews') }}</h3>
                             <a href="{{ route('interview.history') }}" class="text-sm font-medium text-secondary hover:underline">
-                                View Full History
+                                {{ __('messages.interview.index.view_full_history') }}
                             </a>
                         </div>
                         <div class="space-y-3">
@@ -163,21 +160,21 @@
                                                 {{ $session->job_target }}
                                             </p>
                                             <p class="text-xs text-primary/60 mt-1 truncate">
-                                                CV: {{ $session->cv->title ?? 'Deleted CV' }}
+                                                {{ __('messages.interview.index.cv_prefix') }} {{ $session->cv->title ?? __('messages.interview.index.deleted_cv') }}
                                             </p>
                                         </div>
                                         <div class="text-right shrink-0">
                                             @if($session->status === 'completed' && $session->feedback)
                                                 <span class="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-lg text-[10px] font-bold uppercase tracking-wider">
-                                                    Score: {{ $session->feedback->overall_score ?? 0 }}/100
+                                                    {{ __('messages.interview.index.score_label', ['score' => $session->feedback->overall_score ?? 0]) }}
                                                 </span>
                                             @elseif($session->status === 'active')
                                                 <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-[10px] font-bold uppercase tracking-wider">
-                                                    In Progress
+                                                    {{ __('messages.interview.index.in_progress') }}
                                                 </span>
                                             @else
                                                 <span class="inline-flex items-center px-2 py-1 bg-primary/10 text-primary/60 rounded-lg text-[10px] font-bold uppercase tracking-wider">
-                                                    Ended
+                                                    {{ __('messages.interview.index.ended') }}
                                                 </span>
                                             @endif
                                             <p class="text-[10px] text-primary/40 mt-2 font-medium">
@@ -222,7 +219,7 @@
                 startBtn.disabled = on;
                 startIcon.style.display = on ? 'none' : 'inline-block';
                 startSpinner.style.display = on ? 'inline-block' : 'none';
-                startLabel.textContent = on ? 'Starting…' : 'Start Interview';
+                startLabel.textContent = on ? @json(__('messages.interview.index.starting')) : @json(__('messages.interview.index.start_interview'));
             }
 
             function showError(msg) {
@@ -237,11 +234,11 @@
                 const jobTarget = jobTargetInput.value.trim();
 
                 if (!cvId) {
-                    showError('Please select a CV first.');
+                    showError(@json(__('messages.interview.index.select_cv_first_error')));
                     return;
                 }
                 if (!jobTarget) {
-                    showError('Please enter the position you\'re applying for.');
+                    showError(@json(__('messages.interview.index.enter_position_error')));
                     return;
                 }
 
@@ -271,14 +268,14 @@
                     if (data.success) {
                         window.location.href = `/interview/sessions/${data.session_id}`;
                     } else {
-                        showError(data.message || 'Failed to start session. Please try again.');
+                        showError(data.message || @json(__('messages.interview.index.start_failed_error')));
                         setLoading(false);
                     }
                 } catch (err) {
                     clearTimeout(timeoutId);
                     showError(err.name === 'AbortError' ?
-                        'Request timed out. Please try again.' :
-                        'A network error occurred. Please try again.');
+                        @json(__('messages.interview.index.timeout_error')) :
+                        @json(__('messages.interview.index.network_error')));
                     setLoading(false);
                 }
             }

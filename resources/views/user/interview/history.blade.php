@@ -1,16 +1,16 @@
 @extends('layouts.user.app')
 
-@section('title', 'Resumify — Interview History')
+@section('title', 'Resumify — ' . __('messages.interview.history.page_title'))
 
 @section('content')
 <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-    <x-user.page-header title="Interview History" backUrl="{{ route('interview.index') }}">
+    <x-user.page-header title="{{ __('messages.interview.history.heading') }}" backUrl="{{ route('interview.index') }}">
         <a href="{{ route('interview.index') }}"
            class="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-white text-sm font-semibold
                   hover:bg-secondary/90 active:scale-[.98] transition-all">
             <span class="material-symbols-outlined text-[18px]">add</span>
-            Start New Interview
+            {{ __('messages.interview.feedback.start_new_interview') }}
         </a>
     </x-user.page-header>
 
@@ -26,7 +26,7 @@
                         onchange="this.form.submit()"
                         class="text-sm border border-primary/20 rounded-xl px-3 py-2 bg-surface text-primary
                                focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary/50">
-                    <option value="">All Resumes</option>
+                    <option value="">{{ __('messages.interview.history.all_resumes') }}</option>
                     @foreach($cvs as $cv)
                         <option value="{{ $cv->id }}" {{ request('cv_id') === $cv->id ? 'selected' : '' }}>
                             {{ $cv->title }}
@@ -36,8 +36,8 @@
 
                 {{-- Sort by --}}
                 <div class="flex items-center gap-1 text-sm">
-                    <span class="text-primary/50 text-xs">Sort:</span>
-                    @foreach(['date' => 'Date', 'score' => 'Score'] as $key => $label)
+                    <span class="text-primary/50 text-xs">{{ __('messages.interview.history.sort_label') }}</span>
+                    @foreach(['date' => __('messages.interview.history.sort_date'), 'score' => __('messages.interview.history.sort_score')] as $key => $label)
                         @php
                             $isActive = $sort === $key;
                             $newOrder = ($isActive && $order === 'desc') ? 'asc' : 'desc';
@@ -56,7 +56,7 @@
                 @if(request()->hasAny(['cv_id', 'sort', 'order']))
                     <a href="{{ route('interview.history') }}"
                        class="text-xs text-primary/40 hover:text-primary/70 transition-colors underline underline-offset-2">
-                        Reset
+                        {{ __('messages.interview.history.reset') }}
                     </a>
                 @endif
             </form>
@@ -129,13 +129,13 @@
                 @empty
                 <div class="py-16 text-center">
                     <span class="material-symbols-outlined text-primary/20 text-[56px] block mb-3">history</span>
-                    <p class="text-sm font-semibold text-primary/40 mb-1">No interview sessions yet</p>
-                    <p class="text-xs text-primary/30 mb-5">Complete your first mock interview to see your history here.</p>
+                    <p class="text-sm font-semibold text-primary/40 mb-1">{{ __('messages.interview.history.no_sessions_yet') }}</p>
+                    <p class="text-xs text-primary/30 mb-5">{{ __('messages.interview.history.complete_first_interview') }}</p>
                     <a href="{{ route('interview.index') }}"
                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-secondary text-white
                               font-semibold text-sm hover:bg-secondary/90 active:scale-[.98] transition-all">
                         <span class="material-symbols-outlined text-[16px]">play_arrow</span>
-                        Start Your First Interview
+                        {{ __('messages.interview.history.start_first_interview') }}
                     </a>
                 </div>
                 @endforelse
