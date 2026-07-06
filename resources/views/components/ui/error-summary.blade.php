@@ -3,7 +3,7 @@
          role="alert"
          aria-live="assertive"
          tabindex="-1">
-        <p class="font-bold">Please fix the following fields:</p>
+        <p class="font-bold">{{ __('messages.common.fix_following_fields') }}</p>
         <ul class="mt-2 list-disc space-y-1 pl-5">
             @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>

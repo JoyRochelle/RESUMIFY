@@ -1,5 +1,5 @@
 <!-- Skills -->
-                    <x-user.editor-accordion title="Skills" icon="bolt">
+                    <x-user.editor-accordion title="{{ __('messages.editor.sections.skills.title') }}" icon="bolt">
                         <form class="section-form" data-section-id="{{ $skills->id ?? '' }}">
                             <div class="grid grid-cols-1 gap-4" id="skills-list">
                                 @forelse($skillsContent as $index => $skill)
@@ -9,13 +9,13 @@
                                     </button>
                                     <div class="flex gap-4 items-center w-full">
                                         <div class="flex-1">
-                                        <x-ui.form-input label="Skill Name" name="name" value="{{ $skill['name'] ?? '' }}" class="auto-save" />
+                                        <x-ui.form-input label="{{ __('messages.editor.sections.skills.skill_name') }}" name="name" value="{{ $skill['name'] ?? '' }}" class="auto-save" />
                                     </div>
                                     <div class="flex-1">
                                         <div class="relative">
-                                        <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-1 block">Proficiency Level</label>
+                                        <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-1 block">{{ __('messages.editor.sections.skills.proficiency_level') }}</label>
                                         <select name="level" class="auto-save w-full border-b-2 border-primary/15 focus:border-secondary bg-transparent py-2 px-0 outline-none transition-all duration-200 text-primary text-sm appearance-none cursor-pointer">
-                                            <option value="">Select level</option>
+                                            <option value="">{{ __('messages.editor.sections.skills.select_level') }}</option>
                                             @foreach(['Beginner','Elementary','Intermediate','Advanced','Expert'] as $lvl)
                                                 <option value="{{ $lvl }}" {{ ($skill['level'] ?? '') === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
                                             @endforeach
@@ -31,13 +31,13 @@
                                     </button>
                                     <div class="flex gap-4 items-center w-full">
                                         <div class="flex-1">
-                                        <x-ui.form-input label="Skill Name" name="name" value="" class="auto-save" />
+                                        <x-ui.form-input label="{{ __('messages.editor.sections.skills.skill_name') }}" name="name" value="" class="auto-save" />
                                     </div>
                                     <div class="flex-1">
                                         <div class="relative">
-                                        <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-1 block">Proficiency Level</label>
+                                        <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-1 block">{{ __('messages.editor.sections.skills.proficiency_level') }}</label>
                                         <select name="level" class="auto-save w-full border-b-2 border-primary/15 focus:border-secondary bg-transparent py-2 px-0 outline-none transition-all duration-200 text-primary text-sm appearance-none cursor-pointer">
-                                            <option value="">Select level</option>
+                                            <option value="">{{ __('messages.editor.sections.skills.select_level') }}</option>
                                             @foreach(['Beginner','Elementary','Intermediate','Advanced','Expert'] as $lvl)
                                                 <option value="{{ $lvl }}">{{ $lvl }}</option>
                                             @endforeach
@@ -50,7 +50,7 @@
                             </div>
                             <div class="mt-4">
                                 <button type="button" onclick="addListItem('skills-list', this)" class="w-full py-3 rounded-xl border border-dashed border-primary/30 text-primary/70 hover:bg-primary/5 hover:text-primary transition-colors flex items-center justify-center gap-2 font-bold text-sm">
-                                    <span class="material-symbols-outlined text-[20px]">add_circle</span> Add Skill
+                                    <span class="material-symbols-outlined text-[20px]">add_circle</span> {{ __('messages.editor.sections.skills.add') }}
                                 </button>
                             </div>
                         </form>
