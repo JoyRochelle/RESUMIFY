@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User\Interview;
 
 use App\Actions\Interviews\EndInterviewSessionAction;
+use App\Actions\Interviews\GenerateInterviewFeedbackAction;
 use App\Actions\Interviews\SendInterviewMessageAction;
 use App\Actions\Interviews\StartInterviewAction;
 use App\Http\Controllers\Controller;
@@ -59,7 +60,7 @@ class InterviewController extends Controller
     {
         Gate::authorize('view', $session);
 
-        $session->load('messages');
+        $session->load('messages', 'feedback');
 
         return view('user.interview.session', compact('session'));
     }
@@ -114,6 +115,45 @@ class InterviewController extends Controller
         }
 
         return view('user.interview.feedback', compact('session'));
+    }
+
+    /**
+     * Regenerate the feedback report for a completed session that has none —
+     * recovery path for sessions that ended while feedback generation failed.
+     * Quota: 1 credit, reserved and refunded inside the action.
+     */
+    public function generateFeedback(
+        Request $request,
+        InterviewSession $session,
+        GenerateInterviewFeedbackAction $generateInterviewFeedback
+    ): RedirectResponse {
+        Gate::authorize('feedback', $session);
+
+        if ($session->status === 'active') {
+            return redirect()->route('interview.show', $session)
+                ->with('error', 'End the session first to generate its report.');
+        }
+
+        $session->load('feedback');
+
+        if ($session->feedback) {
+            return redirect()->route('interview.feedback', $session);
+        }
+
+        $result = $generateInterviewFeedback->execute(auth()->user(), $session);
+
+        if ($result->feedbackGeneratedSuccessfully()) {
+            return redirect()->route('interview.feedback', $session)
+                ->with('success', 'Here is your interview report.');
+        }
+
+        if ($result->feedbackUnavailableDueToQuota()) {
+            return redirect()->route('interview.show', $session)
+                ->with('error', 'Report is unavailable — your AI credits are exhausted.');
+        }
+
+        return redirect()->route('interview.show', $session)
+            ->with('error', 'Failed to generate the report. Please try again.');
     }
 
     /**

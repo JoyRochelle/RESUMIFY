@@ -43,8 +43,27 @@
     {{-- Session completed banner --}}
     @if($session->status !== 'active')
     <div class="shrink-0 px-4 py-2.5 bg-primary/5 border-b border-primary/10
-                text-primary/60 text-sm text-center">
-        This session ended on {{ $session->ended_at?->format('d M Y, H:i') }}.
+                text-primary/60 text-sm flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-center">
+        <span>This session ended on {{ $session->ended_at?->format('d M Y, H:i') }}.</span>
+
+        @if($session->feedback)
+            <a href="{{ route('interview.feedback', $session) }}"
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary/10
+                      text-secondary text-xs font-semibold hover:bg-secondary/20 transition-all">
+                <span class="material-symbols-outlined text-[15px]">analytics</span>
+                View Report
+            </a>
+        @else
+            <form method="POST" action="{{ route('interview.feedback.generate', $session) }}">
+                @csrf
+                <button type="submit"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary
+                               text-white text-xs font-semibold hover:bg-secondary/90 active:scale-[.98] transition-all">
+                    <span class="material-symbols-outlined text-[15px]">analytics</span>
+                    Generate Report (1 credit)
+                </button>
+            </form>
+        @endif
     </div>
     @endif
 

@@ -484,37 +484,42 @@ PROMPT;
         ];
     }
 
+    /**
+     * Structural schema only — no minimum/maximum, maxLength, or maxItems.
+     * Gemini rejects response_schemas whose combined constraints have "too
+     * many states for serving" (400 INVALID_ARGUMENT, observed 2026-07-06),
+     * and every one of those bounds is already enforced app-side by
+     * InterviewFeedbackResponse::fromProvider with a repair retry.
+     */
     private static function feedbackSchema(): array
     {
         return [
             'type' => 'object',
             'properties' => [
-                'overall_score' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
+                'overall_score' => ['type' => 'integer'],
                 'readiness_badge' => ['type' => 'string', 'enum' => ['ready', 'almost_ready', 'needs_practice']],
                 'missing_keywords' => [
                     'type' => 'array',
-                    'maxItems' => 30,
-                    'items' => ['type' => 'string', 'maxLength' => 100],
+                    'items' => ['type' => 'string'],
                 ],
                 'question_scores' => [
                     'type' => 'array',
-                    'maxItems' => 30,
                     'items' => [
                         'type' => 'object',
                         'properties' => [
-                            'question' => ['type' => 'string', 'maxLength' => 500],
-                            'answer_summary' => ['type' => 'string', 'maxLength' => 700],
+                            'question' => ['type' => 'string'],
+                            'answer_summary' => ['type' => 'string'],
                             'star_scores' => [
                                 'type' => 'object',
                                 'properties' => [
-                                    'situation' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
-                                    'task' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
-                                    'action' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
-                                    'result' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
+                                    'situation' => ['type' => 'integer'],
+                                    'task' => ['type' => 'integer'],
+                                    'action' => ['type' => 'integer'],
+                                    'result' => ['type' => 'integer'],
                                 ],
                                 'required' => ['situation', 'task', 'action', 'result'],
                             ],
-                            'feedback' => ['type' => 'string', 'maxLength' => 1000],
+                            'feedback' => ['type' => 'string'],
                         ],
                         'required' => ['question', 'answer_summary', 'star_scores', 'feedback'],
                     ],
