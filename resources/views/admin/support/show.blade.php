@@ -27,64 +27,8 @@
         <!-- Thread (2/3 width) -->
         <div class="lg:col-span-2 space-y-6">
 
-            <!-- Conversation -->
-            <div class="admin-card overflow-hidden">
-                <div class="p-6 border-b border-primary/5">
-                    <h3 class="admin-section-title">Conversation</h3>
-                </div>
-
-                <div class="divide-y divide-primary/5">
-                    @forelse($ticket->replies as $reply)
-                    <div class="p-6 {{ $reply->sender?->isAdmin() ? 'bg-primary/[0.02]' : '' }}">
-                        <div class="flex items-start space-x-4">
-                            <div class="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 bg-primary/10">
-                                <img src="{{ $reply->sender?->avatar_url ?? 'https://ui-avatars.com/api/?name=?&background=fcdccb&color=4f3b2f' }}"
-                                     alt="{{ $reply->sender?->name }}"
-                                     class="w-full h-full object-cover">
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center space-x-2 mb-2">
-                                    <span class="text-sm font-label font-bold text-primary">{{ $reply->sender?->name ?? 'Unknown' }}</span>
-                                    @if($reply->sender?->isAdmin())
-                                        <span class="text-[9px] bg-primary/10 text-primary/60 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Support</span>
-                                    @endif
-                                    <span class="text-[11px] font-label text-primary/40">{{ $reply->created_at->format('d M Y, H:i') }}</span>
-                                </div>
-                                <p class="text-sm font-label text-primary/80 whitespace-pre-wrap">{{ $reply->body }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    @empty
-                    <div class="p-10 text-center">
-                        <span class="material-symbols-outlined text-primary/20 text-[40px] block mb-2">forum</span>
-                        <p class="text-sm font-label text-primary/40">No replies yet</p>
-                    </div>
-                    @endforelse
-                </div>
-            </div>
-
-            <!-- Reply Form -->
-            @if($ticket->status !== 'closed')
-            <div class="admin-card-pad">
-                <h3 class="admin-section-title mb-4">Send Reply</h3>
-                <form action="{{ route('admin.support.reply', $ticket) }}" method="POST">
-                    @csrf
-                    <textarea name="body" rows="5" required
-                              placeholder="Type your reply..."
-                              class="w-full bg-surface border border-primary/10 rounded-lg px-4 py-3 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30 resize-none">{{ old('body') }}</textarea>
-                    @error('body')
-                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                    @enderror
-                    <div class="flex justify-end mt-4">
-                        <x-ui.loading-button loading-text="Sending..." icon="send">Send Reply</x-ui.loading-button>
-                    </div>
-                </form>
-            </div>
-            @else
-            <div class="bg-primary/5 rounded-lg p-6 text-center">
-                <p class="text-sm font-label text-primary/60">This ticket is closed. Reopen it to reply.</p>
-            </div>
-            @endif
+            <!-- Conversation + Reply (Livewire chat) -->
+            <livewire:ticket-chat :ticket="$ticket" />
 
         </div>
 
