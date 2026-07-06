@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Billing\PaymentController;
 use App\Http\Controllers\Billing\SubscriptionController;
 use App\Http\Controllers\Public\LandingPageController;
+use App\Http\Controllers\Public\LocaleController;
 use App\Http\Controllers\Support\HelpController;
 use App\Http\Controllers\User\Ai\AiResumeController;
 use App\Http\Controllers\User\Ai\AtsController;
@@ -37,6 +38,9 @@ Route::get('/templates/{template}/demo', [TemplateController::class, 'preview'])
 
 // Webhook Route
 Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+
+// Locale Switcher (guest: session, authenticated: persisted on account)
+Route::post('/locale/{locale}', [LocaleController::class, 'update'])->name('locale.update');
 
 // OAuth Routes
 Route::middleware('guest')->group(function () {

@@ -20,6 +20,10 @@
          class="md:hidden fixed bottom-[4.75rem] right-2 z-50 w-60 rounded-lg border border-primary/10 bg-tertiary p-2 shadow-2xl"
          role="menu"
          aria-label="More user navigation">
+        <div class="flex items-center justify-between px-4 py-2 mb-1">
+            <span class="text-xs font-label font-bold text-primary/50">Language</span>
+            <x-ui.locale-switcher />
+        </div>
         @foreach($moreItems as $item)
             @php
                 $active = request()->routeIs(...$item['match']);
