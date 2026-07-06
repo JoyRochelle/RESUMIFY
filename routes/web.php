@@ -67,6 +67,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/contact', 'contact')->name('help.contact');
             Route::get('/tickets', 'tickets')->name('help.tickets');
             Route::get('/tickets/{ticket}', 'showTicket')->name('help.tickets.show');
+            Route::post('/tickets/{ticket}/reply', 'reply')->name('help.tickets.reply');
         });
 
         // Payment Routes

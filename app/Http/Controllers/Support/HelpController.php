@@ -8,6 +8,7 @@ use App\Models\SupportTicket;
 use App\Models\TicketReply;
 use App\Models\User;
 use App\Notifications\NewSupportTicket;
+use App\Notifications\SupportTicketUserReplied;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -69,5 +70,33 @@ class HelpController extends Controller
         $ticket->load('replies.sender');
 
         return view('user.tickets.show', compact('ticket'));
+    }
+
+    public function reply(Request $request, SupportTicket $ticket): RedirectResponse
+    {
+        Gate::authorize('reply', $ticket);
+
+        if ($ticket->status === 'closed') {
+            return back()->with('error', 'This ticket is closed and cannot receive new replies.');
+        }
+
+        $data = $request->validate([
+            'body' => ['required', 'string', 'max:5000'],
+        ]);
+
+        $ticket->replies()->create([
+            'user_id' => auth()->id(),
+            'body'    => $data['body'],
+        ]);
+
+        if ($ticket->status === 'pending') {
+            $ticket->update(['status' => 'open']);
+        }
+
+        if ($ticket->assignedAdmin) {
+            $ticket->assignedAdmin->notify(new SupportTicketUserReplied($ticket));
+        }
+
+        return redirect()->route('help.tickets.show', $ticket)->with('success', 'Your reply has been sent.');
     }
 }

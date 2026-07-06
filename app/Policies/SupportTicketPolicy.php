@@ -11,4 +11,9 @@ class SupportTicketPolicy
     {
         return $user->id === $ticket->user_id;
     }
+
+    public function reply(User $user, SupportTicket $ticket): bool
+    {
+        return $user->id === $ticket->user_id || $user->isAdmin();
+    }
 }
