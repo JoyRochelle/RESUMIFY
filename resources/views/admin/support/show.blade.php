@@ -41,9 +41,9 @@
                 <div class="space-y-3">
                     <div>
                         <p class="text-[10px] font-label text-primary/40 uppercase tracking-widest mb-0.5">Status</p>
-                        @php $badgeMap = ['open' => 'bg-red-100 text-red-600', 'pending' => 'bg-amber-100 text-amber-600', 'closed' => 'bg-primary/10 text-primary/50']; @endphp
+                        @php $badgeMap = ['open' => 'bg-red-100 text-red-600', 'pending' => 'bg-amber-100 text-amber-600', 'awaiting_closure' => 'bg-blue-100 text-blue-600', 'closed' => 'bg-primary/10 text-primary/50']; @endphp
                         <span class="admin-badge {{ $badgeMap[$ticket->status] ?? '' }}">
-                            {{ $ticket->status }}
+                            {{ str_replace('_', ' ', $ticket->status) }}
                         </span>
                     </div>
                     <div>
@@ -103,6 +103,34 @@
                     </select>
                     <x-ui.loading-button loading-text="Updating..." icon="published_with_changes" class="w-full">Update Status</x-ui.loading-button>
                 </form>
+            </div>
+
+            <!-- Mutual Close Flow -->
+            <div class="admin-card-pad">
+                <h3 class="admin-section-title mb-4">Close Request</h3>
+                @if(in_array($ticket->status, ['open', 'pending']))
+                    <form action="{{ route('admin.support.request-close', $ticket) }}" method="POST">
+                        @csrf @method('PATCH')
+                        <x-ui.loading-button variant="outline" loading-text="Requesting..." icon="task_alt" class="w-full">Request Close</x-ui.loading-button>
+                    </form>
+                @elseif($ticket->status === 'awaiting_closure')
+                    @if($ticket->close_requested_by === auth()->id())
+                        <p class="text-sm font-label text-primary/60">Waiting for the user to confirm or reject your close request.</p>
+                    @else
+                        <div class="flex gap-2">
+                            <form action="{{ route('admin.support.reject-close', $ticket) }}" method="POST" class="flex-1">
+                                @csrf @method('PATCH')
+                                <x-ui.loading-button variant="outline" loading-text="Rejecting..." icon="close" class="w-full">Reject</x-ui.loading-button>
+                            </form>
+                            <form action="{{ route('admin.support.confirm-close', $ticket) }}" method="POST" class="flex-1">
+                                @csrf @method('PATCH')
+                                <x-ui.loading-button loading-text="Confirming..." icon="check" class="w-full">Confirm</x-ui.loading-button>
+                            </form>
+                        </div>
+                    @endif
+                @else
+                    <p class="text-sm font-label text-primary/60">This ticket is closed.</p>
+                @endif
             </div>
 
         </div>

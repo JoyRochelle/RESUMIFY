@@ -183,6 +183,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/{ticket}/reply', 'reply')->name('.reply');
             Route::patch('/{ticket}/assign', 'assign')->name('.assign');
             Route::patch('/{ticket}/status', 'updateStatus')->name('.status');
+            Route::patch('/{ticket}/request-close', 'requestClose')->name('.request-close');
+            Route::patch('/{ticket}/confirm-close', 'confirmClose')->name('.confirm-close');
+            Route::patch('/{ticket}/reject-close', 'rejectClose')->name('.reject-close');
         });
 
         // Template Library CRUD

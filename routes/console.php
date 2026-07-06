@@ -23,3 +23,4 @@ Artisan::command('resumify:setup', function () {
 // ── Scheduled Commands ──────────────────────────────────────
 Schedule::command('quota:reset')->daily();
 Schedule::command('subscriptions:expire-cancelled')->daily();
+Schedule::command('tickets:auto-close')->daily();
