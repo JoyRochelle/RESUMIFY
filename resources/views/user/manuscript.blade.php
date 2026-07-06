@@ -12,19 +12,19 @@
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         
         {{-- Page Header --}}
-        <x-user.page-header title="Editor: {{ $cv->title ?? 'Untitled Resume' }}" backUrl="{{ route('dashboard') }}">
-            <x-ui.button type="button" onclick="openCvVersionsModal()" variant="outline" icon="auto_awesome" class="text-sm px-3 hidden sm:flex text-secondary border-secondary hover:bg-secondary/10">Tailor CV</x-ui.button>
-            <x-ui.button onclick="previewPdf('{{ $cv->id ?? '' }}')" variant="ghost" class="text-sm px-3 hidden sm:flex">Preview</x-ui.button>
+        <x-user.page-header title="{{ __('messages.editor.title_prefix') }}{{ $cv->title ?? __('messages.dashboard.untitled_resume') }}" backUrl="{{ route('dashboard') }}">
+            <x-ui.button type="button" onclick="openCvVersionsModal()" variant="outline" icon="auto_awesome" class="text-sm px-3 hidden sm:flex text-secondary border-secondary hover:bg-secondary/10">{{ __('messages.editor.tailor_cv') }}</x-ui.button>
+            <x-ui.button onclick="previewPdf('{{ $cv->id ?? '' }}')" variant="ghost" class="text-sm px-3 hidden sm:flex">{{ __('messages.editor.preview') }}</x-ui.button>
             @if($user->canUsePremiumFeature('pdf_export'))
-                <x-ui.button id="download-btn" onclick="downloadPdf('{{ $cv->id ?? '' }}')" variant="primary" icon="download" iconClass="text-[18px]" class="text-sm px-3 w-full sm:w-auto justify-center">Download PDF</x-ui.button>
+                <x-ui.button id="download-btn" onclick="downloadPdf('{{ $cv->id ?? '' }}')" variant="primary" icon="download" iconClass="text-[18px]" class="text-sm px-3 w-full sm:w-auto justify-center">{{ __('messages.editor.download_pdf') }}</x-ui.button>
             @else
                 <x-user.premium-lock
-                    title="Premium PDF export"
-                    description="Export polished, high-quality PDFs for applications and recruiter sharing."
+                    title="{{ __('messages.editor.premium_pdf_title') }}"
+                    description="{{ __('messages.editor.premium_pdf_desc') }}"
                     align="right">
                     <span class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-[#A16207]/25 bg-[#A16207]/10 px-4 py-2 text-sm font-bold text-[#7C4A03] sm:w-auto">
                         <span class="material-symbols-outlined text-[18px] icon-filled" aria-hidden="true">lock</span>
-                        Download PDF
+                        {{ __('messages.editor.download_pdf') }}
                     </span>
                 </x-user.premium-lock>
             @endif
@@ -34,11 +34,11 @@
         <div class="flex lg:hidden border-b border-primary/10 bg-surface-container-low shrink-0">
             <button id="ms-tab-edit" onclick="switchMsTab('edit')"
                     class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary border-b-2 border-primary transition-colors">
-                <span class="material-symbols-outlined text-[18px]">edit_note</span> Edit
+                <span class="material-symbols-outlined text-[18px]">edit_note</span> {{ __('messages.editor.tab_edit') }}
             </button>
             <button id="ms-tab-preview" onclick="switchMsTab('preview')"
                     class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary/40 border-b-2 border-transparent transition-colors">
-                <span class="material-symbols-outlined text-[18px]">preview</span> Preview
+                <span class="material-symbols-outlined text-[18px]">preview</span> {{ __('messages.editor.tab_preview') }}
             </button>
         </div>
 
@@ -84,14 +84,14 @@
                     <!-- Optional Sections Toggles -->
                     @if($cv && (!$certifications || !$projects || !$languages))
                     <div class="mt-8 border-t border-primary/10 pt-6 px-4">
-                        <h4 class="text-sm font-bold text-primary tracking-wide mb-4 flex items-center gap-2"><span class="material-symbols-outlined">add_box</span> Add Optional Section</h4>
+                        <h4 class="text-sm font-bold text-primary tracking-wide mb-4 flex items-center gap-2"><span class="material-symbols-outlined">add_box</span> {{ __('messages.editor.add_optional_section') }}</h4>
                         <div class="flex flex-wrap gap-3">
                             @if(!$certifications)
                             <form action="{{ route('resumes.sections.store', $cv->id) }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="type" value="certifications">
                                 <input type="hidden" name="title" value="Certifications">
-                                <button type="submit" class="px-4 py-2 rounded-full border border-primary/20 text-xs font-bold text-primary/70 hover:bg-secondary hover:text-white hover:border-secondary transition-all">+ Certifications</button>
+                                <button type="submit" class="px-4 py-2 rounded-full border border-primary/20 text-xs font-bold text-primary/70 hover:bg-secondary hover:text-white hover:border-secondary transition-all">{{ __('messages.editor.add_certifications') }}</button>
                             </form>
                             @endif
                             @if(!$projects)
@@ -99,7 +99,7 @@
                                 @csrf
                                 <input type="hidden" name="type" value="projects">
                                 <input type="hidden" name="title" value="Projects">
-                                <button type="submit" class="px-4 py-2 rounded-full border border-primary/20 text-xs font-bold text-primary/70 hover:bg-secondary hover:text-white hover:border-secondary transition-all">+ Projects</button>
+                                <button type="submit" class="px-4 py-2 rounded-full border border-primary/20 text-xs font-bold text-primary/70 hover:bg-secondary hover:text-white hover:border-secondary transition-all">{{ __('messages.editor.add_projects') }}</button>
                             </form>
                             @endif
                             @if(!$languages)
@@ -107,7 +107,7 @@
                                 @csrf
                                 <input type="hidden" name="type" value="languages">
                                 <input type="hidden" name="title" value="Languages">
-                                <button type="submit" class="px-4 py-2 rounded-full border border-primary/20 text-xs font-bold text-primary/70 hover:bg-secondary hover:text-white hover:border-secondary transition-all">+ Languages</button>
+                                <button type="submit" class="px-4 py-2 rounded-full border border-primary/20 text-xs font-bold text-primary/70 hover:bg-secondary hover:text-white hover:border-secondary transition-all">{{ __('messages.editor.add_languages') }}</button>
                             </form>
                             @endif
                         </div>
@@ -122,9 +122,9 @@
                 <div id="ats-widget" class="absolute top-2 right-2 lg:top-2 lg:right-4 bg-tertiary/95 backdrop-blur-xl p-4 rounded-2xl shadow-xl border border-primary/10 z-30 flex flex-col items-center w-fit transition-all duration-300">
                     
                     {{-- Maximized Content --}}
-                    <div id="ats-maximized" class="flex flex-col items-center cursor-pointer w-full" onclick="toggleAtsMinimize(event)" title="Minimize">
+                    <div id="ats-maximized" class="flex flex-col items-center cursor-pointer w-full" onclick="toggleAtsMinimize(event)" title="{{ __('messages.editor.minimize') }}">
                         <div class="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2 flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[12px]">analytics</span>ATS Score
+                            <span class="material-symbols-outlined text-[12px]">analytics</span>{{ __('messages.editor.ats_score') }}
                         </div>
                         <div id="ats-score-wrap" class="relative w-14 h-14">
                             <svg class="w-14 h-14 -rotate-90" viewBox="0 0 56 56">
@@ -140,7 +140,7 @@
                     </div>
 
                     {{-- Minimized Content --}}
-                    <div id="ats-minimized" class="hidden flex items-center gap-2 cursor-pointer px-2 py-1" onclick="toggleAtsMinimize(event)" title="Maximize">
+                    <div id="ats-minimized" class="hidden flex items-center gap-2 cursor-pointer px-2 py-1" onclick="toggleAtsMinimize(event)" title="{{ __('messages.editor.maximize') }}">
                         <span class="material-symbols-outlined text-secondary text-[20px]">analytics</span>
                         <span id="ats-min-score" class="font-bold text-primary text-sm">—</span>
                     </div>
@@ -148,7 +148,7 @@
                 </div>
                 @else
                 <div class="absolute top-2 right-2 lg:top-2 lg:right-4 bg-tertiary/90 backdrop-blur-xl p-4 rounded-2xl shadow-xl border border-primary/10 z-30 flex flex-col items-center w-fit">
-                    <div class="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">ATS Score</div>
+                    <div class="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">{{ __('messages.editor.ats_score') }}</div>
                     <x-user.score-circle :score="0" size="sm" :showPercent="false"/>
                 </div>
                 @endif
@@ -163,71 +163,71 @@
                         <div class="bg-tertiary w-full h-full min-h-[842px] shadow-xl rounded-sm p-6 lg:p-16 z-10 flex flex-col">
                             <header class="text-center mb-12">
                                 <h2 class="font-headline text-3xl md:text-4xl font-bold text-primary tracking-tight mb-2">{{ auth()->user()->name }}</h2>
-                                <p class="text-sm font-body text-primary/60 tracking-widest uppercase">Senior Product Designer • San Francisco, CA</p>
+                                <p class="text-sm font-body text-primary/60 tracking-widest uppercase">{{ __('messages.editor.placeholder.role_location') }}</p>
                                 <div class="mt-4 flex justify-center gap-6 text-xs font-medium text-primary/80">
                                     <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">mail</span> {{ auth()->user()->email }}</span>
                                     <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">public</span> vance.design</span>
                                     <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">call</span> +1 (555) 000-1111</span>
                                 </div>
                             </header>
-                            
+
                             <div class="space-y-10">
                                 <section>
-                                    <h3 class="font-headline text-lg font-bold text-primary border-b border-primary/20 pb-1 mb-3">Professional Summary</h3>
+                                    <h3 class="font-headline text-lg font-bold text-primary border-b border-primary/20 pb-1 mb-3">{{ __('messages.editor.placeholder.professional_summary_heading') }}</h3>
                                     <p class="text-[13px] leading-relaxed text-primary/80">
-                                        Accomplished Product Designer with 8+ years of experience crafting intuitive digital experiences for high-growth tech companies. Expertise in systems thinking, accessibility-first design, and bridge-building between engineering and design teams.
+                                        {{ __('messages.editor.placeholder.summary_body') }}
                                     </p>
                                 </section>
-                                
+
                                 <section class="space-y-6">
-                                    <h3 class="font-headline text-lg font-bold text-primary border-b border-primary/20 pb-1 mb-4">Experience</h3>
-                                    
+                                    <h3 class="font-headline text-lg font-bold text-primary border-b border-primary/20 pb-1 mb-4">{{ __('messages.editor.placeholder.experience_heading') }}</h3>
+
                                     <div class="space-y-1">
                                         <div class="flex justify-between items-baseline">
-                                            <h4 class="font-headline text-md font-bold text-primary">Senior Product Designer</h4>
+                                            <h4 class="font-headline text-md font-bold text-primary">{{ __('messages.editor.placeholder.job_title_1') }}</h4>
                                             <span class="font-headline italic text-sm text-primary/60">Jan 2021 — Present</span>
                                         </div>
                                         <div class="text-sm font-bold text-secondary">Linear</div>
                                         <p class="text-[13px] leading-relaxed text-primary/80 mt-2">
-                                            Leading design systems for the world's most productive software teams. Crafting high-fidelity components and maintaining visual consistency across mobile and desktop platforms.
+                                            {{ __('messages.editor.placeholder.job_desc_1') }}
                                         </p>
                                     </div>
-                                    
+
                                     <div class="space-y-1">
                                         <div class="flex justify-between items-baseline">
-                                            <h4 class="font-headline text-md font-bold text-primary">Product Designer</h4>
+                                            <h4 class="font-headline text-md font-bold text-primary">{{ __('messages.editor.placeholder.job_title_2') }}</h4>
                                             <span class="font-headline italic text-sm text-primary/60">Mar 2018 — Dec 2020</span>
                                         </div>
                                         <div class="text-sm font-bold text-secondary">Airbnb</div>
                                         <p class="text-[13px] leading-relaxed text-primary/80 mt-2">
-                                            Focused on the guest booking experience and internationalization of the design system. Reduced checkout friction by 12% through iterative testing and accessible UI patterns.
+                                            {{ __('messages.editor.placeholder.job_desc_2') }}
                                         </p>
                                     </div>
                                 </section>
-                                
+
                                 <section>
-                                    <h3 class="font-headline text-lg font-bold text-primary border-b border-primary/20 pb-1 mb-4">Education</h3>
+                                    <h3 class="font-headline text-lg font-bold text-primary border-b border-primary/20 pb-1 mb-4">{{ __('messages.editor.placeholder.education_heading') }}</h3>
                                     <div class="flex justify-between items-baseline">
-                                        <h4 class="font-headline text-md font-bold text-primary">BFA in Interaction Design</h4>
+                                        <h4 class="font-headline text-md font-bold text-primary">{{ __('messages.editor.placeholder.degree') }}</h4>
                                         <span class="font-headline italic text-sm text-primary/60">2014 — 2018</span>
                                     </div>
                                     <div class="text-sm font-medium text-primary/80">Rhode Island School of Design</div>
                                 </section>
-                                
+
                                 <section>
-                                    <h3 class="font-headline text-lg font-bold text-primary border-b border-primary/20 pb-1 mb-4">Expertise</h3>
+                                    <h3 class="font-headline text-lg font-bold text-primary border-b border-primary/20 pb-1 mb-4">{{ __('messages.editor.placeholder.expertise_heading') }}</h3>
                                     <div class="flex flex-wrap gap-2">
-                                        <x-user.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Design Systems</x-user.keyword-tag>
+                                        <x-user.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">{{ __('messages.editor.placeholder.tag_design_systems') }}</x-user.keyword-tag>
                                         <x-user.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Figma</x-user.keyword-tag>
                                         <x-user.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">React & Tailwind</x-user.keyword-tag>
-                                        <x-user.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Accessibility</x-user.keyword-tag>
-                                        <x-user.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">Prototyping</x-user.keyword-tag>
+                                        <x-user.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">{{ __('messages.editor.placeholder.tag_accessibility') }}</x-user.keyword-tag>
+                                        <x-user.keyword-tag variant="neutral" class="bg-surface-container-low text-primary border-primary/5 text-[11px] uppercase px-3 py-1">{{ __('messages.editor.placeholder.tag_prototyping') }}</x-user.keyword-tag>
                                     </div>
                                 </section>
                             </div>
-                            
+
                             <footer class="mt-auto pt-12 border-t border-primary/10 flex justify-center">
-                                <span class="font-headline italic text-xs text-primary/60">1 of 1</span>
+                                <span class="font-headline italic text-xs text-primary/60">{{ __('messages.editor.placeholder.page_of', ['current' => 1, 'total' => 1]) }}</span>
                             </footer>
                         </div>
                     @endif
@@ -235,15 +235,15 @@
 
                 <div class="sticky bottom-24 lg:bottom-10 z-40 bg-tertiary/80 backdrop-blur-md border border-primary/10 px-6 py-3 rounded-full shadow-lg flex items-center gap-6 shrink-0 mx-auto">
                     <x-ui.button variant="text" icon="zoom_in" class="hidden sm:flex">
-                        <span class="text-xs uppercase tracking-widest">Zoom</span>
+                        <span class="text-xs uppercase tracking-widest">{{ __('messages.editor.zoom') }}</span>
                     </x-ui.button>
                     <div class="w-px h-4 bg-primary/20 hidden sm:block"></div>
                     <x-ui.button variant="text" icon="layers" onclick="openTemplateModal()">
-                        <span class="text-xs uppercase tracking-widest">Layout</span>
+                        <span class="text-xs uppercase tracking-widest">{{ __('messages.editor.layout') }}</span>
                     </x-ui.button>
                     <div class="w-px h-4 bg-primary/20"></div>
                     <x-ui.button variant="text" icon="history" onclick="openHistoryModal()">
-                        <span class="text-xs uppercase tracking-widest">History</span>
+                        <span class="text-xs uppercase tracking-widest">{{ __('messages.editor.history') }}</span>
                     </x-ui.button>
                 </div>
                 
@@ -259,9 +259,9 @@
         <div class="bg-surface w-full max-w-4xl max-h-[80vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden mx-4 transform scale-95 transition-transform duration-300" id="template-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="template-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">layers</span> Select Template
+                    <span class="material-symbols-outlined text-secondary">layers</span> {{ __('messages.editor.select_template_title') }}
                 </h3>
-                <button id="close-modal-btn" type="button" onclick="closeTemplateModal()" aria-label="Close template selection" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
+                <button id="close-modal-btn" type="button" onclick="closeTemplateModal()" aria-label="{{ __('messages.editor.close_template_selection') }}" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div class="p-6 overflow-y-auto custom-scrollbar bg-surface flex-1">
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -287,7 +287,7 @@
                                 @if($template->is_premium)
                                     <div class="absolute left-3 top-3 z-30 inline-flex items-center gap-1 rounded-full border border-[#A16207]/25 bg-tertiary/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#7C4A03] shadow-sm backdrop-blur">
                                         <span class="material-symbols-outlined text-[13px] icon-filled" aria-hidden="true">workspace_premium</span>
-                                        Premium
+                                        {{ __('messages.editor.premium_badge') }}
                                     </div>
                                 @endif
                                 @if($isLockedTemplate)
@@ -296,19 +296,19 @@
                                             <span class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#A16207]/10 text-[#7C4A03]">
                                                 <span class="material-symbols-outlined icon-filled" aria-hidden="true">lock</span>
                                             </span>
-                                            <p class="text-sm font-bold text-primary">Locked Premium Template</p>
-                                            <p class="mt-1 text-xs leading-relaxed text-primary/60">Upgrade to apply this layout to your resume.</p>
+                                            <p class="text-sm font-bold text-primary">{{ __('messages.editor.locked_premium_template') }}</p>
+                                            <p class="mt-1 text-xs leading-relaxed text-primary/60">{{ __('messages.editor.upgrade_to_apply_layout') }}</p>
                                             <a href="{{ route('user.upgrade-quota') }}"
                                                class="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-tertiary transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-[#A16207]/40"
                                                onclick="event.stopPropagation()">
                                                 <span class="material-symbols-outlined text-[15px] icon-filled" aria-hidden="true">workspace_premium</span>
-                                                Upgrade to Unlock
+                                                {{ __('messages.editor.upgrade_to_unlock') }}
                                             </a>
                                         </div>
                                     </div>
                                 @else
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
-                                        <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
+                                        <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">{{ __('messages.editor.use_template') }}</span>
                                     </div>
                                 @endif
                             </div>
@@ -338,7 +338,7 @@
                                 @if($template->is_premium)
                                     <div class="absolute left-3 top-3 z-30 inline-flex items-center gap-1 rounded-full border border-[#A16207]/25 bg-tertiary/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#7C4A03] shadow-sm backdrop-blur">
                                         <span class="material-symbols-outlined text-[13px] icon-filled" aria-hidden="true">workspace_premium</span>
-                                        Premium
+                                        {{ __('messages.editor.premium_badge') }}
                                     </div>
                                 @endif
                                 @if($isLockedTemplate)
@@ -347,16 +347,16 @@
                                             <span class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#A16207]/10 text-[#7C4A03]">
                                                 <span class="material-symbols-outlined icon-filled" aria-hidden="true">lock</span>
                                             </span>
-                                            <p class="text-sm font-bold text-primary">Locked Premium Template</p>
+                                            <p class="text-sm font-bold text-primary">{{ __('messages.editor.locked_premium_template') }}</p>
                                             <a href="{{ route('user.upgrade-quota') }}" class="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-tertiary transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-[#A16207]/40">
                                                 <span class="material-symbols-outlined text-[15px] icon-filled" aria-hidden="true">workspace_premium</span>
-                                                Upgrade to Unlock
+                                                {{ __('messages.editor.upgrade_to_unlock') }}
                                             </a>
                                         </div>
                                     </div>
                                 @else
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
-                                        <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
+                                        <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">{{ __('messages.editor.use_template') }}</span>
                                     </div>
                                 @endif
                             </div>
@@ -366,7 +366,7 @@
                             </div>
                             
                             @unless($isLockedTemplate)
-                                <button type="submit" class="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer" aria-label="Use {{ $template->name }} template"></button>
+                                <button type="submit" class="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer" aria-label="{{ __('messages.editor.use_x_template_aria', ['name' => $template->name]) }}"></button>
                             @endunless
                         </form>
                     @endif
@@ -385,14 +385,14 @@
         <div class="bg-surface w-full max-w-lg rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300" id="refine-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="refine-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">auto_awesome</span> Refine with AI
+                    <span class="material-symbols-outlined text-secondary">auto_awesome</span> {{ __('messages.editor.refine_with_ai') }}
                 </h3>
-                <button type="button" onclick="closeRefineModal()" aria-label="Close AI refinement" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
+                <button type="button" onclick="closeRefineModal()" aria-label="{{ __('messages.editor.close_ai_refinement') }}" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div class="p-6 bg-surface">
                 <div id="refine-loading" class="flex flex-col items-center justify-center py-8">
                     <span class="material-symbols-outlined text-[32px] text-secondary animate-spin mb-4">progress_activity</span>
-                    <p class="text-sm text-primary/60">Generating optimized bullet points...</p>
+                    <p class="text-sm text-primary/60">{{ __('messages.editor.generating_bullet_points') }}</p>
                 </div>
                 <div id="refine-results" class="hidden flex flex-col gap-3"></div>
             </div>
@@ -407,21 +407,21 @@
         <div class="bg-surface w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300 overflow-hidden" id="cv-versions-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="cv-versions-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">auto_awesome</span> Tailored CV Versions
+                    <span class="material-symbols-outlined text-secondary">auto_awesome</span> {{ __('messages.editor.tailored_cv_versions') }}
                 </h3>
-                <button type="button" onclick="closeCvVersionsModal()" aria-label="Close tailored CV versions" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
+                <button type="button" onclick="closeCvVersionsModal()" aria-label="{{ __('messages.editor.close_tailored_versions') }}" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div class="p-6 overflow-y-auto custom-scrollbar bg-surface flex-1">
                 <div id="cv-versions-setup" class="flex flex-col gap-4 max-w-2xl mx-auto py-8 text-center">
                     <span class="material-symbols-outlined text-[48px] text-secondary mb-2">content_copy</span>
-                    <h4 class="text-xl font-bold text-primary">Generate Tailored Versions</h4>
-                    <p class="text-sm text-primary/70">We will generate 3 distinct CV versions tailored to your target job: Leadership, Technical, and Ownership angles. This uses 3 AI credits.</p>
-                    <button onclick="generateCvVersions()" class="mt-4 mx-auto bg-secondary hover:bg-secondary/90 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition-all w-fit">Generate Versions</button>
+                    <h4 class="text-xl font-bold text-primary">{{ __('messages.editor.generate_tailored_versions') }}</h4>
+                    <p class="text-sm text-primary/70">{{ __('messages.editor.generate_versions_desc') }}</p>
+                    <button onclick="generateCvVersions()" class="mt-4 mx-auto bg-secondary hover:bg-secondary/90 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition-all w-fit">{{ __('messages.editor.generate_versions_button') }}</button>
                 </div>
                 <div id="cv-versions-loading" class="hidden flex-col items-center justify-center py-20">
                     <span class="material-symbols-outlined text-[48px] text-secondary animate-spin mb-6">progress_activity</span>
-                    <p class="text-lg font-bold text-primary">Crafting tailored CV versions...</p>
-                    <p class="text-sm text-primary/60 mt-2">This usually takes about 10-20 seconds.</p>
+                    <p class="text-lg font-bold text-primary">{{ __('messages.editor.crafting_versions') }}</p>
+                    <p class="text-sm text-primary/60 mt-2">{{ __('messages.editor.crafting_versions_desc') }}</p>
                 </div>
                 <div id="cv-versions-results" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6"></div>
             </div>
@@ -436,13 +436,13 @@
         <div class="bg-surface w-full max-w-lg max-h-[80vh] rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300 overflow-hidden" id="history-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="history-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">history</span> CV History
+                    <span class="material-symbols-outlined text-secondary">history</span> {{ __('messages.editor.cv_history') }}
                 </h3>
-                <button type="button" onclick="closeHistoryModal()" aria-label="Close CV history" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
+                <button type="button" onclick="closeHistoryModal()" aria-label="{{ __('messages.editor.close_cv_history') }}" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div class="p-6 overflow-y-auto custom-scrollbar bg-surface flex-1">
                 <div id="history-list" class="flex flex-col gap-3">
-                    <p class="text-sm text-primary/60 text-center py-8">Loading…</p>
+                    <p class="text-sm text-primary/60 text-center py-8">{{ __('messages.editor.loading_ellipsis') }}</p>
                 </div>
             </div>
         </div>
@@ -455,13 +455,13 @@
          aria-labelledby="apply-version-modal-title">
         <div class="bg-surface w-full max-w-md rounded-2xl shadow-2xl p-6 mx-4 transform scale-95 transition-transform duration-300" id="apply-version-modal-content">
             <h3 id="apply-version-modal-title" class="text-lg font-headline font-bold text-primary flex items-center gap-2 mb-3">
-                <span class="material-symbols-outlined text-secondary">auto_awesome</span> Apply this version?
+                <span class="material-symbols-outlined text-secondary">auto_awesome</span> {{ __('messages.editor.apply_version_title') }}
             </h3>
-            <p class="text-sm text-primary/70 mb-4">This will overwrite your current CV content. A backup of your current content is saved to History, so you can restore it later.</p>
+            <p class="text-sm text-primary/70 mb-4">{{ __('messages.editor.apply_version_desc') }}</p>
             <div id="apply-version-warning" class="hidden mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs"></div>
             <div class="flex justify-end gap-3">
-                <button type="button" onclick="closeApplyVersionModal()" class="py-2.5 px-5 rounded-xl border border-primary/20 hover:bg-primary/5 text-primary font-bold text-sm transition-colors">Cancel</button>
-                <button type="button" id="apply-version-confirm-btn" class="py-2.5 px-5 rounded-xl bg-secondary hover:bg-secondary/90 text-white font-bold text-sm transition-colors">Apply &amp; Overwrite</button>
+                <button type="button" onclick="closeApplyVersionModal()" class="py-2.5 px-5 rounded-xl border border-primary/20 hover:bg-primary/5 text-primary font-bold text-sm transition-colors">{{ __('messages.editor.cancel') }}</button>
+                <button type="button" id="apply-version-confirm-btn" class="py-2.5 px-5 rounded-xl bg-secondary hover:bg-secondary/90 text-white font-bold text-sm transition-colors">{{ __('messages.editor.apply_and_overwrite') }}</button>
             </div>
         </div>
     </div>
