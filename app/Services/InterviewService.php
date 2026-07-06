@@ -20,6 +20,13 @@ class InterviewService
     public const RECENT_MESSAGE_LIMIT = 20;
 
     /**
+     * Ceiling for the conversational (non-JSON) Gemini calls. Ms. Sarah is
+     * instructed to ask elaborate, CV-referencing questions; 30s/60s proved
+     * too tight and aborted otherwise-successful long replies.
+     */
+    private const GEMINI_CONVERSATION_TIMEOUT_SECONDS = 90;
+
+    /**
      * Create an interview session and ask Bu Sari's opening question.
      *
      * @return array{session: InterviewSession, message: string}
@@ -178,7 +185,7 @@ PROMPT;
      *
      * @throws \Exception on API failure or empty response.
      */
-    private function callGemini(string $systemPrompt, array $messages, int $timeout = 30): string
+    private function callGemini(string $systemPrompt, array $messages, int $timeout = self::GEMINI_CONVERSATION_TIMEOUT_SECONDS): string
     {
         $apiKey = config('services.gemini.key');
         if (!$apiKey) {
@@ -190,7 +197,7 @@ PROMPT;
             [
                 'system_instruction' => ['parts' => [['text' => $systemPrompt]]],
                 'contents'           => $messages,
-                'generationConfig'   => ['maxOutputTokens' => 600, 'temperature' => 0.7],
+                'generationConfig'   => self::conversationGenerationConfig(),
             ]
         );
 
@@ -301,14 +308,14 @@ PROMPT;
         }
 
         $response = Http::withOptions(['stream' => true])
-            ->timeout(60)
+            ->timeout(self::GEMINI_CONVERSATION_TIMEOUT_SECONDS)
             ->connectTimeout(5)
             ->post(
                 self::GEMINI_STREAM_URL . "?key={$apiKey}&alt=sse",
                 [
                     'system_instruction' => ['parts' => [['text' => $systemPrompt]]],
                     'contents'           => $messages,
-                    'generationConfig'   => ['maxOutputTokens' => 600, 'temperature' => 0.7],
+                    'generationConfig'   => self::conversationGenerationConfig(),
                 ]
             );
 
@@ -434,6 +441,22 @@ Invalid response:
 
 Return ONLY corrected valid JSON that satisfies the original task and schema. Do not include markdown or explanation.
 PROMPT;
+    }
+
+    /**
+     * Generation config for the conversational (non-JSON) Ms. Sarah calls.
+     * thinkingBudget is set to 0 because this persona needs a direct
+     * conversational reply, not hidden chain-of-thought — otherwise Gemini
+     * 2.5 Flash can spend the whole token/time budget on reasoning before
+     * emitting any visible text, especially for longer, elaborate replies.
+     */
+    private static function conversationGenerationConfig(): array
+    {
+        return [
+            'maxOutputTokens' => 600,
+            'temperature'     => 0.7,
+            'thinkingConfig'  => ['thinkingBudget' => 0],
+        ];
     }
 
     private static function jsonGenerationConfig(array $schema): array
