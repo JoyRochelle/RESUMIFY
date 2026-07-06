@@ -194,6 +194,11 @@ class ResponsiveAdminPagesTest extends TestCase
         $this->actingAs($this->admin)->get(route('admin.templates.index'))->assertOk();
     }
 
+    public function test_admin_settings_loads(): void
+    {
+        $this->actingAs($this->admin)->get(route('admin.settings'))->assertOk();
+    }
+
     // =========================================================
     // Non-admin blocked from seeing responsive layout
     // =========================================================

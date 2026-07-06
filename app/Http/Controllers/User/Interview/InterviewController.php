@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User\Interview;
 
 use App\Actions\Interviews\EndInterviewSessionAction;
 use App\Actions\Interviews\SendInterviewMessageAction;
 use App\Actions\Interviews\StartInterviewAction;
+use App\Http\Controllers\Controller;
 use App\Models\AiUsageLog;
 use App\Models\Cv;
 use App\Models\InterviewMessage;
 use App\Models\InterviewSession;
+use App\Queries\InterviewTrendQuery;
 use App\Services\AiCreditService;
 use App\Services\InterviewService;
 use App\Support\ApiResponse;
@@ -28,6 +30,7 @@ class InterviewController extends Controller
     public function __construct(
         protected InterviewService $interviewService,
         protected AiCreditService $aiCreditService,
+        protected InterviewTrendQuery $trendQuery,
     ) {}
 
     /**
@@ -54,9 +57,7 @@ class InterviewController extends Controller
      */
     public function show(InterviewSession $session): View
     {
-        if ($session->user_id !== auth()->id()) {
-            abort(403);
-        }
+        Gate::authorize('view', $session);
 
         $session->load('messages');
 
@@ -72,9 +73,7 @@ class InterviewController extends Controller
         EndInterviewSessionAction $endInterviewSession
     ): RedirectResponse
     {
-        if ($session->user_id !== auth()->id()) {
-            abort(403);
-        }
+        Gate::authorize('endSession', $session);
 
         if ($session->status !== 'active') {
             return redirect()->back()->with('error', 'This session has already ended.');
@@ -106,9 +105,7 @@ class InterviewController extends Controller
      */
     public function feedback(InterviewSession $session): View|RedirectResponse
     {
-        if ($session->user_id !== auth()->id()) {
-            abort(403);
-        }
+        Gate::authorize('feedback', $session);
 
         $session->load('feedback');
 
@@ -145,34 +142,12 @@ class InterviewController extends Controller
 
         $sessions = $query->paginate(10)->withQueryString();
 
-        $trends = $this->calculateVisibleTrends($sessions, $user->id);
+        $trends = $this->trendQuery->getTrendsForSessions($sessions->getCollection(), $user->id);
 
         return view('user.interview.history', compact('sessions', 'cvs', 'trends', 'sort', 'order'));
     }
 
-    private function calculateVisibleTrends(LengthAwarePaginator $sessions, string $userId): array
-    {
-        $trends = [];
 
-        foreach ($sessions->getCollection() as $session) {
-            if (!$session->feedback) {
-                continue;
-            }
-
-            $previousScore = DB::table('interview_sessions')
-                ->join('interview_feedback', 'interview_sessions.id', '=', 'interview_feedback.session_id')
-                ->where('interview_sessions.user_id', $userId)
-                ->where('interview_sessions.started_at', '<', $session->started_at)
-                ->orderByDesc('interview_sessions.started_at')
-                ->value('interview_feedback.overall_score');
-
-            if ($previousScore !== null) {
-                $trends[$session->id] = $session->feedback->overall_score - (int) $previousScore;
-            }
-        }
-
-        return $trends;
-    }
 
     /**
      * Stream Ms. Sarah's reply token-by-token via SSE.
@@ -180,9 +155,7 @@ class InterviewController extends Controller
      */
     public function stream(Request $request, InterviewSession $session): StreamedResponse
     {
-        if ($session->user_id !== auth()->id()) {
-            abort(403);
-        }
+        Gate::authorize('stream', $session);
 
         $request->validate(['content' => 'required|string|max:2000']);
 
@@ -311,9 +284,7 @@ class InterviewController extends Controller
         SendInterviewMessageAction $sendInterviewMessage
     ): JsonResponse
     {
-        if ($session->user_id !== auth()->id()) {
-            abort(403);
-        }
+        Gate::authorize('message', $session);
 
         $request->validate([
             'content' => 'required|string|max:2000',

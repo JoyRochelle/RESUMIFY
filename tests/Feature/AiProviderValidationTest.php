@@ -10,6 +10,7 @@ use App\Models\InterviewMessage;
 use App\Models\InterviewSession;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -73,6 +74,74 @@ class AiProviderValidationTest extends TestCase
         $this->assertDatabaseCount('ats_scans', 0);
     }
 
+    public function test_ats_analyze_accepts_provider_json_with_extra_fields(): void
+    {
+        $user = User::factory()->create(['role' => 'premium', 'ai_quota_used' => 0]);
+
+        Http::fake([
+            self::GEMINI_PATTERN => Http::response($this->geminiJsonBody(array_merge(
+                $this->validAtsAnalysis(),
+                ['provider_notes' => 'Extra provider metadata should be ignored.'],
+            )), 200),
+        ]);
+
+        $response = $this->actingAs($user)->postJson(route('ats.analyze'), [
+            'resume' => str_repeat('Experienced Laravel developer with production hiring platform results. ', 5),
+            'job_description' => str_repeat('We need a Laravel developer with API and database experience. ', 5),
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.score', 82);
+
+        $this->assertDatabaseCount('ats_scans', 1);
+    }
+
+    public function test_gemini_json_requests_include_response_schema(): void
+    {
+        $user = User::factory()->create(['role' => 'premium', 'ai_quota_used' => 0]);
+
+        Http::fake(function (Request $request) {
+            $config = $request->data()['generationConfig'] ?? [];
+            $schema = $config['response_schema'] ?? null;
+
+            $this->assertSame('application/json', $config['response_mime_type'] ?? null);
+            $this->assertSame('object', $schema['type'] ?? null);
+            $this->assertArrayHasKey('score', $schema['properties'] ?? []);
+            $this->assertContains('score', $schema['required'] ?? []);
+
+            return Http::response($this->geminiJsonBody($this->validAtsAnalysis()), 200);
+        });
+
+        $response = $this->actingAs($user)->postJson(route('ats.analyze'), [
+            'resume' => str_repeat('Experienced Laravel developer with production hiring platform results. ', 5),
+            'job_description' => str_repeat('We need a Laravel developer with API and database experience. ', 5),
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_ats_analyze_repairs_invalid_provider_schema_once(): void
+    {
+        $user = User::factory()->create(['role' => 'premium', 'ai_quota_used' => 0]);
+
+        Http::fakeSequence(self::GEMINI_PATTERN)
+            ->push($this->geminiJsonBody([
+                'rating' => ['label' => 'Very Good', 'sublabel' => 'Needs Minor Polish', 'color' => 'success'],
+            ]), 200)
+            ->push($this->geminiJsonBody($this->validAtsAnalysis()), 200);
+
+        $response = $this->actingAs($user)->postJson(route('ats.analyze'), [
+            'resume' => str_repeat('Experienced Laravel developer with production hiring platform results. ', 5),
+            'job_description' => str_repeat('We need a Laravel developer with API and database experience. ', 5),
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.score', 82);
+
+        Http::assertSentCount(2);
+    }
+
     public function test_refine_bullet_rejects_provider_array_over_limit(): void
     {
         $user = User::factory()->create(['role' => 'premium', 'ai_quota_used' => 0]);
@@ -102,7 +171,7 @@ class AiProviderValidationTest extends TestCase
         $user = User::factory()->create(['role' => 'premium', 'ai_quota_used' => 0]);
         $cv = $this->cvFor($user);
 
-        CvSection::create([
+        CvSection::forceCreate([
             'id' => (string) Str::ulid(),
             'cv_id' => $cv->id,
             'type' => 'personal_info',
@@ -180,7 +249,7 @@ class AiProviderValidationTest extends TestCase
 
     private function cvFor(User $user): Cv
     {
-        return Cv::create([
+        return Cv::forceCreate([
             'id' => (string) Str::ulid(),
             'user_id' => $user->id,
             'template_id' => $this->template->id,
@@ -196,6 +265,28 @@ class AiProviderValidationTest extends TestCase
             'candidates' => [[
                 'content' => ['parts' => [['text' => json_encode($data)]]],
             ]],
+        ];
+    }
+
+    private function validAtsAnalysis(): array
+    {
+        return [
+            'score' => 82,
+            'rating' => ['label' => 'Very Good', 'sublabel' => 'Needs Minor Polish', 'color' => 'success', 'extra' => 'ignored'],
+            'keyword_score' => 76,
+            'matched' => ['Laravel'],
+            'missing' => [],
+            'section_breakdown' => [],
+            'action_verbs' => ['built'],
+            'missing_verbs' => ['owned'],
+            'has_numbers' => true,
+            'length_tip' => 'Good length.',
+            'insights' => [
+                ['title' => 'Add metrics', 'body' => 'Quantify impact.'],
+                ['title' => 'Mirror keywords', 'body' => 'Use job description terms.'],
+                ['title' => 'Tighten summary', 'body' => 'Lead with backend scope.'],
+                ['title' => 'Show ownership', 'body' => 'Name your delivery role.'],
+            ],
         ];
     }
 }

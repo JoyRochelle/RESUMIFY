@@ -14,12 +14,12 @@
 {{-- Pricing Cards Section --}}
 <section class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-16 sm:mb-24 max-w-5xl mx-auto px-4 sm:px-8">
 
-    <x-user.pricing-card plan="Starter" price="Rp 0" period="forever" 
+    <x-product.pricing-card plan="Starter" price="Rp 0" period="forever"
         :features="['1 Active Resume', 'Standard Templates']" 
         :disabledFeatures="['No AI Enhancement']"
         buttonText="Get Started" onclick="window.location.href='{{ route('register') }}'" />
 
-    <x-user.pricing-card plan="Premium PRO" price="Rp 49.000" period="month" :features="[
+    <x-product.pricing-card plan="Premium PRO" price="Rp 49.000" period="month" :features="[
         'Unlimited Resumes',
         ['title' => 'AI Bullet Point Optimizer', 'subtitle' => 'Optimize with high-impact keywords'],
         'Real-time ATS Matcher',

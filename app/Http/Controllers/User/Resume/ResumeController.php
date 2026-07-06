@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User\Resume;
 
 use App\Actions\Resumes\DuplicateResumeAction;
 use App\Actions\Resumes\UpdateResumeSectionAction;
 use App\Exceptions\ResumeQuotaExceededException;
+use App\Http\Controllers\Controller;
 use App\Models\Cv;
 use App\Models\CvSection;
 use App\Models\CvTemplate;
@@ -34,7 +35,7 @@ class ResumeController extends Controller
     {
         $templates = CvTemplate::where('is_active', true)->get();
 
-        return view('resumes.create', compact('templates'));
+        return view('user.resume.create', compact('templates'));
     }
 
     /**
@@ -59,13 +60,19 @@ class ResumeController extends Controller
         $cv = $user->cvs()->create($data);
 
         // auto create the 4 default sections
-        $cv->sections()->createMany([
+        foreach ([
             ['type' => 'personal_info',   'title' => 'Personal Info',   'content' => null, 'order' => 1],
             ['type' => 'work_experience', 'title' => 'Work Experience', 'content' => null, 'order' => 2],
             ['type' => 'education',       'title' => 'Education',       'content' => null, 'order' => 3],
             ['type' => 'skills',          'title' => 'Skills',          'content' => null, 'order' => 4],
             ['type' => 'target_job',      'title' => 'Target Job',      'content' => null, 'order' => 5],
-        ]);
+        ] as $sectionData) {
+            $order = $sectionData['order'];
+            unset($sectionData['order']);
+
+            $section = $cv->sections()->create($sectionData);
+            $section->forceFill(['order' => $order])->save();
+        }
 
         return redirect()->route('user.manuscript', ['cv_id' => $cv->id])->with('success', 'Resume Created Successfully!');
     }
@@ -80,7 +87,7 @@ class ResumeController extends Controller
 
         $cv->load('sections', 'template');
 
-        return view('resumes.show', compact('cv'));
+        return view('user.resume.show', compact('cv'));
     }
 
     /**
@@ -256,12 +263,12 @@ class ResumeController extends Controller
             'title' => ['required', 'string', 'max:100'],
         ]);
 
-        $cv->sections()->create([
+        $section = $cv->sections()->create([
             'type' => $request->type,
             'title' => $request->title,
             'content' => [],
-            'order' => $cv->sections()->max('order') + 1,
         ]);
+        $section->forceFill(['order' => $cv->sections()->max('order') + 1])->save();
 
         return back()->with('success', 'Section added successfully!');
     }

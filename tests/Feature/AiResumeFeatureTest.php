@@ -30,7 +30,7 @@ class AiResumeFeatureTest extends TestCase
 
     protected function createCvForUser(User $user): Cv
     {
-        return Cv::create([
+        return Cv::forceCreate([
             'id' => \Illuminate\Support\Str::ulid(),
             'user_id' => $user->id,
             'template_id' => CvTemplate::first()->id,

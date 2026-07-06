@@ -33,8 +33,8 @@
             <h3 class="admin-section-title">Basic Info</h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <x-user.form-input label="Name" name="name" :value="old('name', $template->name)" required id="template-name" autocomplete="off" />
-                <x-user.form-input label="Blade Path" name="blade_path" :value="old('blade_path', $template->blade_path)" required id="template-blade-path" autocomplete="off" />
+                <x-ui.form-input label="Name" name="name" :value="old('name', $template->name)" required id="template-name" autocomplete="off" />
+                <x-ui.form-input label="Blade Path" name="blade_path" :value="old('blade_path', $template->blade_path)" required id="template-blade-path" autocomplete="off" />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -76,7 +76,7 @@
             <h3 class="admin-section-title">Badge & Flags</h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <x-user.form-input label="Badge Label" name="badge" :value="old('badge', $template->badge ?? '')" maxlength="30" id="template-badge" />
+                <x-ui.form-input label="Badge Label" name="badge" :value="old('badge', $template->badge ?? '')" maxlength="30" id="template-badge" />
                 <div>
                     <label for="template-badge-color" class="block text-[11px] font-label text-primary/50 uppercase tracking-widest mb-1.5">Badge Color</label>
                     <select id="template-badge-color" name="badge_color"

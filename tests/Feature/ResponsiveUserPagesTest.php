@@ -26,8 +26,8 @@ class ResponsiveUserPagesTest extends TestCase
     private function createCvForUser(): Cv
     {
         $template = CvTemplate::factory()->create(['is_active' => true]);
-        return Cv::create([
-            'id'          => Str::ulid(),
+        return Cv::forceCreate([
+            'id'          => (string) Str::ulid(),
             'user_id'     => $this->user->id,
             'template_id' => $template->id,
             'title'       => 'Test Resume',
@@ -226,6 +226,13 @@ class ResponsiveUserPagesTest extends TestCase
         $response = $this->actingAs($this->user)->get(route('user.help'));
         $response->assertOk();
         $response->assertSee('text-3xl md:text-5xl', false);
+    }
+
+    public function test_settings_page_loads_for_authenticated_user(): void
+    {
+        $this->actingAs($this->user)
+            ->get(route('user.settings'))
+            ->assertOk();
     }
 
     // =========================================================

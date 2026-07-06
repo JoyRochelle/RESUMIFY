@@ -4,6 +4,7 @@ use App\Http\Middleware\CheckSuspended;
 use App\Http\Middleware\InterviewTrialMiddleware;
 use App\Http\Middleware\QuotaMiddleware;
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\SecurityHeadersMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,11 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->append(SecurityHeadersMiddleware::class);
+
         $middleware->alias([
-            'role'             => RoleMiddleware::class,
-            'ai.quota'         => QuotaMiddleware::class,
-            'suspended'        => CheckSuspended::class,
-            'interview.trial'  => InterviewTrialMiddleware::class,
+            'role' => RoleMiddleware::class,
+            'ai.quota' => QuotaMiddleware::class,
+            'suspended' => CheckSuspended::class,
+            'interview.trial' => InterviewTrialMiddleware::class,
         ]);
 
         $middleware->appendToGroup('web', CheckSuspended::class);
@@ -32,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if (auth()->check() && auth()->user()->isAdmin()) {
                 return '/admin/dashboard';
             }
+
             return '/dashboard';
         });
     })

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Support;
 
+use App\Http\Controllers\Controller;
 use App\Jobs\SendTicketReplyJob;
 use App\Models\SupportTicket;
 use App\Models\TicketReply;
@@ -9,6 +10,7 @@ use App\Models\User;
 use App\Notifications\NewSupportTicket;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\View\View;
 
@@ -62,9 +64,7 @@ class HelpController extends Controller
 
     public function showTicket(SupportTicket $ticket): View
     {
-        if ($ticket->user_id !== auth()->id()) {
-            abort(403);
-        }
+        Gate::authorize('view', $ticket);
 
         $ticket->load('replies.sender');
 

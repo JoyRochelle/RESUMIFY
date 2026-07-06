@@ -17,13 +17,10 @@ class Cv extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'user_id',
         'template_id',
         'title',
         'job_target',
         'company_target',
-        'ats_score',
-        'status',
         'content',
         'is_public',
     ];

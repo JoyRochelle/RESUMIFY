@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AiUsageLog;
 use App\Models\Transaction;
-use App\Models\User;
+use App\Queries\AdminReportStatsQuery;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -14,11 +13,14 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminReportController extends Controller
 {
+    public function __construct(
+        protected AdminReportStatsQuery $statsQuery
+    ) {}
     public function index(Request $request): View
     {
         [$from, $to] = $this->parseDateRange($request);
 
-        $stats = $this->buildStats($from, $to);
+        $stats = $this->statsQuery->get($from, $to);
 
         // Daily revenue breakdown for the period (for the chart)
         $dailyRevenue = Transaction::where('status', 'success')
@@ -35,7 +37,7 @@ class AdminReportController extends Controller
     {
         [$from, $to] = $this->parseDateRange($request);
 
-        $stats    = $this->buildStats($from, $to);
+        $stats    = $this->statsQuery->get($from, $to);
         $filename = 'report-' . $from->format('Y-m-d') . '-to-' . $to->format('Y-m-d') . '.pdf';
 
         $pdf = Pdf::loadView('admin.reports.pdf', compact('stats', 'from', 'to'))
@@ -55,7 +57,7 @@ class AdminReportController extends Controller
 
             fputcsv($handle, ['Metric', 'Value']);
 
-            $stats = $this->buildStats($from, $to);
+            $stats = $this->statsQuery->get($from, $to);
             foreach ($stats as $label => $value) {
                 fputcsv($handle, [ucwords(str_replace('_', ' ', $label)), $value]);
             }
@@ -91,18 +93,5 @@ class AdminReportController extends Controller
         return [$from, $to];
     }
 
-    private function buildStats(Carbon $from, Carbon $to): array
-    {
-        return [
-            'new_users'           => User::whereBetween('created_at', [$from, $to])->count(),
-            'premium_conversions' => Transaction::where('status', 'success')
-                                        ->whereBetween('paid_at', [$from, $to])
-                                        ->count(),
-            'total_ai_calls'      => AiUsageLog::whereBetween('created_at', [$from, $to])->count(),
-            'total_ai_cost'       => (float) AiUsageLog::whereBetween('created_at', [$from, $to])->sum('cost_usd'),
-            'total_revenue'       => (float) Transaction::where('status', 'success')
-                                        ->whereBetween('paid_at', [$from, $to])
-                                        ->sum('amount'),
-        ];
-    }
+
 }

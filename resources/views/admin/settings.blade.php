@@ -24,8 +24,8 @@
                 </div>
                 
                 <div class="space-y-6">
-                    <x-user.form-input label="Site Name" name="site_name" value="Resumify Production" />
-                    <x-user.form-input label="Global AI Quota Limit (Monthly)" name="global_ai_quota_limit" value="50000" type="number" />
+                    <x-ui.form-input label="Site Name" name="site_name" value="Resumify Production" />
+                    <x-ui.form-input label="Global AI Quota Limit (Monthly)" name="global_ai_quota_limit" value="50000" type="number" />
                     <div class="flex items-center justify-between pt-2">
                         <div>
                             <p class="text-sm font-label text-primary">Maintenance Mode</p>
@@ -48,8 +48,8 @@
                 <p class="text-[11px] font-label text-primary/60 mb-6">Update your administrative credentials. Ensure a strong password is used.</p>
                 
                 <div class="space-y-6 mb-8">
-                    <x-user.form-input label="Current" name="current_password" type="password" value="password" autocomplete="current-password" />
-                    <x-user.form-input label="New" name="new_password" type="password" value="password" autocomplete="new-password" />
+                    <x-ui.form-input label="Current" name="current_password" type="password" value="password" autocomplete="current-password" />
+                    <x-ui.form-input label="New" name="new_password" type="password" value="password" autocomplete="new-password" />
                 </div>
 
                 <div class="flex justify-end">

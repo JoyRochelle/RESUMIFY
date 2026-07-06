@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User\Resume;
 
+use App\Http\Controllers\Controller;
 use App\Models\Cv;
 use App\Services\AiService;
 use Illuminate\Http\Client\ConnectionException;

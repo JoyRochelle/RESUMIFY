@@ -24,7 +24,7 @@ class AtsScoreTest extends TestCase
             'blade_path' => 'templates.default',
         ]);
 
-        $cv = Cv::create([
+        $cv = Cv::forceCreate([
             'id' => \Illuminate\Support\Str::ulid(),
             'user_id' => $user->id,
             'template_id' => $template->id,

@@ -39,11 +39,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'role',
-        'is_suspended',
         'avatar_url',
-        'ai_quota_used',
-        'ai_quota_reset_at',
     ];
 
     /**
