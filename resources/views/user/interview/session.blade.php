@@ -3,7 +3,7 @@
 @section('title', 'Resumify — Interview with Ms. Sarah')
 
 @section('content')
-<div class="flex-1 flex flex-col min-w-0 overflow-hidden h-screen">
+<div class="flex-1 flex flex-col min-w-0 overflow-hidden h-dvh">
 
     {{-- Header bar --}}
     <header class="shrink-0 flex items-center justify-between px-4 md:px-6 py-3
