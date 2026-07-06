@@ -1,4 +1,10 @@
 
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         function previewPdf(resumeId) {
             if (!resumeId) return;
             window.open(`/resumes/${resumeId}/preview`, '_blank');
@@ -220,6 +226,22 @@
             if (container && iframe) {
                 const scale = container.offsetWidth / 794;
                 iframe.style.transform = `scale(${scale})`;
+
+                // Size the iframe (and its scaled container) to the ACTUAL rendered
+                // content height, not a fixed one-page height — otherwise CVs longer
+                // than one A4 page get clipped with no way to scroll to the rest.
+                let contentHeight = 1123;
+                try {
+                    const doc = iframe.contentDocument;
+                    if (doc && doc.documentElement) {
+                        contentHeight = Math.max(doc.documentElement.scrollHeight, 1123);
+                    }
+                } catch (e) {
+                    // Cross-origin or not-yet-loaded — keep the single-page fallback height.
+                }
+
+                iframe.style.height = `${contentHeight}px`;
+                container.style.height = `${contentHeight * scale}px`;
             }
             scaleThumbnails();
         }
@@ -249,7 +271,11 @@
                 if (pp) { pp.style.display = ''; pp.classList.remove('hidden'); }
             }
         });
-        document.addEventListener('DOMContentLoaded', scaleIframe);
+        document.addEventListener('DOMContentLoaded', () => {
+            scaleIframe();
+            const iframe = document.getElementById('resume-preview-iframe');
+            if (iframe) iframe.addEventListener('load', scaleIframe);
+        });
 
         function switchMsTab(tab) {
             if (window.innerWidth >= 1024) return;
@@ -358,6 +384,7 @@
                             iframe.contentDocument.open();
                             iframe.contentDocument.write(result.html);
                             iframe.contentDocument.close();
+                            scaleIframe();
                         } catch (e) {
                             // fallback: full src reload if contentDocument is inaccessible
                             iframe.src = `/resumes/${cvId}/preview?t=${Date.now()}`;
@@ -714,9 +741,10 @@
                 console.log('[AI Versions] Response payload:', data);
                 document.getElementById('cv-versions-loading').style.display = 'none';
                 if (data.success && data.versions) {
+                    window.lastGeneratedVersions = data.versions;
                     const resultsContainer = document.getElementById('cv-versions-results');
                     resultsContainer.classList.remove('hidden');
-                    
+
                     const angleIcons = {
                         leadership: 'groups',
                         technical: 'code',
@@ -726,6 +754,14 @@
                     data.versions.forEach(v => {
                         const div = document.createElement('div');
                         div.className = 'p-6 rounded-2xl border border-primary/10 bg-surface-container-low flex flex-col gap-4 h-full';
+
+                        const warningHtml = v.warning ? `
+                            <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex gap-2">
+                                <span class="material-symbols-outlined text-[16px] shrink-0">warning</span>
+                                <span>Please check this version &mdash; some details weren't found in your original CV: ${escapeHtml([...(v.warning.entities || []), ...(v.warning.numbers || [])].join(', '))}.</span>
+                            </div>
+                        ` : '';
+
                         div.innerHTML = `
                             <div class="flex items-center gap-3 mb-2">
                                 <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
@@ -734,7 +770,9 @@
                                 <h4 class="font-bold text-primary capitalize text-lg">${v.angle} Angle</h4>
                             </div>
                             <p class="text-sm text-primary/70 leading-relaxed flex-1">This version emphasizes ${v.angle} aspects of your experience, perfectly tailored for the provided job description.</p>
+                            ${warningHtml}
                             <div class="flex flex-col gap-2 w-full mt-auto">
+                                <button onclick="openApplyVersionModal('${v.id}')" class="w-full py-2.5 bg-primary text-white hover:bg-primary/90 font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Apply this version</button>
                                 <button onclick="previewCvVersion('${v.id}')" class="w-full py-2.5 bg-secondary/10 hover:bg-secondary text-secondary hover:text-white font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">visibility</span> Preview</button>
                                 <button onclick="downloadCvVersion('${v.id}')" class="w-full py-2.5 border border-primary/20 hover:bg-primary/5 text-primary font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">download</span> Download PDF</button>
                             </div>
@@ -765,6 +803,162 @@
             window.open(`/resumes/${window.editorConfig.cvId}/pdf?adaptation_id=${id}`, '_blank');
         }
 
+        // ── Apply Tailored Version ──────────────────────────────────────
+        let pendingApplyVersionId = null;
+
+        function openApplyVersionModal(id) {
+            pendingApplyVersionId = id;
+            const version = (window.lastGeneratedVersions || []).find(v => v.id === id);
+
+            const warningBox = document.getElementById('apply-version-warning');
+            if (version && version.warning) {
+                const flagged = [...(version.warning.entities || []), ...(version.warning.numbers || [])];
+                warningBox.innerHTML = `<span class="material-symbols-outlined text-[16px] align-middle mr-1">warning</span>Heads up — some details weren't found in your original CV: ${escapeHtml(flagged.join(', '))}. Review before applying.`;
+                warningBox.classList.remove('hidden');
+            } else {
+                warningBox.classList.add('hidden');
+                warningBox.innerHTML = '';
+            }
+
+            const modal = document.getElementById('apply-version-modal');
+            const content = document.getElementById('apply-version-modal-content');
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+            content.classList.replace('scale-95', 'scale-100');
+        }
+
+        function closeApplyVersionModal() {
+            pendingApplyVersionId = null;
+            const modal = document.getElementById('apply-version-modal');
+            const content = document.getElementById('apply-version-modal-content');
+            modal.style.opacity = '0';
+            modal.style.pointerEvents = 'none';
+            content.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function confirmApplyVersion() {
+            if (!pendingApplyVersionId) return;
+            const id = pendingApplyVersionId;
+
+            const confirmBtn = document.getElementById('apply-version-confirm-btn');
+            confirmBtn.disabled = true;
+
+            fetch(`/resumes/${window.editorConfig.cvId}/ai/versions/${id}/apply`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': window.editorConfig.csrfToken
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Version applied! Reloading...', 'success');
+                    setTimeout(() => window.location.reload(), 600);
+                } else {
+                    confirmBtn.disabled = false;
+                    showToast(data.message || 'Failed to apply version.', 'error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                confirmBtn.disabled = false;
+                showToast('Network error — version not applied.', 'error');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const confirmBtn = document.getElementById('apply-version-confirm-btn');
+            if (confirmBtn) confirmBtn.addEventListener('click', confirmApplyVersion);
+        });
+
+        // ── CV History (snapshots) ──────────────────────────────────────
+        const historyReasonLabels = {
+            chameleon_apply: 'Before applying a tailored version',
+            pre_restore: 'Before restoring an earlier version',
+        };
+
+        function openHistoryModal() {
+            const modal = document.getElementById('history-modal');
+            const content = document.getElementById('history-modal-content');
+            const list = document.getElementById('history-list');
+            list.innerHTML = '<p class="text-sm text-primary/60 text-center py-8">Loading…</p>';
+
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+            content.classList.replace('scale-95', 'scale-100');
+
+            fetch(`/resumes/${window.editorConfig.cvId}/history`, {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const snapshots = data.snapshots || [];
+                if (snapshots.length === 0) {
+                    list.innerHTML = '<p class="text-sm text-primary/60 text-center py-8">No history yet.</p>';
+                    return;
+                }
+                list.innerHTML = snapshots.map(s => {
+                    const label = historyReasonLabels[s.reason] || 'Snapshot';
+                    const date = new Date(s.created_at).toLocaleString();
+                    return `
+                        <div class="p-4 rounded-xl border border-primary/10 bg-surface-container-low flex items-center justify-between gap-4">
+                            <div>
+                                <p class="font-bold text-primary text-sm">${escapeHtml(label)}</p>
+                                <p class="text-xs text-primary/60">${escapeHtml(date)}</p>
+                            </div>
+                            <button onclick="restoreSnapshot('${s.id}')" class="py-2 px-4 rounded-xl bg-secondary/10 hover:bg-secondary text-secondary hover:text-white font-bold text-xs transition-colors shrink-0">Restore</button>
+                        </div>
+                    `;
+                }).join('');
+            })
+            .catch(err => {
+                console.error(err);
+                list.innerHTML = '<p class="text-sm text-red-600 text-center py-8">Failed to load history.</p>';
+            });
+        }
+
+        function closeHistoryModal() {
+            const modal = document.getElementById('history-modal');
+            const content = document.getElementById('history-modal-content');
+            modal.style.opacity = '0';
+            modal.style.pointerEvents = 'none';
+            content.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function restoreSnapshot(id) {
+            if (!confirm('Restore this version? Your current content will be snapshotted first so you can undo this too.')) return;
+
+            fetch(`/resumes/${window.editorConfig.cvId}/history/${id}/restore`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': window.editorConfig.csrfToken
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Restored! Reloading...', 'success');
+                    setTimeout(() => window.location.reload(), 600);
+                } else {
+                    showToast(data.message || 'Failed to restore.', 'error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showToast('Network error — restore failed.', 'error');
+            });
+        }
+
         Object.assign(window, {
             previewPdf,
             handlePhotoUpload,
@@ -784,5 +978,11 @@
             generateCvVersions,
             previewCvVersion,
             downloadCvVersion,
+            openApplyVersionModal,
+            closeApplyVersionModal,
+            confirmApplyVersion,
+            openHistoryModal,
+            closeHistoryModal,
+            restoreSnapshot,
         });
     
