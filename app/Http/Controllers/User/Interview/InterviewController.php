@@ -184,8 +184,7 @@ class InterviewController extends Controller
 
             if ($reservation->isDenied()) {
                 echo 'data: ' . json_encode(['error' => 'You have used all your AI credits. Upgrade to Premium for 50 credits/month.']) . "\n\n";
-                ob_flush();
-                flush();
+                $this->flushSse();
 
                 return;
             }
@@ -196,10 +195,13 @@ class InterviewController extends Controller
                     $contents,
                     function (string $token) {
                         echo 'data: ' . json_encode(['token' => $token]) . "\n\n";
-                        ob_flush();
-                        flush();
+                        $this->flushSse();
                     }
                 );
+
+                if (trim($fullText) === '') {
+                    throw new \Exception('Empty response from AI service');
+                }
 
                 InterviewMessage::create([
                     'session_id' => $session->id,
@@ -216,15 +218,13 @@ class InterviewController extends Controller
                 ]);
 
                 echo 'data: ' . json_encode(['done' => true]) . "\n\n";
-                ob_flush();
-                flush();
+                $this->flushSse();
 
             } catch (\Exception $e) {
                 $this->aiCreditService->refund($reservation);
                 Log::error('InterviewController@stream failed', ['error' => $e->getMessage()]);
                 echo 'data: ' . json_encode(['error' => 'Failed to get AI response.']) . "\n\n";
-                ob_flush();
-                flush();
+                $this->flushSse();
             }
         }, 200, [
             'Content-Type'      => 'text/event-stream',
@@ -232,6 +232,21 @@ class InterviewController extends Controller
             'X-Accel-Buffering' => 'no',
             'Connection'        => 'keep-alive',
         ]);
+    }
+
+    /**
+     * Flush the SSE output buffer if one is active. `php artisan serve` (and
+     * some other SAPIs) run requests with zero output buffering, so an
+     * unguarded ob_flush() raises an ErrorException that would otherwise
+     * kill the stream from inside its own catch block.
+     */
+    private function flushSse(): void
+    {
+        if (ob_get_level() > 0) {
+            ob_flush();
+        }
+
+        flush();
     }
 
     /**
