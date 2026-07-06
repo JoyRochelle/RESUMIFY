@@ -4,7 +4,7 @@
             <div class="w-full border-t border-surface-variant"></div>
         </div>
         <div class="relative flex justify-center text-[10px] font-bold tracking-widest uppercase">
-            <span class="bg-surface-container-lowest px-2 text-on-surface-variant">OR CONTINUE WITH</span>
+            <span class="bg-surface-container-lowest px-2 text-on-surface-variant">{{ __('messages.auth.or_continue_with') }}</span>
         </div>
     </div>
 

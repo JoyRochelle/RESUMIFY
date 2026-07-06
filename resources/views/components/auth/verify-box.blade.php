@@ -10,10 +10,10 @@
 
     {{-- Text Content --}}
     <h2 class="text-3xl font-headline font-bold text-primary mb-4 leading-tight">
-        Email Sent<br>Successfully!
+        {!! __('messages.auth.verify_email.heading') !!}
     </h2>
     <p class="text-on-surface-variant text-sm leading-relaxed mb-8 max-w-[280px]">
-        We've sent a verification link to your email address. Please check your inbox (and spam folder) to proceed.
+        {{ __('messages.auth.verify_email.body') }}
     </p>
 
     {{-- Primary Action (Logout to return to Login) --}}
@@ -21,20 +21,20 @@
         @csrf
         <button type="submit"
             class="w-full bg-primary text-white py-4 rounded-xl font-bold shadow-xl shadow-primary/20 hover:opacity-90 active:scale-[0.98] transition-all mb-6 cursor-pointer">
-            Back to Login
+            {{ __('messages.auth.verify_email.back_to_login') }}
         </button>
     </form>
 
     {{-- Secondary Action --}}
     <div class="space-y-4">
         <p class="text-xs text-on-surface-variant/60 font-medium uppercase tracking-widest">
-            Didn't receive an email?
+            {{ __('messages.auth.verify_email.no_email_question') }}
         </p>
         <form method="POST" action="{{ route('verification.send') }}" x-data="{ loading: false }" @submit="loading = true">
             @csrf
             <button type="submit" :disabled="loading"
                 class="text-secondary font-bold hover:underline transition-all disabled:opacity-50"
-                x-text="loading ? 'Sending...' : 'Resend Link'">
+                x-text="loading ? '{{ __('messages.auth.verify_email.sending') }}' : '{{ __('messages.auth.verify_email.resend') }}'">
             </button>
         </form>
     </div>

@@ -12,20 +12,20 @@
             <nav aria-label="Auth Tabs" class="flex border-b border-surface-variant mb-6">
                 <a href="{{ route('login') }}" wire:navigate
                     class="flex-1 text-center pb-4 text-sm font-bold {{ request()->routeIs('login') ? 'text-primary border-b-2 border-primary' : 'text-on-surface-variant hover:text-primary' }} transition-all">
-                    Login
+                    {{ __('messages.auth.tabs.login') }}
                 </a>
                 <a href="{{ route('register') }}" wire:navigate
                     class="flex-1 text-center pb-4 text-sm font-bold {{ request()->routeIs('register') ? 'text-primary border-b-2 border-primary' : 'text-on-surface-variant hover:text-primary' }} transition-all">
-                    Sign Up
+                    {{ __('messages.auth.tabs.sign_up') }}
                 </a>
             </nav>
 
             {{-- Form Header --}}
             <div class="mb-6">
-                <h3 class="text-2xl font-headline font-bold text-on-surface">{{ $title ?? 'Login to Your Account' }}
+                <h3 class="text-2xl font-headline font-bold text-on-surface">{{ $title ?? __('messages.auth.login.heading') }}
                 </h3>
                 <p class="text-sm text-on-surface-variant mt-1">
-                    {{ $subtitle ?? 'Welcome back to your career journey.' }}
+                    {{ $subtitle ?? __('messages.auth.login.subtitle') }}
                 </p>
             </div>
 
@@ -43,9 +43,9 @@
 
         {{-- Secondary Footer --}}
         <div class="mt-8 flex justify-center gap-6 text-[10px] uppercase tracking-widest text-on-surface-variant/60 font-bold">
-            <button type="button" @click="openModal('terms')" class="hover:text-primary transition-colors uppercase tracking-widest">TERMS & CONDITIONS</button>
-            <button type="button" @click="openModal('privacy')" class="hover:text-primary transition-colors uppercase tracking-widest">PRIVACY POLICY</button>
-            <button type="button" @click="openModal('help')" class="hover:text-primary transition-colors uppercase tracking-widest">HELP CENTER</button>
+            <button type="button" @click="openModal('terms')" class="hover:text-primary transition-colors uppercase tracking-widest">{{ __('messages.auth.legal.terms') }}</button>
+            <button type="button" @click="openModal('privacy')" class="hover:text-primary transition-colors uppercase tracking-widest">{{ __('messages.auth.legal.privacy') }}</button>
+            <button type="button" @click="openModal('help')" class="hover:text-primary transition-colors uppercase tracking-widest">{{ __('messages.auth.legal.help') }}</button>
 
             {{-- Modal Overlay --}}
             <div x-show="isModalOpen" 
@@ -84,7 +84,7 @@
                     
                     <div class="px-6 py-4 border-t border-primary/10 bg-surface-container-lowest flex justify-end">
                         <button type="button" @click="closeModal()" class="bg-primary text-white px-5 py-2 rounded-full font-bold text-sm hover:bg-primary/90 transition-colors shadow-sm normal-case tracking-normal focus:outline-none focus:ring-2 focus:ring-secondary/40">
-                            Close
+                            {{ __('messages.auth.legal.close') }}
                         </button>
                     </div>
                 </div>
