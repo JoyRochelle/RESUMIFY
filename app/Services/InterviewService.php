@@ -27,6 +27,13 @@ class InterviewService
     private const GEMINI_CONVERSATION_TIMEOUT_SECONDS = 90;
 
     /**
+     * Ceiling for the end-of-session feedback call. Analyzing a full
+     * transcript is the most reasoning-heavy call in the system, yet it
+     * previously had the tightest timeout (45s) of any Gemini call here.
+     */
+    private const GEMINI_FEEDBACK_TIMEOUT_SECONDS = 90;
+
+    /**
      * Create an interview session and ask Bu Sari's opening question.
      *
      * @return array{session: InterviewSession, message: string}
@@ -127,7 +134,7 @@ PROMPT;
         $transcript = $this->buildTranscript($session->messages);
         $prompt     = $this->buildFeedbackPrompt($session->job_target, $transcript);
 
-        $data = $this->callGeminiJson($prompt, 45, [InterviewFeedbackResponse::class, 'fromProvider']);
+        $data = $this->callGeminiJson($prompt, self::GEMINI_FEEDBACK_TIMEOUT_SECONDS, [InterviewFeedbackResponse::class, 'fromProvider']);
 
         return InterviewFeedback::create([
             'session_id'       => $session->id,
@@ -357,7 +364,7 @@ PROMPT;
      *
      * @throws \Exception on API failure, empty response, or invalid JSON.
      */
-    private function callGeminiJson(string $prompt, int $timeout = 45, ?callable $validator = null): array
+    private function callGeminiJson(string $prompt, int $timeout = self::GEMINI_FEEDBACK_TIMEOUT_SECONDS, ?callable $validator = null): array
     {
         $content = $this->requestGeminiJsonText($prompt, self::feedbackSchema(), $timeout);
 
@@ -378,7 +385,7 @@ PROMPT;
         }
     }
 
-    private function requestGeminiJsonText(string $prompt, array $schema, int $timeout = 45): string
+    private function requestGeminiJsonText(string $prompt, array $schema, int $timeout = self::GEMINI_FEEDBACK_TIMEOUT_SECONDS): string
     {
         $apiKey = config('services.gemini.key');
         if (!$apiKey) {
@@ -459,6 +466,13 @@ PROMPT;
         ];
     }
 
+    /**
+     * thinkingBudget is set to 0 for the same reason as
+     * conversationGenerationConfig(): analyzing a full interview transcript
+     * for STAR-method feedback is the most reasoning-heavy call in this
+     * service, so it was the most exposed to hidden thinking silently
+     * consuming the entire token/time budget before any JSON was emitted.
+     */
     private static function jsonGenerationConfig(array $schema): array
     {
         return [
@@ -466,6 +480,7 @@ PROMPT;
             'maxOutputTokens' => 2000,
             'temperature' => 0.3,
             'response_schema' => $schema,
+            'thinkingConfig' => ['thinkingBudget' => 0],
         ];
     }
 
