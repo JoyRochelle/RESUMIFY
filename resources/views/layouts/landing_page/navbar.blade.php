@@ -20,6 +20,7 @@
 
         {{-- Desktop CTA --}}
         <div class="hidden md:flex items-center gap-6 text-sm">
+            <x-ui.locale-switcher />
             <a class="text-primary font-semibold hover:text-secondary transition-colors"
                 href="{{ route('login') }}">Login</a>
             <x-landing_page.button variant="primary" class="!py-2 !px-4 !text-sm" href="{{ route('register') }}">
@@ -64,7 +65,11 @@
             <span class="material-symbols-outlined text-base">sell</span>
             Pricing
         </a>
-        <div class="pt-3 pb-1 border-t border-primary/10 mt-2">
+        <div class="flex items-center justify-between px-4 py-3 border-t border-primary/10 mt-2">
+            <span class="text-sm font-semibold text-outline">Language</span>
+            <x-ui.locale-switcher />
+        </div>
+        <div class="pb-1">
             <a href="{{ route('register') }}"
                class="flex items-center justify-center gap-2 w-full py-3 rounded-lg bg-secondary text-white text-sm font-bold hover:bg-secondary/90 transition-colors shadow-sm">
                 Create Free Resume ✨

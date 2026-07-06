@@ -40,7 +40,9 @@
         @endforeach
     </nav>
 
-    <div class="pt-6 border-t border-primary/10">
+    <div class="pt-6 border-t border-primary/10 space-y-4">
+        <x-ui.locale-switcher />
+
         <form method="POST" action="{{ route('logout') }}" class="w-full">
             @csrf
             <button type="submit" class="flex min-h-11 w-full items-center space-x-3 rounded-lg p-3 text-primary/60 hover:bg-red-50 hover:text-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-300">
