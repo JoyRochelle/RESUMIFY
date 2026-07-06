@@ -3,7 +3,7 @@
          role="alert"
          aria-live="assertive"
          tabindex="-1">
-        <p class="font-bold">Please review the highlighted fields.</p>
+        <p class="font-bold">{{ __('messages.auth.error_summary') }}</p>
         <ul class="list-disc list-inside">
             @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>

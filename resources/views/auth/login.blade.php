@@ -1,6 +1,6 @@
 @extends('layouts.auth.split')
 
-@section('title', 'Login | Resumify')
+@section('title', __('messages.auth.login.title'))
 
 
 {{-- Alpine.js state for the forgot password modal --}}
@@ -8,21 +8,21 @@
     x-data="{ showForgotModal: {{ old('from_forgot_password') || session('status') ? 'true' : 'false' }} }"
 @endsection
 
-@section('auth-title', 'Login to Your Account')
-@section('auth-subtitle', 'Welcome back to your career journey.')
+@section('auth-title', __('messages.auth.login.heading'))
+@section('auth-subtitle', __('messages.auth.login.subtitle'))
 
 @section('auth-form')
     <x-auth.error-list />
 
     <form class="space-y-5" action="{{ route('login') }}" method="POST" x-data="{ loading: false }" @submit="loading = true">
         @csrf
-        <x-auth.input name="email" label="EMAIL" type="email" placeholder="name@email.com" required />
+        <x-auth.input name="email" label="{{ __('messages.auth.fields.email') }}" type="email" placeholder="name@email.com" required />
 
-        <x-auth.input name="password" label="PASSWORD" type="password" placeholder="••••••••" required>
+        <x-auth.input name="password" label="{{ __('messages.auth.fields.password') }}" type="password" placeholder="••••••••" required>
             <x-slot name="extraLabel">
                 <a @click.prevent="showForgotModal = true" class="text-xs font-bold text-secondary hover:underline"
                     href="#">
-                    Forgot Password?
+                    {{ __('messages.auth.login.forgot_password') }}
                 </a>
             </x-slot>
         </x-auth.input>
@@ -30,11 +30,10 @@
         <div class="flex items-center gap-3">
             <input class="w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary" id="remember"
                 name="remember" type="checkbox" />
-            <label class="text-sm text-on-surface-variant" for="remember">Remember me for 30
-                days</label>
+            <label class="text-sm text-on-surface-variant" for="remember">{{ __('messages.auth.login.remember_me') }}</label>
         </div>
 
-        <x-auth.button>Login</x-auth.button>
+        <x-auth.button>{{ __('messages.auth.login.submit') }}</x-auth.button>
     </form>
 @endsection
 

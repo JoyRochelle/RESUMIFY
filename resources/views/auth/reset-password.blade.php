@@ -1,6 +1,6 @@
 @extends('layouts.auth.centered')
 
-@section('title', 'Reset Password | Resumify')
+@section('title', __('messages.auth.reset_password.title'))
 
 @section('auth-content')
     <x-auth.error-list />
@@ -11,10 +11,10 @@
         <input type="hidden" name="token" value="{{ $request->route('token') }}">
         <input type="hidden" name="email" value="{{ $request->email }}">
 
-        <x-auth.input name="password" label="New Password" type="password" placeholder="********" required />
-        <x-auth.input name="password_confirmation" label="Confirm Password" type="password" placeholder="********"
+        <x-auth.input name="password" label="{{ __('messages.auth.reset_password.new_password') }}" type="password" placeholder="********" required />
+        <x-auth.input name="password_confirmation" label="{{ __('messages.auth.reset_password.confirm_password') }}" type="password" placeholder="********"
             required />
 
-        <x-auth.button>Update Password</x-auth.button>
+        <x-auth.button>{{ __('messages.auth.reset_password.submit') }}</x-auth.button>
     </form>
 @endsection

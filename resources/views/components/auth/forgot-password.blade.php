@@ -2,10 +2,10 @@
     {{-- header --}}
     <div class="text-center mb-8">
         <h2 class="text-3xl font-headline font-bold text-on-surface">
-            Forgot Password?
+            {{ __('messages.auth.forgot_password.modal_heading') }}
         </h2>
         <p class="text-sm text-on-surface-variant mt-3 leading-relaxed">
-            Enter your email address and we'll send you a link to reset your password.
+            {{ __('messages.auth.forgot_password.modal_subtitle') }}
         </p>
     </div>
 
@@ -31,16 +31,16 @@
         @csrf
         <input type="hidden" name="from_forgot_password" value="1">
 
-        <x-auth.input name="email" label="EMAIL ADDRESS" type="email" placeholder="Enter your email" required />
+        <x-auth.input name="email" label="{{ __('messages.auth.fields.email_address') }}" type="email" placeholder="{{ __('messages.auth.forgot_password.modal_placeholder') }}" required />
 
-        <x-auth.button>Send Link</x-auth.button>
+        <x-auth.button>{{ __('messages.auth.forgot_password.modal_submit') }}</x-auth.button>
     </form>
 
     {{-- footer --}}
     <div class="text-center mt-6">
         <button @click="showForgotModal = false"
             class="inline-flex gap-2 text-sm font-bold text-secondary hover:text-secondary/70 transition-colors">
-            Back to Login
+            {{ __('messages.auth.forgot_password.back_to_login') }}
         </button>
     </div>
 </div>
