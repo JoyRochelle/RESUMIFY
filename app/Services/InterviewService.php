@@ -120,8 +120,7 @@ PROMPT;
         $transcript = $this->buildTranscript($session->messages);
         $prompt     = $this->buildFeedbackPrompt($session->job_target, $transcript);
 
-        $data = $this->callGeminiJson($prompt, 45);
-        $data = InterviewFeedbackResponse::fromProvider($data);
+        $data = $this->callGeminiJson($prompt, 45, [InterviewFeedbackResponse::class, 'fromProvider']);
 
         return InterviewFeedback::create([
             'session_id'       => $session->id,
@@ -351,7 +350,28 @@ PROMPT;
      *
      * @throws \Exception on API failure, empty response, or invalid JSON.
      */
-    private function callGeminiJson(string $prompt, int $timeout = 45): array
+    private function callGeminiJson(string $prompt, int $timeout = 45, ?callable $validator = null): array
+    {
+        $content = $this->requestGeminiJsonText($prompt, self::feedbackSchema(), $timeout);
+
+        try {
+            return $this->decodeAndValidateJson($content, $validator);
+        } catch (InvalidAiProviderResponseException $e) {
+            Log::warning('InterviewService feedback Gemini JSON invalid; retrying repair once', [
+                'error' => $e->getMessage(),
+            ]);
+
+            $repairContent = $this->requestGeminiJsonText(
+                $this->buildRepairPrompt($prompt, $content, $e->getMessage()),
+                self::feedbackSchema(),
+                $timeout,
+            );
+
+            return $this->decodeAndValidateJson($repairContent, $validator);
+        }
+    }
+
+    private function requestGeminiJsonText(string $prompt, array $schema, int $timeout = 45): string
     {
         $apiKey = config('services.gemini.key');
         if (!$apiKey) {
@@ -362,11 +382,7 @@ PROMPT;
             self::GEMINI_URL . "?key={$apiKey}",
             [
                 'contents'         => [['parts' => [['text' => $prompt]]]],
-                'generationConfig' => [
-                    'response_mime_type' => 'application/json',
-                    'maxOutputTokens'    => 2000,
-                    'temperature'        => 0.3,
-                ],
+                'generationConfig' => self::jsonGenerationConfig($schema),
             ]
         );
 
@@ -383,6 +399,11 @@ PROMPT;
             throw new \Exception('Empty feedback response from AI service');
         }
 
+        return $content;
+    }
+
+    private function decodeAndValidateJson(string $content, ?callable $validator = null): array
+    {
         $content = preg_replace('/^```json\s*|\s*```$/i', '', trim($content));
         $decoded = json_decode($content, true);
 
@@ -390,6 +411,78 @@ PROMPT;
             throw new InvalidAiProviderResponseException('Invalid JSON feedback from AI service');
         }
 
+        if ($validator) {
+            return $validator($decoded);
+        }
+
         return $decoded;
+    }
+
+    private function buildRepairPrompt(string $originalPrompt, string $invalidJson, string $error): string
+    {
+        return <<<PROMPT
+The previous response did not satisfy the required JSON contract.
+
+Validation error:
+{$error}
+
+Original task:
+{$originalPrompt}
+
+Invalid response:
+{$invalidJson}
+
+Return ONLY corrected valid JSON that satisfies the original task and schema. Do not include markdown or explanation.
+PROMPT;
+    }
+
+    private static function jsonGenerationConfig(array $schema): array
+    {
+        return [
+            'response_mime_type' => 'application/json',
+            'maxOutputTokens' => 2000,
+            'temperature' => 0.3,
+            'response_schema' => $schema,
+        ];
+    }
+
+    private static function feedbackSchema(): array
+    {
+        return [
+            'type' => 'object',
+            'properties' => [
+                'overall_score' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
+                'readiness_badge' => ['type' => 'string', 'enum' => ['ready', 'almost_ready', 'needs_practice']],
+                'missing_keywords' => [
+                    'type' => 'array',
+                    'maxItems' => 30,
+                    'items' => ['type' => 'string', 'maxLength' => 100],
+                ],
+                'question_scores' => [
+                    'type' => 'array',
+                    'maxItems' => 30,
+                    'items' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'question' => ['type' => 'string', 'maxLength' => 500],
+                            'answer_summary' => ['type' => 'string', 'maxLength' => 700],
+                            'star_scores' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'situation' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
+                                    'task' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
+                                    'action' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
+                                    'result' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 100],
+                                ],
+                                'required' => ['situation', 'task', 'action', 'result'],
+                            ],
+                            'feedback' => ['type' => 'string', 'maxLength' => 1000],
+                        ],
+                        'required' => ['question', 'answer_summary', 'star_scores', 'feedback'],
+                    ],
+                ],
+            ],
+            'required' => ['overall_score', 'readiness_badge', 'missing_keywords', 'question_scores'],
+        ];
     }
 }
