@@ -1,7 +1,9 @@
 import "../css/app.css";
 import Alpine from "alpinejs";
+import collapse from "@alpinejs/collapse";
 import "./shared/ai-quota-widget";
 
+Alpine.plugin(collapse);
 window.Alpine = Alpine;
 // Alpine.start() is called by @livewireScripts in each layout.
 // Do NOT call it here — calling it twice breaks Livewire components.

@@ -26,26 +26,26 @@
 
         {{-- Hero Right: Visual Preview --}}
         <div
-            class="w-full md:w-[60%] bg-[#f0f4f8] relative flex items-start justify-center px-4 sm:px-8 md:px-16 py-10 md:py-20">
+            class="w-full md:w-[60%] bg-surface-container-low relative flex items-start justify-center px-4 sm:px-8 md:px-16 py-10 md:py-20">
             <div class="relative w-full max-w-sm md:max-w-md">
 
                 {{-- Resume Card Preview --}}
-                <div class="bg-white p-6 md:p-8 rounded-sm shadow-2xl relative z-10 border border-primary/5">
+                <div class="bg-white p-6 md:p-8 rounded-lg shadow-2xl relative z-10 border border-primary/5">
                     <div class="flex justify-between items-start mb-6 md:mb-8">
                         <div>
-                            <h2 class="text-xl md:text-2xl font-serif text-primary tracking-tighter leading-none">Theofrolic
+                            <h2 class="text-xl md:text-2xl font-headline text-primary tracking-tighter leading-none">Theofrolic
                             </h2>
-                            <p class="text-[#00c9a7] font-bold font-body tracking-widest uppercase text-[10px] mt-2">Senior
+                            <p class="text-secondary font-bold font-body tracking-widest uppercase text-[10px] mt-2">Senior
                                 Product Designer</p>
                         </div>
-                        <div class="text-right text-[10px] text-gray-400 font-body leading-relaxed">
+                        <div class="text-right text-[10px] text-outline font-body leading-relaxed">
                             <p>Jakarta, Indonesia</p>
                             <p>theofrolic@resumify.ai</p>
                         </div>
                     </div>
 
                     <div class="space-y-4 md:space-y-6">
-                        <div class="h-px bg-gray-100 w-full mb-2"></div>
+                        <div class="h-px bg-primary/10 w-full mb-2"></div>
                         <div>
                             <h3 class="text-[10px] font-bold text-primary font-body mb-3 md:mb-4 uppercase tracking-widest">
                                 {{ __('messages.landing.welcome.preview.work_experience') }}</h3>
@@ -54,18 +54,18 @@
                                     <div class="flex justify-between items-start mb-1">
                                         <div>
                                             <p class="text-xs font-bold text-primary font-body">Lead Designer</p>
-                                            <p class="text-[10px] text-gray-400 font-body">TechNova Solutions</p>
+                                            <p class="text-[10px] text-outline font-body">TechNova Solutions</p>
                                         </div>
-                                        <span class="text-[10px] text-gray-400 font-body whitespace-nowrap">2021 –
+                                        <span class="text-[10px] text-outline font-body whitespace-nowrap">2021 –
                                             Present</span>
                                     </div>
                                 </div>
 
-                                <div class="bg-[#f0faf7] p-4 md:p-5 rounded-sm border-l-4 border-[#00c9a7]">
+                                <div class="bg-secondary/10 border border-secondary/20 p-4 md:p-5 rounded-lg">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <span class="material-symbols-outlined text-[16px] text-[#00c9a7]"
+                                        <span class="material-symbols-outlined text-[16px] text-secondary"
                                             style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
-                                        <span class="text-[10px] font-bold text-[#00c9a7] uppercase tracking-wider">{{ __('messages.landing.welcome.preview.ai_optimized') }}</span>
+                                        <span class="text-[10px] font-bold text-secondary uppercase tracking-wider">{{ __('messages.landing.welcome.preview.ai_optimized') }}</span>
                                     </div>
                                     <p class="text-[11px] text-primary/80 leading-loose font-body">
                                         {{ __('messages.landing.welcome.preview.ai_optimized_desc') }}
@@ -78,23 +78,23 @@
 
                 {{-- ATS Match Score — Desktop only (absolute positioned) --}}
                 <div
-                    class="hidden md:block absolute -right-10 top-[280px] bg-white/95 backdrop-blur-xl p-5 rounded-md shadow-xl w-56 z-20 border border-gray-100 transform rotate-1">
-                    <p class="text-[9px] text-gray-400 mb-3 tracking-widest uppercase font-bold">{{ __('messages.landing.welcome.preview.ats_match_score') }}</p>
+                    class="hidden md:block absolute -right-10 top-[360px] bg-white/95 backdrop-blur-xl p-5 rounded-md shadow-xl w-56 z-20 border border-primary/10 transform rotate-1">
+                    <p class="text-[9px] text-outline mb-3 tracking-widest uppercase font-bold">{{ __('messages.landing.welcome.preview.ats_match_score') }}</p>
                     <div class="flex items-end gap-1.5 h-10 mb-3">
-                        <div class="w-full bg-[#f4c4c4] h-1/4 rounded-sm"></div>
-                        <div class="w-full bg-[#e89d9d] h-2/5 rounded-sm"></div>
-                        <div class="w-full bg-[#a7e2cc] h-3/5 rounded-sm"></div>
-                        <div class="w-full bg-[#00c9a7] h-4/5 rounded-sm opacity-80"></div>
-                        <div class="w-full bg-[#00c9a7] h-full rounded-sm"></div>
+                        <div class="w-full bg-red-200 h-1/4 rounded-sm"></div>
+                        <div class="w-full bg-red-300 h-2/5 rounded-sm"></div>
+                        <div class="w-full bg-secondary/30 h-3/5 rounded-sm"></div>
+                        <div class="w-full bg-secondary/70 h-4/5 rounded-sm"></div>
+                        <div class="w-full bg-secondary h-full rounded-sm"></div>
                     </div>
                     <div class="flex justify-between items-center text-[10px] font-bold">
-                        <span class="text-gray-400">{{ __('messages.landing.welcome.preview.low') }}</span>
-                        <span class="text-[#00c9a7]">{{ __('messages.landing.welcome.preview.high') }}</span>
+                        <span class="text-outline">{{ __('messages.landing.welcome.preview.low') }}</span>
+                        <span class="text-secondary">{{ __('messages.landing.welcome.preview.high') }}</span>
                     </div>
                 </div>
 
                 {{-- INPUT EDITOR — Desktop only (absolute positioned) --}}
-                <div class="hidden md:block absolute top-[400px] -left-16 bg-[#44362d] p-7 rounded-md shadow-2xl w-72 z-30">
+                <div class="hidden md:block absolute top-[380px] -left-16 bg-primary p-7 rounded-md shadow-2xl w-72 z-30">
                     <p class="text-[9px] text-white/40 mb-5 tracking-widest uppercase font-bold">{{ __('messages.landing.welcome.preview.input_editor') }}</p>
                     <div class="space-y-5">
                         <div>
@@ -120,20 +120,20 @@
 
                 {{-- Mobile-only: ATS Score badge (inline, not absolute) --}}
                 <div
-                    class="md:hidden mt-4 bg-white/95 p-4 rounded-lg shadow-md border border-gray-100 flex items-center gap-4">
+                    class="md:hidden mt-4 bg-white/95 p-4 rounded-lg shadow-md border border-primary/10 flex items-center gap-4">
                     <div>
-                        <p class="text-[9px] text-gray-400 mb-2 tracking-widest uppercase font-bold">{{ __('messages.landing.welcome.preview.ats_match_score') }}</p>
+                        <p class="text-[9px] text-outline mb-2 tracking-widest uppercase font-bold">{{ __('messages.landing.welcome.preview.ats_match_score') }}</p>
                         <div class="flex items-end gap-1 h-8">
-                            <div class="w-4 bg-[#f4c4c4] h-1/4 rounded-sm"></div>
-                            <div class="w-4 bg-[#e89d9d] h-2/5 rounded-sm"></div>
-                            <div class="w-4 bg-[#a7e2cc] h-3/5 rounded-sm"></div>
-                            <div class="w-4 bg-[#00c9a7] h-4/5 rounded-sm opacity-80"></div>
-                            <div class="w-4 bg-[#00c9a7] h-full rounded-sm"></div>
+                            <div class="w-4 bg-red-200 h-1/4 rounded-sm"></div>
+                            <div class="w-4 bg-red-300 h-2/5 rounded-sm"></div>
+                            <div class="w-4 bg-secondary/30 h-3/5 rounded-sm"></div>
+                            <div class="w-4 bg-secondary/70 h-4/5 rounded-sm"></div>
+                            <div class="w-4 bg-secondary h-full rounded-sm"></div>
                         </div>
                     </div>
                     <div class="flex-1 text-right">
-                        <p class="text-[10px] text-gray-400">{{ __('messages.landing.welcome.preview.resume_quality') }}</p>
-                        <p class="text-lg font-headline font-bold text-[#00c9a7]">{{ __('messages.landing.welcome.preview.high_match') }}</p>
+                        <p class="text-[10px] text-outline">{{ __('messages.landing.welcome.preview.resume_quality') }}</p>
+                        <p class="text-lg font-headline font-bold text-secondary">{{ __('messages.landing.welcome.preview.high_match') }}</p>
                     </div>
                 </div>
 
@@ -169,10 +169,9 @@
                 <p class="text-base md:text-lg text-white/80 mb-8 md:mb-10 leading-relaxed font-body">
                     {{ __('messages.landing.welcome.cta.subtitle') }}
                 </p>
-                <a href="{{ route('register') }}"
-                    class="inline-block bg-white text-primary px-6 sm:px-8 py-3 rounded-sm font-bold font-body text-sm hover:bg-white/90 transition-all active:scale-95 shadow-sm">
+                <x-landing_page.button variant="light" href="{{ route('register') }}">
                     {{ __('messages.landing.welcome.cta.button') }}
-                </a>
+                </x-landing_page.button>
             </div>
         </div>
     </section>
