@@ -10,6 +10,6 @@ class AiQuotaExceededException extends RuntimeException
         public readonly int $remainingCredits,
         public readonly int $quotaLimit,
     ) {
-        parent::__construct('You have used all your AI credits. Upgrade to Premium for 50 credits/month.');
+        parent::__construct(sprintf('You have used all your AI credits. Upgrade to Premium for %d credits/month.', config('quota.premium')));
     }
 }

@@ -31,14 +31,15 @@ class AiResumeController extends Controller
         Gate::authorize('update', $cv);
 
         try {
+            $user = $request->user();
             $options = $refineResumeBullet->execute(
-                user: $request->user(),
+                user: $user,
                 cv: $cv,
                 text: $request->validated('text'),
                 jobContext: $request->validated('job_context'),
             );
 
-            return ApiResponse::success(['options' => $options]);
+            return ApiResponse::success(['options' => $options, 'quota' => $user->aiQuotaSnapshot()]);
         } catch (AiQuotaExceededException $e) {
             return $this->quotaExceededResponse($e);
         } catch (InvalidAiProviderResponseException $e) {
@@ -68,13 +69,14 @@ class AiResumeController extends Controller
         Gate::authorize('update', $cv);
 
         try {
+            $user = $request->user();
             $versions = $generateResumeVersions->execute(
-                user: $request->user(),
+                user: $user,
                 cv: $cv,
                 jobDescription: $request->validated('job_description'),
             );
 
-            return ApiResponse::success(['versions' => $versions]);
+            return ApiResponse::success(['versions' => $versions, 'quota' => $user->aiQuotaSnapshot()]);
         } catch (InsufficientResumeContentException $e) {
             return ApiResponse::legacyError(
                 legacyCode: 'insufficient_resume_content',

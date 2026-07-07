@@ -312,12 +312,15 @@ class InterviewController extends Controller
                 'success'    => true,
                 'session_id' => $result['session']->id,
                 'message'    => $result['message'],
+                'quota'      => $user->aiQuotaSnapshot(),
             ]);
         } catch (HttpExceptionInterface $e) {
             if ($e->getStatusCode() === 402) {
                 return response()->json([
                     'error'     => 'quota_exceeded',
-                    'message'   => 'You have used all your AI credits. Upgrade to Premium for 50 credits/month.',
+                    'message'   => $user->isPremium()
+                        ? 'You have used all your AI credits for this month.'
+                        : sprintf('You have used all your AI credits. Upgrade to Premium for %d credits/month.', config('quota.premium')),
                     'remaining' => $user->getQuotaRemaining(),
                     'limit'     => $user->getQuotaLimit(),
                 ], 402);
@@ -357,12 +360,15 @@ class InterviewController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => $reply,
+                'quota'   => $user->aiQuotaSnapshot(),
             ]);
         } catch (HttpExceptionInterface $e) {
             if ($e->getStatusCode() === 402) {
                 return response()->json([
                     'error'     => 'quota_exceeded',
-                    'message'   => 'You have used all your AI credits. Upgrade to Premium for 50 credits/month.',
+                    'message'   => $user->isPremium()
+                        ? 'You have used all your AI credits for this month.'
+                        : sprintf('You have used all your AI credits. Upgrade to Premium for %d credits/month.', config('quota.premium')),
                     'remaining' => $user->getQuotaRemaining(),
                     'limit'     => $user->getQuotaLimit(),
                 ], 402);

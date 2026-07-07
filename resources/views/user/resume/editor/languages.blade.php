@@ -18,7 +18,7 @@
                                         <select name="level" class="auto-save w-full border-b-2 border-primary/15 focus:border-secondary bg-transparent py-2 px-0 outline-none transition-all duration-200 text-primary text-sm appearance-none cursor-pointer">
                                             <option value="">{{ __('messages.editor.sections.languages.select_level') }}</option>
                                             @foreach(['Beginner','Conversational','Fluent','Native'] as $lvl)
-                                                <option value="{{ $lvl }}" {{ ($lang['level'] ?? '') === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
+                                                <option value="{{ $lvl }}" {{ ($lang['level'] ?? '') === $lvl ? 'selected' : '' }}>{{ __('messages.editor.sections.languages.levels.' . $lvl) }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -40,7 +40,7 @@
                                         <select name="level" class="auto-save w-full border-b-2 border-primary/15 focus:border-secondary bg-transparent py-2 px-0 outline-none transition-all duration-200 text-primary text-sm appearance-none cursor-pointer">
                                             <option value="">{{ __('messages.editor.sections.languages.select_level') }}</option>
                                             @foreach(['Beginner','Conversational','Fluent','Native'] as $lvl)
-                                                <option value="{{ $lvl }}">{{ $lvl }}</option>
+                                                <option value="{{ $lvl }}">{{ __('messages.editor.sections.languages.levels.' . $lvl) }}</option>
                                             @endforeach
                                         </select>
                                     </div>

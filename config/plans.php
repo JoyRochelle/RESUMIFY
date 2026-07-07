@@ -2,8 +2,8 @@
 
 return [
     'resume_limits' => [
-        'basic' => 1,
-        'premium' => null,
+        'basic' => (int) env('RESUME_LIMIT_BASIC', 1),
+        'premium' => env('RESUME_LIMIT_PREMIUM') !== null ? (int) env('RESUME_LIMIT_PREMIUM') : null,
         'admin' => null,
     ],
 

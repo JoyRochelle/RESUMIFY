@@ -13,6 +13,7 @@
         
         {{-- Page Header --}}
         <x-user.page-header title="{{ __('messages.editor.title_prefix') }}{{ $cv->title ?? __('messages.dashboard.untitled_resume') }}" backUrl="{{ route('dashboard') }}">
+            <x-ui.icon-button type="button" onclick="openCvVersionsModal()" icon="auto_awesome" variant="secondary" label="{{ __('messages.editor.tailor_cv') }}" class="sm:hidden" />
             <x-ui.button type="button" onclick="openCvVersionsModal()" variant="outline" icon="auto_awesome" class="text-sm px-3 hidden sm:flex text-secondary border-secondary hover:bg-secondary/10">{{ __('messages.editor.tailor_cv') }}</x-ui.button>
             <x-ui.button onclick="previewPdf('{{ $cv->id ?? '' }}')" variant="ghost" class="text-sm px-3 hidden sm:flex">{{ __('messages.editor.preview') }}</x-ui.button>
             @if($user->canUsePremiumFeature('pdf_export'))
@@ -116,7 +117,7 @@
                 </div>
             </aside>
 
-            <main id="ms-panel-preview" class="w-full lg:w-[60%] lg:h-full bg-primary/5 flex-col items-center p-4 lg:p-8 lg:overflow-y-auto relative custom-scrollbar hidden lg:flex">
+            <main id="ms-panel-preview" class="w-full lg:w-[60%] lg:h-full bg-primary/5 flex flex-col items-center p-4 lg:p-8 lg:overflow-y-auto relative custom-scrollbar hidden lg:flex">
                 {{-- ATS Score Panel (Gemini-powered) --}}
                 @if($cv)
                 <div id="ats-widget" class="absolute top-2 right-2 lg:top-2 lg:right-4 bg-tertiary/95 backdrop-blur-xl p-4 rounded-2xl shadow-xl border border-primary/10 z-30 flex flex-col items-center w-fit transition-all duration-300">
@@ -234,10 +235,6 @@
                 </div>
 
                 <div class="sticky bottom-24 lg:bottom-10 z-40 bg-tertiary/80 backdrop-blur-md border border-primary/10 px-6 py-3 rounded-full shadow-lg flex items-center gap-6 shrink-0 mx-auto">
-                    <x-ui.button variant="text" icon="zoom_in" class="hidden sm:flex">
-                        <span class="text-xs uppercase tracking-widest">{{ __('messages.editor.zoom') }}</span>
-                    </x-ui.button>
-                    <div class="w-px h-4 bg-primary/20 hidden sm:block"></div>
                     <x-ui.button variant="text" icon="layers" onclick="openTemplateModal()">
                         <span class="text-xs uppercase tracking-widest">{{ __('messages.editor.layout') }}</span>
                     </x-ui.button>
@@ -471,7 +468,8 @@
             cvId: '{{ $cv->id ?? "" }}',
             csrfToken: '{{ csrf_token() }}',
             atsScore: {{ $cv->ats_score ?? 0 }},
-            hasCv: {{ $cv ? 'true' : 'false' }}
+            hasCv: {{ $cv ? 'true' : 'false' }},
+            i18n: @json(__('messages.editor.js')),
         };
     </script>
     @vite('resources/js/features/resume-editor.js')

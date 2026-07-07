@@ -6,7 +6,7 @@
 
 @php
     $isPremium = $user?->isPremium();
-    $label = $isPremium ? 'Premium Member' : 'Basic Member';
+    $label = $isPremium ? __('messages.plan_badge.premium') : __('messages.plan_badge.basic');
     $icon = $isPremium ? 'workspace_premium' : 'person';
     $sizeClasses = $size === 'xs'
         ? 'px-2 py-0.5 text-[9px] gap-1'

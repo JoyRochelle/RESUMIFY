@@ -1,4 +1,10 @@
 
+        const t = window.editorConfig.i18n;
+
+        function angleLabel(angle) {
+            return `${t.angle_labels[angle] || angle} ${t.angle_suffix}`.trim();
+        }
+
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
@@ -15,7 +21,7 @@
             const file = input.files[0];
             if (!file) return;
             if (file.size > 2 * 1024 * 1024) {
-                alert('Ukuran foto maksimal 2MB. Silakan pilih file yang lebih kecil.');
+                alert(t.photo_too_large);
                 input.value = '';
                 return;
             }
@@ -58,7 +64,7 @@
             if (!resumeId) return;
             const btn = document.getElementById('download-btn');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> <span class="ml-1">Generating...</span>';
+            btn.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> <span class="ml-1">${t.generating}</span>`;
             btn.disabled = true;
             btn.classList.add('opacity-75', 'cursor-not-allowed');
 
@@ -72,7 +78,7 @@
 
                 if (response.status === 402) {
                     const data = await response.json();
-                    showToast(data.message || 'Premium is required for PDF export.', 'error');
+                    showToast(data.message || t.premium_required_pdf, 'error');
                     if (data.upgrade_url) window.location.href = data.upgrade_url;
                     return;
                 }
@@ -95,7 +101,7 @@
                 URL.revokeObjectURL(url);
             } catch (error) {
                 console.error('Failed to download PDF:', error);
-                alert('Failed to download PDF. Please try again.');
+                alert(t.download_pdf_failed);
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -170,7 +176,7 @@
                 
                 if (response.status === 402) {
                     const data = await response.json();
-                    showToast(data.message || 'Premium is required for this template.', 'error');
+                    showToast(data.message || t.premium_required_template, 'error');
                     if (data.upgrade_url) window.location.href = data.upgrade_url;
                     return;
                 }
@@ -213,10 +219,10 @@
                 }
             } catch (error) {
                 console.error('Failed to change template:', error);
-                alert('Failed to change template.');
+                alert(t.change_template_failed);
             }
             } else {
-                alert('No resume available to update template.');
+                alert(t.no_resume_for_template);
             }
         }
 
@@ -322,7 +328,7 @@
             clearTimeout(saveTimeout);
             const iframe = document.getElementById('resume-preview-iframe');
             if (iframe) iframe.style.opacity = '0.7';
-            showToast('Saving…', 'saving');
+            showToast(t.saving, 'saving');
             saveTimeout = setTimeout(() => saveSection(form), 800);
         }
         
@@ -391,21 +397,21 @@
                         }
                     }
                     if (iframe) iframe.style.opacity = '1';
-                    showToast(result.saved_at ? `✓ Saved · ${result.saved_at}` : 'Changes saved!', 'success');
+                    showToast(result.saved_at ? `✓ ${t.saved_at_prefix} · ${result.saved_at}` : t.changes_saved, 'success');
                     if (result.ats_score !== undefined) {
-                        updateAtsUi(result.ats_score, 'Keyword Match');
+                        updateAtsUi(result.ats_score, t.keyword_match);
                     }
                 } else {
                     console.error('Failed to save section');
                     const iframe = document.getElementById('resume-preview-iframe');
                     if (iframe) iframe.style.opacity = '1';
-                    showToast('Failed to save — please retry.', 'error');
+                    showToast(t.save_failed, 'error');
                 }
             } catch (error) {
                 console.error('Network error', error);
                 const iframe = document.getElementById('resume-preview-iframe');
                 if (iframe) iframe.style.opacity = '1';
-                showToast('Network error — changes not saved.', 'error');
+                showToast(t.network_error_not_saved, 'error');
             }
         }
 
@@ -457,7 +463,7 @@
         }
 
         async function deleteSection(sectionId) {
-            if (!confirm('Are you sure you want to completely remove this section?')) return;
+            if (!confirm(t.confirm_remove_section)) return;
             
             try {
                 const response = await fetch(`/resumes/${window.editorConfig.cvId || 0}/section/${sectionId}`, {
@@ -470,10 +476,10 @@
                 if (response.ok) {
                     window.location.reload();
                 } else {
-                    showToast('Failed to delete section.', 'error');
+                    showToast(t.delete_section_failed, 'error');
                 }
             } catch (e) {
-                showToast('Network error.', 'error');
+                showToast(t.network_error, 'error');
             }
         }
 
@@ -527,7 +533,7 @@
             const minScore = document.getElementById('ats-min-score');
             if (minScore) minScore.textContent = score;
             if (lbl) {
-                lbl.textContent = score === 0 ? 'No Target Job' : label;
+                lbl.textContent = score === 0 ? t.no_target_job : label;
                 lbl.className = 'text-[10px] font-semibold mt-2 ' +
                     (score >= 75 ? 'text-emerald-500' : score >= 50 ? 'text-amber-400' : 'text-red-400');
             }
@@ -537,7 +543,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const initialScore = window.editorConfig.atsScore;
-                updateAtsUi(initialScore, 'Keyword Match');
+                updateAtsUi(initialScore, t.keyword_match);
             }, 800);
         });
         function toggleAtsMinimize(e) {
@@ -609,7 +615,7 @@
             currentRefineTextarea = btn.parentElement.querySelector('textarea');
             const text = currentRefineTextarea.value.trim();
             if (!text || text.length < 10) {
-                alert('Please write at least a few words before refining.');
+                alert(t.refine_min_length);
                 return;
             }
 
@@ -645,6 +651,9 @@
             .then(data => {
                 console.log('[AI Refine] Response payload:', data);
                 document.getElementById('refine-loading').classList.add('hidden');
+                if (data.quota) {
+                    window.dispatchEvent(new CustomEvent('ai-quota:updated', { detail: data.quota }));
+                }
                 if (data.success && data.options) {
                     const resultsContainer = document.getElementById('refine-results');
                     resultsContainer.classList.remove('hidden');
@@ -664,7 +673,7 @@
                     document.getElementById('refine-loading').classList.add('hidden');
                     const resultsContainer = document.getElementById('refine-results');
                     resultsContainer.classList.remove('hidden');
-                    resultsContainer.innerHTML = `<div class="p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">${data.message || 'Failed to refine bullet.'}</div>`;
+                    resultsContainer.innerHTML = `<div class="p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">${data.message || t.refine_failed}</div>`;
                 }
             })
             .catch(err => {
@@ -672,7 +681,7 @@
                 document.getElementById('refine-loading').classList.add('hidden');
                 const resultsContainer = document.getElementById('refine-results');
                 resultsContainer.classList.remove('hidden');
-                resultsContainer.innerHTML = `<div class="p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">An error occurred while connecting to the server.</div>`;
+                resultsContainer.innerHTML = `<div class="p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">${t.connection_error}</div>`;
             });
         }
 
@@ -714,7 +723,7 @@
         function generateCvVersions() {
             const jobDescription = document.querySelector('[name="job_description"]')?.value || '';
             if (!jobDescription || jobDescription.length < 50) {
-                alert('Please provide a detailed Target Job Description (at least 50 characters) in the Target Job section first.');
+                alert(t.job_description_min_length);
                 closeCvVersionsModal();
                 return;
             }
@@ -740,6 +749,9 @@
             .then(data => {
                 console.log('[AI Versions] Response payload:', data);
                 document.getElementById('cv-versions-loading').style.display = 'none';
+                if (data.quota) {
+                    window.dispatchEvent(new CustomEvent('ai-quota:updated', { detail: data.quota }));
+                }
                 if (data.success && data.versions) {
                     window.lastGeneratedVersions = data.versions;
                     const resultsContainer = document.getElementById('cv-versions-results');
@@ -758,7 +770,7 @@
                         const warningHtml = v.warning ? `
                             <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex gap-2">
                                 <span class="material-symbols-outlined text-[16px] shrink-0">warning</span>
-                                <span>Please check this version &mdash; some details weren't found in your original CV: ${escapeHtml([...(v.warning.entities || []), ...(v.warning.numbers || [])].join(', '))}.</span>
+                                <span>${t.version_warning_prefix}${escapeHtml([...(v.warning.entities || []), ...(v.warning.numbers || [])].join(', '))}.</span>
                             </div>
                         ` : '';
 
@@ -767,14 +779,14 @@
                                 <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
                                     <span class="material-symbols-outlined">${angleIcons[v.angle] || 'description'}</span>
                                 </div>
-                                <h4 class="font-bold text-primary capitalize text-lg">${v.angle} Angle</h4>
+                                <h4 class="font-bold text-primary text-lg">${angleLabel(v.angle)}</h4>
                             </div>
-                            <p class="text-sm text-primary/70 leading-relaxed flex-1">This version emphasizes ${v.angle} aspects of your experience, perfectly tailored for the provided job description.</p>
+                            <p class="text-sm text-primary/70 leading-relaxed flex-1">${t.version_emphasizes.replace(':angle', (t.angle_labels[v.angle] || v.angle).toLowerCase())}</p>
                             ${warningHtml}
                             <div class="flex flex-col gap-2 w-full mt-auto">
-                                <button onclick="openApplyVersionModal('${v.id}')" class="w-full py-2.5 bg-primary text-white hover:bg-primary/90 font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Apply this version</button>
-                                <button onclick="previewCvVersion('${v.id}')" class="w-full py-2.5 bg-secondary/10 hover:bg-secondary text-secondary hover:text-white font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">visibility</span> Preview</button>
-                                <button onclick="downloadCvVersion('${v.id}')" class="w-full py-2.5 border border-primary/20 hover:bg-primary/5 text-primary font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">download</span> Download PDF</button>
+                                <button onclick="openApplyVersionModal('${v.id}')" class="w-full py-2.5 bg-primary text-white hover:bg-primary/90 font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> ${t.apply_this_version}</button>
+                                <button onclick="previewCvVersion('${v.id}')" class="w-full py-2.5 bg-secondary/10 hover:bg-secondary text-secondary hover:text-white font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">visibility</span> ${t.preview_button}</button>
+                                <button onclick="downloadCvVersion('${v.id}')" class="w-full py-2.5 border border-primary/20 hover:bg-primary/5 text-primary font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">download</span> ${t.download_pdf_button}</button>
                             </div>
                         `;
                         resultsContainer.appendChild(div);
@@ -783,7 +795,7 @@
                     document.getElementById('cv-versions-loading').style.display = 'none';
                     const resultsContainer = document.getElementById('cv-versions-results');
                     resultsContainer.classList.remove('hidden');
-                    resultsContainer.innerHTML = `<div class="col-span-full p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-center">${data.message || 'Failed to generate versions.'}</div>`;
+                    resultsContainer.innerHTML = `<div class="col-span-full p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-center">${data.message || t.generate_versions_failed}</div>`;
                 }
             })
             .catch(err => {
@@ -791,7 +803,7 @@
                 document.getElementById('cv-versions-loading').style.display = 'none';
                 const resultsContainer = document.getElementById('cv-versions-results');
                 resultsContainer.classList.remove('hidden');
-                resultsContainer.innerHTML = `<div class="col-span-full p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-center">An error occurred while connecting to the server.</div>`;
+                resultsContainer.innerHTML = `<div class="col-span-full p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-center">${t.connection_error}</div>`;
             });
         }
 
@@ -813,7 +825,7 @@
             const warningBox = document.getElementById('apply-version-warning');
             if (version && version.warning) {
                 const flagged = [...(version.warning.entities || []), ...(version.warning.numbers || [])];
-                warningBox.innerHTML = `<span class="material-symbols-outlined text-[16px] align-middle mr-1">warning</span>Heads up — some details weren't found in your original CV: ${escapeHtml(flagged.join(', '))}. Review before applying.`;
+                warningBox.innerHTML = `<span class="material-symbols-outlined text-[16px] align-middle mr-1">warning</span>${t.apply_version_warning_prefix}${escapeHtml(flagged.join(', '))}. ${t.apply_version_warning_suffix}`;
                 warningBox.classList.remove('hidden');
             } else {
                 warningBox.classList.add('hidden');
@@ -857,17 +869,17 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    showToast('Version applied! Reloading...', 'success');
+                    showToast(t.version_applied, 'success');
                     setTimeout(() => window.location.reload(), 600);
                 } else {
                     confirmBtn.disabled = false;
-                    showToast(data.message || 'Failed to apply version.', 'error');
+                    showToast(data.message || t.apply_version_failed, 'error');
                 }
             })
             .catch(err => {
                 console.error(err);
                 confirmBtn.disabled = false;
-                showToast('Network error — version not applied.', 'error');
+                showToast(t.version_not_applied, 'error');
             });
         }
 
@@ -878,15 +890,15 @@
 
         // ── CV History (snapshots) ──────────────────────────────────────
         const historyReasonLabels = {
-            chameleon_apply: 'Before applying a tailored version',
-            pre_restore: 'Before restoring an earlier version',
+            chameleon_apply: t.history_reason_chameleon_apply,
+            pre_restore: t.history_reason_pre_restore,
         };
 
         function openHistoryModal() {
             const modal = document.getElementById('history-modal');
             const content = document.getElementById('history-modal-content');
             const list = document.getElementById('history-list');
-            list.innerHTML = '<p class="text-sm text-primary/60 text-center py-8">Loading…</p>';
+            list.innerHTML = `<p class="text-sm text-primary/60 text-center py-8">${t.loading}</p>`;
 
             modal.classList.remove('hidden');
             void modal.offsetWidth;
@@ -901,11 +913,11 @@
             .then(data => {
                 const snapshots = data.snapshots || [];
                 if (snapshots.length === 0) {
-                    list.innerHTML = '<p class="text-sm text-primary/60 text-center py-8">No history yet.</p>';
+                    list.innerHTML = `<p class="text-sm text-primary/60 text-center py-8">${t.no_history}</p>`;
                     return;
                 }
                 list.innerHTML = snapshots.map(s => {
-                    const label = historyReasonLabels[s.reason] || 'Snapshot';
+                    const label = historyReasonLabels[s.reason] || t.history_reason_snapshot;
                     const date = new Date(s.created_at).toLocaleString();
                     return `
                         <div class="p-4 rounded-xl border border-primary/10 bg-surface-container-low flex items-center justify-between gap-4">
@@ -913,14 +925,14 @@
                                 <p class="font-bold text-primary text-sm">${escapeHtml(label)}</p>
                                 <p class="text-xs text-primary/60">${escapeHtml(date)}</p>
                             </div>
-                            <button onclick="restoreSnapshot('${s.id}')" class="py-2 px-4 rounded-xl bg-secondary/10 hover:bg-secondary text-secondary hover:text-white font-bold text-xs transition-colors shrink-0">Restore</button>
+                            <button onclick="restoreSnapshot('${s.id}')" class="py-2 px-4 rounded-xl bg-secondary/10 hover:bg-secondary text-secondary hover:text-white font-bold text-xs transition-colors shrink-0">${t.restore}</button>
                         </div>
                     `;
                 }).join('');
             })
             .catch(err => {
                 console.error(err);
-                list.innerHTML = '<p class="text-sm text-red-600 text-center py-8">Failed to load history.</p>';
+                list.innerHTML = `<p class="text-sm text-red-600 text-center py-8">${t.history_load_failed}</p>`;
             });
         }
 
@@ -934,7 +946,7 @@
         }
 
         function restoreSnapshot(id) {
-            if (!confirm('Restore this version? Your current content will be snapshotted first so you can undo this too.')) return;
+            if (!confirm(t.confirm_restore)) return;
 
             fetch(`/resumes/${window.editorConfig.cvId}/history/${id}/restore`, {
                 method: 'POST',
@@ -947,15 +959,15 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    showToast('Restored! Reloading...', 'success');
+                    showToast(t.restored, 'success');
                     setTimeout(() => window.location.reload(), 600);
                 } else {
-                    showToast(data.message || 'Failed to restore.', 'error');
+                    showToast(data.message || t.restore_failed, 'error');
                 }
             })
             .catch(err => {
                 console.error(err);
-                showToast('Network error — restore failed.', 'error');
+                showToast(t.restore_network_error, 'error');
             });
         }
 

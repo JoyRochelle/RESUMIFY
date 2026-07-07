@@ -2,6 +2,8 @@
 
 @section('title', 'Resumify — ' . __('messages.interview.index.page_title'))
 
+@section('body_class', 'h-screen flex overflow-hidden')
+
 @section('content')
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
@@ -61,15 +63,15 @@
 
                         {{-- Quota bar --}}
                         @php $user = auth()->user(); @endphp
-                        <div class="flex items-center justify-between text-xs text-primary/50 pb-1">
+                        <div class="flex items-center justify-between text-xs text-primary/50 pb-1" data-ai-quota-widget>
                             <span>{{ __('messages.interview.index.ai_credits_remaining') }}</span>
                             <div class="flex items-center gap-2">
                                 <div class="w-24 h-1.5 bg-primary/10 rounded-full overflow-hidden">
-                                    <div class="h-full bg-secondary rounded-full transition-all"
+                                    <div data-ai-quota-bar class="h-full bg-secondary rounded-full transition-all"
                                         style="width: {{ $user->getQuotaPercentage() }}%"></div>
                                 </div>
                                 <span class="font-bold text-primary">
-                                    {{ $user->getQuotaRemaining() }}/{{ $user->getQuotaLimit() }}
+                                    <span data-ai-quota-remaining>{{ $user->getQuotaRemaining() }}</span>/<span data-ai-quota-limit>{{ $user->getQuotaLimit() }}</span>
                                 </span>
                             </div>
                         </div>

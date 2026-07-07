@@ -73,7 +73,10 @@ class AtsController extends Controller
         );
 
         try {
-            return ApiResponse::success($runAtsAnalysis->execute($user, $request->validated()));
+            $analysis = $runAtsAnalysis->execute($user, $request->validated());
+            $analysis['quota'] = $user->aiQuotaSnapshot();
+
+            return ApiResponse::success($analysis);
         } catch (AiQuotaExceededException $e) {
             return ApiResponse::error(
                 code: ApiResponse::QUOTA_EXCEEDED,

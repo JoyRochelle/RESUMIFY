@@ -191,6 +191,43 @@ return [
         'footer_copyright' => '© 2026 Resumify - Curated with Integrity',
     ],
 
+    'manuscripts_page' => [
+        'title' => 'Manuskrip Anda',
+        'subtitle' => 'Kelola resume yang sudah ada atau buat resume baru yang disesuaikan dengan pekerjaan target Anda.',
+    ],
+
+    'plan_badge' => [
+        'premium' => 'Anggota Premium',
+        'basic' => 'Anggota Basic',
+    ],
+
+    'quota_status' => [
+        'upgrade' => 'Upgrade',
+        'ai_credits' => 'Kredit AI',
+        'used_suffix' => 'terpakai',
+        'resumes' => 'Resume',
+        'created_suffix' => 'dibuat',
+    ],
+
+    'btn_create' => [
+        'label' => 'Buat Resume Baru',
+        'unlimited_title' => 'Resume tanpa batas',
+        'unlimited_desc' => 'Paket Basic mencakup 1 resume. Premium membuka resume tanpa batas untuk setiap peran yang Anda targetkan.',
+    ],
+
+    'resume_card' => [
+        'edit_manuscript' => 'Ubah Manuskrip',
+        'last_edited' => 'Terakhir diubah: :date',
+        'edit' => 'Ubah',
+        'edit_aria' => 'Ubah :title',
+        'rename' => 'Ganti Nama Resume',
+        'rename_aria' => 'Ganti nama :title',
+        'duplicate' => 'Duplikat Resume',
+        'duplicate_aria' => 'Duplikat :title',
+        'delete' => 'Hapus Resume',
+        'delete_aria' => 'Hapus :title',
+    ],
+
     'resume' => [
         'index' => [
             'title' => 'Resume Saya',
@@ -274,7 +311,6 @@ return [
         'ats_score' => 'Skor ATS',
         'minimize' => 'Kecilkan',
         'maximize' => 'Besarkan',
-        'zoom' => 'Perbesar',
         'layout' => 'Tata Letak',
         'history' => 'Riwayat',
         'select_template_title' => 'Pilih Template',
@@ -302,6 +338,58 @@ return [
         'apply_version_desc' => 'Ini akan menimpa konten CV Anda saat ini. Cadangan konten Anda saat ini tersimpan di Riwayat, sehingga Anda bisa memulihkannya nanti.',
         'cancel' => 'Batal',
         'apply_and_overwrite' => 'Terapkan & Timpa',
+
+        'js' => [
+            'photo_too_large' => 'Ukuran foto maksimal 2MB. Silakan pilih file yang lebih kecil.',
+            'generating' => 'Membuat...',
+            'premium_required_pdf' => 'Premium diperlukan untuk ekspor PDF.',
+            'download_pdf_failed' => 'Gagal mengunduh PDF. Silakan coba lagi.',
+            'premium_required_template' => 'Premium diperlukan untuk template ini.',
+            'change_template_failed' => 'Gagal mengganti template.',
+            'no_resume_for_template' => 'Tidak ada resume yang tersedia untuk memperbarui template.',
+            'saving' => 'Menyimpan…',
+            'saved_at_prefix' => 'Tersimpan',
+            'changes_saved' => 'Perubahan disimpan!',
+            'save_failed' => 'Gagal menyimpan — silakan coba lagi.',
+            'network_error_not_saved' => 'Kesalahan jaringan — perubahan tidak disimpan.',
+            'confirm_remove_section' => 'Apakah Anda yakin ingin menghapus bagian ini sepenuhnya?',
+            'delete_section_failed' => 'Gagal menghapus bagian.',
+            'network_error' => 'Kesalahan jaringan.',
+            'no_target_job' => 'Belum Ada Target Pekerjaan',
+            'keyword_match' => 'Kecocokan Kata Kunci',
+            'refine_min_length' => 'Silakan tulis beberapa kata sebelum menyempurnakan.',
+            'refine_failed' => 'Gagal menyempurnakan poin.',
+            'connection_error' => 'Terjadi kesalahan saat menghubungkan ke server.',
+            'job_description_min_length' => 'Silakan isi Deskripsi Target Pekerjaan secara rinci (minimal 50 karakter) di bagian Target Pekerjaan terlebih dahulu.',
+            'version_warning_prefix' => 'Harap periksa versi ini — beberapa detail tidak ditemukan di CV asli Anda: ',
+            'angle_labels' => [
+                'leadership' => 'Kepemimpinan',
+                'technical' => 'Teknis',
+                'ownership' => 'Kepemilikan',
+            ],
+            'angle_suffix' => '',
+            'version_emphasizes' => 'Versi ini menekankan aspek :angle dari pengalaman Anda, disesuaikan khusus untuk deskripsi pekerjaan yang diberikan.',
+            'apply_this_version' => 'Terapkan versi ini',
+            'preview_button' => 'Pratinjau',
+            'download_pdf_button' => 'Unduh PDF',
+            'generate_versions_failed' => 'Gagal membuat versi.',
+            'apply_version_warning_prefix' => 'Perhatian — beberapa detail tidak ditemukan di CV asli Anda: ',
+            'apply_version_warning_suffix' => 'Tinjau sebelum menerapkan.',
+            'version_applied' => 'Versi diterapkan! Memuat ulang...',
+            'apply_version_failed' => 'Gagal menerapkan versi.',
+            'version_not_applied' => 'Kesalahan jaringan — versi tidak diterapkan.',
+            'history_reason_chameleon_apply' => 'Sebelum menerapkan versi yang disesuaikan',
+            'history_reason_pre_restore' => 'Sebelum memulihkan versi sebelumnya',
+            'history_reason_snapshot' => 'Snapshot',
+            'loading' => 'Memuat…',
+            'no_history' => 'Belum ada riwayat.',
+            'restore' => 'Pulihkan',
+            'history_load_failed' => 'Gagal memuat riwayat.',
+            'confirm_restore' => 'Pulihkan versi ini? Konten Anda saat ini akan disimpan sebagai snapshot terlebih dahulu agar Anda juga bisa membatalkannya.',
+            'restored' => 'Dipulihkan! Memuat ulang...',
+            'restore_failed' => 'Gagal memulihkan.',
+            'restore_network_error' => 'Kesalahan jaringan — pemulihan gagal.',
+        ],
 
         'placeholder' => [
             'role_location' => 'Senior Product Designer • San Francisco, CA',
@@ -382,6 +470,13 @@ return [
                 'proficiency_level' => 'Tingkat Kemahiran',
                 'select_level' => 'Pilih tingkat',
                 'add' => 'Tambah Keahlian',
+                'levels' => [
+                    'Beginner' => 'Pemula',
+                    'Elementary' => 'Dasar',
+                    'Intermediate' => 'Menengah',
+                    'Advanced' => 'Mahir',
+                    'Expert' => 'Ahli',
+                ],
             ],
             'certifications' => [
                 'title' => 'Sertifikasi',
@@ -404,6 +499,12 @@ return [
                 'proficiency' => 'Kemahiran',
                 'select_level' => 'Pilih tingkat',
                 'add' => 'Tambah Bahasa',
+                'levels' => [
+                    'Beginner' => 'Pemula',
+                    'Conversational' => 'Percakapan Sehari-hari',
+                    'Fluent' => 'Lancar',
+                    'Native' => 'Bahasa Ibu',
+                ],
             ],
         ],
     ],
@@ -703,6 +804,193 @@ return [
             'delete_account' => 'Hapus Akun',
             'confirm_dialog' => 'Apakah Anda yakin ingin menghapus akun Anda? Tindakan ini tidak dapat dibatalkan.',
         ],
+    ],
+
+    'landing' => [
+
+        'navbar' => [
+            'features' => 'Fitur',
+            'templates' => 'Template',
+            'pricing' => 'Harga',
+            'login' => 'Masuk',
+            'cta_create_resume' => 'Buat Resume Gratis ✨',
+            'language' => 'Bahasa',
+        ],
+
+        'footer' => [
+            'copyright' => 'Resumify. Manuskrip Pilihan.',
+            'privacy_policy' => 'Kebijakan Privasi',
+            'terms_of_service' => 'Syarat Layanan',
+            'cookie_policy' => 'Kebijakan Cookie',
+            'contact' => 'Kontak',
+            'close' => 'Tutup',
+            'legal' => [
+                'privacy' => [
+                    'title' => 'Kebijakan Privasi',
+                    'html' => '
+                        <p class="mb-4">Di Resumify, kami sangat menghargai privasi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, mengungkapkan, dan melindungi informasi Anda saat mengunjungi situs web kami.</p>
+                        <h4 class="font-bold text-primary mb-2 mt-6">1. Informasi yang Kami Kumpulkan</h4>
+                        <p class="mb-4">Kami dapat mengumpulkan informasi identifikasi pribadi dari Pengguna dengan berbagai cara, termasuk namun tidak terbatas pada saat Pengguna mengunjungi situs kami, mendaftar di situs, melakukan pemesanan, dan sehubungan dengan aktivitas, layanan, fitur, atau sumber daya lain yang kami sediakan di Situs kami.</p>
+                        <h4 class="font-bold text-primary mb-2 mt-6">2. Bagaimana Kami Menggunakan Informasi yang Dikumpulkan</h4>
+                        <p class="mb-4">Resumify dapat mengumpulkan dan menggunakan informasi pribadi Pengguna untuk tujuan berikut:</p>
+                        <ul class="list-disc pl-5 mb-4 space-y-1">
+                            <li>Meningkatkan layanan pelanggan</li>
+                            <li>Mempersonalisasi pengalaman pengguna</li>
+                            <li>Memproses pembayaran secara aman</li>
+                            <li>Mengirim email berkala terkait pembaruan manuskrip Anda</li>
+                        </ul>
+                        <h4 class="font-bold text-primary mb-2 mt-6">3. Keamanan Data</h4>
+                        <p>Kami menerapkan praktik pengumpulan, penyimpanan, dan pemrosesan data yang sesuai serta langkah-langkah keamanan untuk melindungi dari akses, perubahan, pengungkapan, atau perusakan yang tidak sah terhadap informasi pribadi, nama pengguna, kata sandi, informasi transaksi, dan data yang tersimpan di Situs kami.</p>
+                    ',
+                ],
+                'terms' => [
+                    'title' => 'Syarat Layanan',
+                    'html' => '
+                        <p class="mb-4">Selamat datang di Resumify. Dengan mengakses situs web ini, kami menganggap Anda menerima syarat dan ketentuan ini. Jangan melanjutkan penggunaan Resumify jika Anda tidak menyetujui seluruh syarat dan ketentuan yang tercantum di halaman ini.</p>
+                        <h4 class="font-bold text-primary mb-2 mt-6">1. Lisensi</h4>
+                        <p class="mb-4">Kecuali dinyatakan lain, Resumify dan/atau pemberi lisensinya memiliki hak kekayaan intelektual atas seluruh materi di Resumify. Semua hak kekayaan intelektual dilindungi. Anda dapat mengakses konten ini dari Resumify untuk penggunaan pribadi Anda, dengan tunduk pada batasan yang ditetapkan dalam syarat dan ketentuan ini.</p>
+                        <h4 class="font-bold text-primary mb-2 mt-6">2. Akun Pengguna</h4>
+                        <p class="mb-4">Saat Anda membuat akun bersama kami, Anda harus memberikan informasi yang akurat, lengkap, dan terkini setiap saat. Kegagalan melakukan hal ini merupakan pelanggaran terhadap Ketentuan ini, yang dapat mengakibatkan penghentian akun Anda di Layanan kami secara langsung.</p>
+                        <h4 class="font-bold text-primary mb-2 mt-6">3. Batasan Tanggung Jawab</h4>
+                        <p>Resumify, beserta pejabat, direktur, dan karyawannya, tidak akan bertanggung jawab atas hal apa pun yang timbul dari atau terkait dengan penggunaan Situs Web ini, baik tanggung jawab tersebut berdasarkan kontrak maupun lainnya.</p>
+                    ',
+                ],
+                'cookie' => [
+                    'title' => 'Kebijakan Cookie',
+                    'html' => '
+                        <p class="mb-4">Situs web kami menggunakan cookie untuk membedakan Anda dari pengguna lain di situs kami. Ini membantu kami memberikan pengalaman yang baik saat Anda menjelajahi situs kami serta memungkinkan kami untuk meningkatkan situs kami.</p>
+                        <h4 class="font-bold text-primary mb-2 mt-6">1. Apa itu cookie?</h4>
+                        <p class="mb-4">Cookie adalah file kecil berisi huruf dan angka yang kami simpan di browser Anda atau hard drive komputer Anda jika Anda menyetujuinya. Cookie berisi informasi yang dipindahkan ke hard drive komputer Anda.</p>
+                        <h4 class="font-bold text-primary mb-2 mt-6">2. Bagaimana kami menggunakan cookie</h4>
+                        <p class="mb-4">Kami menggunakan cookie berikut:</p>
+                        <ul class="list-disc pl-5 mb-4 space-y-1">
+                            <li><strong>Cookie yang sangat diperlukan:</strong> Diperlukan untuk pengoperasian situs web kami, seperti area login yang aman.</li>
+                            <li><strong>Cookie analitik atau kinerja:</strong> Memungkinkan kami mengenali dan menghitung jumlah pengunjung.</li>
+                            <li><strong>Cookie fungsionalitas:</strong> Digunakan untuk mengenali Anda saat kembali ke situs web kami dan mengingat preferensi Anda.</li>
+                        </ul>
+                        <p>Anda dapat memblokir cookie dengan mengaktifkan pengaturan di browser Anda yang memungkinkan Anda menolak pengaturan sebagian atau seluruh cookie.</p>
+                    ',
+                ],
+                'contact' => [
+                    'title' => 'Hubungi Kami',
+                    'html' => '
+                        <p class="mb-6 text-[15px]">Kami senang mendengar dari Anda. Jika Anda memiliki pertanyaan, kekhawatiran, atau masukan mengenai Resumify, silakan hubungi tim dukungan kami.</p>
+
+                        <div class="bg-primary/5 p-4 rounded-xl mb-4 border border-primary/10">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="material-symbols-outlined text-secondary">mail</span>
+                                <span class="font-bold text-primary">Dukungan Email</span>
+                            </div>
+                            <p class="text-primary/70 ml-9">hello@resumify.com<br>support@resumify.com</p>
+                        </div>
+
+                        <div class="bg-primary/5 p-4 rounded-xl mb-6 border border-primary/10">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="material-symbols-outlined text-secondary">location_on</span>
+                                <span class="font-bold text-primary">Kantor Pusat</span>
+                            </div>
+                            <p class="text-primary/70 ml-9">123 Innovation Drive<br>Tech District, San Francisco<br>CA 94105, United States</p>
+                        </div>
+
+                        <p class="text-sm italic text-primary/60">Tim dukungan kami biasanya merespons dalam 24-48 jam kerja.</p>
+                    ',
+                ],
+            ],
+        ],
+
+        'welcome' => [
+            'hero' => [
+                'title' => 'Tulis Kisah Suksesmu',
+                'subtitle' => 'Sesuaikan resume Anda dengan lowongan pekerjaan menggunakan kecerdasan buatan.',
+                'cta' => 'Tingkatkan Resume Anda',
+            ],
+            'preview' => [
+                'work_experience' => 'PENGALAMAN KERJA',
+                'ai_optimized' => 'Dioptimalkan AI',
+                'ai_optimized_desc' => 'Memimpin tim desain beranggotakan 12 orang dan meningkatkan tingkat konversi pengguna sebesar 34% melalui pengujian A/B yang sistematis.',
+                'ats_match_score' => 'SKOR KECOCOKAN ATS',
+                'low' => 'Rendah',
+                'high' => 'Tinggi',
+                'input_editor' => 'EDITOR INPUT',
+                'name_label' => 'NAMA',
+                'company_label' => 'PERUSAHAAN',
+                'description_label' => 'DESKRIPSI',
+                'description_value' => 'Memimpin tim desain dan meningkatkan konversi sebesar 34%...',
+                'resume_quality' => 'Kualitas resume Anda',
+                'high_match' => 'Kecocokan Tinggi',
+            ],
+            'features' => [
+                'ai_bullet' => [
+                    'title' => 'Generator Poin AI',
+                    'desc' => 'Tulis pencapaian Anda secara instan dengan saran berbasis data yang menonjol di mata perekrut.',
+                ],
+                'ats_scanner' => [
+                    'title' => 'Pemindai Skor Kecocokan ATS',
+                    'desc' => 'Evaluasi resume Anda terhadap deskripsi pekerjaan secara real-time untuk memastikan lolos sistem penyaringan.',
+                ],
+                'premium_templates' => [
+                    'title' => 'Template Premium',
+                    'desc' => 'Kumpulan template yang dikurasi secara profesional untuk berbagai industri dan tingkat karier.',
+                ],
+            ],
+            'cta' => [
+                'title' => 'Siap membangun kisahmu?',
+                'subtitle' => 'Bergabunglah dengan ribuan profesional yang telah mempercepat karier mereka bersama Resumify.',
+                'button' => 'Mulai Gratis Sekarang',
+            ],
+        ],
+
+        'templates' => [
+            'hero_title' => 'Pilih Template<br>yang Sesuai Kariermu',
+            'hero_subtitle' => 'Dari minimalis hingga kreatif, semua template kami dioptimalkan untuk lolos filter ATS dengan sentuhan editorial kelas atas.',
+            'tab_all' => 'Semua',
+            'use_template_full' => 'Gunakan Template Ini',
+            'use_template_short' => 'Gunakan Template',
+            'cta' => [
+                'title' => 'Belum menemukan yang cocok?',
+                'subtitle' => 'Jangan khawatir, semua template dapat disesuaikan sepenuhnya untuk memenuhi kebutuhan personal brand Anda. Mulai perjalanan karier Anda hari ini.',
+                'button' => 'Daftar Gratis Sekarang',
+            ],
+        ],
+
+        'pricing' => [
+            'hero' => [
+                'title' => 'Investasikan Kariermu',
+                'subtitle' => 'Mulai gratis, atau buka potensi penuh Anda dengan fitur AI Premium.',
+            ],
+            'plans' => [
+                'starter' => 'Starter',
+                'forever' => 'selamanya',
+                'month' => 'bulan',
+                'standard_templates' => 'Template Standar',
+                'no_ai_enhancement' => 'Tanpa Peningkatan AI',
+                'get_started' => 'Mulai Sekarang',
+                'premium_pro' => 'Premium PRO',
+                'ai_bullet_optimizer' => 'Pengoptimal Poin AI',
+                'ai_bullet_optimizer_subtitle' => 'Optimalkan dengan kata kunci berdampak tinggi',
+                'realtime_ats_matcher' => 'Pencocok ATS Real-time',
+                'premium_pdf_export' => 'Ekspor PDF Premium',
+                'priority_support' => 'Dukungan Prioritas',
+                'activate_premium' => 'Aktifkan Premium Sekarang',
+            ],
+            'compare' => [
+                'title' => 'Bandingkan Fitur Kami',
+                'key_features' => 'Fitur Utama',
+                'number_of_resumes' => 'Jumlah Resume',
+                'standard' => 'Standar',
+                'premium' => 'Premium',
+            ],
+            'faq' => [
+                'title' => 'Pertanyaan yang Sering Diajukan',
+                'q1' => 'Bisakah saya membatalkan langganan saya?',
+                'a1' => 'Ya, Anda dapat membatalkan langganan kapan saja melalui pengaturan akun Anda. Akses premium Anda akan tetap aktif hingga akhir periode penagihan saat ini.',
+                'q2' => 'Metode pembayaran apa saja yang tersedia?',
+                'a2' => 'Kami menerima kartu kredit (Visa, Mastercard), PayPal, dan berbagai dompet digital lokal untuk memfasilitasi transaksi Anda dengan aman.',
+                'q3' => 'Bagaimana AI membantu resume saya?',
+                'a3' => 'AI kami menganalisis deskripsi pekerjaan dan memberikan saran kata kunci yang relevan, mengoptimalkan tata bahasa poin, dan memastikan format resume Anda mudah dibaca oleh sistem ATS.',
+            ],
+        ],
+
     ],
 
 ];

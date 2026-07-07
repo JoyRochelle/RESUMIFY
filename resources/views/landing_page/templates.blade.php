@@ -5,10 +5,10 @@
 @section('content')
 <section class="max-w-7xl mx-auto px-4 sm:px-8 pt-14 sm:pt-20 pb-8 text-center">
     <h1 class="text-4xl sm:text-5xl md:text-6xl font-headline font-bold tracking-tighter mb-4 sm:mb-6 text-primary leading-tight">
-        Choose a Template<br>that Fits Your Career
+        {!! __('messages.landing.templates.hero_title') !!}
     </h1>
     <p class="text-base sm:text-lg text-outline leading-relaxed font-body max-w-2xl mx-auto">
-        From minimalist to creative, all our templates are optimized to pass ATS filters with a high-end editorial touch.
+        {{ __('messages.landing.templates.hero_subtitle') }}
     </p>
 </section>
 
@@ -84,8 +84,8 @@
                 <div class="flex items-center gap-3">
                     <a :href="'{{ route('register') }}'" class="inline-flex items-center gap-2 bg-secondary text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm font-bold hover:bg-secondary/90 transition-all shadow-sm hover:shadow-md">
                         <span class="material-symbols-outlined text-[16px]">edit_document</span>
-                        <span class="hidden sm:inline">Use This Template</span>
-                        <span class="sm:hidden">Use Template</span>
+                        <span class="hidden sm:inline">{{ __('messages.landing.templates.use_template_full') }}</span>
+                        <span class="sm:hidden">{{ __('messages.landing.templates.use_template_short') }}</span>
                     </a>
                     <button @click="closePreview()" class="text-primary/60 hover:text-primary transition-colors p-1.5 rounded-full hover:bg-primary/5">
                         <span class="material-symbols-outlined">close</span>
@@ -121,13 +121,13 @@
         
         <div class="relative z-10 max-w-xl">
             <h2 class="text-3xl md:text-4xl font-headline font-bold mb-4 tracking-tighter text-white leading-tight">
-                Haven't found the right fit?
+                {{ __('messages.landing.templates.cta.title') }}
             </h2>
             <p class="text-white/70 mb-8 font-body leading-relaxed text-sm md:text-base">
-                Don't worry, all templates can be fully customized to meet your personal brand needs. Start your career journey today.
+                {{ __('messages.landing.templates.cta.subtitle') }}
             </p>
             <a href="{{ route('home') }}" class="inline-block bg-white text-primary px-8 py-3 rounded-sm font-bold font-body text-sm hover:bg-white/90 transition-all active:scale-95 shadow-sm">
-                Register for Free Now
+                {{ __('messages.landing.templates.cta.button') }}
             </a>
         </div>
     </div>
@@ -153,7 +153,7 @@ function templateLibrary() {
         previewDescription: '',
         previewUrl: '',
         tabs: [
-            { key: 'all', label: 'All' },
+            { key: 'all', label: {!! json_encode(__('messages.landing.templates.tab_all')) !!} },
             @foreach($templates->pluck('category')->unique() as $cat)
             { key: '{{ $cat }}', label: '{{ ucfirst($cat) }}' },
             @endforeach

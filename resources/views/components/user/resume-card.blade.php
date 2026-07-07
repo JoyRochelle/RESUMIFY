@@ -25,30 +25,30 @@
         @endif
         
         <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
-            <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Edit Manuscript</span>
+            <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">{{ __('messages.resume_card.edit_manuscript') }}</span>
         </div>
 
         <!-- Clickable overlay to open resume -->
-        <a href="{{ $url }}" class="absolute inset-0 z-30" aria-label="Edit {{ $title }}"></a>
+        <a href="{{ $url }}" class="absolute inset-0 z-30" aria-label="{{ __('messages.resume_card.edit_aria', ['title' => $title]) }}"></a>
     </div>
     <div class="p-6 bg-tertiary relative z-20">
         <div class="flex items-start justify-between gap-2 mb-1">
             <h3 class="text-lg font-headline font-bold text-primary leading-tight">{{ $title }}</h3>
 
         </div>
-        <p class="text-sm text-primary/60 font-label mb-6">Last edited: {{ $date }}</p>
+        <p class="text-sm text-primary/60 font-label mb-6">{{ __('messages.resume_card.last_edited', ['date' => $date]) }}</p>
         <div class="flex items-center justify-between border-t border-primary/5 pt-4">
             <a href="{{ $url }}" class="text-secondary font-label font-bold text-sm hover:underline flex items-center gap-1">
                 <span class="material-symbols-outlined text-base" data-icon="edit">edit</span>
-                Edit
+                {{ __('messages.resume_card.edit') }}
             </a>
             @if($cvId)
             <div class="flex items-center gap-1">
                 {{-- Rename Button --}}
                 <button type="button"
                         onclick="openRenameModal('{{ $cvId }}', {{ json_encode($title) }})"
-                        title="Rename Resume"
-                        aria-label="Rename {{ $title }}"
+                        title="{{ __('messages.resume_card.rename') }}"
+                        aria-label="{{ __('messages.resume_card.rename_aria', ['title' => $title]) }}"
                         class="min-h-11 min-w-11 hover:bg-primary/5 hover:text-secondary rounded-full transition-colors text-primary/40 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-secondary/40">
                     <span class="material-symbols-outlined text-[20px]" aria-hidden="true">drive_file_rename_outline</span>
                 </button>
@@ -56,16 +56,16 @@
                 <form method="POST" action="{{ route('resumes.duplicate', $cvId) }}" class="inline">
                     @csrf
                     <button type="submit"
-                            title="Duplicate Resume"
-                            aria-label="Duplicate {{ $title }}"
+                            title="{{ __('messages.resume_card.duplicate') }}"
+                            aria-label="{{ __('messages.resume_card.duplicate_aria', ['title' => $title]) }}"
                             class="min-h-11 min-w-11 hover:bg-blue-50 hover:text-blue-600 rounded-full transition-colors text-primary/40 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-secondary/40">
                         <span class="material-symbols-outlined text-[20px]" data-icon="content_copy" aria-hidden="true">content_copy</span>
                     </button>
                 </form>
                 {{-- Delete Button --}}
                 <button type="button" onclick="openDeleteModal('{{ $cvId }}')"
-                        title="Delete Resume"
-                        aria-label="Delete {{ $title }}"
+                        title="{{ __('messages.resume_card.delete') }}"
+                        aria-label="{{ __('messages.resume_card.delete_aria', ['title' => $title]) }}"
                         class="min-h-11 min-w-11 hover:bg-red-50 hover:text-red-600 rounded-full transition-colors text-primary/40 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-300">
                     <span class="material-symbols-outlined text-[20px]" data-icon="delete" aria-hidden="true">delete</span>
                 </button>

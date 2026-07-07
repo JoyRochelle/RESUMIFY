@@ -21,7 +21,7 @@ class AiCreditService
             $quotaLimit = $lockedUser->getQuotaLimit();
             $currentUsage = (int) $lockedUser->ai_quota_used;
 
-            if ($lockedUser->isPremium() || $lockedUser->isAdmin()) {
+            if ($lockedUser->isAdmin()) {
                 $reservationId = $this->recordReservation(
                     user: $lockedUser,
                     credits: $credits,

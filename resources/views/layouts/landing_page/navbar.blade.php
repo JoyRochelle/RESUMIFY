@@ -11,20 +11,20 @@
         {{-- Desktop Nav Links (centered) --}}
         <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8 text-sm">
             <a href="/" wire:navigate
-                class="{{ request()->is('/') ? 'text-primary font-bold border-b-2 border-secondary pb-1' : 'text-outline hover:text-secondary' }} transition-colors">Features</a>
+                class="{{ request()->is('/') ? 'text-primary font-bold border-b-2 border-secondary pb-1' : 'text-outline hover:text-secondary' }} transition-colors">{{ __('messages.landing.navbar.features') }}</a>
             <a href="/templates" wire:navigate
-                class="{{ request()->is('templates') ? 'text-primary font-bold border-b-2 border-secondary pb-1' : 'text-outline hover:text-secondary' }} transition-colors">Templates</a>
+                class="{{ request()->is('templates') ? 'text-primary font-bold border-b-2 border-secondary pb-1' : 'text-outline hover:text-secondary' }} transition-colors">{{ __('messages.landing.navbar.templates') }}</a>
             <a href="/pricing" wire:navigate
-                class="{{ request()->is('pricing') ? 'text-primary font-bold border-b-2 border-secondary pb-1' : 'text-outline hover:text-secondary' }} transition-colors">Pricing</a>
+                class="{{ request()->is('pricing') ? 'text-primary font-bold border-b-2 border-secondary pb-1' : 'text-outline hover:text-secondary' }} transition-colors">{{ __('messages.landing.navbar.pricing') }}</a>
         </div>
 
         {{-- Desktop CTA --}}
         <div class="hidden md:flex items-center gap-6 text-sm">
             <x-ui.locale-switcher />
             <a class="text-primary font-semibold hover:text-secondary transition-colors"
-                href="{{ route('login') }}">Login</a>
+                href="{{ route('login') }}">{{ __('messages.landing.navbar.login') }}</a>
             <x-landing_page.button variant="primary" class="!py-2 !px-4 !text-sm" href="{{ route('register') }}">
-                Create Free Resume ✨
+                {{ __('messages.landing.navbar.cta_create_resume') }}
             </x-landing_page.button>
         </div>
 
@@ -53,26 +53,26 @@
         <a href="/" wire:navigate @click="open = false"
            class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold {{ request()->is('/') ? 'text-primary bg-primary/5' : 'text-outline hover:text-primary hover:bg-primary/5' }} transition-colors">
             <span class="material-symbols-outlined text-base">star</span>
-            Features
+            {{ __('messages.landing.navbar.features') }}
         </a>
         <a href="/templates" wire:navigate @click="open = false"
            class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold {{ request()->is('templates') ? 'text-primary bg-primary/5' : 'text-outline hover:text-primary hover:bg-primary/5' }} transition-colors">
             <span class="material-symbols-outlined text-base">article</span>
-            Templates
+            {{ __('messages.landing.navbar.templates') }}
         </a>
         <a href="/pricing" wire:navigate @click="open = false"
            class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold {{ request()->is('pricing') ? 'text-primary bg-primary/5' : 'text-outline hover:text-primary hover:bg-primary/5' }} transition-colors">
             <span class="material-symbols-outlined text-base">sell</span>
-            Pricing
+            {{ __('messages.landing.navbar.pricing') }}
         </a>
         <div class="flex items-center justify-between px-4 py-3 border-t border-primary/10 mt-2">
-            <span class="text-sm font-semibold text-outline">Language</span>
+            <span class="text-sm font-semibold text-outline">{{ __('messages.landing.navbar.language') }}</span>
             <x-ui.locale-switcher />
         </div>
         <div class="pb-1">
             <a href="{{ route('register') }}"
                class="flex items-center justify-center gap-2 w-full py-3 rounded-lg bg-secondary text-white text-sm font-bold hover:bg-secondary/90 transition-colors shadow-sm">
-                Create Free Resume ✨
+                {{ __('messages.landing.navbar.cta_create_resume') }}
             </a>
         </div>
     </div>

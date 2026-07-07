@@ -88,24 +88,60 @@ class QuotaSystemTest extends TestCase
         );
     }
 
-    public function test_premium_and_admin_users_bypass_quota_accounting(): void
+    public function test_admin_users_bypass_quota_accounting(): void
     {
-        foreach (['premium', 'admin'] as $role) {
-            $user = User::factory()->create([
-                'role' => $role,
-                'ai_quota_used' => 999,
-            ]);
+        $user = User::factory()->create([
+            'role' => 'admin',
+            'ai_quota_used' => 999,
+        ]);
 
-            $reservation = $this->reserveAiCredits($user->id, 3);
+        $reservation = $this->reserveAiCredits($user->id, 3);
 
-            $this->assertTrue($reservation['bypassed']);
-            $this->assertFalse($reservation['reserved']);
-            $this->assertSame(
-                999,
-                $user->fresh()->ai_quota_used,
-                "{$role} users must not have ai_quota_used changed by AI credit reservation."
-            );
-        }
+        $this->assertTrue($reservation['bypassed']);
+        $this->assertFalse($reservation['reserved']);
+        $this->assertSame(
+            999,
+            $user->fresh()->ai_quota_used,
+            'Admin users must not have ai_quota_used changed by AI credit reservation.'
+        );
+    }
+
+    public function test_premium_users_are_metered_against_premium_quota(): void
+    {
+        $quotaLimit = (int) config('quota.premium');
+        $user = User::factory()->create([
+            'role' => 'premium',
+            'ai_quota_used' => $quotaLimit - 1,
+        ]);
+
+        $reservation = $this->reserveAiCredits($user->id, 1);
+
+        $this->assertTrue($reservation['reserved']);
+        $this->assertFalse($reservation['bypassed']);
+        $this->assertSame(
+            $quotaLimit,
+            $user->fresh()->ai_quota_used,
+            'Premium users must have ai_quota_used incremented like basic users, capped at their own (higher) limit.'
+        );
+    }
+
+    public function test_premium_user_denied_reservation_once_premium_quota_exhausted(): void
+    {
+        $quotaLimit = (int) config('quota.premium');
+        $user = User::factory()->create([
+            'role' => 'premium',
+            'ai_quota_used' => $quotaLimit,
+        ]);
+
+        $reservation = $this->reserveAiCredits($user->id, 1);
+
+        $this->assertFalse($reservation['reserved']);
+        $this->assertFalse($reservation['bypassed']);
+        $this->assertSame(
+            $quotaLimit,
+            $user->fresh()->ai_quota_used,
+            'A denied reservation must not change ai_quota_used.'
+        );
     }
 
     // ────────────────────────────────────────────────
@@ -191,14 +227,14 @@ class QuotaSystemTest extends TestCase
     }
 
     // ────────────────────────────────────────────────
-    // QuotaMiddleware: Premium users bypass quota
+    // QuotaMiddleware: Premium users are metered against their own limit
     // ────────────────────────────────────────────────
 
-    public function test_premium_user_bypasses_quota_check(): void
+    public function test_premium_user_with_remaining_quota_can_access_ai_route(): void
     {
         $user = User::factory()->create([
             'role' => 'premium',
-            'ai_quota_used' => 999, // Even fully exhausted, premium bypasses
+            'ai_quota_used' => 0,
         ]);
 
         $this->app['router']->post('/_test/ai-action', function () {
@@ -208,6 +244,23 @@ class QuotaSystemTest extends TestCase
         $response = $this->actingAs($user)->postJson('/_test/ai-action');
         $response->assertStatus(200)
             ->assertJson(['success' => true]);
+    }
+
+    public function test_premium_user_with_exhausted_quota_gets_402(): void
+    {
+        $quotaLimit = (int) config('quota.premium');
+        $user = User::factory()->create([
+            'role' => 'premium',
+            'ai_quota_used' => $quotaLimit,
+        ]);
+
+        $this->app['router']->post('/_test/ai-action', function () {
+            return response()->json(['success' => true]);
+        })->middleware(['web', 'auth', 'ai.quota:1']);
+
+        $response = $this->actingAs($user)->postJson('/_test/ai-action');
+        $response->assertStatus(402)
+            ->assertJson(['error' => 'quota_exceeded']);
     }
 
     // ────────────────────────────────────────────────
@@ -260,6 +313,32 @@ class QuotaSystemTest extends TestCase
 
         $this->assertEquals(config('quota.basic'), $basicUser->getQuotaRemaining());
         $this->assertEquals(config('quota.premium'), $premiumUser->getQuotaRemaining());
+    }
+
+    // ────────────────────────────────────────────────
+    // User Model: getResumeLimit follows plans.resume_limits config
+    // (which is populated from RESUME_LIMIT_BASIC / RESUME_LIMIT_PREMIUM env vars)
+    // ────────────────────────────────────────────────
+
+    public function test_resume_limit_follows_plans_config(): void
+    {
+        config(['plans.resume_limits.basic' => 2, 'plans.resume_limits.premium' => 10]);
+
+        $basicUser = User::factory()->create(['role' => 'basic']);
+        $premiumUser = User::factory()->create(['role' => 'premium']);
+
+        $this->assertSame(2, $basicUser->getResumeLimit());
+        $this->assertSame(10, $premiumUser->getResumeLimit());
+    }
+
+    public function test_premium_resume_limit_is_unlimited_when_env_value_is_empty(): void
+    {
+        config(['plans.resume_limits.premium' => null]);
+
+        $premiumUser = User::factory()->create(['role' => 'premium']);
+
+        $this->assertNull($premiumUser->getResumeLimit());
+        $this->assertTrue($premiumUser->canCreateResume());
     }
 
     // ────────────────────────────────────────────────
@@ -459,7 +538,7 @@ class QuotaSystemTest extends TestCase
      */
     private function legacyNonAtomicReservationFromSnapshot(User $userSnapshot, int $credits): array
     {
-        if ($userSnapshot->isPremium() || $userSnapshot->isAdmin()) {
+        if ($userSnapshot->isAdmin()) {
             return [
                 'reserved' => false,
                 'bypassed' => true,

@@ -2,6 +2,8 @@
 
 @section('title', 'Resumify — ' . __('messages.interview.history.page_title'))
 
+@section('body_class', 'h-screen flex overflow-hidden')
+
 @section('content')
 <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
