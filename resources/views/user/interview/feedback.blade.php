@@ -2,6 +2,8 @@
 
 @section('title', 'Resumify — ' . __('messages.interview.feedback.page_title'))
 
+@section('body_class', 'h-screen flex overflow-hidden')
+
 @section('content')
     @php
         $feedback = $session->feedback;

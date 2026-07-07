@@ -202,6 +202,21 @@
                 sendMessage();
             }
         });
+
+        // Mobile keyboards pan the visual viewport to keep the focused
+        // textarea visible; on close that pan isn't always undone, leaving
+        // the h-dvh chat shifted up. Re-anchor once the keyboard is gone.
+        userInput.addEventListener('blur', () => {
+            window.scrollTo(0, 0);
+            setTimeout(scrollToBottom, 150);
+        });
+    }
+
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', () => {
+            window.scrollTo(0, 0);
+            scrollToBottom();
+        });
     }
 
     function scrollToBottom() {
