@@ -1,6 +1,6 @@
 @php
     $navItems = config('navigation.user', []);
-    $primaryRoutes = ['dashboard', 'user.manuscript', 'user.ai-assistant', 'interview.history', 'user.settings'];
+    $primaryRoutes = ['dashboard', 'user.manuscript', 'user.ai-assistant', 'interview.index', 'user.settings'];
     $primaryItems = collect($navItems)->filter(fn ($item) => in_array($item['route'], $primaryRoutes, true))->values();
     $moreItems = collect($navItems)->reject(fn ($item) => in_array($item['route'], $primaryRoutes, true))->values();
     $moreActive = $moreItems->contains(fn ($item) => request()->routeIs(...$item['match']));
@@ -39,8 +39,8 @@
         @endforeach
     </div>
 
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-primary/10 bg-tertiary px-1 py-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_rgba(79,59,47,0.08)]" aria-label="User navigation">
-        <div class="grid grid-cols-6 gap-0.5">
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-primary/10 bg-tertiary py-2 pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))] pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_rgba(79,59,47,0.08)]" aria-label="User navigation">
+        <div class="grid w-full grid-cols-6 gap-0.5">
             @foreach($primaryItems as $item)
                 @php
                     $active = request()->routeIs(...$item['match']);

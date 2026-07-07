@@ -86,6 +86,57 @@ return [
             'sending' => 'Mengirim...',
         ],
 
+        'legal_modals' => [
+            'privacy' => [
+                'title' => 'Kebijakan Privasi',
+                'html' => '<p class="mb-4">Di Resumify, kami sangat serius menjaga privasi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, mengungkapkan, dan melindungi informasi Anda saat mengunjungi situs web kami.</p>
+                    <h4 class="font-bold text-primary mb-2 mt-6">1. Informasi yang Kami Kumpulkan</h4>
+                    <p class="mb-4">Kami dapat mengumpulkan informasi identifikasi pribadi dari Pengguna dengan berbagai cara, termasuk namun tidak terbatas pada, saat Pengguna mengunjungi situs kami, mendaftar di situs, melakukan pemesanan, dan sehubungan dengan aktivitas, layanan, fitur, atau sumber daya lain yang kami sediakan di Situs kami.</p>
+                    <h4 class="font-bold text-primary mb-2 mt-6">2. Bagaimana Kami Menggunakan Informasi yang Dikumpulkan</h4>
+                    <p class="mb-4">Resumify dapat mengumpulkan dan menggunakan informasi pribadi Pengguna untuk tujuan berikut:</p>
+                    <ul class="list-disc pl-5 mb-4 space-y-1">
+                        <li>Untuk meningkatkan layanan pelanggan</li>
+                        <li>Untuk mempersonalisasi pengalaman pengguna</li>
+                        <li>Untuk memproses pembayaran secara aman</li>
+                        <li>Untuk mengirimkan email berkala terkait pembaruan manuskrip Anda</li>
+                    </ul>
+                    <h4 class="font-bold text-primary mb-2 mt-6">3. Keamanan Data</h4>
+                    <p>Kami menerapkan praktik pengumpulan, penyimpanan, dan pemrosesan data yang sesuai serta langkah-langkah keamanan untuk melindungi dari akses tidak sah, perubahan, pengungkapan, atau perusakan informasi pribadi, nama pengguna, kata sandi, informasi transaksi, dan data yang tersimpan di Situs kami.</p>',
+            ],
+            'terms' => [
+                'title' => 'Syarat & Ketentuan',
+                'html' => '<p class="mb-4">Selamat datang di Resumify. Dengan mengakses situs web ini, kami menganggap Anda menerima syarat dan ketentuan ini. Jangan lanjutkan menggunakan Resumify jika Anda tidak setuju dengan seluruh syarat dan ketentuan yang tercantum di halaman ini.</p>
+                    <h4 class="font-bold text-primary mb-2 mt-6">1. Lisensi</h4>
+                    <p class="mb-4">Kecuali dinyatakan lain, Resumify dan/atau pemberi lisensinya memiliki hak kekayaan intelektual atas seluruh materi di Resumify. Semua hak kekayaan intelektual dilindungi. Anda dapat mengakses ini dari Resumify untuk penggunaan pribadi Anda sendiri dengan tunduk pada batasan yang ditetapkan dalam syarat dan ketentuan ini.</p>
+                    <h4 class="font-bold text-primary mb-2 mt-6">2. Akun Pengguna</h4>
+                    <p class="mb-4">Saat Anda membuat akun bersama kami, Anda harus memberikan informasi yang akurat, lengkap, dan terkini setiap saat. Kegagalan melakukan hal ini merupakan pelanggaran terhadap Ketentuan, yang dapat mengakibatkan penghentian segera akun Anda pada Layanan kami.</p>
+                    <h4 class="font-bold text-primary mb-2 mt-6">3. Batasan Tanggung Jawab</h4>
+                    <p>Dalam keadaan apa pun, Resumify, maupun pejabat, direktur, dan karyawannya, tidak akan bertanggung jawab atas segala sesuatu yang timbul dari atau terkait dengan penggunaan Situs Web ini, baik tanggung jawab tersebut berdasarkan kontrak.</p>',
+            ],
+            'help' => [
+                'title' => 'Pusat Bantuan',
+                'html' => '<p class="mb-6 text-[15px]">Kami senang mendengar dari Anda. Jika Anda memiliki pertanyaan, kekhawatiran, atau masukan mengenai Resumify, silakan hubungi tim dukungan kami.</p>
+
+                    <div class="bg-primary/5 p-4 rounded-xl mb-4 border border-primary/10">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="material-symbols-outlined text-secondary">mail</span>
+                            <span class="font-bold text-primary">Dukungan Email</span>
+                        </div>
+                        <p class="text-primary/70 ml-9">hello@resumify.com<br>support@resumify.com</p>
+                    </div>
+
+                    <div class="bg-primary/5 p-4 rounded-xl mb-6 border border-primary/10">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="material-symbols-outlined text-secondary">location_on</span>
+                            <span class="font-bold text-primary">Kantor Pusat</span>
+                        </div>
+                        <p class="text-primary/70 ml-9">123 Innovation Drive<br>Tech District, San Francisco<br>CA 94105, Amerika Serikat</p>
+                    </div>
+
+                    <p class="text-sm italic text-primary/60">Tim dukungan kami biasanya merespons dalam 24-48 jam kerja.</p>',
+            ],
+        ],
+
     ],
 
     'nav' => [
@@ -137,6 +188,7 @@ return [
 
     'common' => [
         'fix_following_fields' => 'Mohon perbaiki kolom berikut:',
+        'footer_copyright' => '© 2026 Resumify - Curated with Integrity',
     ],
 
     'resume' => [
@@ -359,6 +411,27 @@ return [
     'ats' => [
         'analyze_match' => 'Analisis Kecocokan',
         'premium_badge' => 'Premium',
+        'page_title' => 'ATS Analyzer',
+        'how_it_works' => 'Cara Kerja',
+        'sections_aria_label' => 'Bagian ATS Analyzer',
+        'tabs' => [
+            'setup' => 'Setup',
+            'results' => 'Hasil',
+        ],
+        'instructions_modal' => [
+            'title' => 'Cara Kerja Penilaian ATS',
+            'close_aria' => 'Tutup petunjuk penilaian ATS',
+            'intro' => 'Analisis ATS kami meniru cara Applicant Tracking Systems mengevaluasi resume Anda terhadap deskripsi pekerjaan.',
+            'keyword_match_label' => 'Kecocokan Kata Kunci (65%)',
+            'keyword_match_desc' => '— Kami mengekstrak istilah kata tunggal dan multi-kata penting dari deskripsi pekerjaan dan memeriksa berapa banyak yang muncul di resume Anda.',
+            'action_verbs_label' => 'Kata Kerja Aksi (15%)',
+            'action_verbs_desc' => '— Kata kerja yang kuat dan berdampak menandakan kandidat yang berorientasi pada pencapaian kepada parser ATS.',
+            'quantification_label' => 'Kuantifikasi (12%)',
+            'quantification_desc' => '— Angka dan persentase secara signifikan meningkatkan skor relevansi di sebagian besar sistem ATS.',
+            'length_format_label' => 'Panjang &amp; Format (8%)',
+            'length_format_desc' => '— Resume antara 200–800 kata paling andal diproses oleh sistem otomatis.',
+            'tip' => 'Tip: Semakin dekat bahasa resume Anda mencerminkan deskripsi pekerjaan, semakin tinggi skor kecocokan Anda.',
+        ],
         'setup' => [
             'select_from_resumes' => 'Pilih dari Resume Anda',
             'choose_resume_placeholder' => '-- Pilih Resume --',
@@ -474,6 +547,161 @@ return [
             'no_sessions_yet' => 'Belum ada sesi wawancara',
             'complete_first_interview' => 'Selesaikan wawancara simulasi pertama Anda untuk melihat riwayat di sini.',
             'start_first_interview' => 'Mulai Wawancara Pertama Anda',
+        ],
+    ],
+
+    'help' => [
+        'hero_title' => 'Pusat Bantuan',
+        'hero_subtitle' => 'Temukan jawaban atas pertanyaan umum atau hubungi tim dukungan kami.',
+        'my_tickets' => 'Tiket Saya',
+        'faq_heading' => 'Pertanyaan yang Sering Diajukan',
+        'faq' => [
+            'getting_started' => [
+                'label' => 'Memulai',
+                'items' => [
+                    ['q' => 'Bagaimana cara membuat resume pertama saya?', 'a' => 'Buka dashboard Anda dan klik "New Resume". Pilih template, lalu isi informasi pribadi, pengalaman kerja, pendidikan, dan keahlian Anda. Anda dapat melihat pratinjau dan mengunduh resume sebagai PDF kapan saja.'],
+                    ['q' => 'Template apa saja yang tersedia?', 'a' => 'Kami menawarkan berbagai template yang dirancang secara profesional untuk berbagai industri dan tingkat pengalaman. Kunjungi halaman Templates untuk melihat pratinjau semua desain yang tersedia.'],
+                    ['q' => 'Bisakah saya membuat beberapa resume?', 'a' => 'Tentu! Anda dapat membuat resume sebanyak yang Anda butuhkan. Setiap resume dapat disesuaikan secara independen untuk lamaran pekerjaan yang berbeda.'],
+                ],
+            ],
+            'resume_builder' => [
+                'label' => 'Pembuat Resume',
+                'items' => [
+                    ['q' => 'Bagaimana cara mengunduh resume saya sebagai PDF?', 'a' => 'Buka resume Anda di editor dan klik tombol "Export PDF" di pojok kanan atas. Resume Anda akan dibuat dan diunduh secara otomatis.'],
+                    ['q' => 'Bisakah saya mengganti template setelah mulai mengedit?', 'a' => 'Ya, Anda dapat mengganti template kapan saja dari editor. Konten Anda akan tetap tersimpan, hanya desain visual yang akan berubah.'],
+                    ['q' => 'Bagian apa saja yang bisa saya tambahkan ke resume saya?', 'a' => 'Anda dapat menambahkan Informasi Pribadi, Pengalaman Kerja, Pendidikan, Keahlian, dan bagian Target Pekerjaan. Setiap bagian dapat disesuaikan dengan latar belakang Anda.'],
+                ],
+            ],
+            'ai_features' => [
+                'label' => 'Fitur AI',
+                'items' => [
+                    ['q' => 'Bagaimana cara meningkatkan skor ATS saya?', 'a' => 'Gunakan fitur ATS Analyzer untuk memeriksa seberapa cocok resume Anda dengan deskripsi pekerjaan. Tempelkan lowongan pekerjaan, dan AI kami akan mengidentifikasi kata kunci yang hilang serta menyarankan perbaikan.'],
+                    ['q' => 'Berapa banyak kredit AI yang saya dapatkan?', 'a' => 'Pengguna Basic menerima 10 kredit AI per bulan. Pengguna Premium mendapatkan 100 kredit. Setiap aksi AI (analisis ATS, optimasi bullet, dll.) menggunakan sejumlah kredit tertentu.'],
+                    ['q' => 'Apa fungsi "AI Polish"?', 'a' => 'AI Polish menulis ulang poin-poin resume Anda agar lebih berdampak, menggunakan kata kerja aksi yang kuat dan pencapaian yang terukur. Fitur ini menggunakan 1 kredit per poin.'],
+                ],
+            ],
+            'billing' => [
+                'label' => 'Tagihan',
+                'items' => [
+                    ['q' => 'Bagaimana cara upgrade ke Premium?', 'a' => 'Buka halaman Upgrade dari dashboard atau pengaturan Anda. Kami mendukung pembayaran melalui Midtrans (transfer bank, e-wallet, dan kartu).'],
+                    ['q' => 'Apa yang terjadi pada data saya jika saya membatalkan?', 'a' => 'Resume dan data Anda tetap tersimpan. Anda akan diturunkan ke paket Basic dan kuota AI Anda akan disesuaikan pada siklus penagihan berikutnya.'],
+                ],
+            ],
+            'technical' => [
+                'label' => 'Teknis',
+                'items' => [
+                    ['q' => 'Apakah data saya aman?', 'a' => 'Ya. Semua data dienkripsi saat transit (HTTPS) dan saat disimpan. Kami tidak pernah membagikan informasi pribadi Anda kepada pihak ketiga. Anda dapat menghapus akun dan semua data terkait kapan saja dari Settings.'],
+                    ['q' => 'Mengapa PDF saya tidak bisa diekspor?', 'a' => 'Pastikan semua bagian yang wajib diisi (Informasi Pribadi, Pengalaman Kerja, Pendidikan, Keahlian) sudah terisi. Jika masalah berlanjut, coba browser lain atau hubungi dukungan.'],
+                ],
+            ],
+        ],
+        'contact' => [
+            'heading' => 'Masih butuh bantuan?',
+            'subtitle' => 'Kirimkan pesan kepada kami dan kami akan segera menghubungi Anda kembali.',
+            'subject_label' => 'Subjek',
+            'subject_placeholder' => 'Jelaskan secara singkat masalah Anda...',
+            'message_label' => 'Pesan',
+            'message_placeholder' => 'Jelaskan masalah Anda secara rinci...',
+            'send' => 'Kirim Pesan',
+            'sending' => 'Mengirim...',
+            'success' => 'Pesan Anda telah terkirim! Kami akan segera menghubungi Anda kembali.',
+        ],
+    ],
+
+    'tickets' => [
+        'status' => [
+            'open' => 'Terbuka',
+            'pending' => 'Menunggu',
+            'awaiting_closure' => 'Menunggu Penutupan',
+            'closed' => 'Ditutup',
+        ],
+        'list' => [
+            'breadcrumb_help' => 'Pusat Bantuan',
+            'breadcrumb_current' => 'Tiket Saya',
+            'heading' => 'Tiket Dukungan Saya',
+            'new_ticket' => 'Tiket Baru',
+            'replies_count' => ':count balasan',
+            'empty_title' => 'Belum ada tiket dukungan',
+            'empty_cta' => 'Kirim tiket pertama Anda',
+        ],
+        'show' => [
+            'breadcrumb_help' => 'Pusat Bantuan',
+            'breadcrumb_my_tickets' => 'Tiket Saya',
+            'ticket_number' => 'Tiket #:id',
+            'opened_on' => 'Dibuka :date',
+        ],
+        'chat' => [
+            'conversation' => 'Percakapan',
+            'unknown_sender' => 'Tidak diketahui',
+            'support_badge' => 'Dukungan',
+            'no_replies' => 'Belum ada balasan.',
+            'ready_to_close' => 'Siap menutup tiket ini?',
+            'request_close' => 'Ajukan Penutupan',
+            'waiting_other_party' => 'Menunggu pihak lain untuk mengonfirmasi atau menolak permintaan penutupan Anda.',
+            'other_requested_close' => 'Pihak lain meminta untuk menutup tiket ini.',
+            'reject' => 'Tolak',
+            'confirm_close' => 'Konfirmasi Penutupan',
+            'reply_label' => 'Pesan balasan',
+            'reply_placeholder' => 'Ketik balasan Anda...',
+            'send_reply' => 'Kirim Balasan',
+            'sending' => 'Mengirim...',
+            'closed_notice' => 'Tiket ini telah ditutup.',
+            'reply_sent' => 'Balasan Anda telah terkirim.',
+            'close_already_pending_error' => 'Permintaan penutupan sudah menunggu atau tiket sudah ditutup.',
+            'no_pending_confirm_error' => 'Tidak ada permintaan penutupan yang menunggu untuk dikonfirmasi.',
+            'no_pending_reject_error' => 'Tidak ada permintaan penutupan yang menunggu untuk ditolak.',
+            'closed_reply_error' => 'Tiket ini telah ditutup dan tidak dapat menerima balasan baru.',
+        ],
+    ],
+
+    'settings' => [
+        'page_title' => 'Pengaturan Akun',
+        'heading' => 'Pengaturan',
+        'subtitle' => 'Kelola kehadiran editorial dan keamanan workspace Anda.',
+        'notifications' => [
+            'heading' => 'Notifikasi',
+            'mark_all_read' => 'Tandai semua telah dibaca',
+            'default_message' => 'Anda memiliki notifikasi baru.',
+            'empty' => 'Belum ada notifikasi.',
+        ],
+        'flash' => [
+            'avatar_updated' => 'Avatar berhasil diperbarui.',
+            'avatar_deleted' => 'Avatar berhasil dihapus.',
+            'profile_updated' => 'Profil berhasil diperbarui.',
+            'password_updated' => 'Kata sandi berhasil diperbarui.',
+        ],
+        'profile_section' => [
+            'title' => 'Profil Pengguna',
+            'verified_badge' => 'Penulis Terverifikasi',
+            'avatar_alt' => 'Avatar Pengguna',
+            'avatar_format_hint' => 'Format: JPG, PNG (Maks 2MB)',
+            'full_name' => 'Nama Lengkap',
+            'email_address' => 'Alamat Email',
+            'locked' => 'terkunci',
+            'save_changes' => 'Simpan Perubahan',
+        ],
+        'billing_section' => [
+            'title' => 'Langganan & Tagihan',
+            'upgrade_quota' => 'Upgrade Kuota',
+            'optimized_by' => 'Dioptimalkan oleh Resumify Editorial Engine.',
+            'view_transaction_history' => 'Lihat Riwayat Transaksi',
+            'transaction_history_wip' => 'Fitur riwayat transaksi sedang dalam pengembangan. Silakan periksa kembali nanti.',
+        ],
+        'security_section' => [
+            'title' => 'Keamanan & Kata Sandi',
+            'subtitle' => 'Pastikan akun Anda menggunakan kata sandi yang panjang dan acak agar tetap aman.',
+            'current_password' => 'Kata Sandi Saat Ini',
+            'new_password' => 'Kata Sandi Baru',
+            'confirm_new_password' => 'Konfirmasi Kata Sandi Baru',
+            'password_hint' => 'Gunakan minimal 8 karakter dengan kombinasi angka dan simbol.',
+            'update_password' => 'Perbarui Kata Sandi',
+        ],
+        'danger_zone' => [
+            'title' => 'Zona Berbahaya',
+            'warning' => 'Tindakan ini tidak dapat dibatalkan. Semua data Anda akan dihapus secara permanen dari server kami.',
+            'confirm_password_placeholder' => 'Konfirmasi kata sandi Anda',
+            'delete_account' => 'Hapus Akun',
+            'confirm_dialog' => 'Apakah Anda yakin ingin menghapus akun Anda? Tindakan ini tidak dapat dibatalkan.',
         ],
     ],
 

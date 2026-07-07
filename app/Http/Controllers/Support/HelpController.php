@@ -49,7 +49,7 @@ class HelpController extends Controller
             Notification::send($admins, new NewSupportTicket($ticket->loadMissing('user')));
         }
 
-        return redirect()->route('user.help')->with('success', 'Your message has been sent! We\'ll get back to you soon.');
+        return redirect()->route('user.help')->with('success', __('messages.help.contact.success'));
     }
 
     public function tickets(): View
@@ -77,7 +77,7 @@ class HelpController extends Controller
         Gate::authorize('reply', $ticket);
 
         if ($ticket->status === 'closed') {
-            return back()->with('error', 'This ticket is closed and cannot receive new replies.');
+            return back()->with('error', __('messages.tickets.chat.closed_reply_error'));
         }
 
         $data = $request->validate([
@@ -97,6 +97,6 @@ class HelpController extends Controller
             $ticket->assignedAdmin->notify(new SupportTicketUserReplied($ticket));
         }
 
-        return redirect()->route('help.tickets.show', $ticket)->with('success', 'Your reply has been sent.');
+        return redirect()->route('help.tickets.show', $ticket)->with('success', __('messages.tickets.chat.reply_sent'));
     }
 }

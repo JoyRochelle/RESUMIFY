@@ -86,6 +86,57 @@ return [
             'sending' => 'Sending...',
         ],
 
+        'legal_modals' => [
+            'privacy' => [
+                'title' => 'Privacy Policy',
+                'html' => '<p class="mb-4">At Resumify, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.</p>
+                    <h4 class="font-bold text-primary mb-2 mt-6">1. Information We Collect</h4>
+                    <p class="mb-4">We may collect personal identification information from Users in a variety of ways, including, but not limited to, when Users visit our site, register on the site, place an order, and in connection with other activities, services, features or resources we make available on our Site.</p>
+                    <h4 class="font-bold text-primary mb-2 mt-6">2. How We Use Collected Information</h4>
+                    <p class="mb-4">Resumify may collect and use Users\' personal information for the following purposes:</p>
+                    <ul class="list-disc pl-5 mb-4 space-y-1">
+                        <li>To improve customer service</li>
+                        <li>To personalize user experience</li>
+                        <li>To process payments securely</li>
+                        <li>To send periodic emails regarding your manuscript updates</li>
+                    </ul>
+                    <h4 class="font-bold text-primary mb-2 mt-6">3. Data Security</h4>
+                    <p>We adopt appropriate data collection, storage and processing practices and security measures to protect against unauthorized access, alteration, disclosure or destruction of your personal information, username, password, transaction information and data stored on our Site.</p>',
+            ],
+            'terms' => [
+                'title' => 'Terms & Conditions',
+                'html' => '<p class="mb-4">Welcome to Resumify. By accessing this website, we assume you accept these terms and conditions. Do not continue to use Resumify if you do not agree to take all of the terms and conditions stated on this page.</p>
+                    <h4 class="font-bold text-primary mb-2 mt-6">1. License</h4>
+                    <p class="mb-4">Unless otherwise stated, Resumify and/or its licensors own the intellectual property rights for all material on Resumify. All intellectual property rights are reserved. You may access this from Resumify for your own personal use subjected to restrictions set in these terms and conditions.</p>
+                    <h4 class="font-bold text-primary mb-2 mt-6">2. User Accounts</h4>
+                    <p class="mb-4">When you create an account with us, you must provide us information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our Service.</p>
+                    <h4 class="font-bold text-primary mb-2 mt-6">3. Limitation of Liability</h4>
+                    <p>In no event shall Resumify, nor any of its officers, directors and employees, shall be held liable for anything arising out of or in any way connected with your use of this Website whether such liability is under contract.</p>',
+            ],
+            'help' => [
+                'title' => 'Help Center',
+                'html' => '<p class="mb-6 text-[15px]">We would love to hear from you. If you have any questions, concerns, or feedback regarding Resumify, please reach out to our support team.</p>
+
+                    <div class="bg-primary/5 p-4 rounded-xl mb-4 border border-primary/10">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="material-symbols-outlined text-secondary">mail</span>
+                            <span class="font-bold text-primary">Email Support</span>
+                        </div>
+                        <p class="text-primary/70 ml-9">hello@resumify.com<br>support@resumify.com</p>
+                    </div>
+
+                    <div class="bg-primary/5 p-4 rounded-xl mb-6 border border-primary/10">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="material-symbols-outlined text-secondary">location_on</span>
+                            <span class="font-bold text-primary">Office Headquarters</span>
+                        </div>
+                        <p class="text-primary/70 ml-9">123 Innovation Drive<br>Tech District, San Francisco<br>CA 94105, United States</p>
+                    </div>
+
+                    <p class="text-sm italic text-primary/60">Our support team usually responds within 24-48 business hours.</p>',
+            ],
+        ],
+
     ],
 
     'nav' => [
@@ -137,6 +188,7 @@ return [
 
     'common' => [
         'fix_following_fields' => 'Please fix the following fields:',
+        'footer_copyright' => '© 2026 Resumify - Curated with Integrity',
     ],
 
     'resume' => [
@@ -359,6 +411,27 @@ return [
     'ats' => [
         'analyze_match' => 'Analyze Match',
         'premium_badge' => 'Premium',
+        'page_title' => 'ATS Analyzer',
+        'how_it_works' => 'How It Works',
+        'sections_aria_label' => 'ATS Analyzer sections',
+        'tabs' => [
+            'setup' => 'Setup',
+            'results' => 'Results',
+        ],
+        'instructions_modal' => [
+            'title' => 'How ATS Scoring Works',
+            'close_aria' => 'Close ATS scoring instructions',
+            'intro' => 'Our ATS analyzer mimics how Applicant Tracking Systems evaluate your resume against a job description.',
+            'keyword_match_label' => 'Keyword Match (65%)',
+            'keyword_match_desc' => '— We extract critical single-word and multi-word terms from the JD and check how many appear in your resume.',
+            'action_verbs_label' => 'Action Verbs (15%)',
+            'action_verbs_desc' => '— Strong, impactful verbs signal an achievement-oriented candidate to ATS parsers.',
+            'quantification_label' => 'Quantification (12%)',
+            'quantification_desc' => '— Numbers and percentages dramatically improve relevancy scores in most ATS systems.',
+            'length_format_label' => 'Length &amp; Format (8%)',
+            'length_format_desc' => '— Resumes between 200–800 words are parsed most reliably by automated systems.',
+            'tip' => "Tip: The closer your resume's language mirrors the job description, the higher your match score will be.",
+        ],
         'setup' => [
             'select_from_resumes' => 'Select from your Resumes',
             'choose_resume_placeholder' => '-- Choose a Resume --',
@@ -474,6 +547,161 @@ return [
             'no_sessions_yet' => 'No interview sessions yet',
             'complete_first_interview' => 'Complete your first mock interview to see your history here.',
             'start_first_interview' => 'Start Your First Interview',
+        ],
+    ],
+
+    'help' => [
+        'hero_title' => 'Help Center',
+        'hero_subtitle' => 'Find answers to common questions or reach out to our support team.',
+        'my_tickets' => 'My Tickets',
+        'faq_heading' => 'Frequently Asked Questions',
+        'faq' => [
+            'getting_started' => [
+                'label' => 'Getting Started',
+                'items' => [
+                    ['q' => 'How do I create my first resume?', 'a' => 'Go to your dashboard and click "New Resume". Choose a template, then fill in your personal info, work experience, education, and skills. You can preview and download your resume as a PDF at any time.'],
+                    ['q' => 'What templates are available?', 'a' => 'We offer a variety of professionally designed templates suited for different industries and experience levels. Visit the Templates page to preview all available designs.'],
+                    ['q' => 'Can I create multiple resumes?', 'a' => 'Yes! You can create as many resumes as you need. Each resume can be customized independently for different job applications.'],
+                ],
+            ],
+            'resume_builder' => [
+                'label' => 'Resume Builder',
+                'items' => [
+                    ['q' => 'How do I download my resume as a PDF?', 'a' => 'Open your resume in the editor and click the "Export PDF" button in the top right corner. Your resume will be generated and downloaded automatically.'],
+                    ['q' => 'Can I change the template after I\'ve started editing?', 'a' => 'Yes, you can switch templates at any time from the editor. Your content will be preserved, only the visual design will change.'],
+                    ['q' => 'What sections can I add to my resume?', 'a' => 'You can add Personal Info, Work Experience, Education, Skills, and Target Job sections. Each section can be customized to fit your background.'],
+                ],
+            ],
+            'ai_features' => [
+                'label' => 'AI Features',
+                'items' => [
+                    ['q' => 'How do I improve my ATS score?', 'a' => 'Use the ATS Analyzer feature to check how well your resume matches a job description. Paste the job posting, and our AI will identify missing keywords and suggest improvements.'],
+                    ['q' => 'How many AI credits do I get?', 'a' => 'Basic users receive 10 AI credits per month. Premium users get 100 credits. Each AI action (ATS analysis, bullet optimization, etc.) uses a set number of credits.'],
+                    ['q' => 'What does "AI Polish" do?', 'a' => 'AI Polish rewrites your resume bullet points to be more impactful, using strong action verbs and quantifiable achievements. It uses 1 credit per bullet point.'],
+                ],
+            ],
+            'billing' => [
+                'label' => 'Billing',
+                'items' => [
+                    ['q' => 'How do I upgrade to Premium?', 'a' => 'Go to the Upgrade page from your dashboard or settings. We support payment via Midtrans (bank transfer, e-wallet, and cards).'],
+                    ['q' => 'What happens to my data if I cancel?', 'a' => 'Your resumes and data are preserved. You\'ll be downgraded to the Basic plan and your AI quota will be adjusted accordingly at the next billing cycle.'],
+                ],
+            ],
+            'technical' => [
+                'label' => 'Technical',
+                'items' => [
+                    ['q' => 'Is my data secure?', 'a' => 'Yes. All data is encrypted in transit (HTTPS) and at rest. We never share your personal information with third parties. You can delete your account and all associated data at any time from Settings.'],
+                    ['q' => 'Why won\'t my PDF export?', 'a' => 'Make sure all required sections (Personal Info, Work Experience, Education, Skills) are filled in. If the issue persists, try a different browser or contact support.'],
+                ],
+            ],
+        ],
+        'contact' => [
+            'heading' => 'Still need help?',
+            'subtitle' => "Send us a message and we'll get back to you as soon as possible.",
+            'subject_label' => 'Subject',
+            'subject_placeholder' => 'Briefly describe your issue...',
+            'message_label' => 'Message',
+            'message_placeholder' => 'Describe your issue in detail...',
+            'send' => 'Send Message',
+            'sending' => 'Sending...',
+            'success' => "Your message has been sent! We'll get back to you soon.",
+        ],
+    ],
+
+    'tickets' => [
+        'status' => [
+            'open' => 'Open',
+            'pending' => 'Pending',
+            'awaiting_closure' => 'Awaiting Closure',
+            'closed' => 'Closed',
+        ],
+        'list' => [
+            'breadcrumb_help' => 'Help Center',
+            'breadcrumb_current' => 'My Tickets',
+            'heading' => 'My Support Tickets',
+            'new_ticket' => 'New Ticket',
+            'replies_count' => ':count reply|:count replies',
+            'empty_title' => 'No support tickets yet',
+            'empty_cta' => 'Submit your first ticket',
+        ],
+        'show' => [
+            'breadcrumb_help' => 'Help Center',
+            'breadcrumb_my_tickets' => 'My Tickets',
+            'ticket_number' => 'Ticket #:id',
+            'opened_on' => 'Opened :date',
+        ],
+        'chat' => [
+            'conversation' => 'Conversation',
+            'unknown_sender' => 'Unknown',
+            'support_badge' => 'Support',
+            'no_replies' => 'No replies yet.',
+            'ready_to_close' => 'Ready to close this ticket?',
+            'request_close' => 'Request Close',
+            'waiting_other_party' => 'Waiting for the other party to confirm or reject your close request.',
+            'other_requested_close' => 'The other party requested to close this ticket.',
+            'reject' => 'Reject',
+            'confirm_close' => 'Confirm Close',
+            'reply_label' => 'Reply message',
+            'reply_placeholder' => 'Type your reply...',
+            'send_reply' => 'Send Reply',
+            'sending' => 'Sending...',
+            'closed_notice' => 'This ticket is closed.',
+            'reply_sent' => 'Your reply has been sent.',
+            'close_already_pending_error' => 'A close request is already pending or the ticket is already closed.',
+            'no_pending_confirm_error' => 'There is no pending close request to confirm.',
+            'no_pending_reject_error' => 'There is no pending close request to reject.',
+            'closed_reply_error' => 'This ticket is closed and cannot receive new replies.',
+        ],
+    ],
+
+    'settings' => [
+        'page_title' => 'Account Settings',
+        'heading' => 'Settings',
+        'subtitle' => 'Manage your editorial presence and workspace security.',
+        'notifications' => [
+            'heading' => 'Notifications',
+            'mark_all_read' => 'Mark all as read',
+            'default_message' => 'You have a new notification.',
+            'empty' => 'No notifications yet.',
+        ],
+        'flash' => [
+            'avatar_updated' => 'Avatar updated successfully.',
+            'avatar_deleted' => 'Avatar removed.',
+            'profile_updated' => 'Profile updated successfully.',
+            'password_updated' => 'Password updated successfully.',
+        ],
+        'profile_section' => [
+            'title' => 'User Profile',
+            'verified_badge' => 'Verified Author',
+            'avatar_alt' => 'User Avatar',
+            'avatar_format_hint' => 'Format: JPG, PNG (Max 2MB)',
+            'full_name' => 'Full Name',
+            'email_address' => 'Email Address',
+            'locked' => 'locked',
+            'save_changes' => 'Save Changes',
+        ],
+        'billing_section' => [
+            'title' => 'Subscription & Billing',
+            'upgrade_quota' => 'Upgrade Quota',
+            'optimized_by' => 'Optimized by Resumify Editorial Engine.',
+            'view_transaction_history' => 'View Transaction History',
+            'transaction_history_wip' => 'Transaction history feature is currently in development. Please check back later.',
+        ],
+        'security_section' => [
+            'title' => 'Security & Password',
+            'subtitle' => 'Ensure your account is using a long, random password to stay secure.',
+            'current_password' => 'Current Password',
+            'new_password' => 'New Password',
+            'confirm_new_password' => 'Confirm New Password',
+            'password_hint' => 'Use at least 8 characters with a combination of numbers and symbols.',
+            'update_password' => 'Update Password',
+        ],
+        'danger_zone' => [
+            'title' => 'Danger Zone',
+            'warning' => 'This action cannot be undone. All your data will be permanently deleted from our servers.',
+            'confirm_password_placeholder' => 'Confirm your password',
+            'delete_account' => 'Delete Account',
+            'confirm_dialog' => 'Are you sure you want to delete your account? This cannot be undone.',
         ],
     ],
 

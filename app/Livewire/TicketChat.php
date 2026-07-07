@@ -30,7 +30,7 @@ class TicketChat extends Component
         Gate::authorize('reply', $this->ticket);
 
         if ($this->ticket->status === 'closed') {
-            $this->addError('body', 'This ticket is closed and cannot receive new replies.');
+            $this->addError('body', __('messages.tickets.chat.closed_reply_error'));
 
             return;
         }
@@ -78,7 +78,7 @@ class TicketChat extends Component
         Gate::authorize('requestClose', $this->ticket);
 
         if (in_array($this->ticket->status, ['awaiting_closure', 'closed'], true)) {
-            $this->addError('close', 'A close request is already pending or the ticket is already closed.');
+            $this->addError('close', __('messages.tickets.chat.close_already_pending_error'));
 
             return;
         }
@@ -106,7 +106,7 @@ class TicketChat extends Component
         Gate::authorize('confirmClose', $this->ticket);
 
         if ($this->ticket->status !== 'awaiting_closure') {
-            $this->addError('close', 'There is no pending close request to confirm.');
+            $this->addError('close', __('messages.tickets.chat.no_pending_confirm_error'));
 
             return;
         }
@@ -135,7 +135,7 @@ class TicketChat extends Component
         Gate::authorize('rejectClose', $this->ticket);
 
         if ($this->ticket->status !== 'awaiting_closure') {
-            $this->addError('close', 'There is no pending close request to reject.');
+            $this->addError('close', __('messages.tickets.chat.no_pending_reject_error'));
 
             return;
         }
