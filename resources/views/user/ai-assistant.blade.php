@@ -1,6 +1,6 @@
 @extends('layouts.user.app')
 
-@section('title', 'Resumify — ATS Analyzer')
+@section('title', __('messages.ats.page_title') . ' - Resumify')
 @section('content')
     @php
         $user = auth()->user();
@@ -9,11 +9,11 @@
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {{-- Page Header --}}
-        <x-user.page-header title="ATS Analyzer" backUrl="{{ route('dashboard') }}">
+        <x-user.page-header title="{{ __('messages.ats.page_title') }}" backUrl="{{ route('dashboard') }}">
             <button id="ats-instructions-btn" type="button"
                 class="flex items-center gap-2 text-sm px-4 py-2 rounded-lg border border-primary/15 text-primary/70 hover:text-primary hover:border-primary/30 transition-all duration-200">
                 <span class="material-symbols-outlined text-[16px]">info</span>
-                How It Works
+                {{ __('messages.ats.how_it_works') }}
             </button>
         </x-user.page-header>
 
@@ -22,20 +22,20 @@
         </div>
 
         {{-- Mobile tab bar (hidden on lg+) --}}
-        <div class="flex lg:hidden border-b border-primary/10 bg-surface-container-low shrink-0" role="tablist" aria-label="ATS Analyzer sections">
+        <div class="flex lg:hidden border-b border-primary/10 bg-surface-container-low shrink-0" role="tablist" aria-label="{{ __('messages.ats.sections_aria_label') }}">
             <button id="ats-tab-setup" type="button" onclick="switchAtsTab('setup')"
                 role="tab"
                 aria-selected="true"
                 aria-controls="ats-panel-setup"
                 class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary border-b-2 border-primary transition-colors">
-                <span class="material-symbols-outlined text-[18px]">tune</span> Setup
+                <span class="material-symbols-outlined text-[18px]">tune</span> {{ __('messages.ats.tabs.setup') }}
             </button>
             <button id="ats-tab-results" type="button" onclick="switchAtsTab('results')"
                 role="tab"
                 aria-selected="false"
                 aria-controls="ats-panel-results"
                 class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary/40 border-b-2 border-transparent transition-colors">
-                <span class="material-symbols-outlined text-[18px]">analytics</span> Results
+                <span class="material-symbols-outlined text-[18px]">analytics</span> {{ __('messages.ats.tabs.results') }}
             </button>
         </div>
 
@@ -61,43 +61,38 @@
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="instructions-modal-title" class="font-headline text-xl font-bold text-primary flex items-center gap-2">
                     <span class="material-symbols-outlined text-secondary">info</span>
-                    How ATS Scoring Works
+                    {{ __('messages.ats.instructions_modal.title') }}
                 </h3>
                 <button type="button" onclick="closeInstructions()"
-                    aria-label="Close ATS scoring instructions"
+                    aria-label="{{ __('messages.ats.instructions_modal.close_aria') }}"
                     class="text-primary/50 hover:text-primary material-symbols-outlined rounded-full p-2 hover:bg-primary/5 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div id="instructions-modal-description" class="p-6 space-y-4 text-sm text-primary/80 leading-relaxed">
-                <p>Our ATS analyzer mimics how Applicant Tracking Systems evaluate your resume against a job description.
+                <p>{{ __('messages.ats.instructions_modal.intro') }}
                 </p>
                 <ul class="space-y-3">
                     <li class="flex items-start gap-3">
                         <span
                             class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
-                        <span><strong class="text-primary">Keyword Match (65%)</strong> — We extract critical single-word
-                            and multi-word terms from the JD and check how many appear in your resume.</span>
+                        <span><strong class="text-primary">{{ __('messages.ats.instructions_modal.keyword_match_label') }}</strong> {{ __('messages.ats.instructions_modal.keyword_match_desc') }}</span>
                     </li>
                     <li class="flex items-start gap-3">
                         <span
                             class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
-                        <span><strong class="text-primary">Action Verbs (15%)</strong> — Strong, impactful verbs signal an
-                            achievement-oriented candidate to ATS parsers.</span>
+                        <span><strong class="text-primary">{{ __('messages.ats.instructions_modal.action_verbs_label') }}</strong> {{ __('messages.ats.instructions_modal.action_verbs_desc') }}</span>
                     </li>
                     <li class="flex items-start gap-3">
                         <span
                             class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
-                        <span><strong class="text-primary">Quantification (12%)</strong> — Numbers and percentages
-                            dramatically improve relevancy scores in most ATS systems.</span>
+                        <span><strong class="text-primary">{{ __('messages.ats.instructions_modal.quantification_label') }}</strong> {{ __('messages.ats.instructions_modal.quantification_desc') }}</span>
                     </li>
                     <li class="flex items-start gap-3">
                         <span
                             class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
-                        <span><strong class="text-primary">Length &amp; Format (8%)</strong> — Resumes between 200–800
-                            words are parsed most reliably by automated systems.</span>
+                        <span><strong class="text-primary">{!! __('messages.ats.instructions_modal.length_format_label') !!}</strong> {!! __('messages.ats.instructions_modal.length_format_desc') !!}</span>
                     </li>
                 </ul>
-                <p class="text-primary/50 text-xs pt-2">Tip: The closer your resume's language mirrors the job description,
-                    the higher your match score will be.</p>
+                <p class="text-primary/50 text-xs pt-2">{{ __('messages.ats.instructions_modal.tip') }}</p>
             </div>
         </div>
     </div>
