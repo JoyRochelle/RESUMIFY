@@ -11,14 +11,14 @@
             <div class="max-w-md w-full text-center md:text-left">
                 <h1
                     class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary leading-tight tracking-tighter mb-6 md:mb-8">
-                    Write Your Success Story <span class="inline-block text-3xl sm:text-4xl md:text-5xl">✨</span>
+                    {{ __('messages.landing.welcome.hero.title') }} <span class="inline-block text-3xl sm:text-4xl md:text-5xl">✨</span>
                 </h1>
                 <p class="text-base sm:text-lg md:text-xl text-outline mb-8 md:mb-10 leading-relaxed font-body">
-                    Adapt your resume to job openings with artificial intelligence.
+                    {{ __('messages.landing.welcome.hero.subtitle') }}
                 </p>
                 <div class="flex justify-center md:justify-start">
                     <x-landing_page.button variant="primary" icon="arrow_forward" href="{{ route('register') }}">
-                        Upgrade Your Resume
+                        {{ __('messages.landing.welcome.hero.cta') }}
                     </x-landing_page.button>
                 </div>
             </div>
@@ -48,8 +48,7 @@
                         <div class="h-px bg-gray-100 w-full mb-2"></div>
                         <div>
                             <h3 class="text-[10px] font-bold text-primary font-body mb-3 md:mb-4 uppercase tracking-widest">
-                                WORK
-                                EXPERIENCE</h3>
+                                {{ __('messages.landing.welcome.preview.work_experience') }}</h3>
                             <div class="space-y-4 md:space-y-5">
                                 <div>
                                     <div class="flex justify-between items-start mb-1">
@@ -66,12 +65,10 @@
                                     <div class="flex items-center gap-2 mb-2">
                                         <span class="material-symbols-outlined text-[16px] text-[#00c9a7]"
                                             style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
-                                        <span class="text-[10px] font-bold text-[#00c9a7] uppercase tracking-wider">AI
-                                            Optimized</span>
+                                        <span class="text-[10px] font-bold text-[#00c9a7] uppercase tracking-wider">{{ __('messages.landing.welcome.preview.ai_optimized') }}</span>
                                     </div>
                                     <p class="text-[11px] text-primary/80 leading-loose font-body">
-                                        Leading a design team of 12 people and increased user conversion rates by 34%
-                                        through systematic A/B testing.
+                                        {{ __('messages.landing.welcome.preview.ai_optimized_desc') }}
                                     </p>
                                 </div>
                             </div>
@@ -82,7 +79,7 @@
                 {{-- ATS Match Score — Desktop only (absolute positioned) --}}
                 <div
                     class="hidden md:block absolute -right-10 top-[280px] bg-white/95 backdrop-blur-xl p-5 rounded-md shadow-xl w-56 z-20 border border-gray-100 transform rotate-1">
-                    <p class="text-[9px] text-gray-400 mb-3 tracking-widest uppercase font-bold">ATS MATCH SCORE</p>
+                    <p class="text-[9px] text-gray-400 mb-3 tracking-widest uppercase font-bold">{{ __('messages.landing.welcome.preview.ats_match_score') }}</p>
                     <div class="flex items-end gap-1.5 h-10 mb-3">
                         <div class="w-full bg-[#f4c4c4] h-1/4 rounded-sm"></div>
                         <div class="w-full bg-[#e89d9d] h-2/5 rounded-sm"></div>
@@ -91,32 +88,31 @@
                         <div class="w-full bg-[#00c9a7] h-full rounded-sm"></div>
                     </div>
                     <div class="flex justify-between items-center text-[10px] font-bold">
-                        <span class="text-gray-400">Low</span>
-                        <span class="text-[#00c9a7]">High</span>
+                        <span class="text-gray-400">{{ __('messages.landing.welcome.preview.low') }}</span>
+                        <span class="text-[#00c9a7]">{{ __('messages.landing.welcome.preview.high') }}</span>
                     </div>
                 </div>
 
                 {{-- INPUT EDITOR — Desktop only (absolute positioned) --}}
                 <div class="hidden md:block absolute top-[400px] -left-16 bg-[#44362d] p-7 rounded-md shadow-2xl w-72 z-30">
-                    <p class="text-[9px] text-white/40 mb-5 tracking-widest uppercase font-bold">INPUT EDITOR</p>
+                    <p class="text-[9px] text-white/40 mb-5 tracking-widest uppercase font-bold">{{ __('messages.landing.welcome.preview.input_editor') }}</p>
                     <div class="space-y-5">
                         <div>
-                            <label class="text-[8px] text-white/40 uppercase tracking-widest block mb-1">NAME</label>
+                            <label class="text-[8px] text-white/40 uppercase tracking-widest block mb-1">{{ __('messages.landing.welcome.preview.name_label') }}</label>
                             <div class="border-b border-white/10 pb-1">
                                 <span class="text-white text-[12px]">Theofrolic</span>
                             </div>
                         </div>
                         <div>
-                            <label class="text-[8px] text-white/40 uppercase tracking-widest block mb-1">COMPANY</label>
+                            <label class="text-[8px] text-white/40 uppercase tracking-widest block mb-1">{{ __('messages.landing.welcome.preview.company_label') }}</label>
                             <div class="border-b border-white/10 pb-1">
                                 <span class="text-white text-[12px]">Resumify</span>
                             </div>
                         </div>
                         <div>
-                            <label class="text-[8px] text-white/40 uppercase tracking-widest block mb-1">DESCRIPTION</label>
+                            <label class="text-[8px] text-white/40 uppercase tracking-widest block mb-1">{{ __('messages.landing.welcome.preview.description_label') }}</label>
                             <div class="border-b border-white/10 pb-1">
-                                <span class="text-white/80 text-[11px] leading-relaxed">Leading design team and increasing
-                                    conversions by 34%...</span>
+                                <span class="text-white/80 text-[11px] leading-relaxed">{{ __('messages.landing.welcome.preview.description_value') }}</span>
                             </div>
                         </div>
                     </div>
@@ -126,7 +122,7 @@
                 <div
                     class="md:hidden mt-4 bg-white/95 p-4 rounded-lg shadow-md border border-gray-100 flex items-center gap-4">
                     <div>
-                        <p class="text-[9px] text-gray-400 mb-2 tracking-widest uppercase font-bold">ATS MATCH SCORE</p>
+                        <p class="text-[9px] text-gray-400 mb-2 tracking-widest uppercase font-bold">{{ __('messages.landing.welcome.preview.ats_match_score') }}</p>
                         <div class="flex items-end gap-1 h-8">
                             <div class="w-4 bg-[#f4c4c4] h-1/4 rounded-sm"></div>
                             <div class="w-4 bg-[#e89d9d] h-2/5 rounded-sm"></div>
@@ -136,8 +132,8 @@
                         </div>
                     </div>
                     <div class="flex-1 text-right">
-                        <p class="text-[10px] text-gray-400">Your resume quality</p>
-                        <p class="text-lg font-headline font-bold text-[#00c9a7]">High Match</p>
+                        <p class="text-[10px] text-gray-400">{{ __('messages.landing.welcome.preview.resume_quality') }}</p>
+                        <p class="text-lg font-headline font-bold text-[#00c9a7]">{{ __('messages.landing.welcome.preview.high_match') }}</p>
                     </div>
                 </div>
 
@@ -148,16 +144,16 @@
     {{-- ======================== FEATURES SECTION ======================== --}}
     <section class="py-16 sm:py-24 md:py-32 px-4 sm:px-8">
         <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-            <x-landing_page.feature-card title="AI Bullet Point Generator" icon="auto_awesome" :filled="true">
-                Write your achievements instantly with data-driven suggestions that stand out to recruiters.
+            <x-landing_page.feature-card title="{{ __('messages.landing.welcome.features.ai_bullet.title') }}" icon="auto_awesome" :filled="true">
+                {{ __('messages.landing.welcome.features.ai_bullet.desc') }}
             </x-landing_page.feature-card>
 
-            <x-landing_page.feature-card title="ATS Match Score Scanner" icon="analytics">
-                Evaluate your resume against job descriptions in real-time to ensure it passes filtration systems.
+            <x-landing_page.feature-card title="{{ __('messages.landing.welcome.features.ats_scanner.title') }}" icon="analytics">
+                {{ __('messages.landing.welcome.features.ats_scanner.desc') }}
             </x-landing_page.feature-card>
 
-            <x-landing_page.feature-card title="Premium Templates" icon="article">
-                A collection of professionally curated templates for various industries and career levels.
+            <x-landing_page.feature-card title="{{ __('messages.landing.welcome.features.premium_templates.title') }}" icon="article">
+                {{ __('messages.landing.welcome.features.premium_templates.desc') }}
             </x-landing_page.feature-card>
         </div>
     </section>
@@ -169,14 +165,13 @@
             <div class="relative z-10 max-w-2xl text-left">
                 <h2
                     class="text-3xl sm:text-4xl md:text-5xl text-white mb-4 md:mb-6 leading-tight font-headline tracking-tighter">
-                    Ready to build
-                    your story?</h2>
+                    {{ __('messages.landing.welcome.cta.title') }}</h2>
                 <p class="text-base md:text-lg text-white/80 mb-8 md:mb-10 leading-relaxed font-body">
-                    Join thousands of professionals who have accelerated their career with Resumify.
+                    {{ __('messages.landing.welcome.cta.subtitle') }}
                 </p>
                 <a href="{{ route('register') }}"
                     class="inline-block bg-white text-primary px-6 sm:px-8 py-3 rounded-sm font-bold font-body text-sm hover:bg-white/90 transition-all active:scale-95 shadow-sm">
-                    Start for Free Now
+                    {{ __('messages.landing.welcome.cta.button') }}
                 </a>
             </div>
         </div>
