@@ -101,22 +101,22 @@
 
                 {{-- Page Title --}}
                 <header class="mb-4">
-                    <h2 class="font-headline text-3xl text-primary font-bold tracking-tight">{{ __('messages.settings.heading') }}</h2>
+                    <h2 class="font-headline text-2xl md:text-3xl text-primary font-bold tracking-tight">{{ __('messages.settings.heading') }}</h2>
                     <p class="text-primary/60 mt-2 font-body text-sm">{{ __('messages.settings.subtitle') }}
                     </p>
                 </header>
 
                 {{-- User Profile Section --}}
-                <section class="bg-tertiary rounded-2xl p-8 border border-primary/10 shadow-sm">
-                    <div class="flex items-center justify-between mb-8">
-                        <h3 class="font-headline text-2xl text-primary">{{ __('messages.settings.profile_section.title') }}</h3>
+                <section class="bg-tertiary rounded-2xl p-5 md:p-8 border border-primary/10 shadow-sm">
+                    <div class="flex items-center justify-between mb-5 md:mb-8">
+                        <h3 class="font-headline text-xl md:text-2xl text-primary">{{ __('messages.settings.profile_section.title') }}</h3>
                         <div
                             class="flex items-center text-secondary font-bold text-xs uppercase tracking-widest bg-secondary/5 px-3 py-1 rounded-full">
                             <span class="material-symbols-outlined text-sm mr-1 icon-filled">verified</span>
                             {{ __('messages.settings.profile_section.verified_badge') }}
                         </div>
                     </div>
-                    <div class="flex flex-col md:flex-row gap-10">
+                    <div class="flex flex-col md:flex-row gap-6 md:gap-10">
 
                         {{-- Avatar Upload Form --}}
                         <form action="{{ route('profile.avatar.update') }}" method="POST" enctype="multipart/form-data">
@@ -124,7 +124,7 @@
                             <div class="flex-shrink-0 flex flex-col items-center">
                                 <div class="relative group">
                                     <img alt="{{ __('messages.settings.profile_section.avatar_alt') }}"
-                                        class="w-32 h-32 rounded-full object-cover border-4 border-surface"
+                                        class="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-surface"
                                         src="{{ auth()->user()->avatar_url }}" />
                                     <label for="avatar"
                                         class="absolute bottom-0 right-0 bg-primary text-tertiary w-9 h-9 rounded-full shadow-lg hover:scale-105 transition-transform flex items-center justify-center cursor-pointer">
@@ -175,11 +175,11 @@
                     <div class="absolute right-0 top-0 h-full w-1/4 opacity-[0.04] pointer-events-none">
                         <div class="w-full h-full bg-gradient-to-l from-secondary to-transparent"></div>
                     </div>
-                    <div class="p-8 relative z-10">
+                    <div class="p-5 md:p-8 relative z-10">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                             <div>
                                 <div class="flex flex-wrap items-center gap-3 mb-2">
-                                    <h3 class="font-headline text-3xl">{{ __('messages.settings.billing_section.title') }}</h3>
+                                    <h3 class="font-headline text-2xl md:text-3xl">{{ __('messages.settings.billing_section.title') }}</h3>
                                     {{-- role badge --}}
                                     <x-user.plan-badge :user="$user" surface="dark" />
                                 </div>
@@ -190,7 +190,7 @@
                                 {{ __('messages.settings.billing_section.upgrade_quota') }}
                             </a>
                         </div>
-                        <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div class="mt-6 md:mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
                             <div>
                                 <div class="flex justify-between items-end mb-4">
                                     {{-- Quota display --}}
@@ -219,9 +219,9 @@
                 </section>
 
                 {{-- Security & Password --}}
-                <section class="bg-tertiary rounded-2xl p-8 border border-primary/10 shadow-sm">
-                    <div class="mb-8">
-                        <h3 class="font-headline text-2xl text-primary mb-2">{{ __('messages.settings.security_section.title') }}</h3>
+                <section class="bg-tertiary rounded-2xl p-5 md:p-8 border border-primary/10 shadow-sm">
+                    <div class="mb-5 md:mb-8">
+                        <h3 class="font-headline text-xl md:text-2xl text-primary mb-2">{{ __('messages.settings.security_section.title') }}</h3>
                         <p class="text-sm text-primary/60 font-body">{{ __('messages.settings.security_section.subtitle') }}</p>
                     </div>
                     <form action="{{ route('user-password.update') }}" method="POST">
@@ -249,10 +249,10 @@
                 </section>
 
                 {{-- Danger Zone --}}
-                <section class="bg-red-50 border border-red-200 rounded-2xl p-8 shadow-sm">
+                <section class="bg-red-50 border border-red-200 rounded-2xl p-5 md:p-8 shadow-sm">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div>
-                            <h3 class="font-headline text-2xl text-red-600 mb-1">{{ __('messages.settings.danger_zone.title') }}</h3>
+                            <h3 class="font-headline text-xl md:text-2xl text-red-600 mb-1">{{ __('messages.settings.danger_zone.title') }}</h3>
                             <p class="text-sm text-red-800/70">{{ __('messages.settings.danger_zone.warning') }}</p>
                         </div>
                         <form action="{{ route('profile.destroy') }}" method="POST"

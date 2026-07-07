@@ -57,7 +57,7 @@
             </div>
         </section>
 
-        <section class="mt-24 grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-primary/10 pt-12">
+        <section class="mt-12 md:mt-24 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 border-t border-primary/10 pt-8 md:pt-12">
 
             <x-user.insight-block number="01" label="{{ __('messages.dashboard.daily_tip_label') }}">
                 "{{ __('messages.dashboard.daily_tip') }}"
