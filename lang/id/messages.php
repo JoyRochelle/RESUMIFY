@@ -311,7 +311,6 @@ return [
         'ats_score' => 'Skor ATS',
         'minimize' => 'Kecilkan',
         'maximize' => 'Besarkan',
-        'zoom' => 'Perbesar',
         'layout' => 'Tata Letak',
         'history' => 'Riwayat',
         'select_template_title' => 'Pilih Template',

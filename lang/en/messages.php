@@ -311,7 +311,6 @@ return [
         'ats_score' => 'ATS Score',
         'minimize' => 'Minimize',
         'maximize' => 'Maximize',
-        'zoom' => 'Zoom',
         'layout' => 'Layout',
         'history' => 'History',
         'select_template_title' => 'Select Template',
