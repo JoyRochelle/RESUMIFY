@@ -37,6 +37,18 @@
                 {{ __('messages.nav.' . $item['label_key']) }}
             </a>
         @endforeach
+
+        <div class="mt-1 border-t border-primary/10 pt-1">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit"
+                        role="menuitem"
+                        class="flex min-h-11 w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-label text-primary/60 transition-colors hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-300">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">logout</span>
+                    {{ __('messages.nav.logout') }}
+                </button>
+            </form>
+        </div>
     </div>
 
     <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-primary/10 bg-tertiary py-2 pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))] pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_rgba(79,59,47,0.08)]" aria-label="User navigation">
