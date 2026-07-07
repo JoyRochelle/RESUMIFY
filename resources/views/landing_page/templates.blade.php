@@ -18,7 +18,8 @@
         <template x-for="tab in tabs" :key="tab.key">
             <button @click="activeCategory = tab.key"
                     :class="activeCategory === tab.key ? 'bg-secondary text-white border-secondary shadow-md' : 'bg-transparent text-primary border-primary/20 hover:border-primary/40 hover:bg-primary/5'"
-                    class="px-6 py-2 rounded-full text-sm font-bold font-body border transition-all duration-300"
+                    :aria-pressed="(activeCategory === tab.key).toString()"
+                    class="min-h-11 px-6 py-2 rounded-full text-sm font-bold font-body border transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40"
                     x-text="tab.label">
             </button>
         </template>
@@ -32,8 +33,11 @@
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 scale-95"
              x-transition:enter-end="opacity-100 scale-100"
-             @click="openPreview('{{ $template->id }}', '{{ $template->name }}', '{{ addslashes($template->description) }}', '{{ route('templates.demo', $template) }}')"
-             class="cursor-pointer">
+             @click="openPreview('{{ $template->id }}', '{{ $template->name }}', '{{ addslashes($template->description) }}', '{{ route('templates.demo', $template) }}', $event)"
+             @keydown.enter="openPreview('{{ $template->id }}', '{{ $template->name }}', '{{ addslashes($template->description) }}', '{{ route('templates.demo', $template) }}', $event)"
+             @keydown.space.prevent="openPreview('{{ $template->id }}', '{{ $template->name }}', '{{ addslashes($template->description) }}', '{{ route('templates.demo', $template) }}', $event)"
+             role="button" tabindex="0" aria-label="{{ __('messages.landing.templates.preview_aria', ['title' => $template->name]) }}"
+             class="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40 rounded-lg">
             <x-landing_page.template-card
                 title="{{ $template->name }}"
                 category="{{ strtoupper(str_replace('_', ' ', $template->category)) }}"
@@ -64,31 +68,32 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center overflow-y-auto"
+         role="dialog" aria-modal="true" aria-labelledby="template-preview-title"
          @click.self="closePreview()" @keydown.escape.window="closePreview()">
 
-        <div x-show="previewOpen"
+        <div x-show="previewOpen" x-ref="previewPanel" tabindex="-1"
              x-transition:enter="transition ease-out duration-300 delay-100"
              x-transition:enter-start="opacity-0 translate-y-8 scale-95"
              x-transition:enter-end="opacity-100 translate-y-0 scale-100"
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
              x-transition:leave-end="opacity-0 translate-y-8 scale-95"
-             class="bg-surface w-full max-w-4xl my-8 mx-4 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+             class="bg-surface w-full max-w-4xl my-8 mx-4 rounded-2xl shadow-2xl overflow-hidden flex flex-col outline-none">
 
             {{-- Modal Header --}}
             <div class="px-4 sm:px-6 py-4 border-b border-primary/10 bg-surface-container-low flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0">
                 <div>
-                    <h3 class="text-lg sm:text-xl font-headline font-bold text-primary" x-text="previewName"></h3>
+                    <h3 id="template-preview-title" class="text-lg sm:text-xl font-headline font-bold text-primary" x-text="previewName"></h3>
                     <p class="text-xs text-primary/60 mt-1 font-body hidden sm:block" x-text="previewDescription"></p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <a :href="'{{ route('register') }}'" class="inline-flex items-center gap-2 bg-secondary text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm font-bold hover:bg-secondary/90 transition-all shadow-sm hover:shadow-md">
-                        <span class="material-symbols-outlined text-[16px]">edit_document</span>
+                    <a :href="'{{ route('register') }}'" class="inline-flex items-center gap-2 bg-secondary text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm font-bold hover:bg-secondary/90 transition-all shadow-sm hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40">
+                        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">edit_document</span>
                         <span class="hidden sm:inline">{{ __('messages.landing.templates.use_template_full') }}</span>
                         <span class="sm:hidden">{{ __('messages.landing.templates.use_template_short') }}</span>
                     </a>
-                    <button @click="closePreview()" class="text-primary/60 hover:text-primary transition-colors p-1.5 rounded-full hover:bg-primary/5">
-                        <span class="material-symbols-outlined">close</span>
+                    <button @click="closePreview()" aria-label="{{ __('messages.landing.templates.close_preview') }}" class="text-primary/60 hover:text-primary transition-colors p-1.5 rounded-full hover:bg-primary/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40">
+                        <span class="material-symbols-outlined" aria-hidden="true">close</span>
                     </button>
                 </div>
             </div>
@@ -115,10 +120,8 @@
 <section class="max-w-5xl mx-auto px-4 sm:px-8 py-12 sm:py-16">
     <div class="relative rounded-2xl overflow-hidden min-h-[320px] flex flex-col items-center justify-center text-center p-12 md:p-16">
         {{-- Background gradient overlay --}}
-        <div class="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-primary/70"></div>
-        {{-- Nature texture overlay for depth --}}
-        <div class="absolute inset-0 opacity-30" style="background: linear-gradient(135deg, rgba(34,60,30,0.6) 0%, rgba(79,59,47,0.4) 40%, rgba(120,90,60,0.3) 70%, rgba(79,59,47,0.5) 100%);"></div>
-        
+        <div class="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary/70"></div>
+
         <div class="relative z-10 max-w-xl">
             <h2 class="text-3xl md:text-4xl font-headline font-bold mb-4 tracking-tighter text-white leading-tight">
                 {{ __('messages.landing.templates.cta.title') }}
@@ -126,9 +129,9 @@
             <p class="text-white/70 mb-8 font-body leading-relaxed text-sm md:text-base">
                 {{ __('messages.landing.templates.cta.subtitle') }}
             </p>
-            <a href="{{ route('home') }}" class="inline-block bg-white text-primary px-8 py-3 rounded-sm font-bold font-body text-sm hover:bg-white/90 transition-all active:scale-95 shadow-sm">
+            <x-landing_page.button variant="light" href="{{ route('home') }}">
                 {{ __('messages.landing.templates.cta.button') }}
-            </a>
+            </x-landing_page.button>
         </div>
     </div>
 </section>
@@ -152,19 +155,24 @@ function templateLibrary() {
         previewName: '',
         previewDescription: '',
         previewUrl: '',
+        previewTrigger: null,
         tabs: [
             { key: 'all', label: {!! json_encode(__('messages.landing.templates.tab_all')) !!} },
             @foreach($templates->pluck('category')->unique() as $cat)
             { key: '{{ $cat }}', label: '{{ ucfirst($cat) }}' },
             @endforeach
         ],
-        openPreview(id, name, description, url) {
+        openPreview(id, name, description, url, event) {
+            this.previewTrigger = event ? event.currentTarget : document.activeElement;
             this.previewName = name;
             this.previewDescription = description;
             this.previewUrl = url;
             this.previewOpen = true;
             document.body.style.overflow = 'hidden';
             this.$nextTick(() => {
+                if (this.$refs.previewPanel) {
+                    this.$refs.previewPanel.focus();
+                }
                 const frame = this.$refs.previewFrame;
                 if (frame) {
                     const container = frame.parentElement;
@@ -177,6 +185,10 @@ function templateLibrary() {
             this.previewOpen = false;
             this.previewUrl = '';
             document.body.style.overflow = '';
+            if (this.previewTrigger && this.previewTrigger.focus) {
+                this.previewTrigger.focus();
+            }
+            this.previewTrigger = null;
         }
     }
 }

@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;600;700&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -14,6 +13,7 @@
     --color-on-surface-variant: #4f453f;
     --color-surface-container-low: #f8f3ef;
     --color-surface-container-lowest: #ffffff;
+    --color-outline: #6b5a4d;
     --color-outline-variant: #d2c4bc;
 
     /* Surfaces & Backgrounds */

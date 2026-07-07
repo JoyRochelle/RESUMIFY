@@ -946,6 +946,8 @@ return [
             'tab_all' => 'Semua',
             'use_template_full' => 'Gunakan Template Ini',
             'use_template_short' => 'Gunakan Template',
+            'preview_aria' => 'Pratinjau template :title',
+            'close_preview' => 'Tutup pratinjau',
             'cta' => [
                 'title' => 'Belum menemukan yang cocok?',
                 'subtitle' => 'Jangan khawatir, semua template dapat disesuaikan sepenuhnya untuk memenuhi kebutuhan personal brand Anda. Mulai perjalanan karier Anda hari ini.',

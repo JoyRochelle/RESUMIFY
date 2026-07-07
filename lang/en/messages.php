@@ -946,6 +946,8 @@ return [
             'tab_all' => 'All',
             'use_template_full' => 'Use This Template',
             'use_template_short' => 'Use Template',
+            'preview_aria' => 'Preview :title template',
+            'close_preview' => 'Close preview',
             'cta' => [
                 'title' => 'Haven\'t found the right fit?',
                 'subtitle' => 'Don\'t worry, all templates can be fully customized to meet your personal brand needs. Start your career journey today.',

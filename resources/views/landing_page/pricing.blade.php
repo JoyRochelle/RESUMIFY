@@ -57,7 +57,7 @@
             {{ __('messages.landing.pricing.compare.title') }}</h2>
 
         {{-- Desktop Table (hidden on mobile) --}}
-        <div class="hidden sm:block w-full bg-tertiary rounded-3xl p-8 shadow-sm border border-primary/10">
+        <div class="hidden sm:block w-full bg-tertiary rounded-2xl p-8 shadow-sm border border-primary/10">
             {{-- Table Header --}}
             <div class="grid grid-cols-3 pb-6 border-b-2 border-primary/10 mb-4">
                 <span class="text-xs text-outline uppercase tracking-[0.2em] font-bold font-body pl-6">{{ __('messages.landing.pricing.compare.key_features') }}</span>
@@ -155,47 +155,20 @@
     </section>
 
     {{-- FAQ Section --}}
-    <section class="max-w-3xl mx-auto px-4 sm:px-8 py-16 sm:py-24" x-data="{ active: null }">
+    <section class="max-w-3xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
         <h2 class="text-3xl md:text-4xl font-headline font-bold text-center mb-12 tracking-tighter text-primary">{{ __('messages.landing.pricing.faq.title') }}</h2>
         <div class="space-y-4">
-            {{-- FAQ 1 --}}
-            <div class="bg-surface-container-lowest rounded-sm overflow-hidden border border-primary/5 shadow-sm">
-                <button @click="active = (active === 1 ? null : 1)"
-                    class="w-full flex items-center justify-between p-6 text-left group">
-                    <span class="font-bold text-primary font-body">{{ __('messages.landing.pricing.faq.q1') }}</span>
-                    <span class="material-symbols-outlined text-outline transition-transform duration-300"
-                        :class="active === 1 ? 'rotate-180 text-primary' : ''">expand_more</span>
-                </button>
-                <div x-show="active === 1" x-collapse class="px-6 pb-6 text-outline font-body leading-relaxed text-sm">
-                    {{ __('messages.landing.pricing.faq.a1') }}
-                </div>
-            </div>
+            <x-ui.disclosure id="pricing-faq-1" :title="__('messages.landing.pricing.faq.q1')">
+                <p class="text-outline font-body leading-relaxed text-sm">{{ __('messages.landing.pricing.faq.a1') }}</p>
+            </x-ui.disclosure>
 
-            {{-- FAQ 2 --}}
-            <div class="bg-surface-container-lowest rounded-sm overflow-hidden border border-primary/5 shadow-sm">
-                <button @click="active = (active === 2 ? null : 2)"
-                    class="w-full flex items-center justify-between p-6 text-left group">
-                    <span class="font-bold text-primary font-body">{{ __('messages.landing.pricing.faq.q2') }}</span>
-                    <span class="material-symbols-outlined text-outline transition-transform duration-300"
-                        :class="active === 2 ? 'rotate-180 text-primary' : ''">expand_more</span>
-                </button>
-                <div x-show="active === 2" x-collapse class="px-6 pb-6 text-outline font-body leading-relaxed text-sm">
-                    {{ __('messages.landing.pricing.faq.a2') }}
-                </div>
-            </div>
+            <x-ui.disclosure id="pricing-faq-2" :title="__('messages.landing.pricing.faq.q2')">
+                <p class="text-outline font-body leading-relaxed text-sm">{{ __('messages.landing.pricing.faq.a2') }}</p>
+            </x-ui.disclosure>
 
-            {{-- FAQ 3 --}}
-            <div class="bg-surface-container-lowest rounded-sm overflow-hidden border border-primary/5 shadow-sm">
-                <button @click="active = (active === 3 ? null : 3)"
-                    class="w-full flex items-center justify-between p-6 text-left group">
-                    <span class="font-bold text-primary font-body">{{ __('messages.landing.pricing.faq.q3') }}</span>
-                    <span class="material-symbols-outlined text-outline transition-transform duration-300"
-                        :class="active === 3 ? 'rotate-180 text-primary' : ''">expand_more</span>
-                </button>
-                <div x-show="active === 3" x-collapse class="px-6 pb-6 text-outline font-body leading-relaxed text-sm">
-                    {{ __('messages.landing.pricing.faq.a3') }}
-                </div>
-            </div>
+            <x-ui.disclosure id="pricing-faq-3" :title="__('messages.landing.pricing.faq.q3')">
+                <p class="text-outline font-body leading-relaxed text-sm">{{ __('messages.landing.pricing.faq.a3') }}</p>
+            </x-ui.disclosure>
         </div>
     </section>
 @endsection
