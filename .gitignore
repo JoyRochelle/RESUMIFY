@@ -1,5 +1,4 @@
 *.log
-.DS_Store
 .env
 .env.backup
 .env.production
@@ -23,12 +22,3 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 database/seeders/AdminSeeder.php
-requirements.md
-Resumify_Backlog_VSM.docx
-sprint_backlog_iter5.md
-sprint_backlog_iter6.md
-resumify_context.md
-.codex/
-skills-lock.json
-ux-audit-sprint-plan.md
-sprint.md
