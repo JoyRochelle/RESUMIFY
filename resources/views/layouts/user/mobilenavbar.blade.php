@@ -1,6 +1,6 @@
 @php
     $navItems = config('navigation.user', []);
-    $primaryRoutes = ['dashboard', 'user.manuscript', 'user.ai-assistant', 'interview.history', 'user.settings'];
+    $primaryRoutes = ['dashboard', 'user.manuscript', 'user.ai-assistant', 'interview.index', 'user.settings'];
     $primaryItems = collect($navItems)->filter(fn ($item) => in_array($item['route'], $primaryRoutes, true))->values();
     $moreItems = collect($navItems)->reject(fn ($item) => in_array($item['route'], $primaryRoutes, true))->values();
     $moreActive = $moreItems->contains(fn ($item) => request()->routeIs(...$item['match']));
@@ -20,6 +20,10 @@
          class="md:hidden fixed bottom-[4.75rem] right-2 z-50 w-60 rounded-lg border border-primary/10 bg-tertiary p-2 shadow-2xl"
          role="menu"
          aria-label="More user navigation">
+        <div class="flex items-center justify-between px-4 py-2 mb-1">
+            <span class="text-xs font-label font-bold text-primary/50">{{ __('messages.nav.language') }}</span>
+            <x-ui.locale-switcher />
+        </div>
         @foreach($moreItems as $item)
             @php
                 $active = request()->routeIs(...$item['match']);
@@ -30,20 +34,20 @@
                class="flex min-h-11 items-center gap-3 rounded-lg px-4 py-3 text-sm font-label transition-colors focus:outline-none focus:ring-2 focus:ring-secondary/40 {{ $active ? 'text-primary font-bold bg-primary/5' : ($emphasis ? 'text-secondary bg-secondary/10 hover:bg-secondary/20 font-bold' : 'text-primary/60 hover:text-primary hover:bg-primary/5') }}"
                @if($active) aria-current="page" @endif>
                 <span class="material-symbols-outlined text-[18px] {{ $active ? 'icon-filled' : '' }}" aria-hidden="true">{{ $item['icon'] }}</span>
-                {{ $item['label'] }}
+                {{ __('messages.nav.' . $item['label_key']) }}
             </a>
         @endforeach
     </div>
 
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-primary/10 bg-tertiary px-1 py-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_rgba(79,59,47,0.08)]" aria-label="User navigation">
-        <div class="grid grid-cols-6 gap-0.5">
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-primary/10 bg-tertiary py-2 pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))] pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_rgba(79,59,47,0.08)]" aria-label="User navigation">
+        <div class="grid w-full grid-cols-6 gap-0.5">
             @foreach($primaryItems as $item)
                 @php
                     $active = request()->routeIs(...$item['match']);
                     $label = match($item['route']) {
-                        'user.manuscript' => 'Manuscripts',
-                        'user.ai-assistant' => 'ATS',
-                        default => $item['short_label'] ?? $item['label'],
+                        'user.manuscript' => __('messages.nav.manuscripts'),
+                        'user.ai-assistant' => __('messages.nav.ats_short'),
+                        default => __('messages.nav.' . $item['label_key']),
                     };
                 @endphp
                 <a href="{{ route($item['route']) }}"
@@ -61,7 +65,7 @@
                     x-bind:aria-expanded="moreOpen.toString()"
                     aria-label="More user navigation">
                 <span class="material-symbols-outlined text-[22px] {{ $moreActive ? 'icon-filled' : '' }}" aria-hidden="true">more_horiz</span>
-                <span class="w-full truncate text-[9px] font-label font-bold leading-tight">More</span>
+                <span class="w-full truncate text-[9px] font-label font-bold leading-tight">{{ __('messages.nav.more') }}</span>
             </button>
         </div>
     </nav>

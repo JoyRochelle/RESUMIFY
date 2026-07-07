@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Billing\PaymentController;
 use App\Http\Controllers\Billing\SubscriptionController;
 use App\Http\Controllers\Public\LandingPageController;
+use App\Http\Controllers\Public\LocaleController;
 use App\Http\Controllers\Support\HelpController;
 use App\Http\Controllers\User\Ai\AiResumeController;
 use App\Http\Controllers\User\Ai\AtsController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\Resume\ManuscriptAtsController;
 use App\Http\Controllers\User\Resume\ResumeController;
 use App\Http\Controllers\User\Resume\ResumeExportController;
+use App\Http\Controllers\User\Resume\ResumeSnapshotController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +38,9 @@ Route::get('/templates/{template}/demo', [TemplateController::class, 'preview'])
 
 // Webhook Route
 Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+
+// Locale Switcher (guest: session, authenticated: persisted on account)
+Route::post('/locale/{locale}', [LocaleController::class, 'update'])->name('locale.update');
 
 // OAuth Routes
 Route::middleware('guest')->group(function () {
@@ -67,6 +72,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/contact', 'contact')->name('help.contact');
             Route::get('/tickets', 'tickets')->name('help.tickets');
             Route::get('/tickets/{ticket}', 'showTicket')->name('help.tickets.show');
+            Route::post('/tickets/{ticket}/reply', 'reply')->name('help.tickets.reply');
         });
 
         // Payment Routes
@@ -111,6 +117,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/pdf', 'downloadPdf')->name('pdf');
             });
 
+            // Section history (snapshots) actions
+            Route::prefix('history')->controller(ResumeSnapshotController::class)->name('history.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/{snapshot}/restore', 'restore')->name('restore');
+            });
+
             // AI Features actions
             Route::prefix('ai')->controller(AiResumeController::class)->name('ai.')->group(function () {
                 Route::post('/refine-bullet', 'refineBullet')
@@ -120,6 +132,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::post('/generate-versions', 'generateVersions')
                     ->middleware(['ai.quota:3', 'throttle:3,1'])
                     ->name('generateVersions');
+
+                Route::post('/versions/{adaptation}/apply', 'applyVersion')
+                    ->name('applyVersion');
             });
         });
 
@@ -130,6 +145,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/history', 'history')->name('history');
             Route::get('/sessions/{session}', 'show')->name('show');
             Route::get('/sessions/{session}/feedback', 'feedback')->name('feedback');
+            Route::post('/sessions/{session}/feedback/generate', 'generateFeedback')->name('feedback.generate');
             Route::post('/sessions/{session}/end', 'endSession')->name('end');
 
             // API routes
@@ -181,6 +197,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/{ticket}/reply', 'reply')->name('.reply');
             Route::patch('/{ticket}/assign', 'assign')->name('.assign');
             Route::patch('/{ticket}/status', 'updateStatus')->name('.status');
+            Route::patch('/{ticket}/request-close', 'requestClose')->name('.request-close');
+            Route::patch('/{ticket}/confirm-close', 'confirmClose')->name('.confirm-close');
+            Route::patch('/{ticket}/reject-close', 'rejectClose')->name('.reject-close');
         });
 
         // Template Library CRUD

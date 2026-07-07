@@ -1,4 +1,8 @@
-@props(['loadingText' => 'Processing...'])
+@props(['loadingText' => null])
+
+@php
+    $loadingText = $loadingText ?? __('messages.auth.processing');
+@endphp
 
 <button
     {{ $attributes->merge([
@@ -8,5 +12,5 @@
     ]) }}
     :disabled="loading" :class="loading ? 'opacity-70 cursor-not-allowed' : ''">
     <span x-show="loading" style="display:none" class="animate-spin h-4 w-4 border-2 border-white/30 border-t-white rounded-full"></span>
-    <span x-text="loading ? '{{ $loadingText ?? 'Processing...' }}' : '{{ $slot }}'"></span>
+    <span x-text="loading ? '{{ $loadingText }}' : '{{ $slot }}'"></span>
 </button>

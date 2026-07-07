@@ -8,6 +8,7 @@ use App\Models\SupportTicket;
 use App\Models\TicketReply;
 use App\Models\User;
 use App\Notifications\NewSupportTicket;
+use App\Notifications\SupportTicketUserReplied;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -48,7 +49,7 @@ class HelpController extends Controller
             Notification::send($admins, new NewSupportTicket($ticket->loadMissing('user')));
         }
 
-        return redirect()->route('user.help')->with('success', 'Your message has been sent! We\'ll get back to you soon.');
+        return redirect()->route('user.help')->with('success', __('messages.help.contact.success'));
     }
 
     public function tickets(): View
@@ -69,5 +70,33 @@ class HelpController extends Controller
         $ticket->load('replies.sender');
 
         return view('user.tickets.show', compact('ticket'));
+    }
+
+    public function reply(Request $request, SupportTicket $ticket): RedirectResponse
+    {
+        Gate::authorize('reply', $ticket);
+
+        if ($ticket->status === 'closed') {
+            return back()->with('error', __('messages.tickets.chat.closed_reply_error'));
+        }
+
+        $data = $request->validate([
+            'body' => ['required', 'string', 'max:5000'],
+        ]);
+
+        $ticket->replies()->create([
+            'user_id' => auth()->id(),
+            'body'    => $data['body'],
+        ]);
+
+        if ($ticket->status === 'pending') {
+            $ticket->update(['status' => 'open']);
+        }
+
+        if ($ticket->assignedAdmin) {
+            $ticket->assignedAdmin->notify(new SupportTicketUserReplied($ticket));
+        }
+
+        return redirect()->route('help.tickets.show', $ticket)->with('success', __('messages.tickets.chat.reply_sent'));
     }
 }

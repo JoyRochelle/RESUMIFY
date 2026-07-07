@@ -18,6 +18,7 @@ class ChameleonAdaptation extends Model
 
     protected $fillable = [
         'cv_id',
+        'batch_id',
         'target_company',
         'tone_style',
         'adapted_content',

@@ -35,17 +35,19 @@
                class="flex min-h-11 items-center space-x-3 rounded-lg p-3 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secondary/40 {{ $active ? 'text-primary font-bold bg-tertiary shadow-sm' : ($emphasis ? 'text-secondary bg-secondary/10 hover:bg-secondary/20 font-bold' : 'text-primary/60 hover:text-primary hover:bg-tertiary/60') }}"
                @if($active) aria-current="page" @endif>
                 <span class="material-symbols-outlined {{ $active ? 'icon-filled' : '' }}" aria-hidden="true">{{ $item['icon'] }}</span>
-                <span class="font-label tracking-wide">{{ $item['label'] }}</span>
+                <span class="font-label tracking-wide">{{ __('messages.nav.' . $item['label_key']) }}</span>
             </a>
         @endforeach
     </nav>
 
-    <div class="pt-6 border-t border-primary/10">
+    <div class="pt-6 border-t border-primary/10 space-y-4">
+        <x-ui.locale-switcher />
+
         <form method="POST" action="{{ route('logout') }}" class="w-full">
             @csrf
             <button type="submit" class="flex min-h-11 w-full items-center space-x-3 rounded-lg p-3 text-primary/60 hover:bg-red-50 hover:text-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-300">
                 <span class="material-symbols-outlined" aria-hidden="true">logout</span>
-                <span class="font-label tracking-wide">Log Out</span>
+                <span class="font-label tracking-wide">{{ __('messages.nav.logout') }}</span>
             </button>
         </form>
     </div>

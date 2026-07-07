@@ -5,6 +5,7 @@ use App\Http\Middleware\InterviewTrialMiddleware;
 use App\Http\Middleware\QuotaMiddleware;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\SecurityHeadersMiddleware;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->appendToGroup('web', CheckSuspended::class);
+        $middleware->appendToGroup('web', SetLocale::class);
 
         $middleware->validateCsrfTokens(except: [
             'payment/callback',

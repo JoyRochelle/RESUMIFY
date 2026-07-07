@@ -59,14 +59,14 @@
         <div class="md:hidden divide-y divide-primary/5">
             @forelse($tickets as $ticket)
             @php
-                $badgeMap = ['open' => 'bg-red-100 text-red-600', 'pending' => 'bg-amber-100 text-amber-600', 'closed' => 'bg-primary/10 text-primary/50'];
+                $badgeMap = ['open' => 'bg-red-100 text-red-600', 'pending' => 'bg-amber-100 text-amber-600', 'awaiting_closure' => 'bg-blue-100 text-blue-600', 'closed' => 'bg-primary/10 text-primary/50'];
             @endphp
             <a href="{{ route('admin.support.show', $ticket) }}"
                class="block p-4 hover:bg-surface/40 transition-colors">
                 <div class="flex items-start justify-between gap-2 mb-1">
                     <p class="text-sm font-label font-bold text-primary truncate flex-1">{{ $ticket->subject }}</p>
                     <span class="admin-badge shrink-0 {{ $badgeMap[$ticket->status] ?? '' }}">
-                        {{ $ticket->status }}
+                        {{ str_replace('_', ' ', $ticket->status) }}
                     </span>
                 </div>
                 <p class="text-xs text-primary/50 font-label">
@@ -103,10 +103,10 @@
                     </td>
                     <td class="admin-td">
                         @php
-                            $badgeMap = ['open' => 'bg-red-100 text-red-600', 'pending' => 'bg-amber-100 text-amber-600', 'closed' => 'bg-primary/10 text-primary/50'];
+                            $badgeMap = ['open' => 'bg-red-100 text-red-600', 'pending' => 'bg-amber-100 text-amber-600', 'awaiting_closure' => 'bg-blue-100 text-blue-600', 'closed' => 'bg-primary/10 text-primary/50'];
                         @endphp
                         <span class="admin-badge {{ $badgeMap[$ticket->status] ?? '' }}">
-                            {{ $ticket->status }}
+                            {{ str_replace('_', ' ', $ticket->status) }}
                         </span>
                     </td>
                     <td class="admin-td">

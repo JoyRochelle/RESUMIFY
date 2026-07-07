@@ -4,12 +4,14 @@ namespace App\Http\Controllers\User\Ai;
 
 use App\Actions\Ai\GenerateResumeVersionsAction;
 use App\Actions\Ai\RefineResumeBulletAction;
+use App\Actions\Resumes\ApplyChameleonAdaptationAction;
 use App\Exceptions\AiQuotaExceededException;
 use App\Exceptions\InsufficientResumeContentException;
 use App\Exceptions\InvalidAiProviderResponseException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GenerateResumeVersionsRequest;
 use App\Http\Requests\RefineResumeBulletRequest;
+use App\Models\ChameleonAdaptation;
 use App\Models\Cv;
 use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -94,6 +96,27 @@ class AiResumeController extends Controller
                 status: 500,
             );
         }
+    }
+
+    /**
+     * Apply a generated CV version, overwriting the CV's real sections.
+     * A snapshot of the prior content is saved before the overwrite.
+     */
+    public function applyVersion(
+        Cv $cv,
+        ChameleonAdaptation $adaptation,
+        ApplyChameleonAdaptationAction $applyChameleonAdaptation,
+    ): JsonResponse {
+        Gate::authorize('update', $cv);
+
+        $result = $applyChameleonAdaptation->execute($cv, $adaptation);
+
+        return ApiResponse::success([
+            'saved_at' => now()->format('H:i:s'),
+            'ats_score' => $result['ats_score'],
+            'ats_matched' => $result['ats_matched'],
+            'snapshot_id' => $result['snapshot_id'],
+        ]);
     }
 
     private function quotaExceededResponse(AiQuotaExceededException $exception): JsonResponse

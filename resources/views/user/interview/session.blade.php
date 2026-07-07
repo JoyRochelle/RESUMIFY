@@ -1,9 +1,13 @@
 @extends('layouts.user.app')
 
-@section('title', 'Resumify — Interview with Ms. Sarah')
+@section('title', 'Resumify — ' . __('messages.interview.session.page_title'))
 
 @section('content')
-<div class="flex-1 flex flex-col min-w-0 overflow-hidden h-screen">
+{{-- NOTE: no flex-1 here — as a flex item with flex-basis:0% the browser
+     ignores the height property, so h-dvh never took effect and the page
+     grew to content height (body-level scroll). flex-basis must stay auto. --}}
+<div class="flex flex-col min-w-0 overflow-hidden h-dvh overscroll-none
+            pb-[calc(4.75rem+env(safe-area-inset-bottom))] md:pb-0">
 
     {{-- Header bar --}}
     <header class="shrink-0 flex items-center justify-between px-4 md:px-6 py-3
@@ -17,7 +21,7 @@
                 <span class="material-symbols-outlined text-secondary text-[16px]">smart_toy</span>
             </div>
             <div class="min-w-0">
-                <p class="font-semibold text-primary text-sm leading-tight">Ms. Sarah · HRD Interviewer</p>
+                <p class="font-semibold text-primary text-sm leading-tight">{{ __('messages.interview.session.header_name') }}</p>
                 <p class="text-primary/50 text-xs truncate">{{ $session->job_target }}</p>
             </div>
         </div>
@@ -27,11 +31,11 @@
                 class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-200
                        text-red-600 text-xs font-medium hover:bg-red-50 transition-all">
             <span class="material-symbols-outlined text-[15px]">stop_circle</span>
-            End Session
+            {{ __('messages.interview.session.end_session') }}
         </button>
         @else
         <span class="px-3 py-1.5 rounded-lg bg-primary/5 text-primary/40 text-xs font-medium">
-            Session Ended
+            {{ __('messages.interview.session.session_ended_badge') }}
         </span>
         @endif
     </header>
@@ -39,14 +43,33 @@
     {{-- Session completed banner --}}
     @if($session->status !== 'active')
     <div class="shrink-0 px-4 py-2.5 bg-primary/5 border-b border-primary/10
-                text-primary/60 text-sm text-center">
-        This session ended on {{ $session->ended_at?->format('d M Y, H:i') }}.
+                text-primary/60 text-sm flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-center">
+        <span>{{ __('messages.interview.session.ended_on', ['date' => $session->ended_at?->format('d M Y, H:i')]) }}</span>
+
+        @if($session->feedback)
+            <a href="{{ route('interview.feedback', $session) }}"
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary/10
+                      text-secondary text-xs font-semibold hover:bg-secondary/20 transition-all">
+                <span class="material-symbols-outlined text-[15px]">analytics</span>
+                {{ __('messages.interview.session.view_report') }}
+            </a>
+        @else
+            <form method="POST" action="{{ route('interview.feedback.generate', $session) }}">
+                @csrf
+                <button type="submit"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary
+                               text-white text-xs font-semibold hover:bg-secondary/90 active:scale-[.98] transition-all">
+                    <span class="material-symbols-outlined text-[15px]">analytics</span>
+                    {{ __('messages.interview.session.generate_report') }}
+                </button>
+            </form>
+        @endif
     </div>
     @endif
 
     {{-- Message list --}}
     <div id="messages"
-         class="flex-1 overflow-y-auto px-4 md:px-6 py-5 space-y-4 custom-scrollbar">
+         class="flex-1 overflow-y-auto overscroll-contain px-4 md:px-6 py-5 space-y-4 custom-scrollbar">
 
         @foreach($session->messages as $msg)
             @if($msg->role === 'assistant')
@@ -91,7 +114,7 @@
     <div class="shrink-0 border-t border-primary/10 bg-surface px-4 md:px-6 py-3">
         <div class="flex items-end gap-3 max-w-3xl mx-auto">
             <textarea id="user-input" rows="1"
-                      placeholder="Type your answer… (Enter to send, Shift+Enter for new line)"
+                      placeholder="{{ __('messages.interview.session.input_placeholder') }}"
                       class="flex-1 resize-none rounded-xl border border-primary/20 bg-surface-container-low
                              px-4 py-2.5 text-sm text-primary placeholder:text-primary/30
                              focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary/50
@@ -123,25 +146,25 @@
                 <span class="material-symbols-outlined text-red-500 text-[20px]">stop_circle</span>
             </div>
             <div>
-                <p class="font-semibold text-primary text-sm">End Session?</p>
-                <p class="text-primary/50 text-xs">Ended sessions cannot be resumed.</p>
+                <p class="font-semibold text-primary text-sm">{{ __('messages.interview.session.end_modal_title') }}</p>
+                <p class="text-primary/50 text-xs">{{ __('messages.interview.session.end_modal_subtitle') }}</p>
             </div>
         </div>
         <p class="text-primary/70 text-sm mb-5">
-            Are you sure you want to end this interview session now?
+            {{ __('messages.interview.session.end_modal_body') }}
         </p>
         <div class="flex gap-3">
             <button onclick="closeEndModal()"
                     class="flex-1 px-4 py-2.5 rounded-xl border border-primary/20 text-primary/70
                            text-sm font-medium hover:border-primary/40 transition">
-                Cancel
+                {{ __('messages.interview.session.cancel') }}
             </button>
             <form method="POST" action="{{ route('interview.end', $session) }}" class="flex-1">
                 @csrf
                 <button type="submit"
                         class="w-full px-4 py-2.5 rounded-xl bg-red-500 text-white
                                text-sm font-semibold hover:bg-red-600 active:scale-[.98] transition">
-                    End Session
+                    {{ __('messages.interview.session.end_session') }}
                 </button>
             </form>
         </div>
@@ -258,7 +281,7 @@
         scrollToBottom();
 
         const controller = new AbortController();
-        const timeoutId  = setTimeout(() => controller.abort(), 60000);
+        const timeoutId  = setTimeout(() => controller.abort(), 100000);
 
         try {
             const res = await fetch(STREAM_URL, {
@@ -276,7 +299,7 @@
             typing.classList.add('hidden');
 
             if (!res.ok) {
-                appendBubble('assistant', 'An error occurred. Please try again.');
+                appendBubble('assistant', @json(__('messages.interview.session.error_occurred')));
                 setLoading(false);
                 return;
             }
@@ -311,7 +334,7 @@
                             break;
                         }
                         if (data.error) {
-                            bubble.textContent = 'An error occurred. Please try again.';
+                            bubble.textContent = @json(__('messages.interview.session.error_occurred'));
                             reader.cancel();
                             break;
                         }
@@ -324,8 +347,8 @@
             typing.classList.add('hidden');
             appendBubble('assistant',
                 err.name === 'AbortError'
-                    ? 'Request timed out. Please try again.'
-                    : 'Connection lost. Check your network and try again.');
+                    ? @json(__('messages.interview.session.timeout_error'))
+                    : @json(__('messages.interview.session.connection_lost')));
         }
 
         setLoading(false);

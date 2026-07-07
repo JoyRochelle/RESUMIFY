@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User\Interview;
 
 use App\Actions\Interviews\EndInterviewSessionAction;
+use App\Actions\Interviews\GenerateInterviewFeedbackAction;
 use App\Actions\Interviews\SendInterviewMessageAction;
 use App\Actions\Interviews\StartInterviewAction;
 use App\Http\Controllers\Controller;
@@ -59,7 +60,7 @@ class InterviewController extends Controller
     {
         Gate::authorize('view', $session);
 
-        $session->load('messages');
+        $session->load('messages', 'feedback');
 
         return view('user.interview.session', compact('session'));
     }
@@ -114,6 +115,45 @@ class InterviewController extends Controller
         }
 
         return view('user.interview.feedback', compact('session'));
+    }
+
+    /**
+     * Regenerate the feedback report for a completed session that has none —
+     * recovery path for sessions that ended while feedback generation failed.
+     * Quota: 1 credit, reserved and refunded inside the action.
+     */
+    public function generateFeedback(
+        Request $request,
+        InterviewSession $session,
+        GenerateInterviewFeedbackAction $generateInterviewFeedback
+    ): RedirectResponse {
+        Gate::authorize('feedback', $session);
+
+        if ($session->status === 'active') {
+            return redirect()->route('interview.show', $session)
+                ->with('error', 'End the session first to generate its report.');
+        }
+
+        $session->load('feedback');
+
+        if ($session->feedback) {
+            return redirect()->route('interview.feedback', $session);
+        }
+
+        $result = $generateInterviewFeedback->execute(auth()->user(), $session);
+
+        if ($result->feedbackGeneratedSuccessfully()) {
+            return redirect()->route('interview.feedback', $session)
+                ->with('success', 'Here is your interview report.');
+        }
+
+        if ($result->feedbackUnavailableDueToQuota()) {
+            return redirect()->route('interview.show', $session)
+                ->with('error', 'Report is unavailable — your AI credits are exhausted.');
+        }
+
+        return redirect()->route('interview.show', $session)
+            ->with('error', 'Failed to generate the report. Please try again.');
     }
 
     /**
@@ -184,8 +224,7 @@ class InterviewController extends Controller
 
             if ($reservation->isDenied()) {
                 echo 'data: ' . json_encode(['error' => 'You have used all your AI credits. Upgrade to Premium for 50 credits/month.']) . "\n\n";
-                ob_flush();
-                flush();
+                $this->flushSse();
 
                 return;
             }
@@ -196,10 +235,13 @@ class InterviewController extends Controller
                     $contents,
                     function (string $token) {
                         echo 'data: ' . json_encode(['token' => $token]) . "\n\n";
-                        ob_flush();
-                        flush();
+                        $this->flushSse();
                     }
                 );
+
+                if (trim($fullText) === '') {
+                    throw new \Exception('Empty response from AI service');
+                }
 
                 InterviewMessage::create([
                     'session_id' => $session->id,
@@ -216,15 +258,13 @@ class InterviewController extends Controller
                 ]);
 
                 echo 'data: ' . json_encode(['done' => true]) . "\n\n";
-                ob_flush();
-                flush();
+                $this->flushSse();
 
             } catch (\Exception $e) {
                 $this->aiCreditService->refund($reservation);
                 Log::error('InterviewController@stream failed', ['error' => $e->getMessage()]);
                 echo 'data: ' . json_encode(['error' => 'Failed to get AI response.']) . "\n\n";
-                ob_flush();
-                flush();
+                $this->flushSse();
             }
         }, 200, [
             'Content-Type'      => 'text/event-stream',
@@ -232,6 +272,21 @@ class InterviewController extends Controller
             'X-Accel-Buffering' => 'no',
             'Connection'        => 'keep-alive',
         ]);
+    }
+
+    /**
+     * Flush the SSE output buffer if one is active. `php artisan serve` (and
+     * some other SAPIs) run requests with zero output buffering, so an
+     * unguarded ob_flush() raises an ErrorException that would otherwise
+     * kill the stream from inside its own catch block.
+     */
+    private function flushSse(): void
+    {
+        if (ob_get_level() > 0) {
+            ob_flush();
+        }
+
+        flush();
     }
 
     /**

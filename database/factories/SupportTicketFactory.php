@@ -29,4 +29,13 @@ class SupportTicketFactory extends Factory
     {
         return $this->state(['status' => 'closed']);
     }
+
+    public function awaitingClosure(?string $requestedBy = null, ?\DateTimeInterface $requestedAt = null): static
+    {
+        return $this->state([
+            'status' => 'awaiting_closure',
+            'close_requested_by' => $requestedBy ?? User::factory(),
+            'close_requested_at' => $requestedAt ?? now(),
+        ]);
+    }
 }

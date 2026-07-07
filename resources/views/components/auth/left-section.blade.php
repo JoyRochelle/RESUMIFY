@@ -5,10 +5,10 @@
     <div>
         <header>
             <h1 class="text-4xl lg:text-5xl font-headline text-on-surface tracking-tight leading-tight">
-                One Account, One Adapted Career ✨
+                {{ __('messages.auth.marketing.headline') }}
             </h1>
             <p class="mt-4 text-lg text-on-surface-variant font-body">
-                Build professional resumes and boost your ATS score in minutes.</p>
+                {{ __('messages.auth.marketing.subtitle') }}</p>
             </p>
         </header>
 
@@ -49,8 +49,7 @@
                 <div
                     class="absolute -right-8 -bottom-4 glass-panel p-6 rounded-xl shadow-xl w-48 animate-bounce-subtle">
                     <div class="flex justify-between items-end mb-3">
-                        <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">ATS
-                            MATCH</span>
+                        <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">{{ __('messages.auth.marketing.ats_match') }}</span>
                         <span class="text-2xl font-headline font-bold text-secondary">94%</span>
                     </div>
                     <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
@@ -58,7 +57,7 @@
                     </div>
                     <div class="mt-3 flex items-center gap-2">
                         <span class="material-symbols-outlined w-6 h-6 text-emerald-500" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
-                        <span class="text-[10px] text-on-surface-variant font-medium">AI Optimization Active</span>
+                        <span class="text-[10px] text-on-surface-variant font-medium">{{ __('messages.auth.marketing.ai_optimization') }}</span>
                     </div>
                 </div>
             </div>
