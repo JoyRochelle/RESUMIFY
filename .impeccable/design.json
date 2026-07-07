@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-07T08:27:40Z",
+  "title": "Design System: Resumify",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Deep Brown Ink", "canonical": "#4f3b2f", "tonalRamp": ["#1d1611", "#2c221a", "#3b2d23", "#4f3b2f", "#6b5346", "#8a715f", "#ab9484", "#d6c7bc"] },
+      "secondary": { "role": "secondary", "displayName": "Atelier Emerald", "canonical": "#0F6E56", "tonalRamp": ["#052b21", "#0a4636", "#0d5c47", "#0F6E56", "#1a9976", "#3fbf9a", "#7fd8bd", "#c2ecdf"] },
+      "tertiary": { "role": "tertiary", "displayName": "Paper White", "canonical": "#ffffff", "tonalRamp": ["#dedede", "#e8e8e8", "#f0f0f0", "#f7f7f7", "#ffffff", "#ffffff", "#ffffff", "#ffffff"] },
+      "neutral": { "role": "neutral", "displayName": "Warm Cream", "canonical": "#fdf8f4", "tonalRamp": ["#3a352f", "#5c554b", "#8a8175", "#c9beae", "#e9dfd2", "#f7f2ee", "#fdf8f4", "#ffffff"] },
+      "surface-container-low": { "role": "neutral", "displayName": "Low Cream", "canonical": "#f7f2ee", "tonalRamp": ["#3a352f", "#5c554b", "#8a8175", "#c9beae", "#e2d8ca", "#eee6dc", "#f7f2ee", "#fbf8f5"] },
+      "surface-container-lowest": { "role": "neutral", "displayName": "Lowest Surface", "canonical": "#ffffff", "tonalRamp": ["#dedede", "#e8e8e8", "#f0f0f0", "#f7f7f7", "#ffffff", "#ffffff", "#ffffff", "#ffffff"] },
+      "nav-footer": { "role": "neutral", "displayName": "Nav Tan", "canonical": "#f0e8dc", "tonalRamp": ["#3a3125", "#5c4e3b", "#8a7658", "#c9ae85", "#e2cba8", "#ecdcc4", "#f0e8dc", "#f8f2ea"] },
+      "on-surface": { "role": "neutral", "displayName": "Ink Variant Dark", "canonical": "#1d1b19", "tonalRamp": ["#0a0908", "#141312", "#1d1b19", "#332f2b", "#4f453f", "#736659", "#a3937f", "#d6c9bb"] },
+      "on-surface-variant": { "role": "neutral", "displayName": "Ink Variant Muted", "canonical": "#4f453f", "tonalRamp": ["#161311", "#241f1c", "#332c27", "#4f453f", "#6b5f56", "#8c8177", "#b3a99f", "#dad3cc"] },
+      "outline-variant": { "role": "neutral", "displayName": "Soft Divider", "canonical": "#d2c4bc", "tonalRamp": ["#453a34", "#6b5a51", "#93796d", "#b7a094", "#d2c4bc", "#e2d8d2", "#efe9e5", "#f8f5f3"] },
+      "primary-fixed": { "role": "neutral", "displayName": "Peach Fixed", "canonical": "#fcdccb", "tonalRamp": ["#5c2f1c", "#8a4a2c", "#b8683f", "#e0925f", "#f2b795", "#fcdccb", "#fdeadf", "#fff6f0"] },
+      "premium-gold": { "role": "accent", "displayName": "Premium Gold", "canonical": "#A16207", "tonalRamp": ["#3d2503", "#5c3805", "#7c4a03", "#A16207", "#c4820f", "#e0a53a", "#f0c778", "#faeac0"] }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Headline / Display", "purpose": "All h1-h4, card titles, modal titles, pricing numbers. Always Newsreader, never swapped to sans." },
+      "body": { "displayName": "Body", "purpose": "Paragraph copy and descriptions, Manrope, capped at 65-75ch." },
+      "label": { "displayName": "Label", "purpose": "Nav items, table headers, badges, uppercase tracked functional text (not decorative eyebrows)." }
+    },
+    "shadows": [
+      { "name": "resting-card", "value": "0 1px 2px rgba(79,59,47,0.05)", "purpose": "Default barely-there definition on cards, panels, buttons." },
+      { "name": "hover-lift", "value": "0 16px 32px rgba(79,59,47,0.08)", "purpose": "Interactive card hover, ink-tinted rather than neutral black." },
+      { "name": "modal", "value": "0 25px 50px -12px rgba(0,0,0,0.25)", "purpose": "The one plane that reads as physically above the page." },
+      { "name": "premium-glow", "value": "0 18px 42px rgba(161,98,7,0.14), 0 0 0 1px rgba(161,98,7,0.08)", "purpose": "Gold-tinted glow reserved for the Premium pricing card and upsell moments." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "ease-out", "purpose": "Default hover/focus transitions across buttons, links, cards." },
+      { "name": "duration-standard", "value": "300ms", "purpose": "Nav item and card hover transitions." },
+      { "name": "duration-modal", "value": "200ms enter / 150ms leave", "purpose": "Modal and drawer enter/leave transitions." }
+    ],
+    "breakpoints": [
+      { "name": "md", "value": "768px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action per view: deep brown fill, white bold text, subtle opacity shift on hover.",
+      "html": "<button class=\"ds-btn-primary\">Save Resume</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; font-family: Manrope, sans-serif; font-size: 14px; padding: 8px 20px; background: #4f3b2f; color: #ffffff; border: none; border-radius: 8px; min-height: 44px; transition: opacity 0.2s ease-out; } .ds-btn-primary:hover { opacity: 0.9; } .ds-btn-primary:focus-visible { outline: 2px solid #0F6E56; outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Default secondary action: transparent fill, brown border and text.",
+      "html": "<button class=\"ds-btn-outline\">Cancel</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; font-family: Manrope, sans-serif; font-size: 14px; padding: 8px 20px; background: transparent; color: #4f3b2f; border: 1px solid rgba(79,59,47,0.2); border-radius: 8px; min-height: 44px; transition: background 0.2s ease-out; } .ds-btn-outline:hover { background: rgba(79,59,47,0.05); }"
+    },
+    {
+      "name": "Accent Pill Button",
+      "kind": "button",
+      "refersTo": "button-secondary-accent",
+      "description": "Compact emerald accent CTA, e.g. the resume-card hover overlay label.",
+      "html": "<button class=\"ds-btn-pill\">Edit Manuscript</button>",
+      "css": ".ds-btn-pill { display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-family: Manrope, sans-serif; font-size: 12px; padding: 6px 12px; background: #0F6E56; color: #ffffff; border: none; border-radius: 9999px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: filter 0.2s ease-out; } .ds-btn-pill:hover { filter: brightness(1.1); }"
+    },
+    {
+      "name": "Underline Input",
+      "kind": "input",
+      "refersTo": "input-underline",
+      "description": "Floating-label text field with an underline border that turns emerald on focus; validation swaps a trailing icon rather than adding a box-shadow.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\">Full Name</label><input class=\"ds-field-input\" type=\"text\" placeholder=\"Jane Doe\" /></div>",
+      "css": ".ds-field { position: relative; } .ds-field-label { display: block; font-family: Manrope, sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(79,59,47,0.6); margin-bottom: 4px; } .ds-field-input { width: 100%; border: none; border-bottom: 2px solid rgba(79,59,47,0.15); background: transparent; padding: 8px 0; font-family: Manrope, sans-serif; font-size: 14px; color: #4f3b2f; outline: none; transition: border-color 0.2s ease-out; } .ds-field-input:focus { border-bottom-color: #0F6E56; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Standard flat card: white surface on the cream page, hairline border, shadow only on hover.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Software Engineer CV</h3><p class=\"ds-card-body\">Last edited 2 hours ago</p></div>",
+      "css": ".ds-card { background: #ffffff; border: 1px solid rgba(79,59,47,0.1); border-radius: 8px; padding: 24px; transition: box-shadow 0.5s ease-out; } .ds-card:hover { box-shadow: 0 16px 32px rgba(79,59,47,0.08); } .ds-card-title { font-family: Newsreader, serif; font-weight: 700; font-size: 18px; color: #4f3b2f; margin: 0 0 4px; } .ds-card-body { font-family: Manrope, sans-serif; font-size: 14px; color: rgba(79,59,47,0.6); margin: 0; }"
+    },
+    {
+      "name": "Premium Pricing Card",
+      "kind": "card",
+      "refersTo": "card-premium",
+      "description": "The one card allowed a stronger shape and a gold-tinted glow — reserved for the Premium plan.",
+      "html": "<div class=\"ds-card-premium\"><span class=\"ds-badge-popular\">Most Popular</span><h3 class=\"ds-card-premium-title\">Premium PRO</h3></div>",
+      "css": ".ds-card-premium { position: relative; background: #ffffff; border: 2px solid #0F6E56; border-radius: 16px; padding: 40px; box-shadow: 0 18px 42px rgba(161,98,7,0.14), 0 0 0 1px rgba(161,98,7,0.08); } .ds-card-premium-title { font-family: Newsreader, serif; font-weight: 700; font-size: 24px; color: #4f3b2f; } .ds-badge-popular { position: absolute; top: 24px; right: -35px; background: #0F6E56; color: #ffffff; padding: 4px 40px; transform: rotate(45deg); font-family: Manrope, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }"
+    },
+    {
+      "name": "Score Circle",
+      "kind": "custom",
+      "refersTo": "score-circle",
+      "description": "Signature circular progress ring for ATS/interview scores: brown track, emerald arc, bold serif percentage centered inside.",
+      "html": "<div class=\"ds-score\"><svg viewBox=\"0 0 128 128\" class=\"ds-score-svg\"><circle class=\"ds-score-track\" cx=\"64\" cy=\"64\" r=\"56\" /><circle class=\"ds-score-arc\" cx=\"64\" cy=\"64\" r=\"56\" /></svg><span class=\"ds-score-label\">82%</span></div>",
+      "css": ".ds-score { position: relative; width: 128px; height: 128px; } .ds-score-svg { width: 100%; height: 100%; transform: rotate(-90deg); } .ds-score-track { fill: none; stroke: rgba(79,59,47,0.1); stroke-width: 8; } .ds-score-arc { fill: none; stroke: #0F6E56; stroke-width: 8; stroke-linecap: round; stroke-dasharray: 351.9; stroke-dashoffset: 63.3; } .ds-score-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: Newsreader, serif; font-weight: 700; font-style: italic; font-size: 28px; color: #4f3b2f; }"
+    },
+    {
+      "name": "Plan Badge (Premium)",
+      "kind": "chip",
+      "refersTo": "plan-badge",
+      "description": "Gold-role badge marking Premium status — deliberately distinct from the emerald accent.",
+      "html": "<span class=\"ds-badge-premium\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 2l2.4 7.4H22l-6 4.4 2.3 7.4L12 16.8 5.7 21.2 8 13.8 2 9.4h7.6z\"/></svg>Premium</span>",
+      "css": ".ds-badge-premium { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 9999px; border: 1px solid rgba(161,98,7,0.3); background: rgba(161,98,7,0.1); color: #7C4A03; font-family: Manrope, sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }"
+    },
+    {
+      "name": "Sidebar Nav Item",
+      "kind": "nav",
+      "refersTo": "nav-sidebar",
+      "description": "Active state is a filled white pill on the tan sidebar; inactive items are brown-at-opacity with a soft hover tint.",
+      "html": "<a class=\"ds-nav-item ds-nav-item--active\">Dashboard</a><a class=\"ds-nav-item\">Templates</a>",
+      "css": ".ds-nav-item { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 12px; border-radius: 8px; font-family: Manrope, sans-serif; font-size: 14px; color: rgba(79,59,47,0.6); text-decoration: none; transition: all 0.3s ease-out; } .ds-nav-item:hover { color: #4f3b2f; background: rgba(255,255,255,0.6); } .ds-nav-item--active { color: #4f3b2f; font-weight: 700; background: #ffffff; box-shadow: 0 1px 2px rgba(79,59,47,0.05); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Career Atelier",
+    "overview": "Resumify is a craftsperson's workshop for one document that matters: someone's career, told well. The system reads as inked and considered — deep brown surfaces and serif headlines borrowed from the language of a well-typeset page — rather than the glassy, gradient-lit dashboard of a generic AI-SaaS wrapper. A single emerald accent stands in for the atelier's one tool that matters: it marks progress, success, and the moments where the product actively helps (scores, checkmarks, the premium \"unlimited\" tier). Everything else stays quiet — warm cream surfaces, hairline borders, soft infrequent shadows — so the accent and the user's own words keep the room's attention. This is a candidate-facing tool, not recruiter-facing admin software, and it should never feel like either. It explicitly rejects the interchangeable template-picker aesthetic of Canva-style builders, the sterile chrome of corporate HR/ATS systems, and the cream-background/gradient-text/glass-card default that most AI tools reach for in 2025-26. Warmth here comes from typography, color restraint, and calm confident copy — not from decoration.",
+    "keyCharacteristics": [
+      "Warm-neutral surfaces (#fdf8f4 family) with deep-brown ink (#4f3b2f), never pure black-on-white.",
+      "One accent color (#0F6E56 emerald) used sparingly and consistently for progress, success, and links.",
+      "Newsreader serif headlines paired with Manrope sans body and interface labels.",
+      "Flat-by-default surfaces with hairline borders; shadow only as a response to hover, modals, or the premium moment.",
+      "A distinct premium-gold (#A16207) role kept separate from emerald, reserved only for Premium-tier signals."
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Emerald (#0F6E56) is the only saturated accent in the interface. Reach for brown-at-opacity or cream first; use emerald only for progress, success, or the primary action.", "section": "colors" },
+      { "name": "The Premium-Gold Exception", "body": "Premium-tier signals use a dedicated gold (#A16207), never emerald and never a gradient. Gold means \"you're on Premium\"; emerald means \"this worked.\"", "section": "colors" },
+      { "name": "The Serif-Headline Rule", "body": "Any h1-h4 is font-headline (Newsreader) by default; never set a sans headline.", "section": "typography" },
+      { "name": "The Flat-at-Rest Rule", "body": "No element carries a shadow in its default state except modals. If a shadow is visible before hover/interaction, remove it.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep emerald (#0F6E56) to a single accent role per screen.",
+      "Do default every card and panel to flat with a hairline border and add shadow only on hover, in modals, or for the Premium moment.",
+      "Do set headlines in Newsreader and body/UI text in Manrope.",
+      "Do use the underline input style for text fields; keep validation inline (icon + message swap).",
+      "Do maintain min-h-11 min-w-11 (44px) tap targets on every button and icon button.",
+      "Do use the premium-gold role exclusively for Premium-tier signals, kept visually distinct from emerald."
+    ],
+    "donts": [
+      "Don't build a wall of interchangeable template-picker cards with no guidance or point of view.",
+      "Don't make any surface feel like sterile corporate HR/ATS software.",
+      "Don't default to the cream-background + gradient-text + glass-card AI-SaaS look.",
+      "Don't add a resting shadow to any element that isn't a modal.",
+      "Don't use emerald and gold interchangeably.",
+      "Don't use border-left/border-right colored stripes as a callout or card accent.",
+      "Don't round cards or sections past rounded-2xl (16px); full-pill rounding is reserved for buttons, badges, and avatars only."
+    ]
+  }
+}
