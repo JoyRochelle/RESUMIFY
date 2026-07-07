@@ -9,10 +9,10 @@
                     <div class="w-24 h-24 rounded-full bg-secondary/10 flex items-center justify-center mb-6">
                         <span class="material-symbols-outlined text-secondary text-4xl icon-filled">analytics</span>
                     </div>
-                    <h3 class="font-headline text-2xl text-primary mb-2">Select & Analyze</h3>
+                    <h3 class="font-headline text-2xl text-primary mb-2">{{ __('messages.ats.results.select_analyze_heading') }}</h3>
                     <p class="text-primary/50 text-sm max-w-xs leading-relaxed">
-                        Select a resume on the left, then click <strong class="text-primary/70">Analyze Match</strong> to
-                        see your ATS score and actionable recommendations.
+                        {{ __('messages.ats.results.select_analyze_before') }} <strong class="text-primary/70">{{ __('messages.ats.analyze_match') }}</strong>
+                        {{ __('messages.ats.results.select_analyze_after') }}
                     </p>
                 </div>
 
@@ -21,10 +21,9 @@
                     <div class="flex items-center justify-between">
                         <h3 class="font-bold text-primary flex items-center gap-2 text-sm">
                             <span class="material-symbols-outlined text-primary/60 text-[18px]">description</span>
-                            <span id="ats-preview-title">Resume Preview</span>
+                            <span id="ats-preview-title">{{ __('messages.ats.results.resume_preview') }}</span>
                         </h3>
-                        <span class="text-[10px] font-label text-primary/40 uppercase tracking-widest">Click Analyze Match
-                            to score</span>
+                        <span class="text-[10px] font-label text-primary/40 uppercase tracking-widest">{{ __('messages.ats.results.click_to_score', ['action' => __('messages.ats.analyze_match')]) }}</span>
                     </div>
                     <div id="ats-preview-container"
                         class="relative w-full bg-white rounded-xl border border-primary/10 shadow-sm overflow-hidden"
@@ -54,7 +53,7 @@
                             class="bg-tertiary rounded-2xl p-5 border border-primary/10 shadow-sm md:col-span-2 flex flex-col max-h-[320px]">
                             <div class="flex items-center gap-2 mb-4 text-red-500 shrink-0">
                                 <span class="material-symbols-outlined text-[18px]">error_outline</span>
-                                <h4 class="font-bold tracking-tight text-xs uppercase">Missing Keywords</h4>
+                                <h4 class="font-bold tracking-tight text-xs uppercase">{{ __('messages.ats.results.missing_keywords') }}</h4>
                                 <span id="missing-count-badge"
                                     class="ml-auto text-[10px] font-bold bg-red-500/10 text-red-500 px-2 py-0.5 rounded-full"></span>
                             </div>
@@ -70,7 +69,7 @@
                     <div class="bg-tertiary rounded-2xl p-5 border border-primary/10 shadow-sm">
                         <div class="flex items-center gap-2 mb-4 text-secondary">
                             <span class="material-symbols-outlined text-[18px] icon-filled">check_circle</span>
-                            <h4 class="font-bold tracking-tight text-xs uppercase">Matched Keywords</h4>
+                            <h4 class="font-bold tracking-tight text-xs uppercase">{{ __('messages.ats.results.matched_keywords') }}</h4>
                             <span id="matched-count-badge"
                                 class="ml-auto text-[10px] font-bold bg-secondary/10 text-secondary px-2 py-0.5 rounded-full"></span>
                         </div>
@@ -81,11 +80,11 @@
                     <div class="bg-tertiary rounded-2xl p-5 border border-primary/10 shadow-sm">
                         <div class="flex items-center gap-2 mb-4 text-primary/70">
                             <span class="material-symbols-outlined text-[18px]">bolt</span>
-                            <h4 class="font-bold tracking-tight text-xs uppercase">Action Verbs Detected</h4>
+                            <h4 class="font-bold tracking-tight text-xs uppercase">{{ __('messages.ats.results.action_verbs_detected') }}</h4>
                         </div>
                         <div id="action-verbs-container" class="flex flex-wrap gap-2 mb-3 min-h-[2rem]"></div>
                         <div id="missing-verbs-row" class="hidden mt-3 pt-3 border-t border-primary/5">
-                            <p class="text-[11px] text-primary/50 mb-2 uppercase tracking-wider font-bold">Consider Adding
+                            <p class="text-[11px] text-primary/50 mb-2 uppercase tracking-wider font-bold">{{ __('messages.ats.results.consider_adding') }}
                             </p>
                             <div id="missing-verbs-container" class="flex flex-wrap gap-2"></div>
                         </div>
@@ -104,7 +103,7 @@
                     <section class="rounded-2xl p-7 border border-primary/10 bg-tertiary">
                         <div class="flex items-center gap-2 mb-5 text-primary">
                             <span class="material-symbols-outlined text-[20px] icon-filled">grading</span>
-                            <h4 class="font-bold tracking-tight text-sm uppercase">Section Breakdown</h4>
+                            <h4 class="font-bold tracking-tight text-sm uppercase">{{ __('messages.ats.results.section_breakdown') }}</h4>
                         </div>
                         <div id="section-breakdown-container" class="grid grid-cols-1 gap-3"></div>
                     </section>
@@ -117,15 +116,15 @@
                         </div>
                         <div class="flex items-center gap-3 mb-6">
                             <span class="material-symbols-outlined text-secondary icon-filled">auto_awesome</span>
-                            <h3 class="font-headline text-xl font-bold text-primary">Strategic Insights</h3>
+                            <h3 class="font-headline text-xl font-bold text-primary">{{ __('messages.ats.results.strategic_insights') }}</h3>
                         </div>
                         <div id="insights-container" class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5"></div>
                     </section>
 
                     {{-- Re-analyze nudge --}}
                     <p class="text-center text-xs text-primary/30 pb-4">
-                        Update your texts and click <span class="font-bold text-primary/50">Analyze Match</span> again to
-                        see your new score.
+                        {{ __('messages.ats.results.reanalyze_before') }} <span class="font-bold text-primary/50">{{ __('messages.ats.analyze_match') }}</span>
+                        {{ __('messages.ats.results.reanalyze_after') }}
                     </p>
                 </div>
             </main>
