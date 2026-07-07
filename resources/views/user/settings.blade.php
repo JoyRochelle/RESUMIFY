@@ -191,18 +191,18 @@
                             </a>
                         </div>
                         <div class="mt-6 md:mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
-                            <div>
+                            <div data-ai-quota-widget>
                                 <div class="flex justify-between items-end mb-4">
                                     {{-- Quota display --}}
                                     <span class="text-2xl font-headline italic">
-                                        {{ auth()->user()->getQuotaRemaining() }}
-                                        <span class="text-sm not-italic opacity-60">/{{ auth()->user()->getQuotaLimit() }}
+                                        <span data-ai-quota-remaining>{{ auth()->user()->getQuotaRemaining() }}</span>
+                                        <span class="text-sm not-italic opacity-60">/<span data-ai-quota-limit>{{ auth()->user()->getQuotaLimit() }}</span>
                                         </span>
                                     </span>
                                 </div>
                                 <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
                                     {{-- Progress bar: shows remaining quota (full = 100% left) --}}
-                                    <div class="h-full bg-secondary rounded-full"
+                                    <div data-ai-quota-bar-remaining class="h-full bg-secondary rounded-full"
                                         style="width: {{ 100 - auth()->user()->getQuotaPercentage() }}%"></div>
                                 </div>
                                 <p class="mt-4 text-xs italic opacity-60">{{ __('messages.settings.billing_section.optimized_by') }}</p>

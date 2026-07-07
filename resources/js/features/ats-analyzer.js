@@ -392,6 +392,10 @@
 
                 renderResults(data);
 
+                if (data.quota) {
+                    window.dispatchEvent(new CustomEvent('ai-quota:updated', { detail: data.quota }));
+                }
+
                 // Prepend new card to history list
                 if (data._scan_id) {
                     prependHistory({

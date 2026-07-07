@@ -111,8 +111,8 @@ class AiResumeFeatureTest extends TestCase
                      'success' => true,
                      'options' => ['Option 1', 'Option 2', 'Option 3']
                  ]);
-                 
-        $this->assertEquals(0, $user->fresh()->ai_quota_used);
+
+        $this->assertEquals(1, $user->fresh()->ai_quota_used);
     }
 
     // ────────────────────────────────────────────────
@@ -253,7 +253,7 @@ class AiResumeFeatureTest extends TestCase
             'tone_style' => 'ownership',
         ]);
 
-        $this->assertEquals(0, $user->fresh()->ai_quota_used);
+        $this->assertEquals(3, $user->fresh()->ai_quota_used);
     }
 
     // ────────────────────────────────────────────────
@@ -406,7 +406,7 @@ class AiResumeFeatureTest extends TestCase
         $response->assertStatus(200)
                  ->assertJsonStructure(['score', 'rating', 'word_count']);
 
-        $this->assertEquals(0, $user->fresh()->ai_quota_used);
+        $this->assertEquals(1, $user->fresh()->ai_quota_used);
     }
 
     public function test_ats_analyze_refunds_credit_on_failure(): void

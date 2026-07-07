@@ -471,7 +471,8 @@
             cvId: '{{ $cv->id ?? "" }}',
             csrfToken: '{{ csrf_token() }}',
             atsScore: {{ $cv->ats_score ?? 0 }},
-            hasCv: {{ $cv ? 'true' : 'false' }}
+            hasCv: {{ $cv ? 'true' : 'false' }},
+            i18n: @json(__('messages.editor.js')),
         };
     </script>
     @vite('resources/js/features/resume-editor.js')

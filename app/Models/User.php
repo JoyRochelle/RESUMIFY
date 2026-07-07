@@ -206,6 +206,20 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Snapshot of this user's current AI quota, for JSON responses that
+     * need the frontend to refresh a quota widget without a page reload.
+     */
+    public function aiQuotaSnapshot(): array
+    {
+        return [
+            'used' => (int) $this->ai_quota_used,
+            'limit' => $this->getQuotaLimit(),
+            'remaining' => $this->getQuotaRemaining(),
+            'percentage' => $this->getQuotaPercentage(),
+        ];
+    }
+
+    /**
      * Get the AI usage logs for this user.
      */
     public function aiUsageLogs(): HasMany

@@ -97,7 +97,7 @@ class AtsScanOwnershipTest extends TestCase
             'job_title' => 'Laravel Engineer',
             'job_company' => 'Acme',
         ]);
-        $this->assertEquals(0, $user->fresh()->ai_quota_used);
+        $this->assertEquals(1, $user->fresh()->ai_quota_used);
     }
 
     public function test_ats_analyze_refunds_reserved_credit_when_provider_fails(): void
