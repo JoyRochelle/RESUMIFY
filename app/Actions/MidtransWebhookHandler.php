@@ -18,12 +18,16 @@ class MidtransWebhookHandler
         }
 
         $orderId = $payload['order_id'] ?? '';
+        $statusCode = (string) ($payload['status_code'] ?? '');
+        $grossAmount = (string) ($payload['gross_amount'] ?? '');
         $transactionStatus = $payload['transaction_status'] ?? '';
         $paymentType = $payload['payment_type'] ?? '';
         $midtransTransactionId = $payload['transaction_id'] ?? '';
 
         $result = DB::transaction(function () use (
             $orderId,
+            $statusCode,
+            $grossAmount,
             $transactionStatus,
             $paymentType,
             $midtransTransactionId
@@ -39,7 +43,17 @@ class MidtransWebhookHandler
                 ];
             }
 
-            if (in_array($transactionStatus, ['settlement', 'capture'], true)) {
+            $isSuccessful = $statusCode === '200'
+                && in_array($transactionStatus, ['settlement', 'capture'], true);
+
+            if ($isSuccessful) {
+                if (! $this->grossAmountMatches($grossAmount, (string) $transaction->amount)) {
+                    return [
+                        'response' => response()->json(['error' => 'Amount mismatch'], 422),
+                        'dispatch_confirmation' => false,
+                    ];
+                }
+
                 if ($transaction->status !== 'success') {
                     $user = User::whereKey($transaction->user_id)
                         ->lockForUpdate()
@@ -92,6 +106,11 @@ class MidtransWebhookHandler
         }
 
         return $result['response'];
+    }
+
+    private function grossAmountMatches(string $reported, string $expected): bool
+    {
+        return number_format((float) $reported, 2, '.', '') === number_format((float) $expected, 2, '.', '');
     }
 
     public function isSignatureValid(array $payload): bool
