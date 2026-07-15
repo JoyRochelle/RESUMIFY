@@ -83,10 +83,13 @@ class AiService
         $responses = Http::pool(function (Pool $pool) use ($apiKey, $angles, $prompts) {
             $reqs = [];
             foreach ($angles as $angle => $instruction) {
-                $reqs[] = $pool->as($angle)->timeout(60)->post(self::GEMINI_URL . "?key={$apiKey}", [
-                    'contents' => [['parts' => [['text' => $prompts[$angle]]]]],
-                    'generationConfig' => self::jsonGenerationConfig(self::cvVersionsSchema()),
-                ]);
+                $reqs[] = $pool->as($angle)
+                    ->withHeaders(['x-goog-api-key' => $apiKey])
+                    ->timeout(60)
+                    ->post(self::GEMINI_URL, [
+                        'contents' => [['parts' => [['text' => $prompts[$angle]]]]],
+                        'generationConfig' => self::jsonGenerationConfig(self::cvVersionsSchema()),
+                    ]);
             }
             return $reqs;
         });
@@ -207,10 +210,13 @@ class AiService
     {
         $apiKey = $this->getApiKey();
 
-        $response = Http::timeout($timeout)->connectTimeout(5)->post(self::GEMINI_URL . "?key={$apiKey}", [
-            'contents' => [['parts' => [['text' => $prompt]]]],
-            'generationConfig' => self::jsonGenerationConfig($schema),
-        ]);
+        $response = Http::withHeaders(['x-goog-api-key' => $apiKey])
+            ->timeout($timeout)
+            ->connectTimeout(5)
+            ->post(self::GEMINI_URL, [
+                'contents' => [['parts' => [['text' => $prompt]]]],
+                'generationConfig' => self::jsonGenerationConfig($schema),
+            ]);
 
         if ($response->failed()) {
             Log::error('AiService Gemini API failed', [
