@@ -38,7 +38,7 @@
                 <span class="material-symbols-outlined text-[18px]">edit_note</span> {{ __('messages.editor.tab_edit') }}
             </button>
             <button id="ms-tab-preview" onclick="switchMsTab('preview')"
-                    class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary/40 border-b-2 border-transparent transition-colors">
+                    class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary/70 border-b-2 border-transparent transition-colors">
                 <span class="material-symbols-outlined text-[18px]">preview</span> {{ __('messages.editor.tab_preview') }}
             </button>
         </div>
@@ -249,7 +249,7 @@
     </div>
 
     {{-- Template Selection Modal --}}
-    <div id="template-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="opacity: 0; pointer-events: none;"
+    <div id="template-modal" class="fixed inset-0 z-50 hidden bg-primary/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="opacity: 0; pointer-events: none;"
          role="dialog"
          aria-modal="true"
          aria-labelledby="template-modal-title">
@@ -277,10 +277,9 @@
                             <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
                                 <iframe src="{{ route('resumes.preview', $cv) }}?template_id={{ $template->id }}" 
                                         style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
-                                        class="template-thumbnail-iframe pointer-events-none transition-transform duration-500 origin-top-left"
+                                        class="template-thumbnail-iframe pointer-events-none transition-transform duration-300 origin-top-left"
                                         loading="lazy" tabindex="-1">
                                 </iframe>
-                                <div class="absolute inset-0 bg-transparent z-10"></div>
                                 @if($template->is_premium)
                                     <div class="absolute left-3 top-3 z-30 inline-flex items-center gap-1 rounded-full border border-[#A16207]/25 bg-tertiary/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#7C4A03] shadow-sm backdrop-blur">
                                         <span class="material-symbols-outlined text-[13px] icon-filled" aria-hidden="true">workspace_premium</span>
@@ -304,7 +303,7 @@
                                         </div>
                                     </div>
                                 @else
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4 z-20">
                                         <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">{{ __('messages.editor.use_template') }}</span>
                                     </div>
                                 @endif
@@ -328,10 +327,9 @@
                             <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
                                 <iframe src="{{ route('templates.demo', $template) }}" 
                                         style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
-                                        class="template-thumbnail-iframe pointer-events-none transition-transform duration-500 origin-top-left"
+                                        class="template-thumbnail-iframe pointer-events-none transition-transform duration-300 origin-top-left"
                                         loading="lazy" tabindex="-1">
                                 </iframe>
-                                <div class="absolute inset-0 bg-transparent z-10"></div>
                                 @if($template->is_premium)
                                     <div class="absolute left-3 top-3 z-30 inline-flex items-center gap-1 rounded-full border border-[#A16207]/25 bg-tertiary/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#7C4A03] shadow-sm backdrop-blur">
                                         <span class="material-symbols-outlined text-[13px] icon-filled" aria-hidden="true">workspace_premium</span>
@@ -352,7 +350,7 @@
                                         </div>
                                     </div>
                                 @else
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4 z-20">
                                         <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">{{ __('messages.editor.use_template') }}</span>
                                     </div>
                                 @endif
@@ -374,7 +372,7 @@
     </div>
 
     {{-- Refine Modal --}}
-    <div id="refine-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+    <div id="refine-modal" class="fixed inset-0 z-50 hidden bg-primary/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
          role="dialog"
          aria-modal="true"
          aria-labelledby="refine-modal-title"
@@ -397,7 +395,7 @@
     </div>
 
     {{-- CV Versions Modal --}}
-    <div id="cv-versions-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+    <div id="cv-versions-modal" class="fixed inset-0 z-50 hidden bg-primary/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
          role="dialog"
          aria-modal="true"
          aria-labelledby="cv-versions-modal-title">
@@ -426,7 +424,7 @@
     </div>
 
     {{-- CV History Modal --}}
-    <div id="history-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+    <div id="history-modal" class="fixed inset-0 z-50 hidden bg-primary/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
          role="dialog"
          aria-modal="true"
          aria-labelledby="history-modal-title">
@@ -446,7 +444,7 @@
     </div>
 
     {{-- Apply Version Confirmation Modal --}}
-    <div id="apply-version-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+    <div id="apply-version-modal" class="fixed inset-0 z-50 hidden bg-primary/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
          role="dialog"
          aria-modal="true"
          aria-labelledby="apply-version-modal-title">

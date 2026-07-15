@@ -297,7 +297,7 @@
                 const active = btn.id === `ms-tab-${tab}`;
                 btn.classList.toggle('text-primary',     active);
                 btn.classList.toggle('border-primary',   active);
-                btn.classList.toggle('text-primary/40',  !active);
+                btn.classList.toggle('text-primary/70',  !active);
                 btn.classList.toggle('border-transparent', !active);
             });
 
@@ -997,4 +997,63 @@
             closeHistoryModal,
             restoreSnapshot,
         });
-    
+
+        // ── Modal accessibility: Escape-to-close, focus trap, focus restore ──
+        // (No body scroll-lock: the editor body is already `overflow-hidden`.)
+        (function () {
+            const closers = {
+                'template-modal':      closeTemplateModal,
+                'refine-modal':        closeRefineModal,
+                'cv-versions-modal':   closeCvVersionsModal,
+                'history-modal':       closeHistoryModal,
+                'apply-version-modal': closeApplyVersionModal,
+            };
+            const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+            let restoreTarget = null;
+
+            const modalEls = () => Object.keys(closers)
+                .map(id => document.getElementById(id))
+                .filter(Boolean);
+            const visibleFocusables = (el) =>
+                [...el.querySelectorAll(FOCUSABLE)].filter(n => n.offsetParent !== null);
+
+            // Track show/hide to manage focus on open and restore it on close.
+            modalEls().forEach(el => {
+                new MutationObserver(() => {
+                    const open = !el.classList.contains('hidden');
+                    if (open && !el.dataset.a11yOpen) {
+                        el.dataset.a11yOpen = '1';
+                        restoreTarget = document.activeElement;
+                        setTimeout(() => { visibleFocusables(el)[0]?.focus(); }, 60);
+                    } else if (!open && el.dataset.a11yOpen) {
+                        delete el.dataset.a11yOpen;
+                        if (typeof restoreTarget?.focus === 'function') restoreTarget.focus();
+                        restoreTarget = null;
+                    }
+                }).observe(el, { attributes: true, attributeFilter: ['class'] });
+            });
+
+            document.addEventListener('keydown', (e) => {
+                const open = modalEls().filter(el => !el.classList.contains('hidden'));
+                if (!open.length) return;
+                const modal = open[open.length - 1];
+
+                if (e.key === 'Escape') {
+                    // The template modal is mandatory when there is no CV yet — don't let Escape strand the user.
+                    if (modal.id === 'template-modal' && !window.editorConfig.hasCv) return;
+                    e.preventDefault();
+                    closers[modal.id]?.();
+                    return;
+                }
+
+                if (e.key === 'Tab') {
+                    const f = visibleFocusables(modal);
+                    if (!f.length) return;
+                    const first = f[0], last = f[f.length - 1];
+                    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+                    else if (!modal.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+                }
+            });
+        })();
+

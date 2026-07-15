@@ -125,7 +125,7 @@
                                                     <span class="font-normal text-primary/50">@ {{ $scan->job_company }}</span>
                                                 @endif
                                             </p>
-                                            <p class="text-[11px] text-primary/40 mt-0.5 truncate">
+                                            <p class="text-[11px] text-primary/60 mt-0.5 truncate">
                                                 {{ $scan->cv?->title ?? __('messages.ats.setup.no_resume_linked') }}
                                                 · {{ $scan->created_at->diffForHumans() }}
                                             </p>

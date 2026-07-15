@@ -34,7 +34,7 @@
                 role="tab"
                 aria-selected="false"
                 aria-controls="ats-panel-results"
-                class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary/40 border-b-2 border-transparent transition-colors">
+                class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary/70 border-b-2 border-transparent transition-colors">
                 <span class="material-symbols-outlined text-[18px]">analytics</span> {{ __('messages.ats.tabs.results') }}
             </button>
         </div>

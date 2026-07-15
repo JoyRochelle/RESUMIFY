@@ -1,9 +1,11 @@
-@props(['number', 'label'])
+@props(['icon', 'label'])
 
-<div class="flex gap-4 md:gap-6">
-    <div class="text-3xl md:text-5xl font-headline italic text-secondary/40 serif-number">{{ $number }}</div>
+<div class="flex gap-4 md:gap-5">
+    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-primary/10 bg-primary/5 text-primary/70">
+        <span class="material-symbols-outlined text-[22px]" aria-hidden="true">{{ $icon }}</span>
+    </div>
     <div>
-        <h4 class="font-label font-bold text-primary/70 uppercase tracking-widest text-xs mb-3">{{ $label }}</h4>
+        <h4 class="font-label font-bold text-primary/80 uppercase tracking-widest text-xs mb-3">{{ $label }}</h4>
         <p class="font-headline text-lg md:text-2xl text-primary leading-snug">
             {{ $slot }}
         </p>
