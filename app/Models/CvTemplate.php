@@ -12,6 +12,15 @@ class CvTemplate extends Model
 {
     use HasFactory, HasUlids;
 
+    /**
+     * Allowlist pattern for blade_path. Templates may only ever resolve to a
+     * view inside the `templates.*` namespace (resources/views/templates/*).
+     * This prevents a tampered/injected blade_path from rendering arbitrary
+     * application views (e.g. admin.*, emails.*) — a path-injection / SSRF-style
+     * vulnerability, since the value flows straight into view().
+     */
+    public const BLADE_PATH_PATTERN = '/^templates\.[a-z0-9\-]+$/';
+
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -52,9 +61,25 @@ class CvTemplate extends Model
         return $this->hasMany(Cv::class, 'template_id');
     }
 
+    /**
+     * Return the blade_path only if it is a safe, existing CV template view.
+     * Aborts with 404 otherwise so a malicious/tampered path can never be
+     * rendered. Use this everywhere blade_path is passed to view().
+     */
+    public function safeBladePath(): string
+    {
+        $path = (string) $this->blade_path;
+
+        if (! preg_match(self::BLADE_PATH_PATTERN, $path) || ! view()->exists($path)) {
+            abort(404, 'Template not found.');
+        }
+
+        return $path;
+    }
+
     // Helper: render this template with a CV's data
     public function renderHtml(Cv $cv): string
     {
-        return view($this->blade_path, compact('cv'))->render();
+        return view($this->safeBladePath(), compact('cv'))->render();
     }
 }
