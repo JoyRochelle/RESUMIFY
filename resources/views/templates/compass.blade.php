@@ -48,7 +48,7 @@
         @if(!empty($info['title'])) <div class="title-role">{{ $info['title'] }}</div> @endif
 
         @if(!empty($info['summary']))
-        <div class="career-goal-label">Tujuan Karier</div>
+        <div class="career-goal-label">Career Objective</div>
         <div class="career-goal">{!! nl2br(e($info['summary'])) !!}</div>
         @endif
 
@@ -76,7 +76,7 @@
         @endif
 
         @if($experience && !empty($experience->content))
-        <h2>Pengalaman & Organisasi</h2>
+        <h2>Experience & Organizations</h2>
         @foreach($experience->content as $job)
         <div class="entry">
             <div class="entry-row">
@@ -92,7 +92,7 @@
         @endif
 
         @if($projects && !empty($projects->content))
-        <h2>Proyek</h2>
+        <h2>Projects</h2>
         @foreach($projects->content as $proj)
         <div class="entry">
             <div class="entry-row">
@@ -117,7 +117,7 @@
         @endif
 
         @if($certifications && !empty($certifications->content))
-        <h2>Sertifikasi</h2>
+        <h2>Certifications</h2>
         @foreach($certifications->content as $cert)
         <div class="entry">
             <div class="entry-row">

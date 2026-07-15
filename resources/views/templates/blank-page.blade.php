@@ -94,7 +94,7 @@
     @endif
 
     @if($experience && !empty($experience->content))
-    <h2>Pengalaman & Volunteer</h2>
+    <h2>Experience & Volunteering</h2>
     @foreach($experience->content as $job)
     <div class="entry">
         <div class="entry-row">

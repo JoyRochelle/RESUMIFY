@@ -19,6 +19,9 @@
                         'secondary' => 'bg-secondary/20 text-secondary',
                         'purple'    => 'bg-purple-100 text-purple-700',
                         'green'     => 'bg-green-100 text-green-700',
+                        'slate'     => 'bg-slate-200 text-slate-700',
+                        'teal'      => 'bg-teal-100 text-teal-700',
+                        'gray'      => 'bg-gray-200 text-gray-700',
                     ];
                 @endphp
                 <span class="admin-badge {{ $badgeColors[$template->badge_color] ?? 'bg-primary/10 text-primary/60' }}">
