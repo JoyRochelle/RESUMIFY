@@ -97,6 +97,27 @@ class CvTemplateSeeder extends Seeder
             ]
         ]);
 
+        // Signal: Job Seeker premium — tier premium ATS-maximized untuk 'general', monokrom densitas tinggi.
+        CvTemplate::create([
+            'name'             => 'Signal',
+            'blade_path'       => 'templates.signal',
+            'category'         => 'professional',
+            'experience_level' => 'general',
+            'description'      => 'Dioptimalkan habis-habisan untuk ATS: satu kolom padat, monokrom, tanpa hiasan, font Arial yang paling andal diparsing. Densitas keyword maksimal, ruang terbuang minimal.',
+            'badge'            => 'Premium',
+            'badge_color'      => 'gray',
+            'is_premium'       => true,
+            'is_active'        => true,
+            'sort_order'       => 5,
+            'style_config'     => [
+                'primary_color'    => '#000000',
+                'secondary_color'  => '#000000',
+                'background_color' => '#ffffff',
+                'font_heading'     => 'Arial',
+                'font_body'        => 'Arial',
+            ]
+        ]);
+
         // ── 2. Awal Karier (fresh_graduate) ─────────────────────────
 
         CvTemplate::create([
@@ -109,7 +130,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'blue',
             'is_premium'       => false,
             'is_active'        => true,
-            'sort_order'       => 5,
+            'sort_order'       => 6,
             'style_config'     => [
                 'primary_color'    => '#16a34a',
                 'secondary_color'  => '#15803d',
@@ -129,7 +150,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'blue',
             'is_premium'       => false,
             'is_active'        => true,
-            'sort_order'       => 6,
+            'sort_order'       => 7,
             'style_config'     => [
                 'primary_color'    => '#374151',
                 'secondary_color'  => '#6b7280',
@@ -149,7 +170,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'blue',
             'is_premium'       => false,
             'is_active'        => true,
-            'sort_order'       => 7,
+            'sort_order'       => 8,
             'style_config'     => [
                 'primary_color'    => '#1e293b',
                 'secondary_color'  => '#334155',
@@ -169,13 +190,34 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'blue',
             'is_premium'       => false,
             'is_active'        => true,
-            'sort_order'       => 8,
+            'sort_order'       => 9,
             'style_config'     => [
                 'primary_color'    => '#111827',
                 'secondary_color'  => '#6b7280',
                 'background_color' => '#ffffff',
                 'font_heading'     => 'Open Sans',
                 'font_body'        => 'Open Sans',
+            ]
+        ]);
+
+        // Meridian: satu-satunya fresh-grad dengan layout label-kiri, dan satu-satunya yang premium.
+        CvTemplate::create([
+            'name'             => 'Meridian',
+            'blade_path'       => 'templates.meridian',
+            'category'         => 'professional',
+            'experience_level' => 'fresh_graduate',
+            'description'      => 'Layout label-kiri: judul section di kolom kiri, konten di kanan — rapi dan mudah dipindai. Pendidikan & Proyek di atas, Pengalaman Kerja opsional di bawah. Satu kolom, aman ATS.',
+            'badge'            => 'Premium',
+            'badge_color'      => 'slate',
+            'is_premium'       => true,
+            'is_active'        => true,
+            'sort_order'       => 10,
+            'style_config'     => [
+                'primary_color'    => '#2C3E50',
+                'secondary_color'  => '#5D6D7E',
+                'background_color' => '#ffffff',
+                'font_heading'     => 'Source Serif 4',
+                'font_body'        => 'Inter',
             ]
         ]);
 
@@ -191,7 +233,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'blue',
             'is_premium'       => false,
             'is_active'        => true,
-            'sort_order'       => 9,
+            'sort_order'       => 11,
             'style_config'     => [
                 'primary_color'    => '#1a1a1a',
                 'secondary_color'  => '#374151',
@@ -211,7 +253,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'blue',
             'is_premium'       => false,
             'is_active'        => true,
-            'sort_order'       => 10,
+            'sort_order'       => 12,
             'style_config'     => [
                 'primary_color'    => '#1e3a8a',
                 'secondary_color'  => '#1e40af',
@@ -231,7 +273,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'blue',
             'is_premium'       => false,
             'is_active'        => true,
-            'sort_order'       => 11,
+            'sort_order'       => 13,
             'style_config'     => [
                 'primary_color'    => '#1a1a1a',
                 'secondary_color'  => '#92722a',
@@ -251,7 +293,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'amber',
             'is_premium'       => true,
             'is_active'        => true,
-            'sort_order'       => 12,
+            'sort_order'       => 14,
             'style_config'     => [
                 'primary_color'    => '#1f2937',
                 'secondary_color'  => '#374151',
@@ -272,7 +314,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'blue',
             'is_premium'       => false,
             'is_active'        => true,
-            'sort_order'       => 13,
+            'sort_order'       => 15,
             'style_config'     => [
                 'primary_color'    => '#000000',
                 'secondary_color'  => '#000000',
@@ -294,7 +336,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'blue',
             'is_premium'       => false,
             'is_active'        => true,
-            'sort_order'       => 14,
+            'sort_order'       => 16,
             'style_config'     => [
                 'primary_color'    => '#7c3aed',
                 'secondary_color'  => '#6d28d9',
@@ -314,7 +356,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'blue',
             'is_premium'       => false,
             'is_active'        => true,
-            'sort_order'       => 15,
+            'sort_order'       => 17,
             'style_config'     => [
                 'primary_color'    => '#ea580c',
                 'secondary_color'  => '#c2410c',
@@ -334,7 +376,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'amber',
             'is_premium'       => false,
             'is_active'        => true,
-            'sort_order'       => 16,
+            'sort_order'       => 18,
             'style_config'     => [
                 'primary_color'    => '#0d9488',
                 'secondary_color'  => '#0f766e',
@@ -355,7 +397,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'blue',
             'is_premium'       => false,
             'is_active'        => true,
-            'sort_order'       => 17,
+            'sort_order'       => 19,
             'style_config'     => [
                 'primary_color'    => '#2563eb',
                 'secondary_color'  => '#1d4ed8',
@@ -377,7 +419,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'red',
             'is_premium'       => true,
             'is_active'        => true,
-            'sort_order'       => 18,
+            'sort_order'       => 20,
             'style_config'     => [
                 'primary_color'    => '#ec4899',
                 'secondary_color'  => '#db2777',
@@ -398,7 +440,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'red',
             'is_premium'       => true,
             'is_active'        => true,
-            'sort_order'       => 19,
+            'sort_order'       => 21,
             'style_config'     => [
                 'primary_color'    => '#1a1a1a',
                 'secondary_color'  => '#eab308',
@@ -419,7 +461,7 @@ class CvTemplateSeeder extends Seeder
             'badge_color'      => 'red',
             'is_premium'       => true,
             'is_active'        => true,
-            'sort_order'       => 20,
+            'sort_order'       => 22,
             'style_config'     => [
                 'primary_color'    => '#7c3aed',
                 'secondary_color'  => '#ea580c',
@@ -427,6 +469,29 @@ class CvTemplateSeeder extends Seeder
                 'font_heading'     => 'Oswald',
                 'font_body'        => 'Inter',
                 'show_photo'       => true,
+            ]
+        ]);
+
+        // ── 6. Pindah Jalur Karier (career_switcher) ────────────────
+        // Crossing: satu-satunya template career-switcher. Layout skill-forward hybrid.
+        CvTemplate::create([
+            'name'             => 'Crossing',
+            'blade_path'       => 'templates.crossing',
+            'category'         => 'professional',
+            'experience_level' => 'career_switcher',
+            'description'      => 'Untuk yang pindah jalur karier: keahlian transferable ditonjolkan di atas, diperkuat pernyataan positioning. Riwayat kerja tetap kronologis dengan tanggal agar aman ATS.',
+            'badge'            => 'Premium',
+            'badge_color'      => 'teal',
+            'is_premium'       => true,
+            'is_active'        => true,
+            'sort_order'       => 23,
+            'style_config'     => [
+                'primary_color'    => '#0F6E56',
+                'secondary_color'  => '#0d9488',
+                'soft_color'       => '#e6f4f0',
+                'background_color' => '#ffffff',
+                'font_heading'     => 'Fraunces',
+                'font_body'        => 'Inter',
             ]
         ]);
 

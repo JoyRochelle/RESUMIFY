@@ -81,6 +81,9 @@
                         <option value="secondary" {{ old('badge_color') === 'secondary' ? 'selected' : '' }}>Secondary</option>
                         <option value="purple"    {{ old('badge_color') === 'purple'    ? 'selected' : '' }}>Purple</option>
                         <option value="green"     {{ old('badge_color') === 'green'     ? 'selected' : '' }}>Green</option>
+                        <option value="slate"     {{ old('badge_color') === 'slate'     ? 'selected' : '' }}>Slate</option>
+                        <option value="teal"      {{ old('badge_color') === 'teal'      ? 'selected' : '' }}>Teal</option>
+                        <option value="gray"      {{ old('badge_color') === 'gray'      ? 'selected' : '' }}>Gray</option>
                     </select>
                     @error('badge_color')<p id="template-badge-color-error" class="mt-1 text-xs text-red-600" role="alert">{{ $message }}</p>@enderror
                 </div>

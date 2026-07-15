@@ -30,6 +30,9 @@
                         'blue' => 'bg-secondary text-white',
                         'amber' => 'bg-amber-500 text-white',
                         'red' => 'bg-red-500 text-white',
+                        'slate' => 'bg-slate-700 text-white',
+                        'teal' => 'bg-teal-600 text-white',
+                        'gray' => 'bg-gray-700 text-white',
                         default => 'bg-secondary text-white',
                     };
                 @endphp
