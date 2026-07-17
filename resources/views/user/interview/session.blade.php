@@ -34,7 +34,7 @@
             {{ __('messages.interview.session.end_session') }}
         </button>
         @else
-        <span class="px-3 py-1.5 rounded-lg bg-primary/5 text-primary/40 text-xs font-medium">
+        <span class="px-3 py-1.5 rounded-lg bg-primary/5 text-primary/60 text-xs font-medium">
             {{ __('messages.interview.session.session_ended_badge') }}
         </span>
         @endif
@@ -101,9 +101,9 @@
             </div>
             <div class="flex items-center gap-1.5 bg-surface-container-low
                         rounded-tr-2xl rounded-br-2xl rounded-tl-2xl px-4 py-3">
-                <span class="w-2 h-2 bg-primary/30 rounded-full animate-bounce [animation-delay:0ms]"></span>
-                <span class="w-2 h-2 bg-primary/30 rounded-full animate-bounce [animation-delay:150ms]"></span>
-                <span class="w-2 h-2 bg-primary/30 rounded-full animate-bounce [animation-delay:300ms]"></span>
+                <span class="typing-dot w-2 h-2 bg-primary/40 rounded-full [animation-delay:0ms]"></span>
+                <span class="typing-dot w-2 h-2 bg-primary/40 rounded-full [animation-delay:180ms]"></span>
+                <span class="typing-dot w-2 h-2 bg-primary/40 rounded-full [animation-delay:360ms]"></span>
             </div>
         </div>
 
@@ -135,8 +135,9 @@
 {{-- End Session Confirmation Modal --}}
 @if($session->status === 'active')
 <div id="end-modal"
-     class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm
+     class="hidden fixed inset-0 z-50 bg-primary/50 backdrop-blur-sm
             flex items-center justify-center px-4"
+     role="dialog" aria-modal="true" aria-labelledby="end-modal-title"
      onclick="if(event.target===this) closeEndModal()">
     <div class="bg-surface rounded-2xl p-6 max-w-sm w-full shadow-xl
                 transform transition-all duration-200 scale-95 opacity-0"
@@ -146,7 +147,7 @@
                 <span class="material-symbols-outlined text-red-500 text-[20px]">stop_circle</span>
             </div>
             <div>
-                <p class="font-semibold text-primary text-sm">{{ __('messages.interview.session.end_modal_title') }}</p>
+                <p id="end-modal-title" class="font-semibold text-primary text-sm">{{ __('messages.interview.session.end_modal_title') }}</p>
                 <p class="text-primary/50 text-xs">{{ __('messages.interview.session.end_modal_subtitle') }}</p>
             </div>
         </div>
@@ -173,6 +174,17 @@
 @endif
 
 @push('scripts')
+<style>
+    /* Refined typing indicator — gentle pulse, not a hard bounce. */
+    @keyframes typingPulse {
+        0%, 60%, 100% { opacity: .35; transform: translateY(0); }
+        30%           { opacity: .9;  transform: translateY(-3px); }
+    }
+    .typing-dot { animation: typingPulse 1.2s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+        .typing-dot { animation: none; opacity: .6; }
+    }
+</style>
 <script>
     const messageList = document.getElementById('messages');
     const userInput   = document.getElementById('user-input');
@@ -372,21 +384,45 @@
     // End session modal
     const endModal     = document.getElementById('end-modal');
     const endModalCard = document.getElementById('end-modal-card');
+    const END_FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    let endRestoreTarget = null;
 
     function openEndModal() {
         if (!endModal) return;
+        endRestoreTarget = document.activeElement;
         endModal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
         requestAnimationFrame(() => {
             endModalCard.classList.remove('scale-95', 'opacity-0');
             endModalCard.classList.add('scale-100', 'opacity-100');
         });
+        setTimeout(() => endModal.querySelector(END_FOCUSABLE)?.focus(), 60);
     }
 
     function closeEndModal() {
         if (!endModal) return;
         endModalCard.classList.remove('scale-100', 'opacity-100');
         endModalCard.classList.add('scale-95', 'opacity-0');
+        document.body.classList.remove('overflow-hidden');
         setTimeout(() => endModal.classList.add('hidden'), 200);
+        if (typeof endRestoreTarget?.focus === 'function') endRestoreTarget.focus();
+        endRestoreTarget = null;
+    }
+
+    // Escape-to-close + focus trap while the end-session modal is open.
+    if (endModal) {
+        document.addEventListener('keydown', (e) => {
+            if (endModal.classList.contains('hidden')) return;
+            if (e.key === 'Escape') { e.preventDefault(); closeEndModal(); return; }
+            if (e.key === 'Tab') {
+                const f = [...endModal.querySelectorAll(END_FOCUSABLE)].filter(n => n.offsetParent !== null);
+                if (!f.length) return;
+                const first = f[0], last = f[f.length - 1];
+                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+                else if (!endModal.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+            }
+        });
     }
 </script>
 @endpush

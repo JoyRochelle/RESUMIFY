@@ -59,8 +59,7 @@
         <div class="bg-tertiary w-full max-w-lg rounded-2xl shadow-2xl border border-primary/10 transform scale-95 transition-transform duration-300 overflow-hidden"
             id="instructions-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
-                <h3 id="instructions-modal-title" class="font-headline text-xl font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">info</span>
+                <h3 id="instructions-modal-title" class="font-headline text-xl font-bold text-primary">
                     {{ __('messages.ats.instructions_modal.title') }}
                 </h3>
                 <button type="button" onclick="closeInstructions()"
@@ -71,24 +70,16 @@
                 <p>{{ __('messages.ats.instructions_modal.intro') }}
                 </p>
                 <ul class="space-y-3">
-                    <li class="flex items-start gap-3">
-                        <span
-                            class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
+                    <li class="leading-relaxed">
                         <span><strong class="text-primary">{{ __('messages.ats.instructions_modal.keyword_match_label') }}</strong> {{ __('messages.ats.instructions_modal.keyword_match_desc') }}</span>
                     </li>
-                    <li class="flex items-start gap-3">
-                        <span
-                            class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
+                    <li class="leading-relaxed">
                         <span><strong class="text-primary">{{ __('messages.ats.instructions_modal.action_verbs_label') }}</strong> {{ __('messages.ats.instructions_modal.action_verbs_desc') }}</span>
                     </li>
-                    <li class="flex items-start gap-3">
-                        <span
-                            class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
+                    <li class="leading-relaxed">
                         <span><strong class="text-primary">{{ __('messages.ats.instructions_modal.quantification_label') }}</strong> {{ __('messages.ats.instructions_modal.quantification_desc') }}</span>
                     </li>
-                    <li class="flex items-start gap-3">
-                        <span
-                            class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 icon-filled">check_circle</span>
+                    <li class="leading-relaxed">
                         <span><strong class="text-primary">{!! __('messages.ats.instructions_modal.length_format_label') !!}</strong> {!! __('messages.ats.instructions_modal.length_format_desc') !!}</span>
                     </li>
                 </ul>

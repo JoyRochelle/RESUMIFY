@@ -85,7 +85,7 @@
                     <!-- Optional Sections Toggles -->
                     @if($cv && (!$certifications || !$projects || !$languages))
                     <div class="mt-8 border-t border-primary/10 pt-6 px-4">
-                        <h4 class="text-sm font-bold text-primary tracking-wide mb-4 flex items-center gap-2"><span class="material-symbols-outlined">add_box</span> {{ __('messages.editor.add_optional_section') }}</h4>
+                        <h4 class="text-sm font-bold text-primary tracking-wide mb-4">{{ __('messages.editor.add_optional_section') }}</h4>
                         <div class="flex flex-wrap gap-3">
                             @if(!$certifications)
                             <form action="{{ route('resumes.sections.store', $cv->id) }}" method="POST">
@@ -124,8 +124,8 @@
                     
                     {{-- Maximized Content --}}
                     <div id="ats-maximized" class="flex flex-col items-center cursor-pointer w-full" onclick="toggleAtsMinimize(event)" title="{{ __('messages.editor.minimize') }}">
-                        <div class="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2 flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[12px]">analytics</span>{{ __('messages.editor.ats_score') }}
+                        <div class="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">
+                            {{ __('messages.editor.ats_score') }}
                         </div>
                         <div id="ats-score-wrap" class="relative w-14 h-14">
                             <svg class="w-14 h-14 -rotate-90" viewBox="0 0 56 56">
@@ -256,7 +256,7 @@
         <div class="bg-surface w-full max-w-4xl max-h-[80vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden mx-4 transform scale-95 transition-transform duration-300" id="template-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="template-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">layers</span> {{ __('messages.editor.select_template_title') }}
+                    {{ __('messages.editor.select_template_title') }}
                 </h3>
                 <button id="close-modal-btn" type="button" onclick="closeTemplateModal()" aria-label="{{ __('messages.editor.close_template_selection') }}" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
@@ -380,7 +380,7 @@
         <div class="bg-surface w-full max-w-lg rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300" id="refine-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="refine-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">auto_awesome</span> {{ __('messages.editor.refine_with_ai') }}
+                    {{ __('messages.editor.refine_with_ai') }}
                 </h3>
                 <button type="button" onclick="closeRefineModal()" aria-label="{{ __('messages.editor.close_ai_refinement') }}" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
@@ -402,7 +402,7 @@
         <div class="bg-surface w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300 overflow-hidden" id="cv-versions-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="cv-versions-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">auto_awesome</span> {{ __('messages.editor.tailored_cv_versions') }}
+                    {{ __('messages.editor.tailored_cv_versions') }}
                 </h3>
                 <button type="button" onclick="closeCvVersionsModal()" aria-label="{{ __('messages.editor.close_tailored_versions') }}" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
@@ -431,7 +431,7 @@
         <div class="bg-surface w-full max-w-lg max-h-[80vh] rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300 overflow-hidden" id="history-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="history-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">history</span> {{ __('messages.editor.cv_history') }}
+                    {{ __('messages.editor.cv_history') }}
                 </h3>
                 <button type="button" onclick="closeHistoryModal()" aria-label="{{ __('messages.editor.close_cv_history') }}" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
@@ -450,7 +450,7 @@
          aria-labelledby="apply-version-modal-title">
         <div class="bg-surface w-full max-w-md rounded-2xl shadow-2xl p-6 mx-4 transform scale-95 transition-transform duration-300" id="apply-version-modal-content">
             <h3 id="apply-version-modal-title" class="text-lg font-headline font-bold text-primary flex items-center gap-2 mb-3">
-                <span class="material-symbols-outlined text-secondary">auto_awesome</span> {{ __('messages.editor.apply_version_title') }}
+                {{ __('messages.editor.apply_version_title') }}
             </h3>
             <p class="text-sm text-primary/70 mb-4">{{ __('messages.editor.apply_version_desc') }}</p>
             <div id="apply-version-warning" class="hidden mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs"></div>

@@ -7,8 +7,7 @@
                     {{-- Select CV --}}
                     @if (isset($cvs) && $cvs->isNotEmpty())
                         <div class="bg-tertiary rounded-xl p-5 border border-primary/10 shadow-sm flex flex-col gap-3">
-                            <label for="cv-selector" class="font-bold text-primary flex items-center gap-2 text-sm">
-                                <span class="material-symbols-outlined text-primary/60 text-[18px]">folder_open</span>
+                            <label for="cv-selector" class="font-bold text-primary text-sm">
                                 {{ __('messages.ats.setup.select_from_resumes') }}
                             </label>
                             <select id="cv-selector"
@@ -49,8 +48,7 @@
                                     placeholder="{{ __('messages.editor.sections.target_job.job_description_placeholder') }}"
                                     class="w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30"></textarea>
                             </div>
-                            <p class="text-xs text-primary/40 -mt-2 flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[13px]">info</span>
+                            <p class="text-xs text-primary/60 -mt-2">
                                 {{ __('messages.ats.setup.autofill_hint') }}
                             </p>
                         </div>
@@ -91,8 +89,7 @@
                     @if (isset($history) && $history->isNotEmpty())
                         <div class="flex flex-col gap-3">
                             <div class="flex items-center justify-between">
-                                <h3 class="font-bold text-primary/70 text-xs uppercase tracking-widest flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-[15px]">history</span>
+                                <h3 class="font-bold text-primary/70 text-xs uppercase tracking-widest">
                                     {{ __('messages.ats.setup.scan_history') }}
                                 </h3>
                                 <span class="text-[10px] text-primary/40">{{ trans_choice('messages.ats.setup.recent_scans_count', $history->count(), ['count' => $history->count()]) }}</span>
