@@ -2,6 +2,8 @@
 
 AI-powered CV builder built for the Indonesian job market — resume authoring, ATS gap analysis, and an AI mock interviewer in one flow, instead of three disconnected tools.
 
+**Live demo:** [https://resumify-t5kx.onrender.com](https://resumify-t5kx.onrender.com/) (hosted on Render's free tier — the first request after idle may take ~a minute to cold-start)
+
 Generic builders (Canva, Novoresume, Resume.io) don't understand local formats (BUMN/startup/corporate conventions, IPK, photo norms, Bahasa Indonesia) and don't connect CV building to ATS feedback or interview prep. Resumify's target: zero to a downloadable, tailored CV in under 10 minutes, with ATS feedback the user can actually act on. See [PRODUCT.md](PRODUCT.md) for the full product brief and [DESIGN.md](DESIGN.md) for the visual design system.
 
 ## Table of Contents
@@ -193,6 +195,8 @@ php artisan test
 61 test files across `tests/Feature` and `tests/Unit`. CI ([.github/workflows/laravel.yml](.github/workflows/laravel.yml)) runs the full suite against MySQL 8 on every push/PR to `develop` and `main`.
 
 ## Deployment
+
+Live at [https://resumify-t5kx.onrender.com](https://resumify-t5kx.onrender.com/), deployed on [Render](https://render.com) via Docker.
 
 Docker-based, multi-stage build (see [Dockerfile](Dockerfile)):
 
