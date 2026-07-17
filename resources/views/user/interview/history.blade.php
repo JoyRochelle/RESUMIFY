@@ -95,7 +95,7 @@
                             @if($session->status !== 'completed')
                                 &nbsp;·&nbsp;
                                 <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
-                                    {{ $session->status === 'active' ? 'bg-yellow-100 text-yellow-600' : 'bg-primary/8 text-primary/40' }}">
+                                    {{ $session->status === 'active' ? 'bg-yellow-100 text-yellow-700' : 'bg-primary/8 text-primary/60' }}">
                                     {{ $session->status }}
                                 </span>
                             @endif
@@ -106,7 +106,7 @@
                     <div class="shrink-0 w-14 text-center">
                         @if($hasFeedback && $trend !== null && $trend !== 0)
                             @if($trend > 0)
-                                <span class="text-xs font-bold text-green-600">▲ +{{ $trend }}</span>
+                                <span class="text-xs font-bold text-secondary">▲ +{{ $trend }}</span>
                             @else
                                 <span class="text-xs font-bold text-red-500">▼ {{ $trend }}</span>
                             @endif
@@ -131,8 +131,8 @@
                 @empty
                 <div class="py-16 text-center">
                     <span class="material-symbols-outlined text-primary/20 text-[56px] block mb-3">history</span>
-                    <p class="text-sm font-semibold text-primary/40 mb-1">{{ __('messages.interview.history.no_sessions_yet') }}</p>
-                    <p class="text-xs text-primary/30 mb-5">{{ __('messages.interview.history.complete_first_interview') }}</p>
+                    <p class="text-sm font-semibold text-primary/70 mb-1">{{ __('messages.interview.history.no_sessions_yet') }}</p>
+                    <p class="text-xs text-primary/60 mb-5">{{ __('messages.interview.history.complete_first_interview') }}</p>
                     <a href="{{ route('interview.index') }}"
                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-secondary text-white
                               font-semibold text-sm hover:bg-secondary/90 active:scale-[.98] transition-all">

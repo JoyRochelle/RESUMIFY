@@ -167,11 +167,11 @@
                                         </div>
                                         <div class="text-right shrink-0">
                                             @if($session->status === 'completed' && $session->feedback)
-                                                <span class="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                                                <span class="inline-flex items-center gap-1 px-2 py-1 bg-secondary/10 text-secondary rounded-lg text-[10px] font-bold uppercase tracking-wider">
                                                     {{ __('messages.interview.index.score_label', ['score' => $session->feedback->overall_score ?? 0]) }}
                                                 </span>
                                             @elseif($session->status === 'active')
-                                                <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                                                <span class="inline-flex items-center px-2 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-[10px] font-bold uppercase tracking-wider">
                                                     {{ __('messages.interview.index.in_progress') }}
                                                 </span>
                                             @else

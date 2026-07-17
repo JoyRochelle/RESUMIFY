@@ -15,8 +15,7 @@
                 <p class="text-primary/60 font-label text-sm max-w-md">{{ __('messages.manuscripts_page.subtitle') }}</p>
                 <div class="mt-4 flex flex-wrap items-center gap-3">
                     <x-user.plan-badge :user="$user" />
-                    <span class="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-tertiary px-3 py-1 text-sm font-label text-primary/70">
-                        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">description</span>
+                    <span class="inline-flex items-center rounded-full border border-primary/10 bg-tertiary px-3 py-1 text-sm font-label text-primary/80">
                         {{ __('messages.dashboard.resume_quota', ['used' => $user->getResumeQuotaUsed(), 'limit' => $user->getResumeLimit() ?? __('messages.dashboard.unlimited')]) }}
                     </span>
                 </div>
@@ -90,8 +89,8 @@
          aria-labelledby="rename-modal-title">
         <div id="rename-modal-content" class="bg-tertiary w-full max-w-md rounded-2xl shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
-                <h3 id="rename-modal-title" class="font-headline text-xl font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">drive_file_rename_outline</span> {{ __('messages.dashboard.rename_modal.title') }}
+                <h3 id="rename-modal-title" class="font-headline text-xl font-bold text-primary">
+                    {{ __('messages.dashboard.rename_modal.title') }}
                 </h3>
                 <button type="button" onclick="closeRenameModal()" aria-label="{{ __('messages.dashboard.rename_modal.close_aria') }}" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>

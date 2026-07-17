@@ -15,8 +15,7 @@
                     {{ __('messages.dashboard.welcome') }} <br />{{ $user->name }}</h1>
                 <div class="flex flex-wrap items-center gap-3">
                     <x-user.plan-badge :user="$user" />
-                    <span class="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-tertiary px-3 py-1 text-sm font-label text-primary/70">
-                        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">visibility</span>
+                    <span class="inline-flex items-center rounded-full border border-primary/10 bg-tertiary px-3 py-1 text-sm font-label text-primary/80">
                         {{ __('messages.dashboard.resume_quota', ['used' => $user->getResumeQuotaUsed(), 'limit' => $user->getResumeLimit() ?? __('messages.dashboard.unlimited')]) }}
                     </span>
                 </div>
@@ -29,7 +28,7 @@
 
         <section>
             <div class="flex items-center justify-between mb-8">
-                <h2 class="text-xl font-body font-medium text-primary tracking-wide">{{ __('messages.dashboard.your_resumes') }}</h2>
+                <h2 class="text-xl font-headline font-medium text-primary">{{ __('messages.dashboard.your_resumes') }}</h2>
                 <div class="h-px flex-1 mx-6 bg-primary/10 hidden md:block"></div>
             </div>
 
@@ -49,7 +48,7 @@
                             <span class="material-symbols-outlined text-primary text-3xl" data-icon="add">{{ $user->canCreateResume() ? 'add' : 'lock' }}</span>
                         </div>
                         <p class="font-headline text-xl text-primary mb-2">{{ $user->canCreateResume() ? __('messages.dashboard.start_new_manuscript') : __('messages.dashboard.resume_limit_reached') }}</p>
-                        <p id="dashboard-create-limit" class="text-sm text-primary/60 font-label max-w-[220px]">
+                        <p id="dashboard-create-limit" class="text-sm text-primary/80 font-label max-w-[220px]">
                             {{ $user->canCreateResume() ? __('messages.dashboard.start_new_manuscript_desc') : __('messages.dashboard.resume_limit_reached_desc') }}
                         </p>
                     </div>
@@ -59,11 +58,11 @@
 
         <section class="mt-12 md:mt-24 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 border-t border-primary/10 pt-8 md:pt-12">
 
-            <x-user.insight-block number="01" label="{{ __('messages.dashboard.daily_tip_label') }}">
+            <x-user.insight-block icon="lightbulb" label="{{ __('messages.dashboard.daily_tip_label') }}">
                 "{{ __('messages.dashboard.daily_tip') }}"
             </x-user.insight-block>
 
-            <x-user.insight-block number="02" label="{{ __('messages.dashboard.ats_insight_label') }}">
+            <x-user.insight-block icon="query_stats" label="{{ __('messages.dashboard.ats_insight_label') }}">
                 {{ __('messages.dashboard.ats_insight_prefix') }} <a href="{{ route('user.ai-assistant') }}"
                     class="text-secondary font-bold hover:underline">{{ __('messages.dashboard.ats_insight_link') }}</a> {{ __('messages.dashboard.ats_insight_suffix') }}
             </x-user.insight-block>
@@ -116,8 +115,8 @@
         <div id="rename-modal-content"
             class="bg-tertiary w-full max-w-md rounded-2xl shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
-                <h3 id="rename-modal-title" class="font-headline text-xl font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">drive_file_rename_outline</span> {{ __('messages.dashboard.rename_modal.title') }}
+                <h3 id="rename-modal-title" class="font-headline text-xl font-bold text-primary">
+                    {{ __('messages.dashboard.rename_modal.title') }}
                 </h3>
                 <button type="button" onclick="closeRenameModal()"
                     aria-label="{{ __('messages.dashboard.rename_modal.close_aria') }}"
@@ -156,11 +155,53 @@
             }
         }
 
+        const MODAL_IDS = ['create-modal', 'delete-modal', 'rename-modal'];
+
+        function openModals() {
+            return MODAL_IDS
+                .map(id => document.getElementById(id))
+                .filter(el => el && !el.classList.contains('hidden'));
+        }
+
+        // Lock body scroll while any modal is open; release when the last one closes.
+        function syncScrollLock() {
+            document.body.classList.toggle('overflow-hidden', openModals().length > 0);
+        }
+
+        // Keep Tab focus inside the topmost open modal.
+        function trapFocus(e) {
+            if (e.key !== 'Tab') return;
+            const modal = openModals().pop();
+            if (!modal) return;
+
+            const focusable = modal.querySelectorAll(
+                'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            );
+            if (!focusable.length) return;
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            } else if (!modal.contains(document.activeElement)) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+
+        document.addEventListener('keydown', trapFocus);
+
         function openCreateModal() {
             rememberFocus();
             const modal = document.getElementById('create-modal');
             const modalContent = document.getElementById('create-modal-content');
             modal.classList.remove('hidden');
+            syncScrollLock();
             void modal.offsetWidth; // Trigger reflow
             modal.style.opacity = '1';
             modalContent.classList.remove('scale-95');
@@ -191,6 +232,7 @@
             modalContent.classList.add('scale-95');
             setTimeout(() => {
                 modal.classList.add('hidden');
+                syncScrollLock();
                 restoreFocus();
             }, 300);
         }
@@ -213,6 +255,7 @@
             deleteForm.action = `/resumes/${cvId}`;
 
             modal.classList.remove('hidden');
+            syncScrollLock();
             void modal.offsetWidth; // Trigger reflow
             modal.style.opacity = '1';
             modalContent.classList.remove('scale-95');
@@ -228,6 +271,7 @@
             modalContent.classList.add('scale-95');
             setTimeout(() => {
                 modal.classList.add('hidden');
+                syncScrollLock();
                 restoreFocus();
             }, 300);
         }
@@ -244,6 +288,7 @@
             titleInput.value = currentTitle;
 
             modal.classList.remove('hidden');
+            syncScrollLock();
             void modal.offsetWidth; // Trigger reflow
             modal.style.opacity = '1';
             modalContent.classList.remove('scale-95');
@@ -264,6 +309,7 @@
             modalContent.classList.add('scale-95');
             setTimeout(() => {
                 modal.classList.add('hidden');
+                syncScrollLock();
                 restoreFocus();
             }, 300);
         }

@@ -38,7 +38,7 @@
                 <span class="material-symbols-outlined text-[18px]">edit_note</span> {{ __('messages.editor.tab_edit') }}
             </button>
             <button id="ms-tab-preview" onclick="switchMsTab('preview')"
-                    class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary/40 border-b-2 border-transparent transition-colors">
+                    class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-primary/70 border-b-2 border-transparent transition-colors">
                 <span class="material-symbols-outlined text-[18px]">preview</span> {{ __('messages.editor.tab_preview') }}
             </button>
         </div>
@@ -85,7 +85,7 @@
                     <!-- Optional Sections Toggles -->
                     @if($cv && (!$certifications || !$projects || !$languages))
                     <div class="mt-8 border-t border-primary/10 pt-6 px-4">
-                        <h4 class="text-sm font-bold text-primary tracking-wide mb-4 flex items-center gap-2"><span class="material-symbols-outlined">add_box</span> {{ __('messages.editor.add_optional_section') }}</h4>
+                        <h4 class="text-sm font-bold text-primary tracking-wide mb-4">{{ __('messages.editor.add_optional_section') }}</h4>
                         <div class="flex flex-wrap gap-3">
                             @if(!$certifications)
                             <form action="{{ route('resumes.sections.store', $cv->id) }}" method="POST">
@@ -124,8 +124,8 @@
                     
                     {{-- Maximized Content --}}
                     <div id="ats-maximized" class="flex flex-col items-center cursor-pointer w-full" onclick="toggleAtsMinimize(event)" title="{{ __('messages.editor.minimize') }}">
-                        <div class="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2 flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[12px]">analytics</span>{{ __('messages.editor.ats_score') }}
+                        <div class="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">
+                            {{ __('messages.editor.ats_score') }}
                         </div>
                         <div id="ats-score-wrap" class="relative w-14 h-14">
                             <svg class="w-14 h-14 -rotate-90" viewBox="0 0 56 56">
@@ -249,14 +249,14 @@
     </div>
 
     {{-- Template Selection Modal --}}
-    <div id="template-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="opacity: 0; pointer-events: none;"
+    <div id="template-modal" class="fixed inset-0 z-50 hidden bg-primary/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="opacity: 0; pointer-events: none;"
          role="dialog"
          aria-modal="true"
          aria-labelledby="template-modal-title">
         <div class="bg-surface w-full max-w-4xl max-h-[80vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden mx-4 transform scale-95 transition-transform duration-300" id="template-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="template-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">layers</span> {{ __('messages.editor.select_template_title') }}
+                    {{ __('messages.editor.select_template_title') }}
                 </h3>
                 <button id="close-modal-btn" type="button" onclick="closeTemplateModal()" aria-label="{{ __('messages.editor.close_template_selection') }}" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
@@ -277,10 +277,9 @@
                             <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
                                 <iframe src="{{ route('resumes.preview', $cv) }}?template_id={{ $template->id }}" 
                                         style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
-                                        class="template-thumbnail-iframe pointer-events-none transition-transform duration-500 origin-top-left"
+                                        class="template-thumbnail-iframe pointer-events-none transition-transform duration-300 origin-top-left"
                                         loading="lazy" tabindex="-1">
                                 </iframe>
-                                <div class="absolute inset-0 bg-transparent z-10"></div>
                                 @if($template->is_premium)
                                     <div class="absolute left-3 top-3 z-30 inline-flex items-center gap-1 rounded-full border border-[#A16207]/25 bg-tertiary/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#7C4A03] shadow-sm backdrop-blur">
                                         <span class="material-symbols-outlined text-[13px] icon-filled" aria-hidden="true">workspace_premium</span>
@@ -304,7 +303,7 @@
                                         </div>
                                     </div>
                                 @else
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4 z-20">
                                         <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">{{ __('messages.editor.use_template') }}</span>
                                     </div>
                                 @endif
@@ -328,10 +327,9 @@
                             <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
                                 <iframe src="{{ route('templates.demo', $template) }}" 
                                         style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
-                                        class="template-thumbnail-iframe pointer-events-none transition-transform duration-500 origin-top-left"
+                                        class="template-thumbnail-iframe pointer-events-none transition-transform duration-300 origin-top-left"
                                         loading="lazy" tabindex="-1">
                                 </iframe>
-                                <div class="absolute inset-0 bg-transparent z-10"></div>
                                 @if($template->is_premium)
                                     <div class="absolute left-3 top-3 z-30 inline-flex items-center gap-1 rounded-full border border-[#A16207]/25 bg-tertiary/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#7C4A03] shadow-sm backdrop-blur">
                                         <span class="material-symbols-outlined text-[13px] icon-filled" aria-hidden="true">workspace_premium</span>
@@ -352,7 +350,7 @@
                                         </div>
                                     </div>
                                 @else
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4 z-20">
                                         <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">{{ __('messages.editor.use_template') }}</span>
                                     </div>
                                 @endif
@@ -374,7 +372,7 @@
     </div>
 
     {{-- Refine Modal --}}
-    <div id="refine-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+    <div id="refine-modal" class="fixed inset-0 z-50 hidden bg-primary/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
          role="dialog"
          aria-modal="true"
          aria-labelledby="refine-modal-title"
@@ -382,7 +380,7 @@
         <div class="bg-surface w-full max-w-lg rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300" id="refine-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="refine-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">auto_awesome</span> {{ __('messages.editor.refine_with_ai') }}
+                    {{ __('messages.editor.refine_with_ai') }}
                 </h3>
                 <button type="button" onclick="closeRefineModal()" aria-label="{{ __('messages.editor.close_ai_refinement') }}" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
@@ -397,14 +395,14 @@
     </div>
 
     {{-- CV Versions Modal --}}
-    <div id="cv-versions-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+    <div id="cv-versions-modal" class="fixed inset-0 z-50 hidden bg-primary/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
          role="dialog"
          aria-modal="true"
          aria-labelledby="cv-versions-modal-title">
         <div class="bg-surface w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300 overflow-hidden" id="cv-versions-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="cv-versions-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">auto_awesome</span> {{ __('messages.editor.tailored_cv_versions') }}
+                    {{ __('messages.editor.tailored_cv_versions') }}
                 </h3>
                 <button type="button" onclick="closeCvVersionsModal()" aria-label="{{ __('messages.editor.close_tailored_versions') }}" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
@@ -426,14 +424,14 @@
     </div>
 
     {{-- CV History Modal --}}
-    <div id="history-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+    <div id="history-modal" class="fixed inset-0 z-50 hidden bg-primary/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
          role="dialog"
          aria-modal="true"
          aria-labelledby="history-modal-title">
         <div class="bg-surface w-full max-w-lg max-h-[80vh] rounded-2xl shadow-2xl flex flex-col mx-4 transform scale-95 transition-transform duration-300 overflow-hidden" id="history-modal-content">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="history-modal-title" class="text-xl font-headline font-bold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">history</span> {{ __('messages.editor.cv_history') }}
+                    {{ __('messages.editor.cv_history') }}
                 </h3>
                 <button type="button" onclick="closeHistoryModal()" aria-label="{{ __('messages.editor.close_cv_history') }}" class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
@@ -446,13 +444,13 @@
     </div>
 
     {{-- Apply Version Confirmation Modal --}}
-    <div id="apply-version-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+    <div id="apply-version-modal" class="fixed inset-0 z-50 hidden bg-primary/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
          role="dialog"
          aria-modal="true"
          aria-labelledby="apply-version-modal-title">
         <div class="bg-surface w-full max-w-md rounded-2xl shadow-2xl p-6 mx-4 transform scale-95 transition-transform duration-300" id="apply-version-modal-content">
             <h3 id="apply-version-modal-title" class="text-lg font-headline font-bold text-primary flex items-center gap-2 mb-3">
-                <span class="material-symbols-outlined text-secondary">auto_awesome</span> {{ __('messages.editor.apply_version_title') }}
+                {{ __('messages.editor.apply_version_title') }}
             </h3>
             <p class="text-sm text-primary/70 mb-4">{{ __('messages.editor.apply_version_desc') }}</p>
             <div id="apply-version-warning" class="hidden mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs"></div>
