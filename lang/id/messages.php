@@ -16,6 +16,11 @@ return [
         'error_summary' => 'Mohon periksa kembali kolom yang ditandai.',
         'or_continue_with' => 'ATAU LANJUTKAN DENGAN',
 
+        'social' => [
+            'in_development' => 'Dalam pengembangan',
+            'linkedin_unavailable' => 'Masuk dengan LinkedIn masih dalam tahap pengembangan. Silakan lanjutkan dengan Google atau email.',
+        ],
+
         'tabs' => [
             'login' => 'Masuk',
             'sign_up' => 'Daftar',

@@ -16,6 +16,11 @@ return [
         'error_summary' => 'Please review the highlighted fields.',
         'or_continue_with' => 'OR CONTINUE WITH',
 
+        'social' => [
+            'in_development' => 'In development',
+            'linkedin_unavailable' => 'LinkedIn sign-in is still in development. Please continue with Google or email.',
+        ],
+
         'tabs' => [
             'login' => 'Login',
             'sign_up' => 'Sign Up',

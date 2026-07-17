@@ -16,6 +16,14 @@ class SocialAuthController extends Controller
     public function redirect($provider)
     {
         abort_unless(in_array($provider, ['google', 'linkedin-openid']), 404);
+
+        // LinkedIn sign-in is still in development: block new sign-in attempts,
+        // but keep the callback alive for accounts that are already linked.
+        if ($provider === 'linkedin-openid') {
+            return redirect()->route('login')
+                ->withErrors(['oauth' => __('messages.auth.social.linkedin_unavailable')]);
+        }
+
         return Socialite::driver($provider)->redirect();
     }
 
