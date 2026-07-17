@@ -19,11 +19,11 @@ class ResumeExportController extends Controller
         \Illuminate\Support\Facades\Gate::authorize('view', $cv); // only owner can preview
         $cv->load(['template', 'sections']);
 
-        $templateBlade = $cv->template->blade_path;
+        $templateBlade = $cv->template->safeBladePath();
         if (request()->has('template_id')) {
             $previewTemplate = \App\Models\CvTemplate::find(request()->query('template_id'));
             if ($previewTemplate) {
-                $templateBlade = $previewTemplate->blade_path;
+                $templateBlade = $previewTemplate->safeBladePath();
                 $cv->setRelation('template', $previewTemplate);
             }
         }
@@ -80,7 +80,7 @@ class ResumeExportController extends Controller
         }
 
         $isPdf = true;
-        $html = view($cv->template->blade_path, compact('cv', 'isPdf'))->render();
+        $html = view($cv->template->safeBladePath(), compact('cv', 'isPdf'))->render();
         $pdf  = Pdf::loadHTML($html)->setPaper('a4');
 
         return $pdf->download($cv->title . '.pdf');
