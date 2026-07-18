@@ -2,6 +2,8 @@
 
 AI-powered CV builder built for the Indonesian job market — resume authoring, ATS gap analysis, and an AI mock interviewer in one flow, instead of three disconnected tools.
 
+**Live demo:** [https://resumify-t5kx.onrender.com](https://resumify-t5kx.onrender.com/) (hosted on Render's free tier — the first request after idle may take ~a minute to cold-start)
+
 Generic builders (Canva, Novoresume, Resume.io) don't understand local formats (BUMN/startup/corporate conventions, IPK, photo norms, Bahasa Indonesia) and don't connect CV building to ATS feedback or interview prep. Resumify's target: zero to a downloadable, tailored CV in under 10 minutes, with ATS feedback the user can actually act on. See [PRODUCT.md](PRODUCT.md) for the full product brief and [DESIGN.md](DESIGN.md) for the visual design system.
 
 ## Table of Contents
@@ -18,6 +20,20 @@ Generic builders (Canva, Novoresume, Resume.io) don't understand local formats (
 - [Documentation](#documentation)
 
 ## Features
+
+### Evaluator Feature Checklist
+
+| Feature | Route / Menu | Role Access | Evidence in Project |
+| --- | --- | --- | --- |
+| Resume builder and autosave editor | `/dashboard`, `/manuscripts`, `/resumes/{cv}/section/{section}` | Basic, Premium | `Cv` and `CvSection` models, `ResumeController`, `UpdateResumeSectionAction`, responsive manuscript editor views |
+| CV template catalog and PDF export | `/templates`, `/resumes/{cv}/preview`, `/resumes/{cv}/pdf` | Basic, Premium; Premium unlocks premium templates | `CvTemplate`, `TemplateController`, `ResumeExportController`, `barryvdh/laravel-dompdf` |
+| ATS scanner with scan history | `/ats`, `/ats/analyze`, `/ats/history/{scan}` | Basic and Premium with AI quota / feature rules | `AtsController`, `AtsScan`, `AtsScoreService`, structured Gemini response validation |
+| AI resume assistance | `/resumes/{cv}/ai/refine-bullet`, `/resumes/{cv}/ai/generate-versions` | Basic and Premium with AI quota | `AiResumeController`, `RefineResumeBulletAction`, `GenerateResumeVersionsAction`, anti-fabrication validator |
+| Mock interview and feedback | `/interview`, `/interview/start`, `/interview/sessions/{session}/feedback` | Basic trial, Premium full access | `InterviewController`, `InterviewSession`, `InterviewMessage`, `InterviewFeedback`, SSE streaming tests |
+| Billing and subscription upgrade | `/upgrade-quota`, `/payment/create`, `/payment/callback` | Authenticated customers | `PaymentController`, `SubscriptionController`, `Transaction`, Midtrans webhook handler |
+| Support tickets and chat | `/help`, `/help/tickets`, `/help/tickets/{ticket}` | Basic, Premium; Admin replies through admin support | `SupportTicket`, `TicketReply`, `TicketChat` Livewire component, mutual close flow |
+| Admin operations dashboard | `/admin/dashboard`, `/admin/users`, `/admin/support`, `/admin/templates`, `/admin/logs`, `/admin/reports` | Admin only | Role middleware, admin controllers, user management actions, CSV/PDF exports, Sentry-backed monitor |
+| Authentication, OAuth, localization, and security headers | `/login`, `/register`, `/auth/{provider}`, `/locale/{locale}` | Guests and authenticated users | Laravel Fortify, Socialite, `SetLocale`, `SecurityHeadersMiddleware`, `lang/en` and `lang/id` |
 
 ### Resume Builder
 
@@ -52,7 +68,7 @@ In-app help center with ticketing (`SupportTicket`, `TicketReply`), live chat vi
 
 ### Platform features
 
-Google & LinkedIn OAuth (Laravel Socialite), two-factor auth and email verification (Laravel Fortify), English/Indonesian localization (`lang/en`, `lang/id`), Sentry error tracking, and WCAG 2.1 AA accessibility baseline (keyboard operability, focus states, `prefers-reduced-motion`).
+Google OAuth via Laravel Socialite (LinkedIn sign-in is scaffolded but currently disabled — still in development), two-factor auth and email verification (Laravel Fortify), English/Indonesian localization (`lang/en`, `lang/id`), Sentry error tracking, and WCAG 2.1 AA accessibility baseline (keyboard operability, focus states, `prefers-reduced-motion`).
 
 ## Tech Stack
 
@@ -62,7 +78,7 @@ Google & LinkedIn OAuth (Laravel Socialite), two-factor auth and email verificat
 | Reactive UI | Livewire 4 (chat/ticket components), Alpine.js (lightweight interactivity) |
 | Frontend build | Vite 7, Tailwind CSS 4 |
 | Database | MySQL 8 |
-| Auth | Laravel Fortify (2FA, email verification), Laravel Socialite (Google, LinkedIn OAuth) |
+| Auth | Laravel Fortify (2FA, email verification), Laravel Socialite (Google OAuth; LinkedIn in development) |
 | AI provider | Google Gemini (`gemini-2.5-flash`) via direct HTTP calls |
 | Payments | Midtrans |
 | PDF export | `barryvdh/laravel-dompdf` |
@@ -194,12 +210,29 @@ php artisan test
 
 ## Deployment
 
+Live at [https://resumify-t5kx.onrender.com](https://resumify-t5kx.onrender.com/), deployed on [Render](https://render.com) via Docker.
+
+Production database uses an external MySQL database from [Filess.io](https://filess.io/). Render only runs the Dockerized Laravel app; persistent data is stored outside the container so redeploys do not wipe application data.
+
+Production monitoring is handled outside the application container with Prometheus and Grafana: Prometheus collects runtime/service metrics, while Grafana is used to visualize deployment health, resource usage, and uptime trends. Application-level error tracking is also supported through Sentry configuration (`SENTRY_LARAVEL_DSN` and related variables).
+
 Docker-based, multi-stage build (see [Dockerfile](Dockerfile)):
 
 1. **assets** stage — Node 20, builds Vite assets (`npm run build`).
 2. **runtime** stage — `php:8.4-cli` with required extensions, Composer install (`--no-dev`), built assets copied in.
 
 [docker/entrypoint.sh](docker/entrypoint.sh) caches config/routes/views, runs migrations, then serves on `$PORT` (defaults to 8080) — matches Render's free-tier hosting model.
+
+Required Render environment variables for the production database:
+
+| Variable | Value / Source |
+| --- | --- |
+| `DB_CONNECTION` | `mysql` |
+| `DB_HOST` | Filess.io MySQL host |
+| `DB_PORT` | Filess.io MySQL port |
+| `DB_DATABASE` | Filess.io database name |
+| `DB_USERNAME` | Filess.io database username |
+| `DB_PASSWORD` | Filess.io database password, stored only in Render environment variables |
 
 ```bash
 docker build -t resumify .

@@ -12,10 +12,10 @@
         $badgeConfig = match ($badge) {
             'ready' => [
                 'label' => __('messages.interview.feedback.badge_ready'),
-                'bg' => 'bg-green-50',
-                'text' => 'text-green-700',
-                'border' => 'border-green-200',
-                'dot' => 'bg-green-500',
+                'bg' => 'bg-secondary/10',
+                'text' => 'text-secondary',
+                'border' => 'border-secondary/20',
+                'dot' => 'bg-secondary',
             ],
             'almost_ready' => [
                 'label' => __('messages.interview.feedback.badge_almost_ready'),
@@ -78,8 +78,7 @@
                 {{-- Missing Keywords --}}
                 @if (!empty($feedback->missing_keywords))
                     <div class="bg-surface rounded-2xl border border-primary/10 p-5">
-                        <p class="font-semibold text-primary text-sm mb-3 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[18px] text-red-400">label_off</span>
+                        <p class="font-semibold text-primary text-sm mb-3">
                             {{ __('messages.ats.results.missing_keywords') }}
                         </p>
                         <div class="flex flex-wrap gap-2">

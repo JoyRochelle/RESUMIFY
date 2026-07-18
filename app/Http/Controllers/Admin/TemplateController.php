@@ -44,11 +44,11 @@ class TemplateController extends Controller
     {
         $validated = $request->validate([
             'name'         => 'required|string|max:100',
-            'blade_path'   => 'required|string|max:100',
+            'blade_path'   => ['required', 'string', 'max:100', 'regex:' . CvTemplate::BLADE_PATH_PATTERN],
             'category'     => 'required|in:professional,creative,technology,managerial',
             'description'  => 'nullable|string|max:500',
             'badge'        => 'nullable|string|max:30',
-            'badge_color'  => 'nullable|in:blue,secondary,purple,green',
+            'badge_color'  => 'nullable|in:blue,secondary,purple,green,slate,teal,gray',
             'is_premium'   => 'boolean',
             'is_active'    => 'boolean',
             'sort_order'   => 'integer|min:0',
@@ -75,11 +75,11 @@ class TemplateController extends Controller
     {
         $validated = $request->validate([
             'name'         => 'required|string|max:100',
-            'blade_path'   => 'required|string|max:100',
+            'blade_path'   => ['required', 'string', 'max:100', 'regex:' . CvTemplate::BLADE_PATH_PATTERN],
             'category'     => 'required|in:professional,creative,technology,managerial',
             'description'  => 'nullable|string|max:500',
             'badge'        => 'nullable|string|max:30',
-            'badge_color'  => 'nullable|in:blue,secondary,purple,green',
+            'badge_color'  => 'nullable|in:blue,secondary,purple,green,slate,teal,gray',
             'is_premium'   => 'boolean',
             'is_active'    => 'boolean',
             'sort_order'   => 'integer|min:0',
@@ -145,6 +145,6 @@ class TemplateController extends Controller
             ]]),
         ]));
 
-        return view($template->blade_path, compact('cv'));
+        return view($template->safeBladePath(), compact('cv'));
     }
 }

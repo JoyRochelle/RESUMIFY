@@ -19,8 +19,7 @@
                 {{-- Resume preview (shown when a resume is selected, before analysis) --}}
                 <div id="ats-resume-preview" style="display:none" class="flex flex-col gap-4">
                     <div class="flex items-center justify-between">
-                        <h3 class="font-bold text-primary flex items-center gap-2 text-sm">
-                            <span class="material-symbols-outlined text-primary/60 text-[18px]">description</span>
+                        <h3 class="font-bold text-primary text-sm">
                             <span id="ats-preview-title">{{ __('messages.ats.results.resume_preview') }}</span>
                         </h3>
                         <span class="text-[10px] font-label text-primary/40 uppercase tracking-widest">{{ __('messages.ats.results.click_to_score', ['action' => __('messages.ats.analyze_match')]) }}</span>
@@ -52,7 +51,6 @@
                         <div
                             class="bg-tertiary rounded-2xl p-5 border border-primary/10 shadow-sm md:col-span-2 flex flex-col max-h-[320px]">
                             <div class="flex items-center gap-2 mb-4 text-red-500 shrink-0">
-                                <span class="material-symbols-outlined text-[18px]">error_outline</span>
                                 <h4 class="font-bold tracking-tight text-xs uppercase">{{ __('messages.ats.results.missing_keywords') }}</h4>
                                 <span id="missing-count-badge"
                                     class="ml-auto text-[10px] font-bold bg-red-500/10 text-red-500 px-2 py-0.5 rounded-full"></span>
@@ -68,7 +66,6 @@
                     {{-- Matched Keywords --}}
                     <div class="bg-tertiary rounded-2xl p-5 border border-primary/10 shadow-sm">
                         <div class="flex items-center gap-2 mb-4 text-secondary">
-                            <span class="material-symbols-outlined text-[18px] icon-filled">check_circle</span>
                             <h4 class="font-bold tracking-tight text-xs uppercase">{{ __('messages.ats.results.matched_keywords') }}</h4>
                             <span id="matched-count-badge"
                                 class="ml-auto text-[10px] font-bold bg-secondary/10 text-secondary px-2 py-0.5 rounded-full"></span>
@@ -79,7 +76,6 @@
                     {{-- Action Verbs --}}
                     <div class="bg-tertiary rounded-2xl p-5 border border-primary/10 shadow-sm">
                         <div class="flex items-center gap-2 mb-4 text-primary/70">
-                            <span class="material-symbols-outlined text-[18px]">bolt</span>
                             <h4 class="font-bold tracking-tight text-xs uppercase">{{ __('messages.ats.results.action_verbs_detected') }}</h4>
                         </div>
                         <div id="action-verbs-container" class="flex flex-wrap gap-2 mb-3 min-h-[2rem]"></div>
@@ -102,7 +98,6 @@
                     {{-- Section Breakdown --}}
                     <section class="rounded-2xl p-7 border border-primary/10 bg-tertiary">
                         <div class="flex items-center gap-2 mb-5 text-primary">
-                            <span class="material-symbols-outlined text-[20px] icon-filled">grading</span>
                             <h4 class="font-bold tracking-tight text-sm uppercase">{{ __('messages.ats.results.section_breakdown') }}</h4>
                         </div>
                         <div id="section-breakdown-container" class="grid grid-cols-1 gap-3"></div>
@@ -114,8 +109,7 @@
                         <div
                             class="absolute -top-12 -right-12 w-48 h-48 bg-secondary/10 blur-3xl rounded-full pointer-events-none">
                         </div>
-                        <div class="flex items-center gap-3 mb-6">
-                            <span class="material-symbols-outlined text-secondary icon-filled">auto_awesome</span>
+                        <div class="mb-6">
                             <h3 class="font-headline text-xl font-bold text-primary">{{ __('messages.ats.results.strategic_insights') }}</h3>
                         </div>
                         <div id="insights-container" class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5"></div>

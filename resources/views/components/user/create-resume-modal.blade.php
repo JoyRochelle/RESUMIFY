@@ -15,8 +15,7 @@
          class="bg-tertiary w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
         <div class="p-6 border-b border-primary/10 flex justify-between items-start gap-4 bg-surface-container-low">
             <div>
-                <h3 id="create-modal-title" class="font-headline text-2xl font-bold text-primary flex items-center gap-3">
-                    <span class="material-symbols-outlined text-secondary" aria-hidden="true">layers</span>
+                <h3 id="create-modal-title" class="font-headline text-2xl font-bold text-primary">
                     Create New Resume
                 </h3>
                 <p id="create-modal-description" class="mt-1 text-sm text-primary/60">Name your resume first, then choose the template that fits your target role.</p>

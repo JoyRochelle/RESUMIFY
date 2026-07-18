@@ -135,7 +135,7 @@
                 const active = btn.id === `ats-tab-${tab}`;
                 btn.classList.toggle('text-primary', active);
                 btn.classList.toggle('border-primary', active);
-                btn.classList.toggle('text-primary/40', !active);
+                btn.classList.toggle('text-primary/70', !active);
                 btn.classList.toggle('border-transparent', !active);
                 btn.setAttribute('aria-selected', active ? 'true' : 'false');
             });
@@ -477,7 +477,7 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="text-xs font-bold text-primary truncate leading-tight">${title}${company}</p>
-                        <p class="text-[11px] text-primary/40 mt-0.5 truncate">${cvLine} · ${timeAgo}</p>
+                        <p class="text-[11px] text-primary/60 mt-0.5 truncate">${cvLine} · ${timeAgo}</p>
                     </div>
                 </button>
                 <button type="button" title="Delete"
@@ -625,25 +625,47 @@
             document.getElementById('ats-error').classList.add('hidden');
         }
 
+        const instructionsModal = document.getElementById('instructions-modal');
+        const INSTR_FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        let instructionsRestoreTarget = null;
+
         document.getElementById('ats-instructions-btn').addEventListener('click', () => {
-            const modal = document.getElementById('instructions-modal');
             const content = document.getElementById('instructions-content');
-            modal.classList.remove('hidden');
-            void modal.offsetWidth;
-            modal.style.opacity = '1';
+            instructionsRestoreTarget = document.activeElement;
+            instructionsModal.classList.remove('hidden');
+            void instructionsModal.offsetWidth;
+            instructionsModal.style.opacity = '1';
             content.classList.replace('scale-95', 'scale-100');
+            document.body.classList.add('overflow-hidden');
+            setTimeout(() => instructionsModal.querySelector(INSTR_FOCUSABLE)?.focus(), 60);
         });
 
         function closeInstructions() {
-            const modal = document.getElementById('instructions-modal');
             const content = document.getElementById('instructions-content');
-            modal.style.opacity = '0';
+            instructionsModal.style.opacity = '0';
             content.classList.replace('scale-100', 'scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 300);
+            document.body.classList.remove('overflow-hidden');
+            setTimeout(() => instructionsModal.classList.add('hidden'), 300);
+            if (typeof instructionsRestoreTarget?.focus === 'function') instructionsRestoreTarget.focus();
+            instructionsRestoreTarget = null;
         }
 
-        document.getElementById('instructions-modal').addEventListener('click', function(e) {
+        instructionsModal.addEventListener('click', function(e) {
             if (e.target === this) closeInstructions();
+        });
+
+        // Escape-to-close + focus trap while the modal is open.
+        document.addEventListener('keydown', (e) => {
+            if (instructionsModal.classList.contains('hidden')) return;
+            if (e.key === 'Escape') { e.preventDefault(); closeInstructions(); return; }
+            if (e.key === 'Tab') {
+                const f = [...instructionsModal.querySelectorAll(INSTR_FOCUSABLE)].filter(n => n.offsetParent !== null);
+                if (!f.length) return;
+                const first = f[0], last = f[f.length - 1];
+                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+                else if (!instructionsModal.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+            }
         });
 
         Object.assign(window, {

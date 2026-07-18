@@ -49,8 +49,7 @@
                                 {{-- Photo Upload: only shown when template supports show_photo --}}
                                 @if($cv && !empty($cv->template->style_config['show_photo']))
                                 <div id="photo-upload-section" class="mt-2">
-                                    <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-[14px]">photo_camera</span>
+                                    <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">
                                         {{ __('messages.editor.sections.personal_info.profile_photo') }}
                                     </label>
                                     <div class="flex items-center gap-4">

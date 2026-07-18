@@ -71,7 +71,7 @@
     @endif
 
     @if($experience && !empty($experience->content))
-    <div class="section-title"><div class="section-title-text">{{ $hasWorkExp ? 'Work Experience' : 'Magang & Organisasi' }}</div><div class="section-title-line"><hr></div></div>
+    <div class="section-title"><div class="section-title-text">{{ $hasWorkExp ? 'Work Experience' : 'Internships & Organizations' }}</div><div class="section-title-line"><hr></div></div>
     @foreach($experience->content as $job)
     <div class="entry">
         <div class="entry-row">
