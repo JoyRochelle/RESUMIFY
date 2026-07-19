@@ -10,9 +10,9 @@
 ])
 
 <div @class([
-    'bg-tertiary rounded-2xl p-10 flex flex-col shadow-sm transition-all',
+    'bg-tertiary rounded-2xl p-10 flex flex-col h-full shadow-sm transition-all',
     'border border-primary/10 hover:shadow-lg' => !$isPremium,
-    'border-2 border-secondary premium-glow shadow-xl relative overflow-hidden hover:scale-[1.01]' => $isPremium,
+    'border-2 border-secondary premium-glow shadow-xl relative overflow-hidden hover:scale-[1.01] border-beam' => $isPremium,
 ])>
     @if ($isPremium)
         <div

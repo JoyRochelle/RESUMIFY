@@ -51,10 +51,10 @@
                  style="animation-delay: 300ms">
                 <div class="flex justify-between items-end mb-3">
                     <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">{{ __('messages.auth.marketing.ats_match') }}</span>
-                    <span class="text-2xl font-headline font-bold text-secondary">92%</span>
+                    <span class="text-2xl font-headline font-bold text-secondary"><span data-count-up="92">92</span>%</span>
                 </div>
                 <div class="h-2 w-full bg-primary/10 rounded-full overflow-hidden">
-                    <div class="h-full w-[92%] rounded-full bg-secondary"></div>
+                    <div data-anime-bar class="h-full w-[92%] origin-left rounded-full bg-secondary"></div>
                 </div>
                 <div class="mt-3 flex items-center gap-2">
                     <span class="material-symbols-outlined text-[18px] text-secondary icon-filled" aria-hidden="true">auto_awesome</span>

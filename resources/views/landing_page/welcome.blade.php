@@ -8,23 +8,23 @@
 
         {{-- Hero Left: Content --}}
         <div class="w-full md:w-[40%] flex items-start justify-center md:justify-start px-4 sm:px-8 md:px-16 py-12 md:py-20">
-            <div class="max-w-md w-full text-center md:text-left animate-fade-up">
+            <div class="max-w-md w-full text-center md:text-left">
                 <h1
-                    class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary leading-tight tracking-tight mb-6 md:mb-8">
+                    class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary leading-tight tracking-tight mb-6 md:mb-8 animate-fade-up-blur">
                     {{ __('messages.landing.welcome.hero.title') }}
                 </h1>
-                <p class="text-base sm:text-lg md:text-xl text-outline mb-8 md:mb-10 leading-relaxed font-body">
+                <p class="text-base sm:text-lg md:text-xl text-outline mb-8 md:mb-10 leading-relaxed font-body animate-fade-up" style="animation-delay: 120ms">
                     {{ __('messages.landing.welcome.hero.subtitle') }}
                 </p>
-                <div class="flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start gap-3 sm:gap-4">
-                    <x-landing_page.button variant="primary" icon="arrow_forward" href="{{ route('register') }}">
+                <div class="flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start gap-3 sm:gap-4 animate-fade-up" style="animation-delay: 240ms">
+                    <x-landing_page.button variant="primary" icon="arrow_forward" href="{{ route('register') }}" class="btn-shimmer">
                         {{ __('messages.landing.welcome.hero.cta') }}
                     </x-landing_page.button>
                     <x-landing_page.button variant="outline" href="{{ route('templates') }}">
                         {{ __('messages.landing.welcome.hero.cta_secondary') }}
                     </x-landing_page.button>
                 </div>
-                <p class="mt-4 text-sm text-outline font-body">
+                <p class="mt-4 text-sm text-outline font-body animate-fade-up" style="animation-delay: 320ms">
                     {{ __('messages.landing.welcome.hero.reassurance') }}
                 </p>
             </div>
@@ -33,6 +33,8 @@
         {{-- Hero Right: Visual Preview --}}
         <div
             class="w-full md:w-[60%] bg-surface-container-low relative flex items-start justify-center px-4 sm:px-8 md:px-16 py-10 md:py-20">
+            {{-- Decorative drifting dot grid behind the preview stack --}}
+            <div class="absolute inset-0 dot-pattern" style="--dot-color: rgb(79 59 47 / 0.14)" aria-hidden="true"></div>
             <div class="relative w-full max-w-sm md:max-w-md">
 
                 {{-- Resume Card Preview: the centerpiece "raised page" --}}
@@ -143,11 +145,11 @@
                 {{ __('messages.landing.welcome.features.ai_bullet.desc') }}
             </x-landing_page.feature-card>
 
-            <x-landing_page.feature-card title="{{ __('messages.landing.welcome.features.ats_scanner.title') }}" icon="analytics">
+            <x-landing_page.feature-card title="{{ __('messages.landing.welcome.features.ats_scanner.title') }}" icon="analytics" class="animate-scroll-reveal-2">
                 {{ __('messages.landing.welcome.features.ats_scanner.desc') }}
             </x-landing_page.feature-card>
 
-            <x-landing_page.feature-card title="{{ __('messages.landing.welcome.features.premium_templates.title') }}" icon="article">
+            <x-landing_page.feature-card title="{{ __('messages.landing.welcome.features.premium_templates.title') }}" icon="article" class="animate-scroll-reveal-3">
                 {{ __('messages.landing.welcome.features.premium_templates.desc') }}
             </x-landing_page.feature-card>
         </div>
@@ -164,20 +166,23 @@
             </p>
         </div>
 
-        <div class="relative max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+        {{-- Anime.js timeline choreographs this: marker 1 pops, the line draws
+             rightward, markers 2 and 3 pop as it reaches them. Without JS the
+             section is simply static and fully visible. --}}
+        <div class="relative max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8" data-anime-steps>
             {{-- Connector line between step markers (desktop) --}}
-            <div class="hidden md:block absolute top-[22px] left-[17%] right-[17%] h-px bg-primary/10" aria-hidden="true"></div>
+            <div class="hidden md:block absolute top-[22px] left-[17%] right-[17%] h-px bg-primary/10 origin-left" data-anime-steps-line aria-hidden="true"></div>
 
             @foreach (['build', 'scan', 'rehearse'] as $i => $step)
-                <div class="relative text-center md:px-4 animate-scroll-reveal">
+                <div class="relative text-center md:px-4" data-anime-step>
                     {{-- The last step is the payoff — it carries the section's one emerald accent --}}
-                    <div class="relative z-10 mx-auto mb-5 flex h-11 w-11 items-center justify-center rounded-full border font-headline text-lg font-bold shadow-sm {{ $loop->last ? 'border-secondary/30 bg-secondary/10 text-secondary' : 'border-primary/15 bg-tertiary text-primary' }}">
+                    <div data-anime-step-marker class="relative z-10 mx-auto mb-5 flex h-11 w-11 items-center justify-center rounded-full border font-headline text-lg font-bold shadow-sm {{ $loop->last ? 'border-secondary/30 bg-secondary/10 text-secondary' : 'border-primary/15 bg-tertiary text-primary' }}">
                         {{ $i + 1 }}
                     </div>
-                    <h3 class="text-xl font-headline font-bold text-primary mb-2 tracking-tight">
+                    <h3 data-anime-step-text class="text-xl font-headline font-bold text-primary mb-2 tracking-tight">
                         {{ __('messages.landing.welcome.how.steps.' . $step . '.title') }}
                     </h3>
-                    <p class="mx-auto max-w-[36ch] text-sm md:text-base text-outline font-body leading-relaxed">
+                    <p data-anime-step-text class="mx-auto max-w-[36ch] text-sm md:text-base text-outline font-body leading-relaxed">
                         {{ __('messages.landing.welcome.how.steps.' . $step . '.desc') }}
                     </p>
                 </div>
@@ -189,6 +194,8 @@
     <section class="py-12 sm:py-16 md:py-24 px-4 sm:px-8">
         <div
             class="max-w-5xl mx-auto bg-primary rounded-2xl relative min-h-[320px] md:min-h-[400px] flex items-center p-8 sm:p-12 md:p-20 overflow-hidden">
+            {{-- Decorative drifting dot grid on the dark panel --}}
+            <div class="absolute inset-0 dot-pattern" aria-hidden="true"></div>
             <div class="relative z-10 max-w-2xl text-left">
                 <h2
                     class="text-3xl sm:text-4xl md:text-5xl text-white mb-4 md:mb-6 leading-tight font-headline tracking-tight">
@@ -196,7 +203,7 @@
                 <p class="text-base md:text-lg text-white/80 mb-8 md:mb-10 leading-relaxed font-body">
                     {{ __('messages.landing.welcome.cta.subtitle') }}
                 </p>
-                <x-landing_page.button variant="light" href="{{ route('register') }}">
+                <x-landing_page.button variant="light" href="{{ route('register') }}" class="btn-shimmer btn-shimmer-dark">
                     {{ __('messages.landing.welcome.cta.button') }}
                 </x-landing_page.button>
             </div>

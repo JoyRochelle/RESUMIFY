@@ -174,9 +174,33 @@
     }
 }
 
+/* Hero-grade entrance: fade-up plus a soft blur settle. */
+@utility animate-fade-up-blur {
+    animation: fade-up-blur 700ms var(--ease-out-quart) both;
+}
+
+@keyframes fade-up-blur {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+        filter: blur(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
 /* Scroll-driven reveal, progressive enhancement only: browsers without
    animation-timeline support (and reduced-motion users) see the content
-   static and fully visible — nothing is gated on the animation running. */
+   static and fully visible — nothing is gated on the animation running.
+   No blur here: elements near the bottom of the document can end up
+   parked partway through their view timeline, and a frozen partial fade
+   is invisible while a frozen partial blur is not. The -2/-3 variants
+   only delay the start — every variant completes at the same early
+   point so bottom-of-page sections still finish their reveal. */
 @utility animate-scroll-reveal {
     @media (prefers-reduced-motion: no-preference) {
         @supports (animation-timeline: view()) {
@@ -184,6 +208,45 @@
             animation-timeline: view();
             animation-range: entry 0% cover 30%;
         }
+    }
+}
+
+@utility animate-scroll-reveal-2 {
+    @media (prefers-reduced-motion: no-preference) {
+        @supports (animation-timeline: view()) {
+            animation: fade-up linear both;
+            animation-timeline: view();
+            animation-range: entry 8% cover 30%;
+        }
+    }
+}
+
+@utility animate-scroll-reveal-3 {
+    @media (prefers-reduced-motion: no-preference) {
+        @supports (animation-timeline: view()) {
+            animation: fade-up linear both;
+            animation-timeline: view();
+            animation-range: entry 16% cover 30%;
+        }
+    }
+}
+
+/* Horizontal rule that draws itself in as it scrolls into view; same
+   progressive-enhancement contract as animate-scroll-reveal. */
+@utility animate-line-draw {
+    @media (prefers-reduced-motion: no-preference) {
+        @supports (animation-timeline: view()) {
+            transform-origin: left center;
+            animation: line-draw linear both;
+            animation-timeline: view();
+            animation-range: entry 0% cover 35%;
+        }
+    }
+}
+
+@keyframes line-draw {
+    from {
+        transform: scaleX(0);
     }
 }
 
@@ -212,6 +275,93 @@
 
     50% {
         transform: translateY(-10px) rotate(1deg);
+    }
+}
+
+/* Periodic sheen sweep across a CTA. Sweep color is overridable via
+   --shimmer-color so it stays visible on both dark and light buttons. */
+@utility btn-shimmer {
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(115deg,
+                transparent 25%,
+                var(--shimmer-color, rgb(255 255 255 / 0.22)) 50%,
+                transparent 75%);
+        transform: translateX(-150%);
+        animation: shimmer-sweep 4.5s var(--ease-out-quart) 1s infinite;
+        pointer-events: none;
+    }
+}
+
+@utility btn-shimmer-dark {
+    --shimmer-color: rgb(79 59 47 / 0.1);
+}
+
+@keyframes shimmer-sweep {
+    0% {
+        transform: translateX(-150%);
+    }
+
+    40%,
+    100% {
+        transform: translateX(150%);
+    }
+}
+
+/* A highlight that travels around the element's border. Without @property
+   support the angle can't interpolate, leaving a static accent — fine. */
+@property --beam-angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+}
+
+@utility border-beam {
+    position: relative;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 2px;
+        background: conic-gradient(from var(--beam-angle),
+                transparent 0deg 290deg,
+                var(--color-secondary) 325deg,
+                transparent 360deg);
+        mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        mask-composite: exclude;
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        animation: beam-spin 7s linear infinite;
+        pointer-events: none;
+    }
+}
+
+@keyframes beam-spin {
+    to {
+        --beam-angle: 360deg;
+    }
+}
+
+/* Decorative drifting dot grid for dark panels; purely presentational,
+   fades out radially so content stays legible. */
+@utility dot-pattern {
+    background-image: radial-gradient(var(--dot-color, rgb(255 255 255 / 0.14)) 1px, transparent 1.5px);
+    background-size: 24px 24px;
+    mask-image: radial-gradient(70% 90% at 65% 40%, #000 0%, transparent 100%);
+    -webkit-mask-image: radial-gradient(70% 90% at 65% 40%, #000 0%, transparent 100%);
+    animation: dot-drift 60s linear infinite;
+}
+
+@keyframes dot-drift {
+    to {
+        background-position: 240px -240px;
     }
 }
 
