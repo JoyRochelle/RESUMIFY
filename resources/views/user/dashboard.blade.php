@@ -28,7 +28,7 @@
 
         <section>
             <div class="flex items-center justify-between mb-8">
-                <h2 class="text-xl font-headline font-medium text-primary">{{ __('messages.dashboard.your_resumes') }}</h2>
+                <h2 class="text-xl font-headline font-bold text-primary">{{ __('messages.dashboard.your_resumes') }}</h2>
                 <div class="h-px flex-1 mx-6 bg-primary/10 hidden md:block"></div>
             </div>
 
@@ -41,7 +41,7 @@
 
                 <button type="button" onclick="{{ $user->canCreateResume() ? 'openCreateModal()' : '' }}"
                     @unless($user->canCreateResume()) disabled aria-describedby="dashboard-create-limit" @endunless
-                    class="w-full h-full group relative bg-surface-container-low/50 rounded-lg border-2 border-dashed {{ $user->canCreateResume() ? 'border-primary/20 hover:border-primary/50 hover:bg-surface-container-low cursor-pointer' : 'border-[#A16207]/30 cursor-not-allowed' }} transition-all duration-300 overflow-hidden flex flex-col items-center justify-center min-h-[200px] sm:min-h-[400px]">
+                    class="w-full h-full group relative bg-surface-container-low/50 rounded-lg border-2 border-dashed {{ $user->canCreateResume() ? 'border-primary/20 hover:border-primary/50 hover:bg-surface-container-low cursor-pointer' : 'border-[#A16207]/30 cursor-not-allowed' }} transition-all duration-200 overflow-hidden flex flex-col items-center justify-center min-h-[200px] sm:min-h-[400px] focus:outline-none focus:ring-2 focus:ring-secondary/40">
                     <div class="flex flex-col items-center text-center p-8">
                         <div
                             class="w-16 h-16 rounded-full bg-tertiary flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-200 shadow-sm">
@@ -74,32 +74,32 @@
 
     <!-- Delete Confirmation Modal -->
     <div id="delete-modal"
-        class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4"
+        class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-200 flex items-center justify-center p-4"
         role="dialog"
         aria-modal="true"
         aria-labelledby="delete-modal-title"
         aria-describedby="delete-modal-description">
         <div id="delete-modal-content"
-            class="bg-tertiary w-full max-w-md rounded-2xl shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
+            class="bg-tertiary w-full max-w-md rounded-lg shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-200 ease-out">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="delete-modal-title" class="font-headline text-xl font-bold text-red-600 flex items-center gap-2">
                     <span class="material-symbols-outlined">warning</span> {{ __('messages.dashboard.delete_modal.title') }}
                 </h3>
                 <button type="button" onclick="closeDeleteModal()"
                     aria-label="{{ __('messages.dashboard.delete_modal.close_aria') }}"
-                    class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
+                    class="inline-flex min-h-11 min-w-11 items-center justify-center text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div class="p-6 bg-surface">
                 <p id="delete-modal-description" class="text-primary/80 mb-6">{{ __('messages.dashboard.delete_modal.body') }}
                 </p>
                 <div class="flex justify-end gap-3">
                     <button type="button" onclick="closeDeleteModal()"
-                        class="px-4 py-2 rounded-lg font-bold text-primary/70 hover:bg-primary/5 transition-colors">{{ __('messages.dashboard.delete_modal.cancel') }}</button>
+                        class="inline-flex min-h-11 items-center justify-center px-4 py-2 rounded-lg font-bold text-primary/70 hover:bg-primary/5 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary/40">{{ __('messages.dashboard.delete_modal.cancel') }}</button>
                     <form id="delete-form" method="POST" action="">
                         @csrf
                         @method('DELETE')
                         <button type="submit"
-                            class="px-4 py-2 rounded-lg font-bold bg-red-600 text-white hover:bg-red-700 transition-colors shadow-md">{{ __('messages.dashboard.delete_modal.confirm') }}</button>
+                            class="inline-flex min-h-11 items-center justify-center px-4 py-2 rounded-lg font-bold bg-red-600 text-white hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-300">{{ __('messages.dashboard.delete_modal.confirm') }}</button>
                     </form>
                 </div>
             </div>
@@ -108,19 +108,19 @@
 
     <!-- Rename Modal -->
     <div id="rename-modal"
-        class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4"
+        class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-200 flex items-center justify-center p-4"
         role="dialog"
         aria-modal="true"
         aria-labelledby="rename-modal-title">
         <div id="rename-modal-content"
-            class="bg-tertiary w-full max-w-md rounded-2xl shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
+            class="bg-tertiary w-full max-w-md rounded-lg shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-200 ease-out">
             <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container-low">
                 <h3 id="rename-modal-title" class="font-headline text-xl font-bold text-primary">
                     {{ __('messages.dashboard.rename_modal.title') }}
                 </h3>
                 <button type="button" onclick="closeRenameModal()"
                     aria-label="{{ __('messages.dashboard.rename_modal.close_aria') }}"
-                    class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
+                    class="inline-flex min-h-11 min-w-11 items-center justify-center text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
             </div>
             <div class="p-6 bg-surface">
                 <form id="rename-form" method="POST" action="">
@@ -133,9 +133,9 @@
                         class="w-full px-4 py-2.5 rounded-lg border border-primary/20 bg-tertiary text-primary font-body text-sm focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-colors">
                     <div class="flex justify-end gap-3 mt-6">
                         <button type="button" onclick="closeRenameModal()"
-                            class="px-4 py-2 rounded-lg font-bold text-primary/70 hover:bg-primary/5 transition-colors">{{ __('messages.dashboard.rename_modal.cancel') }}</button>
+                            class="inline-flex min-h-11 items-center justify-center px-4 py-2 rounded-lg font-bold text-primary/70 hover:bg-primary/5 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary/40">{{ __('messages.dashboard.rename_modal.cancel') }}</button>
                         <button type="submit"
-                            class="px-5 py-2 rounded-lg font-bold bg-secondary text-white hover:bg-secondary/90 transition-colors shadow-md">{{ __('messages.dashboard.rename_modal.save') }}</button>
+                            class="inline-flex min-h-11 items-center justify-center px-5 py-2 rounded-lg font-bold bg-secondary text-white hover:bg-secondary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary/40">{{ __('messages.dashboard.rename_modal.save') }}</button>
                     </div>
                 </form>
             </div>
@@ -234,7 +234,7 @@
                 modal.classList.add('hidden');
                 syncScrollLock();
                 restoreFocus();
-            }, 300);
+            }, 200);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -273,7 +273,7 @@
                 modal.classList.add('hidden');
                 syncScrollLock();
                 restoreFocus();
-            }, 300);
+            }, 200);
         }
 
         // Rename Modal Logic
@@ -311,7 +311,7 @@
                 modal.classList.add('hidden');
                 syncScrollLock();
                 restoreFocus();
-            }, 300);
+            }, 200);
         }
 
         // Close modals on Escape key

@@ -4,7 +4,7 @@
 
 @section('content')
 <section class="max-w-7xl mx-auto px-4 sm:px-8 pt-14 sm:pt-20 pb-8 text-center">
-    <h1 class="text-4xl sm:text-5xl md:text-6xl font-headline font-bold tracking-tighter mb-4 sm:mb-6 text-primary leading-tight">
+    <h1 class="text-4xl sm:text-5xl md:text-6xl font-headline font-bold tracking-tight mb-4 sm:mb-6 text-primary leading-tight">
         {!! __('messages.landing.templates.hero_title') !!}
     </h1>
     <p class="text-base sm:text-lg text-outline leading-relaxed font-body max-w-2xl mx-auto">
@@ -17,9 +17,9 @@
     <div class="flex flex-wrap justify-center gap-3 mb-16">
         <template x-for="tab in tabs" :key="tab.key">
             <button @click="activeCategory = tab.key"
-                    :class="activeCategory === tab.key ? 'bg-secondary text-white border-secondary shadow-md' : 'bg-transparent text-primary border-primary/20 hover:border-primary/40 hover:bg-primary/5'"
+                    :class="activeCategory === tab.key ? 'bg-secondary text-white border-secondary' : 'bg-transparent text-primary border-primary/20 hover:border-primary/40 hover:bg-primary/5'"
                     :aria-pressed="(activeCategory === tab.key).toString()"
-                    class="min-h-11 px-6 py-2 rounded-full text-sm font-bold font-body border transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40"
+                    class="min-h-11 px-6 py-2 rounded-full text-sm font-bold font-body border transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40"
                     x-text="tab.label">
             </button>
         </template>
@@ -78,7 +78,7 @@
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
              x-transition:leave-end="opacity-0 translate-y-8 scale-95"
-             class="bg-surface w-full max-w-4xl my-8 mx-4 rounded-2xl shadow-2xl overflow-hidden flex flex-col outline-none">
+             class="bg-surface w-full max-w-4xl my-8 mx-4 rounded-lg border border-primary/10 shadow-2xl overflow-hidden flex flex-col outline-none">
 
             {{-- Modal Header --}}
             <div class="px-4 sm:px-6 py-4 border-b border-primary/10 bg-surface-container-low flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0">
@@ -92,7 +92,7 @@
                         <span class="hidden sm:inline">{{ __('messages.landing.templates.use_template_full') }}</span>
                         <span class="sm:hidden">{{ __('messages.landing.templates.use_template_short') }}</span>
                     </a>
-                    <button @click="closePreview()" aria-label="{{ __('messages.landing.templates.close_preview') }}" class="text-primary/60 hover:text-primary transition-colors p-1.5 rounded-full hover:bg-primary/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40">
+                    <button @click="closePreview()" aria-label="{{ __('messages.landing.templates.close_preview') }}" class="inline-flex min-h-11 min-w-11 items-center justify-center text-primary/60 hover:text-primary transition-colors rounded-full hover:bg-primary/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40">
                         <span class="material-symbols-outlined" aria-hidden="true">close</span>
                     </button>
                 </div>
@@ -118,12 +118,9 @@
 
 {{-- CTA Section: Haven't found the right fit? --}}
 <section class="max-w-5xl mx-auto px-4 sm:px-8 py-12 sm:py-16">
-    <div class="relative rounded-2xl overflow-hidden min-h-[320px] flex flex-col items-center justify-center text-center p-12 md:p-16">
-        {{-- Background gradient overlay --}}
-        <div class="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary/70"></div>
-
+    <div class="relative rounded-2xl overflow-hidden bg-primary min-h-[320px] flex flex-col items-center justify-center text-center p-12 md:p-16">
         <div class="relative z-10 max-w-xl">
-            <h2 class="text-3xl md:text-4xl font-headline font-bold mb-4 tracking-tighter text-white leading-tight">
+            <h2 class="text-3xl md:text-4xl font-headline font-bold mb-4 tracking-tight text-white leading-tight">
                 {{ __('messages.landing.templates.cta.title') }}
             </h2>
             <p class="text-white/70 mb-8 font-body leading-relaxed text-sm md:text-base">

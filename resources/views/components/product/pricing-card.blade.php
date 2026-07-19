@@ -17,7 +17,7 @@
     @if ($isPremium)
         <div
             class="absolute top-6 right-[-35px] bg-secondary text-tertiary px-10 py-1 rotate-45 text-[10px] font-bold tracking-widest uppercase">
-            MOST POPULAR
+            {{ __('messages.landing.pricing.plans.most_popular') }}
         </div>
     @endif
 
@@ -27,8 +27,8 @@
             @if ($isPremium)
                 <span
                     class="bg-secondary/10 text-secondary px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[12px] icon-filled">auto_awesome</span>
-                    AI Powered
+                    <span class="material-symbols-outlined text-[12px] icon-filled" aria-hidden="true">auto_awesome</span>
+                    {{ __('messages.landing.pricing.plans.ai_powered') }}
                 </span>
             @endif
         </div>
@@ -70,12 +70,12 @@
 
     @if ($isCurrentPlan)
         <x-ui.button variant="ghost"
-            class="w-full py-4 rounded-xl cursor-not-allowed opacity-60 border border-primary/10" disabled>
-            Current Plan
+            class="w-full py-4 rounded-lg cursor-not-allowed opacity-60 border border-primary/10" disabled>
+            {{ __('messages.landing.pricing.plans.current_plan') }}
         </x-ui.button>
     @else
         <x-ui.button variant="primary"
-            class="w-full py-4 rounded-xl shadow-lg {{ $isPremium ? '!bg-secondary hover:opacity-90' : '' }}"
+            class="w-full py-4 rounded-lg {{ $isPremium ? '!bg-secondary hover:!bg-secondary/90' : '' }}"
             {{ $attributes }}>
             {{ $buttonText }}
         </x-ui.button>

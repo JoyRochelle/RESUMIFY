@@ -8,19 +8,25 @@
 
         {{-- Hero Left: Content --}}
         <div class="w-full md:w-[40%] flex items-start justify-center md:justify-start px-4 sm:px-8 md:px-16 py-12 md:py-20">
-            <div class="max-w-md w-full text-center md:text-left">
+            <div class="max-w-md w-full text-center md:text-left animate-fade-up">
                 <h1
-                    class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary leading-tight tracking-tighter mb-6 md:mb-8">
-                    {{ __('messages.landing.welcome.hero.title') }} <span class="inline-block text-3xl sm:text-4xl md:text-5xl">✨</span>
+                    class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary leading-tight tracking-tight mb-6 md:mb-8">
+                    {{ __('messages.landing.welcome.hero.title') }}
                 </h1>
                 <p class="text-base sm:text-lg md:text-xl text-outline mb-8 md:mb-10 leading-relaxed font-body">
                     {{ __('messages.landing.welcome.hero.subtitle') }}
                 </p>
-                <div class="flex justify-center md:justify-start">
+                <div class="flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start gap-3 sm:gap-4">
                     <x-landing_page.button variant="primary" icon="arrow_forward" href="{{ route('register') }}">
                         {{ __('messages.landing.welcome.hero.cta') }}
                     </x-landing_page.button>
+                    <x-landing_page.button variant="outline" href="{{ route('templates') }}">
+                        {{ __('messages.landing.welcome.hero.cta_secondary') }}
+                    </x-landing_page.button>
                 </div>
+                <p class="mt-4 text-sm text-outline font-body">
+                    {{ __('messages.landing.welcome.hero.reassurance') }}
+                </p>
             </div>
         </div>
 
@@ -29,8 +35,8 @@
             class="w-full md:w-[60%] bg-surface-container-low relative flex items-start justify-center px-4 sm:px-8 md:px-16 py-10 md:py-20">
             <div class="relative w-full max-w-sm md:max-w-md">
 
-                {{-- Resume Card Preview --}}
-                <div class="bg-white p-6 md:p-8 rounded-lg shadow-2xl relative z-10 border border-primary/5">
+                {{-- Resume Card Preview: the centerpiece "raised page" --}}
+                <div class="bg-tertiary p-6 md:p-8 rounded-lg shadow-2xl relative z-10 border border-primary/10 animate-fade-up" style="animation-delay: 100ms">
                     <div class="flex justify-between items-start mb-6 md:mb-8">
                         <div>
                             <h2 class="text-xl md:text-2xl font-headline text-primary tracking-tighter leading-none">Theofrolic
@@ -76,64 +82,45 @@
                     </div>
                 </div>
 
-                {{-- ATS Match Score — Desktop only (absolute positioned) --}}
-                <div
-                    class="hidden md:block absolute -right-10 top-[360px] bg-white/95 backdrop-blur-xl p-5 rounded-md shadow-xl w-56 z-20 border border-primary/10 transform rotate-1">
-                    <p class="text-[9px] text-outline mb-3 tracking-widest uppercase font-bold">{{ __('messages.landing.welcome.preview.ats_match_score') }}</p>
-                    <div class="flex items-end gap-1.5 h-10 mb-3">
-                        <div class="w-full bg-red-200 h-1/4 rounded-sm"></div>
-                        <div class="w-full bg-red-300 h-2/5 rounded-sm"></div>
-                        <div class="w-full bg-secondary/30 h-3/5 rounded-sm"></div>
-                        <div class="w-full bg-secondary/70 h-4/5 rounded-sm"></div>
-                        <div class="w-full bg-secondary h-full rounded-sm"></div>
+                {{-- Desktop satellites: in flow, side by side, tucked ~40px under the document's bottom edge --}}
+                <div class="hidden md:flex relative z-20 -mt-10 items-start justify-between gap-6">
+                    {{-- INPUT EDITOR --}}
+                    <div class="-ml-10 w-64 shrink-0 bg-primary p-5 rounded-lg shadow-2xl -rotate-1 animate-fade-up" style="animation-delay: 250ms">
+                        <p class="text-[9px] text-white/50 mb-4 tracking-widest uppercase font-bold">{{ __('messages.landing.welcome.preview.input_editor') }}</p>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-[8px] text-white/50 uppercase tracking-widest block mb-1">{{ __('messages.landing.welcome.preview.name_label') }}</label>
+                                <div class="border-b border-white/15 pb-1">
+                                    <span class="text-white text-[12px]">Theofrolic</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[8px] text-white/70 uppercase tracking-widest block mb-1">{{ __('messages.landing.welcome.preview.description_label') }}</label>
+                                {{-- The "focused" field: emerald underline + live caret, mirroring the real editor's focus state --}}
+                                <div class="border-b-2 border-secondary pb-1">
+                                    <span class="text-white/90 text-[11px] leading-relaxed">{{ __('messages.landing.welcome.preview.description_value') }}</span><span class="ml-0.5 inline-block h-3 w-0.5 translate-y-0.5 bg-white/80 animate-pulse" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center text-[10px] font-bold">
-                        <span class="text-outline">{{ __('messages.landing.welcome.preview.low') }}</span>
-                        <span class="text-secondary">{{ __('messages.landing.welcome.preview.high') }}</span>
-                    </div>
-                </div>
 
-                {{-- INPUT EDITOR — Desktop only (absolute positioned) --}}
-                <div class="hidden md:block absolute top-[380px] -left-16 bg-primary p-7 rounded-md shadow-2xl w-72 z-30">
-                    <p class="text-[9px] text-white/40 mb-5 tracking-widest uppercase font-bold">{{ __('messages.landing.welcome.preview.input_editor') }}</p>
-                    <div class="space-y-5">
-                        <div>
-                            <label class="text-[8px] text-white/40 uppercase tracking-widest block mb-1">{{ __('messages.landing.welcome.preview.name_label') }}</label>
-                            <div class="border-b border-white/10 pb-1">
-                                <span class="text-white text-[12px]">Theofrolic</span>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-[8px] text-white/40 uppercase tracking-widest block mb-1">{{ __('messages.landing.welcome.preview.company_label') }}</label>
-                            <div class="border-b border-white/10 pb-1">
-                                <span class="text-white text-[12px]">Resumify</span>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-[8px] text-white/40 uppercase tracking-widest block mb-1">{{ __('messages.landing.welcome.preview.description_label') }}</label>
-                            <div class="border-b border-white/10 pb-1">
-                                <span class="text-white/80 text-[11px] leading-relaxed">{{ __('messages.landing.welcome.preview.description_value') }}</span>
-                            </div>
+                    {{-- ATS Match Score --}}
+                    <div class="-mr-10 mt-4 flex min-w-0 flex-1 items-center gap-4 bg-tertiary p-5 rounded-lg shadow-xl border border-primary/10 rotate-1 animate-fade-up" style="animation-delay: 400ms">
+                        <x-user.score-circle :score="92" size="sm" />
+                        <div class="min-w-0">
+                            <p class="text-[9px] text-primary/60 tracking-widest uppercase font-bold">{{ __('messages.landing.welcome.preview.ats_match_score') }}</p>
+                            <p class="mt-1 font-headline text-lg font-bold leading-tight text-primary">{{ __('messages.landing.welcome.preview.high_match') }}</p>
+                            <p class="text-[10px] text-primary/60">{{ __('messages.landing.welcome.preview.resume_quality') }}</p>
                         </div>
                     </div>
                 </div>
 
                 {{-- Mobile-only: ATS Score badge (inline, not absolute) --}}
-                <div
-                    class="md:hidden mt-4 bg-white/95 p-4 rounded-lg shadow-md border border-primary/10 flex items-center gap-4">
-                    <div>
-                        <p class="text-[9px] text-outline mb-2 tracking-widest uppercase font-bold">{{ __('messages.landing.welcome.preview.ats_match_score') }}</p>
-                        <div class="flex items-end gap-1 h-8">
-                            <div class="w-4 bg-red-200 h-1/4 rounded-sm"></div>
-                            <div class="w-4 bg-red-300 h-2/5 rounded-sm"></div>
-                            <div class="w-4 bg-secondary/30 h-3/5 rounded-sm"></div>
-                            <div class="w-4 bg-secondary/70 h-4/5 rounded-sm"></div>
-                            <div class="w-4 bg-secondary h-full rounded-sm"></div>
-                        </div>
-                    </div>
+                <div class="md:hidden mt-4 bg-tertiary p-4 rounded-lg shadow-md border border-primary/10 flex items-center gap-4 animate-fade-up" style="animation-delay: 250ms">
+                    <x-user.score-circle :score="92" size="sm" />
                     <div class="flex-1 text-right">
-                        <p class="text-[10px] text-outline">{{ __('messages.landing.welcome.preview.resume_quality') }}</p>
-                        <p class="text-lg font-headline font-bold text-secondary">{{ __('messages.landing.welcome.preview.high_match') }}</p>
+                        <p class="text-[10px] text-primary/60">{{ __('messages.landing.welcome.preview.resume_quality') }}</p>
+                        <p class="text-lg font-headline font-bold text-primary">{{ __('messages.landing.welcome.preview.high_match') }}</p>
                     </div>
                 </div>
 
@@ -143,7 +130,15 @@
 
     {{-- ======================== FEATURES SECTION ======================== --}}
     <section class="py-16 sm:py-24 md:py-32 px-4 sm:px-8">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+        <div class="max-w-2xl mx-auto text-center mb-12 md:mb-16 animate-scroll-reveal">
+            <h2 class="text-3xl sm:text-4xl font-headline font-bold text-primary tracking-tight mb-4 leading-tight">
+                {{ __('messages.landing.welcome.features.title') }}
+            </h2>
+            <p class="text-base sm:text-lg text-outline font-body leading-relaxed">
+                {{ __('messages.landing.welcome.features.subtitle') }}
+            </p>
+        </div>
+        <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
             <x-landing_page.feature-card title="{{ __('messages.landing.welcome.features.ai_bullet.title') }}" icon="auto_awesome" :filled="true">
                 {{ __('messages.landing.welcome.features.ai_bullet.desc') }}
             </x-landing_page.feature-card>
@@ -158,13 +153,45 @@
         </div>
     </section>
 
+    {{-- ======================== HOW IT WORKS ======================== --}}
+    <section class="py-16 sm:py-24 px-4 sm:px-8 bg-surface-container-low/60">
+        <div class="max-w-2xl mx-auto text-center mb-12 md:mb-16 animate-scroll-reveal">
+            <h2 class="text-3xl sm:text-4xl font-headline font-bold text-primary tracking-tight mb-4 leading-tight">
+                {{ __('messages.landing.welcome.how.title') }}
+            </h2>
+            <p class="text-base sm:text-lg text-outline font-body leading-relaxed">
+                {{ __('messages.landing.welcome.how.subtitle') }}
+            </p>
+        </div>
+
+        <div class="relative max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+            {{-- Connector line between step markers (desktop) --}}
+            <div class="hidden md:block absolute top-[22px] left-[17%] right-[17%] h-px bg-primary/10" aria-hidden="true"></div>
+
+            @foreach (['build', 'scan', 'rehearse'] as $i => $step)
+                <div class="relative text-center md:px-4 animate-scroll-reveal">
+                    {{-- The last step is the payoff — it carries the section's one emerald accent --}}
+                    <div class="relative z-10 mx-auto mb-5 flex h-11 w-11 items-center justify-center rounded-full border font-headline text-lg font-bold shadow-sm {{ $loop->last ? 'border-secondary/30 bg-secondary/10 text-secondary' : 'border-primary/15 bg-tertiary text-primary' }}">
+                        {{ $i + 1 }}
+                    </div>
+                    <h3 class="text-xl font-headline font-bold text-primary mb-2 tracking-tight">
+                        {{ __('messages.landing.welcome.how.steps.' . $step . '.title') }}
+                    </h3>
+                    <p class="mx-auto max-w-[36ch] text-sm md:text-base text-outline font-body leading-relaxed">
+                        {{ __('messages.landing.welcome.how.steps.' . $step . '.desc') }}
+                    </p>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
     {{-- ======================== CALL TO ACTION ======================== --}}
     <section class="py-12 sm:py-16 md:py-24 px-4 sm:px-8">
         <div
             class="max-w-5xl mx-auto bg-primary rounded-2xl relative min-h-[320px] md:min-h-[400px] flex items-center p-8 sm:p-12 md:p-20 overflow-hidden">
             <div class="relative z-10 max-w-2xl text-left">
                 <h2
-                    class="text-3xl sm:text-4xl md:text-5xl text-white mb-4 md:mb-6 leading-tight font-headline tracking-tighter">
+                    class="text-3xl sm:text-4xl md:text-5xl text-white mb-4 md:mb-6 leading-tight font-headline tracking-tight">
                     {{ __('messages.landing.welcome.cta.title') }}</h2>
                 <p class="text-base md:text-lg text-white/80 mb-8 md:mb-10 leading-relaxed font-body">
                     {{ __('messages.landing.welcome.cta.subtitle') }}

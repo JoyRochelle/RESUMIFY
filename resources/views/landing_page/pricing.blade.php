@@ -27,7 +27,7 @@
     {{-- Header Section --}}
     <section class="max-w-7xl mx-auto px-4 sm:px-8 pt-14 sm:pt-20 pb-8 text-center">
         <h1
-            class="text-4xl sm:text-5xl md:text-6xl font-headline font-bold text-primary tracking-tighter mb-4 sm:mb-6 leading-tight">
+            class="text-4xl sm:text-5xl md:text-6xl font-headline font-bold text-primary tracking-tight mb-4 sm:mb-6 leading-tight">
             {{ __('messages.landing.pricing.hero.title') }}</h1>
         <p class="text-base sm:text-lg md:text-xl text-outline max-w-2xl mx-auto font-body leading-relaxed">
             {{ __('messages.landing.pricing.hero.subtitle') }}
@@ -53,7 +53,7 @@
 
     {{-- Compare Our Features Section --}}
     <section class="max-w-4xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
-        <h2 class="text-3xl md:text-4xl font-headline font-bold text-center mb-10 sm:mb-16 tracking-tighter text-primary">
+        <h2 class="text-3xl md:text-4xl font-headline font-bold text-center mb-10 sm:mb-16 tracking-tight text-primary">
             {{ __('messages.landing.pricing.compare.title') }}</h2>
 
         {{-- Desktop Table (hidden on mobile) --}}
@@ -68,31 +68,31 @@
                 </span>
             </div>
             <div class="divide-y divide-primary/5">
-                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-lg px-6 transition-colors">
                     <span class="text-base font-body text-primary font-medium">{{ __('messages.landing.pricing.compare.number_of_resumes') }}</span>
                     <span class="text-base font-body text-outline text-center">{{ $basicResumeCompareLabel }}</span>
                     <span class="text-base font-body font-bold text-primary text-center">{{ $premiumResumeCompareLabel }}</span>
                 </div>
-                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-lg px-6 transition-colors">
                     <span class="text-base font-body text-primary font-medium">{{ __('messages.landing.pricing.plans.ai_bullet_optimizer') }}</span>
                     <span class="text-base font-body text-outline text-center">—</span>
                     <span class="flex justify-center">
                         <span class="material-symbols-outlined text-secondary text-2xl icon-filled">check_circle</span>
                     </span>
                 </div>
-                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-lg px-6 transition-colors">
                     <span class="text-base font-body text-primary font-medium">{{ __('messages.landing.pricing.plans.realtime_ats_matcher') }}</span>
                     <span class="text-base font-body text-outline text-center">—</span>
                     <span class="flex justify-center">
                         <span class="material-symbols-outlined text-secondary text-2xl icon-filled">check_circle</span>
                     </span>
                 </div>
-                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-lg px-6 transition-colors">
                     <span class="text-base font-body text-primary font-medium">{{ __('messages.landing.pricing.plans.premium_pdf_export') }}</span>
                     <span class="text-base font-body text-outline text-center">{{ __('messages.landing.pricing.compare.standard') }}</span>
                     <span class="text-base font-body font-bold text-primary text-center">{{ __('messages.landing.pricing.compare.premium') }}</span>
                 </div>
-                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-lg px-6 transition-colors">
                     <span class="text-base font-body text-primary font-medium">{{ __('messages.landing.pricing.plans.priority_support') }}</span>
                     <span class="text-base font-body text-outline text-center">—</span>
                     <span class="flex justify-center">
@@ -156,7 +156,7 @@
 
     {{-- FAQ Section --}}
     <section class="max-w-3xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
-        <h2 class="text-3xl md:text-4xl font-headline font-bold text-center mb-12 tracking-tighter text-primary">{{ __('messages.landing.pricing.faq.title') }}</h2>
+        <h2 class="text-3xl md:text-4xl font-headline font-bold text-center mb-12 tracking-tight text-primary">{{ __('messages.landing.pricing.faq.title') }}</h2>
         <div class="space-y-4">
             <x-ui.disclosure id="pricing-faq-1" :title="__('messages.landing.pricing.faq.q1')">
                 <p class="text-outline font-body leading-relaxed text-sm">{{ __('messages.landing.pricing.faq.a1') }}</p>

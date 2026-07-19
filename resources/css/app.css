@@ -32,6 +32,10 @@
     /* Border Radius - Soft Minimalist */
     --radius-lg: 0.5rem; /* 8px — cards */
     --radius-pill: 1.25rem; /* 20px — pills */
+
+    /* Motion — decelerating ease-outs only; no bounce/elastic */
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
@@ -50,6 +54,12 @@
     h4 {
         @apply font-headline;
     }
+
+    h1,
+    h2,
+    h3 {
+        text-wrap: balance;
+    }
 }
 
 /* Material Symbols Adjustments */
@@ -67,9 +77,13 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--color-primary);
-    opacity: 0.2;
+    /* opacity is ignored on scrollbar pseudo-elements; bake it into the color */
+    background: color-mix(in srgb, var(--color-primary) 25%, transparent);
     border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--color-primary) 40%, transparent);
 }
 
 @utility glass-panel {
@@ -145,6 +159,44 @@
 
 @utility admin-badge {
     @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider;
+}
+
+/* One-time entrance for marketing hero content. Pure CSS animation (not a
+   class-triggered transition) so content is never gated on JS running. */
+@utility animate-fade-up {
+    animation: fade-up 600ms var(--ease-out-quart) both;
+}
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+}
+
+/* Scroll-driven reveal, progressive enhancement only: browsers without
+   animation-timeline support (and reduced-motion users) see the content
+   static and fully visible — nothing is gated on the animation running. */
+@utility animate-scroll-reveal {
+    @media (prefers-reduced-motion: no-preference) {
+        @supports (animation-timeline: view()) {
+            animation: fade-up linear both;
+            animation-timeline: view();
+            animation-range: entry 0% cover 30%;
+        }
+    }
+}
+
+/* Score circle arc draws in from empty to its value; the element's own
+   stroke-dashoffset attribute is the animation's end state. */
+@utility animate-score-arc {
+    animation: score-arc 900ms var(--ease-out-expo) both;
+}
+
+@keyframes score-arc {
+    from {
+        stroke-dashoffset: var(--score-arc-from);
+    }
 }
 
 @utility animate-bounce-subtle {

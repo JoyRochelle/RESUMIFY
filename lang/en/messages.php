@@ -34,10 +34,15 @@ return [
         ],
 
         'marketing' => [
-            'headline' => 'One Account, One Adapted Career ✨',
+            'headline' => 'One Account, One Adapted Career',
             'subtitle' => 'Build professional resumes and boost your ATS score in minutes.',
             'ats_match' => 'ATS MATCH',
             'ai_optimization' => 'AI Optimization Active',
+            'points' => [
+                'ats_friendly' => 'ATS-friendly templates',
+                'bilingual' => 'Bahasa Indonesia & English',
+                'free' => 'Free to start',
+            ],
         ],
 
         'login' => [
@@ -818,7 +823,7 @@ return [
             'templates' => 'Templates',
             'pricing' => 'Pricing',
             'login' => 'Login',
-            'cta_create_resume' => 'Create Free Resume ✨',
+            'cta_create_resume' => 'Create Free Resume',
             'language' => 'Language',
         ],
 
@@ -908,6 +913,8 @@ return [
                 'title' => 'Write Your Success Story',
                 'subtitle' => 'Adapt your resume to job openings with artificial intelligence.',
                 'cta' => 'Upgrade Your Resume',
+                'cta_secondary' => 'Browse Templates',
+                'reassurance' => 'Free to start — no credit card needed.',
             ],
             'preview' => [
                 'work_experience' => 'WORK EXPERIENCE',
@@ -925,6 +932,8 @@ return [
                 'high_match' => 'High Match',
             ],
             'features' => [
+                'title' => 'Everything you need to land the job',
+                'subtitle' => 'Build your CV, check your ATS score, and rehearse the interview — one calm workflow built for the Indonesian job market.',
                 'ai_bullet' => [
                     'title' => 'AI Bullet Point Generator',
                     'desc' => 'Write your achievements instantly with data-driven suggestions that stand out to recruiters.',
@@ -936,6 +945,24 @@ return [
                 'premium_templates' => [
                     'title' => 'Premium Templates',
                     'desc' => 'A collection of professionally curated templates for various industries and career levels.',
+                ],
+            ],
+            'how' => [
+                'title' => 'From blank page to interview-ready',
+                'subtitle' => 'One flow, three steps — each one picks up where the last left off.',
+                'steps' => [
+                    'build' => [
+                        'title' => 'Build with AI',
+                        'desc' => 'Start from a template and let AI turn your experience into recruiter-ready bullet points.',
+                    ],
+                    'scan' => [
+                        'title' => 'Scan against the job',
+                        'desc' => 'Paste the job description and get a concrete gap list — not just a score.',
+                    ],
+                    'rehearse' => [
+                        'title' => 'Rehearse with Bu Sari',
+                        'desc' => 'Practice interview questions drawn from your own CV and get structured STAR feedback.',
+                    ],
                 ],
             ],
             'cta' => [
@@ -952,6 +979,7 @@ return [
             'use_template_full' => 'Use This Template',
             'use_template_short' => 'Use Template',
             'preview_aria' => 'Preview :title template',
+            'preview_template' => 'Preview Template',
             'close_preview' => 'Close preview',
             'cta' => [
                 'title' => 'Haven\'t found the right fit?',
@@ -979,6 +1007,9 @@ return [
                 'premium_pdf_export' => 'Premium PDF Export',
                 'priority_support' => 'Priority Support',
                 'activate_premium' => 'Activate Premium Now',
+                'most_popular' => 'Most Popular',
+                'ai_powered' => 'AI Powered',
+                'current_plan' => 'Current Plan',
             ],
             'compare' => [
                 'title' => 'Compare Our Features',

@@ -14,7 +14,7 @@
     $isPremium = $user->isPremium();
 @endphp
 
-<section {{ $attributes->merge(['class' => $compact ? 'grid gap-3' : 'grid gap-4 rounded-2xl border border-primary/10 bg-tertiary p-4 shadow-sm']) }}
+<section {{ $attributes->merge(['class' => $compact ? 'grid gap-3' : 'grid gap-4 rounded-lg border border-primary/10 bg-tertiary p-4 shadow-sm']) }}
          aria-label="Current plan usage"
          aria-live="polite">
     <div class="flex flex-wrap items-center justify-between gap-3">
@@ -35,7 +35,7 @@
                 <span class="text-sm font-bold text-primary"><span data-ai-quota-used>{{ $aiUsed }}</span>/<span data-ai-quota-limit>{{ $aiLimit }}</span> {{ __('messages.quota_status.used_suffix') }}</span>
             </div>
             <div class="h-2 overflow-hidden rounded-full bg-primary/10" aria-hidden="true">
-                <div data-ai-quota-bar class="h-full rounded-full bg-secondary transition-all duration-200" style="width: {{ $aiPercentage }}%"></div>
+                <div data-ai-quota-bar class="h-full rounded-full bg-secondary transition-[width] duration-500 ease-out-quart" style="width: {{ $aiPercentage }}%"></div>
             </div>
         </div>
 
@@ -47,7 +47,7 @@
                 </span>
             </div>
             <div class="h-2 overflow-hidden rounded-full bg-primary/10" aria-hidden="true">
-                <div class="h-full rounded-full {{ $isPremium ? 'bg-[#A16207]' : 'bg-primary' }} transition-all duration-200" style="width: {{ $resumePercentage }}%"></div>
+                <div class="h-full rounded-full {{ $isPremium ? 'bg-[#A16207]' : 'bg-primary' }} transition-[width] duration-500 ease-out-quart" style="width: {{ $resumePercentage }}%"></div>
             </div>
         </div>
     </div>
