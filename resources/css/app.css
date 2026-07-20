@@ -344,10 +344,10 @@
                 transparent 0deg 290deg,
                 var(--color-secondary) 325deg,
                 transparent 360deg);
-        mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-        mask-composite: exclude;
-        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-        -webkit-mask-composite: xor;
+        /* `exclude` must live inside the shorthand: a standalone
+           mask-composite gets dropped/reordered by the CSS minifier,
+           which un-masks the gradient and smears it across the card. */
+        mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
         animation: beam-spin 7s linear infinite;
         pointer-events: none;
     }
