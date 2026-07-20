@@ -160,6 +160,7 @@ return [
         'upgrade_quota' => 'Upgrade Quota',
         'language' => 'Language',
         'logout' => 'Log Out',
+        'toggle_sidebar' => 'Show or hide navigation',
         'more' => 'More',
     ],
 
@@ -360,6 +361,7 @@ return [
             'saving' => 'Saving…',
             'saved_at_prefix' => 'Saved',
             'changes_saved' => 'Changes saved!',
+            'fill_previous_entry' => 'Fill in the previous entry first before adding a new one.',
             'save_failed' => 'Failed to save — please retry.',
             'network_error_not_saved' => 'Network error — changes not saved.',
             'confirm_remove_section' => 'Are you sure you want to completely remove this section?',

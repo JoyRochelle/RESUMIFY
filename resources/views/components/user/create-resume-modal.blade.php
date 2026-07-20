@@ -105,6 +105,7 @@
 
                         <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
                             <iframe src="{{ route('templates.demo', $template) }}"
+                                    scrolling="no"
                                     style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
                                     class="template-thumbnail-iframe pointer-events-none transition-transform duration-500 origin-top-left"
                                     loading="lazy"

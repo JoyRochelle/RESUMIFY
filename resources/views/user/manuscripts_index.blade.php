@@ -9,24 +9,24 @@
     @endphp
 
     <main class="flex-1 p-4 sm:p-6 md:p-12 max-w-7xl mx-auto w-full pb-24 md:pb-12">
-        <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 md:mb-16">
+        <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6 md:mb-8 animate-fade-up">
             <div>
                 <h1 class="text-3xl sm:text-4xl md:text-5xl font-headline text-primary tracking-tight leading-tight mb-2">{{ __('messages.manuscripts_page.title') }}</h1>
                 <p class="text-primary/60 font-label text-sm max-w-md">{{ __('messages.manuscripts_page.subtitle') }}</p>
                 <div class="mt-4 flex flex-wrap items-center gap-3">
                     <x-user.plan-badge :user="$user" />
-                    <span class="inline-flex items-center rounded-full border border-primary/10 bg-tertiary px-3 py-1 text-sm font-label text-primary/80">
+                    {{-- <span class="inline-flex items-center rounded-full border border-primary/10 bg-tertiary px-3 py-1 text-sm font-label text-primary/80">
                         {{ __('messages.dashboard.resume_quota', ['used' => $user->getResumeQuotaUsed(), 'limit' => $user->getResumeLimit() ?? __('messages.dashboard.unlimited')]) }}
-                    </span>
+                    </span> --}}
                 </div>
             </div>
 
             <x-user.btn-create />
         </header>
 
-        <x-user.quota-status :user="$user" class="mb-10 md:mb-12" />
+        <x-user.quota-status :user="$user" class="mb-10 md:mb-12 animate-fade-up" style="animation-delay: 100ms" />
 
-        <section>
+        <section class="animate-fade-up" style="animation-delay: 160ms">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach($cvs as $cv)
                 <x-user.resume-card

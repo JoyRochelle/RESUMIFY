@@ -4,6 +4,7 @@
     <div class="aspect-[210/297] bg-surface-container-low overflow-hidden relative border-b border-primary/5">
         @if($cvId)
             <iframe src="{{ route('resumes.preview', $cvId) }}"
+                    scrolling="no"
                     style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
                     class="cv-thumbnail-iframe pointer-events-none transition-transform duration-300 origin-top-left group-hover:opacity-90"
                     loading="lazy" tabindex="-1">

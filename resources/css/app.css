@@ -278,6 +278,16 @@
     }
 }
 
+/* Scrollable text boxes: padding scrolls away with the content, so text
+   hugs the bottom edge mid-scroll. Borders sit outside the scrollport,
+   so a thick transparent bottom border is a permanent bottom inset for
+   the text; the background still paints under it (border-box clip), and
+   the visible outline moves to an inset ring on the element. */
+@utility scroll-pad-b {
+    border-bottom: 0.75rem solid transparent;
+    background-clip: border-box;
+}
+
 /* Periodic sheen sweep across a CTA. Sweep color is overridable via
    --shimmer-color so it stays visible on both dark and light buttons. */
 @utility btn-shimmer {

@@ -160,6 +160,7 @@ return [
         'upgrade_quota' => 'Upgrade Kuota',
         'language' => 'Bahasa',
         'logout' => 'Keluar',
+        'toggle_sidebar' => 'Tampilkan atau sembunyikan navigasi',
         'more' => 'Lainnya',
     ],
 
@@ -360,6 +361,7 @@ return [
             'saving' => 'Menyimpan…',
             'saved_at_prefix' => 'Tersimpan',
             'changes_saved' => 'Perubahan disimpan!',
+            'fill_previous_entry' => 'Isi dulu entri sebelumnya sebelum menambahkan yang baru.',
             'save_failed' => 'Gagal menyimpan — silakan coba lagi.',
             'network_error_not_saved' => 'Kesalahan jaringan — perubahan tidak disimpan.',
             'confirm_remove_section' => 'Apakah Anda yakin ingin menghapus bagian ini sepenuhnya?',

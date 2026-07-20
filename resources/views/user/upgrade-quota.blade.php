@@ -15,7 +15,7 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-16">
 
             {{-- Hero Section --}}
-            <section class="text-center mb-10 md:mb-20">
+            <section class="text-center mb-10 md:mb-20 animate-fade-up">
                 <h1 class="font-headline text-3xl sm:text-4xl md:text-6xl text-primary mb-6 tracking-tight">Choose Your Success Plan ✨
                 </h1>
                 <p class="font-body text-primary/70 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
@@ -25,7 +25,7 @@
             </section>
 
             @if ($isPremium && $subscription)
-                <section class="mb-8 md:mb-10 rounded-2xl border border-primary/10 bg-tertiary p-5 shadow-sm md:flex md:items-center md:justify-between md:gap-6">
+                <section class="mb-8 md:mb-10 rounded-2xl border border-primary/10 bg-tertiary p-5 shadow-sm md:flex md:items-center md:justify-between md:gap-6 animate-fade-up" style="animation-delay: 100ms">
                     <div>
                         <p class="font-label text-xs font-bold uppercase tracking-widest {{ $isCancelled ? 'text-amber-700' : 'text-secondary' }}">
                             {{ $isCancelled ? 'Cancellation Scheduled' : 'Premium Active' }}
