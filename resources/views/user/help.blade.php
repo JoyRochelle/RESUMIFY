@@ -8,7 +8,7 @@
         <div class="max-w-4xl mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-16">
 
             {{-- Hero --}}
-            <section class="text-center mb-10 md:mb-16">
+            <section class="text-center mb-10 md:mb-16 animate-fade-up">
                 <h2 class="font-headline text-3xl md:text-5xl text-primary mb-4 tracking-tight">{{ __('messages.help.hero_title') }}</h2>
                 <p class="font-body text-primary/60 text-lg max-w-2xl mx-auto leading-relaxed">
                     {{ __('messages.help.hero_subtitle') }}
@@ -32,7 +32,7 @@
             </div>
 
             {{-- FAQ --}}
-            <section class="mb-16" x-data="{ open: null }">
+            <section class="mb-16 animate-fade-up" style="animation-delay: 120ms" x-data="{ open: null }">
                 <h3 class="font-headline text-2xl text-primary mb-8">{{ __('messages.help.faq_heading') }}</h3>
 
                 @foreach(['getting_started' => 'gs', 'resume_builder' => 'rb', 'ai_features' => 'ai', 'billing' => 'bi', 'technical' => 'te'] as $group => $prefix)

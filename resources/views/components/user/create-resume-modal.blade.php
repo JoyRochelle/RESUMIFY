@@ -6,13 +6,13 @@
 @endphp
 
 <div id="create-modal"
-     class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4"
+     class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-200 flex items-center justify-center p-4"
      role="dialog"
      aria-modal="true"
      aria-labelledby="create-modal-title"
      aria-describedby="create-modal-description">
     <div id="create-modal-content"
-         class="bg-tertiary w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
+         class="bg-tertiary w-full max-w-5xl max-h-[90vh] rounded-lg shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-200 ease-out">
         <div class="p-6 border-b border-primary/10 flex justify-between items-start gap-4 bg-surface-container-low">
             <div>
                 <h3 id="create-modal-title" class="font-headline text-2xl font-bold text-primary">
@@ -23,7 +23,7 @@
             <button type="button"
                     onclick="closeCreateModal()"
                     aria-label="Close template selection"
-                    class="text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full p-2 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
+                    class="inline-flex min-h-11 min-w-11 items-center justify-center text-primary/60 hover:text-primary transition-colors material-symbols-outlined rounded-full hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">close</button>
         </div>
 
         <div class="p-6 overflow-y-auto custom-scrollbar bg-surface flex-1">
@@ -98,13 +98,14 @@
                           data-template-name="{{ strtolower($template->name) }}"
                           data-template-category="{{ $category }}"
                           data-template-access="{{ $access }}"
-                          class="group relative border {{ $isLocked ? 'border-[#A16207]/30 bg-[#A16207]/[0.03]' : 'border-primary/10 bg-tertiary hover:border-secondary hover:shadow-lg hover:-translate-y-1' }} rounded-xl overflow-hidden transition-all duration-200">
+                          class="group relative border {{ $isLocked ? 'border-[#A16207]/30 bg-[#A16207]/[0.03]' : 'border-primary/10 bg-tertiary hover:border-secondary hover:shadow-lg hover:-translate-y-1' }} rounded-lg overflow-hidden transition-all duration-200 ease-out">
                         @csrf
                         <input type="hidden" name="title" class="js-create-resume-title-value" value="{{ old('title') }}">
                         <input type="hidden" name="template_id" value="{{ $template->id }}">
 
                         <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
                             <iframe src="{{ route('templates.demo', $template) }}"
+                                    scrolling="no"
                                     style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
                                     class="template-thumbnail-iframe pointer-events-none transition-transform duration-500 origin-top-left"
                                     loading="lazy"

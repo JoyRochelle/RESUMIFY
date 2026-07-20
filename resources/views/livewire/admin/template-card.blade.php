@@ -40,6 +40,7 @@
                  if (iframe) iframe.style.transform = 'scale(' + scale + ')';
              ">
             <iframe src="{{ route('admin.templates.preview', $template) }}"
+                    scrolling="no"
                     loading="lazy"
                     tabindex="-1"
                     style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0; pointer-events: none;">

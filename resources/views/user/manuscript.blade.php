@@ -158,7 +158,7 @@
 
                     @if($cv)
                         <div class="w-full relative bg-tertiary shadow-xl rounded-sm border border-primary/10 z-10" id="preview-container" style="min-height: 1123px;">
-                            <iframe id="resume-preview-iframe" src="{{ route('resumes.preview', $cv) }}" style="width: 794px; height: 1123px; transform-origin: 0 0; border: none;" class="pointer-events-none absolute top-0 left-0"></iframe>
+                            <iframe id="resume-preview-iframe" scrolling="no" src="{{ route('resumes.preview', $cv) }}" style="width: 794px; height: 1123px; transform-origin: 0 0; border: none;" class="pointer-events-none absolute top-0 left-0"></iframe>
                         </div>
                     @else
                         <div class="bg-tertiary w-full h-full min-h-[842px] shadow-xl rounded-sm p-6 lg:p-16 z-10 flex flex-col">
@@ -275,7 +275,7 @@
                             @endif
                             onmouseenter="previewTemplate('{{ $template->id }}')" onmouseleave="resetPreview()" class="template-card {{ $isLockedTemplate ? 'cursor-not-allowed border-[#A16207]/30 bg-[#A16207]/[0.03]' : 'cursor-pointer hover:border-secondary hover:shadow-lg hover:-translate-y-1' }} group relative border @if(!$isLockedTemplate && $cv && $cv->template_id === $template->id) border-secondary bg-secondary/5 @elseif(!$isLockedTemplate) border-primary/10 @endif rounded-xl overflow-hidden transition-all duration-200 text-left focus:outline-none focus:ring-2 focus:ring-secondary/40" aria-pressed="{{ $cv && $cv->template_id === $template->id ? 'true' : 'false' }}">
                             <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
-                                <iframe src="{{ route('resumes.preview', $cv) }}?template_id={{ $template->id }}" 
+                                <iframe src="{{ route('resumes.preview', $cv) }}?template_id={{ $template->id }}" scrolling="no"
                                         style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
                                         class="template-thumbnail-iframe pointer-events-none transition-transform duration-300 origin-top-left"
                                         loading="lazy" tabindex="-1">
@@ -325,7 +325,7 @@
                             <input type="hidden" name="template_id" value="{{ $template->id }}">
                             
                             <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
-                                <iframe src="{{ route('templates.demo', $template) }}" 
+                                <iframe src="{{ route('templates.demo', $template) }}" scrolling="no"
                                         style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
                                         class="template-thumbnail-iframe pointer-events-none transition-transform duration-300 origin-top-left"
                                         loading="lazy" tabindex="-1">

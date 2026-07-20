@@ -1,9 +1,10 @@
 @props(['title', 'date', 'url' => '#', 'cvId' => null])
 
-<article class="group bg-tertiary rounded-lg border border-primary/10 hover:shadow-[0_16px_32px_rgba(79,59,47,0.08)] transition-all duration-300 overflow-hidden flex flex-col">
+<article class="group bg-tertiary rounded-lg border border-primary/10 hover:border-primary/20 hover:shadow-[0_16px_32px_rgba(79,59,47,0.08)] hover:-translate-y-1 transition-all duration-200 ease-out overflow-hidden flex flex-col">
     <div class="aspect-[210/297] bg-surface-container-low overflow-hidden relative border-b border-primary/5">
         @if($cvId)
             <iframe src="{{ route('resumes.preview', $cvId) }}"
+                    scrolling="no"
                     style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
                     class="cv-thumbnail-iframe pointer-events-none transition-transform duration-300 origin-top-left group-hover:opacity-90"
                     loading="lazy" tabindex="-1">
@@ -28,7 +29,7 @@
         </div>
 
         <!-- Clickable overlay to open resume -->
-        <a href="{{ $url }}" class="absolute inset-0 z-30" aria-label="{{ __('messages.resume_card.edit_aria', ['title' => $title]) }}"></a>
+        <a href="{{ $url }}" class="absolute inset-0 z-30 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-secondary/60" aria-label="{{ __('messages.resume_card.edit_aria', ['title' => $title]) }}"></a>
     </div>
     <div class="p-6 bg-tertiary relative z-20">
         <div class="flex items-start justify-between gap-2 mb-1">
@@ -37,7 +38,7 @@
         </div>
         <p class="text-sm text-primary/80 font-label mb-6">{{ __('messages.resume_card.last_edited', ['date' => $date]) }}</p>
         <div class="flex items-center justify-between border-t border-primary/5 pt-4">
-            <a href="{{ $url }}" class="text-secondary font-label font-bold text-sm hover:underline flex items-center gap-1">
+            <a href="{{ $url }}" class="inline-flex min-h-11 items-center gap-1 rounded-lg text-secondary font-label font-bold text-sm hover:underline focus:outline-none focus:ring-2 focus:ring-secondary/40">
                 <span class="material-symbols-outlined text-base" data-icon="edit">edit</span>
                 {{ __('messages.resume_card.edit') }}
             </a>

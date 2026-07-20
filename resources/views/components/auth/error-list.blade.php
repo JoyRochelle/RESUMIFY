@@ -1,5 +1,5 @@
 @if ($errors->any())
-    <div {{ $attributes->merge(['class' => 'mb-6 p-4 text-sm text-red-800 bg-red-50 border border-red-200 rounded-lg font-medium leading-relaxed']) }}
+    <div data-anime-shake {{ $attributes->merge(['class' => 'mb-6 p-4 text-sm text-red-800 bg-red-50 border border-red-200 rounded-lg font-medium leading-relaxed']) }}
          role="alert"
          aria-live="assertive"
          tabindex="-1">

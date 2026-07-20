@@ -28,6 +28,7 @@
                         class="relative w-full bg-white rounded-xl border border-primary/10 shadow-sm overflow-hidden"
                         style="aspect-ratio: 210/297;">
                         <iframe id="ats-preview-iframe"
+                            scrolling="no"
                             style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0; pointer-events: none;"
                             loading="lazy"></iframe>
                     </div>

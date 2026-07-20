@@ -17,7 +17,7 @@
             </button>
         </x-user.page-header>
 
-        <div class="px-4 lg:px-6 py-3 bg-surface-container-low border-b border-primary/10">
+        <div class="px-4 lg:px-6 py-3 bg-surface-container-low border-b border-primary/10 animate-fade-up" style="animation-delay: 80ms">
             <x-user.quota-status :user="$user" compact class="grid gap-3" />
         </div>
 
@@ -39,7 +39,7 @@
             </button>
         </div>
 
-        <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden pb-20 lg:pb-0">
+        <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden pb-20 lg:pb-0 animate-fade-up" style="animation-delay: 140ms">
 
             {{-- ════════════════ LEFT PANEL — INPUTS ════════════════ --}}
             @include('user.ai.ats.setup-panel', ['cvs' => $cvs ?? collect(), 'history' => $history ?? collect(), 'user' => $user])
