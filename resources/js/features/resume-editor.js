@@ -420,8 +420,18 @@
             const list = document.getElementById(listId);
             const items = list.querySelectorAll('.list-item');
             if (items.length === 0) return;
-            
+
             const lastItem = items[items.length - 1];
+
+            // Anti-spam: the previous entry must have content before a new
+            // empty row may be added.
+            const lastItemHasContent = [...lastItem.querySelectorAll('input, textarea, select')]
+                .some(el => el.value && el.value.trim() !== '');
+            if (!lastItemHasContent) {
+                showToast(t.fill_previous_entry, 'error');
+                return;
+            }
+
             const clone = lastItem.cloneNode(true);
             
             // Clear inputs

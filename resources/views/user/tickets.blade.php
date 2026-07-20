@@ -8,7 +8,7 @@
         <div class="max-w-3xl mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-16">
 
             {{-- Header --}}
-            <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center justify-between mb-8 animate-fade-up">
                 <div>
                     <div class="flex items-center space-x-2 text-sm font-label text-primary/50 mb-2">
                         <a href="{{ route('user.help') }}" class="hover:text-primary transition-colors">{{ __('messages.tickets.list.breadcrumb_help') }}</a>
@@ -32,7 +32,7 @@
             @endif
 
             {{-- Ticket List --}}
-            <div class="bg-white rounded-3xl border border-primary/5 shadow-sm overflow-hidden">
+            <div class="bg-white rounded-3xl border border-primary/5 shadow-sm overflow-hidden animate-fade-up" style="animation-delay: 120ms">
                 @forelse($tickets as $ticket)
                 @php
                     $badgeMap = [

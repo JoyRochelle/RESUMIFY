@@ -34,10 +34,15 @@ return [
         ],
 
         'marketing' => [
-            'headline' => 'Satu Akun, Satu Karier yang Adaptif ✨',
+            'headline' => 'Satu Akun, Satu Karier yang Adaptif',
             'subtitle' => 'Buat resume profesional dan tingkatkan skor ATS Anda dalam hitungan menit.',
             'ats_match' => 'KECOCOKAN ATS',
             'ai_optimization' => 'Optimasi AI Aktif',
+            'points' => [
+                'ats_friendly' => 'Template ramah ATS',
+                'bilingual' => 'Bahasa Indonesia & Inggris',
+                'free' => 'Gratis untuk memulai',
+            ],
         ],
 
         'login' => [
@@ -155,6 +160,7 @@ return [
         'upgrade_quota' => 'Upgrade Kuota',
         'language' => 'Bahasa',
         'logout' => 'Keluar',
+        'toggle_sidebar' => 'Tampilkan atau sembunyikan navigasi',
         'more' => 'Lainnya',
     ],
 
@@ -355,6 +361,7 @@ return [
             'saving' => 'Menyimpan…',
             'saved_at_prefix' => 'Tersimpan',
             'changes_saved' => 'Perubahan disimpan!',
+            'fill_previous_entry' => 'Isi dulu entri sebelumnya sebelum menambahkan yang baru.',
             'save_failed' => 'Gagal menyimpan — silakan coba lagi.',
             'network_error_not_saved' => 'Kesalahan jaringan — perubahan tidak disimpan.',
             'confirm_remove_section' => 'Apakah Anda yakin ingin menghapus bagian ini sepenuhnya?',
@@ -818,7 +825,7 @@ return [
             'templates' => 'Template',
             'pricing' => 'Harga',
             'login' => 'Masuk',
-            'cta_create_resume' => 'Buat Resume Gratis ✨',
+            'cta_create_resume' => 'Buat Resume Gratis',
             'language' => 'Bahasa',
         ],
 
@@ -908,6 +915,8 @@ return [
                 'title' => 'Tulis Kisah Suksesmu',
                 'subtitle' => 'Sesuaikan resume Anda dengan lowongan pekerjaan menggunakan kecerdasan buatan.',
                 'cta' => 'Tingkatkan Resume Anda',
+                'cta_secondary' => 'Lihat Template',
+                'reassurance' => 'Gratis untuk memulai — tanpa kartu kredit.',
             ],
             'preview' => [
                 'work_experience' => 'PENGALAMAN KERJA',
@@ -925,6 +934,8 @@ return [
                 'high_match' => 'Kecocokan Tinggi',
             ],
             'features' => [
+                'title' => 'Semua yang kamu butuhkan untuk dapat kerja',
+                'subtitle' => 'Buat CV, cek skor ATS, dan latihan wawancara — satu alur kerja tenang yang dibuat untuk pasar kerja Indonesia.',
                 'ai_bullet' => [
                     'title' => 'Generator Poin AI',
                     'desc' => 'Tulis pencapaian Anda secara instan dengan saran berbasis data yang menonjol di mata perekrut.',
@@ -936,6 +947,24 @@ return [
                 'premium_templates' => [
                     'title' => 'Template Premium',
                     'desc' => 'Kumpulan template yang dikurasi secara profesional untuk berbagai industri dan tingkat karier.',
+                ],
+            ],
+            'how' => [
+                'title' => 'Dari halaman kosong sampai siap wawancara',
+                'subtitle' => 'Satu alur, tiga langkah — setiap langkah melanjutkan langkah sebelumnya.',
+                'steps' => [
+                    'build' => [
+                        'title' => 'Buat dengan AI',
+                        'desc' => 'Mulai dari template dan biarkan AI mengubah pengalamanmu menjadi poin-poin yang siap dilirik perekrut.',
+                    ],
+                    'scan' => [
+                        'title' => 'Cek dengan lowongan',
+                        'desc' => 'Tempel deskripsi pekerjaan dan dapatkan daftar kekurangan yang konkret — bukan sekadar skor.',
+                    ],
+                    'rehearse' => [
+                        'title' => 'Latihan dengan Bu Sari',
+                        'desc' => 'Latih pertanyaan wawancara dari CV-mu sendiri dan dapatkan umpan balik STAR yang terstruktur.',
+                    ],
                 ],
             ],
             'cta' => [
@@ -952,6 +981,7 @@ return [
             'use_template_full' => 'Gunakan Template Ini',
             'use_template_short' => 'Gunakan Template',
             'preview_aria' => 'Pratinjau template :title',
+            'preview_template' => 'Pratinjau Template',
             'close_preview' => 'Tutup pratinjau',
             'cta' => [
                 'title' => 'Belum menemukan yang cocok?',
@@ -979,6 +1009,9 @@ return [
                 'premium_pdf_export' => 'Ekspor PDF Premium',
                 'priority_support' => 'Dukungan Prioritas',
                 'activate_premium' => 'Aktifkan Premium Sekarang',
+                'most_popular' => 'Paling Populer',
+                'ai_powered' => 'Didukung AI',
+                'current_plan' => 'Paket Saat Ini',
             ],
             'compare' => [
                 'title' => 'Bandingkan Fitur Kami',

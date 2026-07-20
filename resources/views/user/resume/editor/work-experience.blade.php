@@ -17,7 +17,7 @@
                                     </div>
                                     <div class="relative mt-2">
                                         <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">{{ __('messages.editor.sections.work_experience.description') }}</label>
-                                        <textarea name="description" placeholder="{{ __('messages.editor.sections.work_experience.description_placeholder') }}" class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="4">{{ $job['description'] ?? '' }}</textarea>
+                                        <textarea name="description" placeholder="{{ __('messages.editor.sections.work_experience.description_placeholder') }}" class="auto-save w-full bg-surface-container-low rounded-lg scroll-pad-b ring-1 ring-inset ring-primary/10 focus:ring-secondary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="4">{{ $job['description'] ?? '' }}</textarea>
                                         <button type="button" onclick="openRefineModal(this)" class="absolute bottom-3 right-3 text-[10px] font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-2 py-1 rounded transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[12px]">auto_awesome</span>{{ __('messages.editor.sections.work_experience.refine') }}</button>
                                     </div>
                                 </div>
@@ -36,7 +36,7 @@
                                     </div>
                                     <div class="relative mt-2">
                                         <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">{{ __('messages.editor.sections.work_experience.description') }}</label>
-                                        <textarea name="description" placeholder="{{ __('messages.editor.sections.work_experience.description_placeholder') }}" class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="4"></textarea>
+                                        <textarea name="description" placeholder="{{ __('messages.editor.sections.work_experience.description_placeholder') }}" class="auto-save w-full bg-surface-container-low rounded-lg scroll-pad-b ring-1 ring-inset ring-primary/10 focus:ring-secondary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="4"></textarea>
                                         <button type="button" onclick="openRefineModal(this)" class="absolute bottom-3 right-3 text-[10px] font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-2 py-1 rounded transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[12px]">auto_awesome</span>{{ __('messages.editor.sections.work_experience.refine') }}</button>
                                     </div>
                                 </div>

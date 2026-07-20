@@ -27,9 +27,9 @@
     {{-- Header Section --}}
     <section class="max-w-7xl mx-auto px-4 sm:px-8 pt-14 sm:pt-20 pb-8 text-center">
         <h1
-            class="text-4xl sm:text-5xl md:text-6xl font-headline font-bold text-primary tracking-tighter mb-4 sm:mb-6 leading-tight">
+            class="text-4xl sm:text-5xl md:text-6xl font-headline font-bold text-primary tracking-tight mb-4 sm:mb-6 leading-tight animate-fade-up-blur">
             {{ __('messages.landing.pricing.hero.title') }}</h1>
-        <p class="text-base sm:text-lg md:text-xl text-outline max-w-2xl mx-auto font-body leading-relaxed">
+        <p class="text-base sm:text-lg md:text-xl text-outline max-w-2xl mx-auto font-body leading-relaxed animate-fade-up" style="animation-delay: 120ms">
             {{ __('messages.landing.pricing.hero.subtitle') }}
         </p>
     </section>
@@ -37,27 +37,31 @@
     {{-- Pricing Cards Section --}}
     <section class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-16 sm:mb-24 max-w-5xl mx-auto px-4 sm:px-8">
 
-        <x-product.pricing-card plan="{{ __('messages.landing.pricing.plans.starter') }}" price="Rp 0" period="{{ __('messages.landing.pricing.plans.forever') }}" :features="[$basicResumeLabel, __('messages.landing.pricing.plans.standard_templates')]" :disabledFeatures="[__('messages.landing.pricing.plans.no_ai_enhancement')]"
-            buttonText="{{ __('messages.landing.pricing.plans.get_started') }}" onclick="window.location.href='{{ route('register') }}'" />
+        <div class="animate-fade-up" style="animation-delay: 200ms">
+            <x-product.pricing-card plan="{{ __('messages.landing.pricing.plans.starter') }}" price="Rp 0" period="{{ __('messages.landing.pricing.plans.forever') }}" :features="[$basicResumeLabel, __('messages.landing.pricing.plans.standard_templates')]" :disabledFeatures="[__('messages.landing.pricing.plans.no_ai_enhancement')]"
+                buttonText="{{ __('messages.landing.pricing.plans.get_started') }}" onclick="window.location.href='{{ route('register') }}'" />
+        </div>
 
-        <x-product.pricing-card plan="{{ __('messages.landing.pricing.plans.premium_pro') }}" price="Rp 49.000" period="{{ __('messages.landing.pricing.plans.month') }}" :features="[
-            $premiumResumeLabel,
-            ['title' => __('messages.landing.pricing.plans.ai_bullet_optimizer'), 'subtitle' => __('messages.landing.pricing.plans.ai_bullet_optimizer_subtitle')],
-            __('messages.landing.pricing.plans.realtime_ats_matcher'),
-            __('messages.landing.pricing.plans.premium_pdf_export'),
-            __('messages.landing.pricing.plans.priority_support'),
-        ]" :isPremium="true"
-            buttonText="{{ __('messages.landing.pricing.plans.activate_premium') }}" onclick="window.location.href='{{ route('register') }}'" />
+        <div class="animate-fade-up" style="animation-delay: 320ms">
+            <x-product.pricing-card plan="{{ __('messages.landing.pricing.plans.premium_pro') }}" price="Rp 49.000" period="{{ __('messages.landing.pricing.plans.month') }}" :features="[
+                $premiumResumeLabel,
+                ['title' => __('messages.landing.pricing.plans.ai_bullet_optimizer'), 'subtitle' => __('messages.landing.pricing.plans.ai_bullet_optimizer_subtitle')],
+                __('messages.landing.pricing.plans.realtime_ats_matcher'),
+                __('messages.landing.pricing.plans.premium_pdf_export'),
+                __('messages.landing.pricing.plans.priority_support'),
+            ]" :isPremium="true"
+                buttonText="{{ __('messages.landing.pricing.plans.activate_premium') }}" onclick="window.location.href='{{ route('register') }}'" />
+        </div>
 
     </section>
 
     {{-- Compare Our Features Section --}}
     <section class="max-w-4xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
-        <h2 class="text-3xl md:text-4xl font-headline font-bold text-center mb-10 sm:mb-16 tracking-tighter text-primary">
+        <h2 class="text-3xl md:text-4xl font-headline font-bold text-center mb-10 sm:mb-16 tracking-tight text-primary animate-scroll-reveal">
             {{ __('messages.landing.pricing.compare.title') }}</h2>
 
         {{-- Desktop Table (hidden on mobile) --}}
-        <div class="hidden sm:block w-full bg-tertiary rounded-2xl p-8 shadow-sm border border-primary/10">
+        <div class="hidden sm:block w-full bg-tertiary rounded-2xl p-8 shadow-sm border border-primary/10 animate-scroll-reveal-2">
             {{-- Table Header --}}
             <div class="grid grid-cols-3 pb-6 border-b-2 border-primary/10 mb-4">
                 <span class="text-xs text-outline uppercase tracking-[0.2em] font-bold font-body pl-6">{{ __('messages.landing.pricing.compare.key_features') }}</span>
@@ -68,31 +72,31 @@
                 </span>
             </div>
             <div class="divide-y divide-primary/5">
-                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-lg px-6 transition-colors">
                     <span class="text-base font-body text-primary font-medium">{{ __('messages.landing.pricing.compare.number_of_resumes') }}</span>
                     <span class="text-base font-body text-outline text-center">{{ $basicResumeCompareLabel }}</span>
                     <span class="text-base font-body font-bold text-primary text-center">{{ $premiumResumeCompareLabel }}</span>
                 </div>
-                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-lg px-6 transition-colors">
                     <span class="text-base font-body text-primary font-medium">{{ __('messages.landing.pricing.plans.ai_bullet_optimizer') }}</span>
                     <span class="text-base font-body text-outline text-center">—</span>
                     <span class="flex justify-center">
                         <span class="material-symbols-outlined text-secondary text-2xl icon-filled">check_circle</span>
                     </span>
                 </div>
-                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-lg px-6 transition-colors">
                     <span class="text-base font-body text-primary font-medium">{{ __('messages.landing.pricing.plans.realtime_ats_matcher') }}</span>
                     <span class="text-base font-body text-outline text-center">—</span>
                     <span class="flex justify-center">
                         <span class="material-symbols-outlined text-secondary text-2xl icon-filled">check_circle</span>
                     </span>
                 </div>
-                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-lg px-6 transition-colors">
                     <span class="text-base font-body text-primary font-medium">{{ __('messages.landing.pricing.plans.premium_pdf_export') }}</span>
                     <span class="text-base font-body text-outline text-center">{{ __('messages.landing.pricing.compare.standard') }}</span>
                     <span class="text-base font-body font-bold text-primary text-center">{{ __('messages.landing.pricing.compare.premium') }}</span>
                 </div>
-                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-xl px-6 transition-colors">
+                <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-lg px-6 transition-colors">
                     <span class="text-base font-body text-primary font-medium">{{ __('messages.landing.pricing.plans.priority_support') }}</span>
                     <span class="text-base font-body text-outline text-center">—</span>
                     <span class="flex justify-center">
@@ -124,7 +128,7 @@
                 ];
             @endphp
             @foreach ($features as $f)
-                <div class="bg-tertiary rounded-2xl border border-primary/10 p-6 shadow-sm">
+                <div class="bg-tertiary rounded-2xl border border-primary/10 p-6 shadow-sm animate-scroll-reveal">
                     <p class="text-base font-bold text-primary font-body mb-5">{{ $f['label'] }}</p>
                     <div class="flex justify-around items-center">
                         <div class="text-center flex-1">
@@ -156,7 +160,7 @@
 
     {{-- FAQ Section --}}
     <section class="max-w-3xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
-        <h2 class="text-3xl md:text-4xl font-headline font-bold text-center mb-12 tracking-tighter text-primary">{{ __('messages.landing.pricing.faq.title') }}</h2>
+        <h2 class="text-3xl md:text-4xl font-headline font-bold text-center mb-12 tracking-tight text-primary">{{ __('messages.landing.pricing.faq.title') }}</h2>
         <div class="space-y-4">
             <x-ui.disclosure id="pricing-faq-1" :title="__('messages.landing.pricing.faq.q1')">
                 <p class="text-outline font-body leading-relaxed text-sm">{{ __('messages.landing.pricing.faq.a1') }}</p>

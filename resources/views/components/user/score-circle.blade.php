@@ -20,7 +20,7 @@
 <div class="relative {{ $containerClass }} flex items-center justify-center">
     <svg class="w-full h-full transform -rotate-90">
         <circle class="text-primary/10" cx="{{ $center }}" cy="{{ $center }}" fill="transparent" r="{{ $r }}" stroke="currentColor" stroke-width="{{ $strokeWidth }}"></circle>
-        <circle class="text-secondary" cx="{{ $center }}" cy="{{ $center }}" fill="transparent" r="{{ $r }}" stroke="currentColor" stroke-dasharray="{{ $circumference }}" stroke-dashoffset="{{ $dashoffset }}" stroke-linecap="round" stroke-width="{{ $strokeWidth }}"></circle>
+        <circle class="text-secondary animate-score-arc" style="--score-arc-from: {{ $circumference }}" cx="{{ $center }}" cy="{{ $center }}" fill="transparent" r="{{ $r }}" stroke="currentColor" stroke-dasharray="{{ $circumference }}" stroke-dashoffset="{{ $dashoffset }}" stroke-linecap="round" stroke-width="{{ $strokeWidth }}"></circle>
     </svg>
-    <span class="absolute {{ $textClass }}">{{ $score }}{{ $showPercent ? '%' : '' }}</span>
+    <span class="absolute {{ $textClass }}"><span data-count-up="{{ $score }}">{{ $score }}</span>{{ $showPercent ? '%' : '' }}</span>
 </div>

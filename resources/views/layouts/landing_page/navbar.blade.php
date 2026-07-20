@@ -11,17 +11,20 @@
         {{-- Desktop Nav Links (centered) --}}
         <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8 text-sm">
             <a href="/" wire:navigate
-                class="{{ request()->is('/') ? 'text-primary font-bold border-b-2 border-secondary pb-1' : 'text-outline hover:text-secondary' }} transition-colors">{{ __('messages.landing.navbar.features') }}</a>
+                class="pb-1 border-b-2 rounded-sm transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40 {{ request()->is('/') ? 'text-primary font-bold border-secondary' : 'text-outline border-transparent hover:text-secondary' }}"
+                @if(request()->is('/')) aria-current="page" @endif>{{ __('messages.landing.navbar.features') }}</a>
             <a href="/templates" wire:navigate
-                class="{{ request()->is('templates') ? 'text-primary font-bold border-b-2 border-secondary pb-1' : 'text-outline hover:text-secondary' }} transition-colors">{{ __('messages.landing.navbar.templates') }}</a>
+                class="pb-1 border-b-2 rounded-sm transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40 {{ request()->is('templates') ? 'text-primary font-bold border-secondary' : 'text-outline border-transparent hover:text-secondary' }}"
+                @if(request()->is('templates')) aria-current="page" @endif>{{ __('messages.landing.navbar.templates') }}</a>
             <a href="/pricing" wire:navigate
-                class="{{ request()->is('pricing') ? 'text-primary font-bold border-b-2 border-secondary pb-1' : 'text-outline hover:text-secondary' }} transition-colors">{{ __('messages.landing.navbar.pricing') }}</a>
+                class="pb-1 border-b-2 rounded-sm transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40 {{ request()->is('pricing') ? 'text-primary font-bold border-secondary' : 'text-outline border-transparent hover:text-secondary' }}"
+                @if(request()->is('pricing')) aria-current="page" @endif>{{ __('messages.landing.navbar.pricing') }}</a>
         </div>
 
         {{-- Desktop CTA --}}
         <div class="hidden md:flex items-center gap-6 text-sm">
             <x-ui.locale-switcher />
-            <a class="text-primary font-semibold hover:text-secondary transition-colors"
+            <a class="inline-flex min-h-11 items-center rounded-lg px-2 text-primary font-semibold hover:text-secondary transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40"
                 href="{{ route('login') }}">{{ __('messages.landing.navbar.login') }}</a>
             <x-landing_page.button variant="primary" class="!py-2 !px-4 !text-sm" href="{{ route('register') }}">
                 {{ __('messages.landing.navbar.cta_create_resume') }}
@@ -30,12 +33,13 @@
 
         {{-- Mobile: Login link + Hamburger --}}
         <div class="flex md:hidden items-center gap-3">
-            <a class="text-sm text-primary font-semibold hover:text-secondary transition-colors"
-                href="{{ route('login') }}">Login</a>
+            <a class="inline-flex min-h-11 items-center rounded-lg px-2 text-sm text-primary font-semibold hover:text-secondary transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40"
+                href="{{ route('login') }}">{{ __('messages.landing.navbar.login') }}</a>
             <button @click="open = !open"
-                    class="p-2 rounded-lg hover:bg-primary/5 transition-colors text-primary"
-                    aria-label="Toggle menu">
-                <span class="material-symbols-outlined text-2xl" x-text="open ? 'close' : 'menu'">menu</span>
+                    class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg hover:bg-primary/5 transition-colors duration-200 text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40"
+                    aria-label="Toggle menu"
+                    x-bind:aria-expanded="open.toString()">
+                <span class="material-symbols-outlined text-2xl" aria-hidden="true" x-text="open ? 'close' : 'menu'">menu</span>
             </button>
         </div>
     </div>

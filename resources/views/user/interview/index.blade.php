@@ -16,7 +16,7 @@
             </div>
         @endif
 
-        <div class="flex-1 overflow-y-auto px-4 py-6 md:px-8">
+        <div class="flex-1 overflow-y-auto px-4 py-6 md:px-8 animate-fade-up" style="animation-delay: 100ms">
             <div class="max-w-xl mx-auto">
 
                 {{-- Intro card --}}
