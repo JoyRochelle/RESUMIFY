@@ -9,12 +9,16 @@ use App\Models\InterviewFeedback;
 use App\Models\InterviewMessage;
 use App\Models\InterviewSession;
 use App\Models\User;
+use App\Support\Concerns\TracksGeminiUsage;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class InterviewService
 {
+    use TracksGeminiUsage;
+
     private const GEMINI_URL        = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
     private const GEMINI_STREAM_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent';
     public const RECENT_MESSAGE_LIMIT = 20;
@@ -36,34 +40,41 @@ class InterviewService
     /**
      * Create an interview session and ask Bu Sari's opening question.
      *
-     * @return array{session: InterviewSession, message: string}
+     * @return array{session: InterviewSession, message: string, usage: \App\Support\GeminiUsage}
      */
     public function startSession(User $user, Cv $cv, string $jobTarget): array
     {
+        $this->resetUsage();
         $cv->load('sections');
-
-        $session = InterviewSession::create([
-            'user_id'    => $user->id,
-            'resume_id'  => $cv->id,
-            'job_target' => $jobTarget,
-            'status'     => 'active',
-            'started_at' => now(),
-        ]);
 
         $systemPrompt = $this->buildSystemPrompt($cv, $jobTarget);
 
         // Trigger Ms. Sarah to open — not stored, just the prompt seed
         $seed = [['role' => 'user', 'parts' => [['text' => 'Please begin the interview session.']]]];
 
+        // Call the AI *before* persisting anything. If Gemini fails, this throws
+        // and no session row is left behind — otherwise every failed attempt
+        // would create an empty, orphaned "active" session the user could spam.
         $opening = $this->callGemini($systemPrompt, $seed);
 
-        InterviewMessage::create([
-            'session_id' => $session->id,
-            'role'       => 'assistant',
-            'content'    => $opening,
-        ]);
+        // Persist the session and its opening message atomically only on success.
+        return DB::transaction(function () use ($user, $cv, $jobTarget, $opening) {
+            $session = InterviewSession::create([
+                'user_id'    => $user->id,
+                'resume_id'  => $cv->id,
+                'job_target' => $jobTarget,
+                'status'     => 'active',
+                'started_at' => now(),
+            ]);
 
-        return ['session' => $session, 'message' => $opening];
+            InterviewMessage::create([
+                'session_id' => $session->id,
+                'role'       => 'assistant',
+                'content'    => $opening,
+            ]);
+
+            return ['session' => $session, 'message' => $opening, 'usage' => $this->lastUsage()];
+        });
     }
 
     /**
@@ -71,6 +82,8 @@ class InterviewService
      */
     public function sendMessage(InterviewSession $session, string $userContent): string
     {
+        $this->resetUsage();
+
         // Save user turn first
         InterviewMessage::create([
             'session_id' => $session->id,
@@ -129,6 +142,7 @@ PROMPT;
      */
     public function generateFeedback(InterviewSession $session): InterviewFeedback
     {
+        $this->resetUsage();
         $session->load(['messages', 'cv.sections']);
 
         $transcript = $this->buildTranscript($session->messages);
@@ -216,7 +230,10 @@ PROMPT;
             throw new \Exception('AI service failed with status ' . $response->status());
         }
 
-        $text = $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? null;
+        $json = $response->json();
+        $this->recordUsage($json);
+
+        $text = $json['candidates'][0]['content']['parts'][0]['text'] ?? null;
         if (!$text) {
             throw new \Exception('Empty response from AI service');
         }
@@ -309,6 +326,8 @@ PROMPT;
      */
     public function callGeminiStreaming(string $systemPrompt, array $messages, callable $onToken): string
     {
+        $this->resetUsage();
+
         $apiKey = config('services.gemini.key');
         if (!$apiKey) {
             throw new \Exception('Gemini API key not configured.');
@@ -330,9 +349,10 @@ PROMPT;
             throw new \Exception('AI streaming service failed with status ' . $response->status());
         }
 
-        $body     = $response->toPsrResponse()->getBody();
-        $fullText = '';
-        $buffer   = '';
+        $body      = $response->toPsrResponse()->getBody();
+        $fullText  = '';
+        $buffer    = '';
+        $usageJson = null;
 
         while (!$body->eof()) {
             $chunk = $body->read(256);
@@ -347,6 +367,11 @@ PROMPT;
                     $json = substr($line, 6);
                     if ($json === '[DONE]') break 2;
                     $payload = json_decode($json, true);
+                    // usageMetadata rides the final SSE chunk and is cumulative,
+                    // so keep the last one seen rather than summing per chunk.
+                    if (isset($payload['usageMetadata'])) {
+                        $usageJson = $payload;
+                    }
                     $token   = $payload['candidates'][0]['content']['parts'][0]['text'] ?? '';
                     if ($token) {
                         $fullText .= $token;
@@ -355,6 +380,8 @@ PROMPT;
                 }
             }
         }
+
+        $this->recordUsage($usageJson);
 
         return $fullText;
     }
@@ -408,7 +435,10 @@ PROMPT;
             throw new \Exception('Feedback AI service failed with status ' . $response->status());
         }
 
-        $content = $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? null;
+        $json = $response->json();
+        $this->recordUsage($json);
+
+        $content = $json['candidates'][0]['content']['parts'][0]['text'] ?? null;
         if (!$content) {
             throw new \Exception('Empty feedback response from AI service');
         }

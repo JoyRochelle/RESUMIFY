@@ -17,7 +17,7 @@
                                     </div>
                                     <div class="relative mt-2">
                                         <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">{{ __('messages.editor.sections.education.additional_info') }}</label>
-                                        <textarea name="description" class="auto-save w-full bg-surface-container-low rounded-lg scroll-pad-b ring-1 ring-inset ring-primary/10 focus:ring-secondary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="2">{{ $edu['description'] ?? '' }}</textarea>
+                                        <textarea name="description" class="auto-save w-full bg-surface-container-low rounded-lg scroll-pad-b ring-1 ring-primary/10 focus:ring-secondary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="2">{{ $edu['description'] ?? '' }}</textarea>
                                     </div>
                                 </div>
                                 @empty
@@ -35,7 +35,7 @@
                                     </div>
                                     <div class="relative mt-2">
                                         <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">{{ __('messages.editor.sections.education.additional_info') }}</label>
-                                        <textarea name="description" class="auto-save w-full bg-surface-container-low rounded-lg scroll-pad-b ring-1 ring-inset ring-primary/10 focus:ring-secondary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="2"></textarea>
+                                        <textarea name="description" class="auto-save w-full bg-surface-container-low rounded-lg scroll-pad-b ring-1 ring-primary/10 focus:ring-secondary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="2"></textarea>
                                     </div>
                                 </div>
                                 @endforelse

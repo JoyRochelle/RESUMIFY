@@ -28,12 +28,13 @@ class SendInterviewMessageAction
         try {
             $reply = $this->interviewService->sendMessage($session, $content);
 
+            $usage = $this->interviewService->lastUsage();
             AiUsageLog::create([
                 'user_id' => $user->id,
                 'action_type' => 'interview_question',
                 'resume_id' => $session->resume_id,
-                'tokens_used' => 0,
-                'cost_usd' => 0,
+                'tokens_used' => $usage->totalTokens,
+                'cost_usd' => $usage->costUsd(),
             ]);
 
             return $reply;

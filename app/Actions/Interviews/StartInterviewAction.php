@@ -7,6 +7,7 @@ use App\Models\Cv;
 use App\Models\User;
 use App\Services\AiCreditService;
 use App\Services\InterviewService;
+use App\Support\GeminiUsage;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -31,12 +32,13 @@ class StartInterviewAction
         try {
             $result = $this->interviewService->startSession($user, $resume, $jobTarget);
 
+            $usage = $result['usage'] ?? new GeminiUsage();
             AiUsageLog::create([
                 'user_id' => $user->id,
                 'action_type' => 'interview_question',
                 'resume_id' => $resume->id,
-                'tokens_used' => 0,
-                'cost_usd' => 0,
+                'tokens_used' => $usage->totalTokens,
+                'cost_usd' => $usage->costUsd(),
             ]);
 
             return $result;

@@ -46,7 +46,7 @@
                                 <label for="jd-input" class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">{{ __('messages.editor.sections.target_job.job_description') }}</label>
                                 <textarea id="jd-input" rows="6"
                                     placeholder="{{ __('messages.editor.sections.target_job.job_description_placeholder') }}"
-                                    class="w-full bg-surface-container-low rounded-lg scroll-pad-b ring-1 ring-inset ring-primary/10 focus:ring-secondary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30"></textarea>
+                                    class="w-full bg-surface-container-low rounded-lg scroll-pad-b ring-1 ring-primary/10 focus:ring-secondary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30"></textarea>
                             </div>
                             <p class="text-xs text-primary/60 -mt-2">
                                 {{ __('messages.ats.setup.autofill_hint') }}
