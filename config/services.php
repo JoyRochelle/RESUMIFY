@@ -50,6 +50,14 @@ return [
 
     'gemini' => [
         'key' => env('GEMINI_API_KEY'),
+
+        // Estimated pricing (USD per 1,000,000 tokens) used to derive the
+        // cost_usd stored in ai_usage_logs. Defaults track Gemini 2.5 Flash
+        // text pricing; override per environment as pricing changes.
+        'pricing' => [
+            'input_per_million'  => env('GEMINI_PRICE_INPUT_PER_MTOK', 0.30),
+            'output_per_million' => env('GEMINI_PRICE_OUTPUT_PER_MTOK', 2.50),
+        ],
     ],
 
     'midtrans' => [

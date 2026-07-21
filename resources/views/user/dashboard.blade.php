@@ -21,56 +21,69 @@
                 </div>
             </div>
 
-            <x-user.btn-create />
+            @unless ($cvs->isEmpty())
+                <x-user.btn-create />
+            @endunless
         </header>
 
         <x-user.quota-status :user="$user" class="mb-10 md:mb-12 animate-fade-up" style="animation-delay: 100ms" />
 
-        <section>
-            <div class="flex items-center justify-between mb-8 animate-fade-up" style="animation-delay: 160ms">
-                <h2 class="text-xl font-headline font-bold text-primary">{{ __('messages.dashboard.your_resumes') }}</h2>
-                <div class="h-px flex-1 mx-6 bg-primary/10 hidden md:block"></div>
-            </div>
+        @if ($cvs->isEmpty())
+            {{-- Onboarding empty-state: brand-new user with no resume yet. --}}
+            <section class="animate-fade-up rounded-2xl border border-primary/10 bg-tertiary px-6 py-12 text-center shadow-sm md:py-16" style="animation-delay: 160ms">
+                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/5 text-primary">
+                    <span class="material-symbols-outlined text-[32px]" aria-hidden="true">draft</span>
+                </div>
+                <h2 class="mt-6 font-headline text-2xl font-bold text-primary md:text-3xl">{{ __('messages.dashboard.onboarding.title') }}</h2>
+                <p class="mx-auto mt-3 max-w-md font-body text-primary/65">{{ __('messages.dashboard.onboarding.subtitle') }}</p>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach ($cvs as $cv)
-                    <div class="animate-fade-up" style="animation-delay: {{ min(220 + $loop->index * 70, 500) }}ms">
-                        <x-user.resume-card title="{{ $cv->title ?: __('messages.dashboard.untitled_resume') }}"
-                            date="{{ $cv->updated_at->diffForHumans() }}"
-                            url="{{ route('user.manuscript', ['cv_id' => $cv->id]) }}" cvId="{{ $cv->id }}" />
-                    </div>
-                @endforeach
+                <div class="mt-8 flex justify-center">
+                    <x-user.btn-create />
+                </div>
 
-                <button type="button" onclick="{{ $user->canCreateResume() ? 'openCreateModal()' : '' }}"
-                    @unless($user->canCreateResume()) disabled aria-describedby="dashboard-create-limit" @endunless
-                    class="w-full h-full group relative bg-surface-container-low/50 rounded-lg border-2 border-dashed {{ $user->canCreateResume() ? 'border-primary/20 hover:border-primary/50 hover:bg-surface-container-low cursor-pointer' : 'border-[#A16207]/30 cursor-not-allowed' }} transition-all duration-200 overflow-hidden flex flex-col items-center justify-center min-h-[200px] sm:min-h-[400px] focus:outline-none focus:ring-2 focus:ring-secondary/40 animate-fade-up"
-                    style="animation-delay: {{ min(220 + $cvs->count() * 70, 500) }}ms">
-                    <div class="flex flex-col items-center text-center p-8">
-                        <div
-                            class="w-16 h-16 rounded-full bg-tertiary flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-200 shadow-sm">
-                            <span class="material-symbols-outlined text-primary text-3xl" data-icon="add">{{ $user->canCreateResume() ? 'add' : 'lock' }}</span>
+                <div class="mx-auto mt-12 max-w-2xl border-t border-primary/10 pt-8">
+                    <p class="mb-6 font-label text-xs font-bold uppercase tracking-widest text-primary/50">{{ __('messages.dashboard.onboarding.steps_label') }}</p>
+                    <ol class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                        @foreach ([__('messages.dashboard.onboarding.step1'), __('messages.dashboard.onboarding.step2'), __('messages.dashboard.onboarding.step3')] as $stepLabel)
+                            <li class="flex flex-col items-center gap-3">
+                                <span class="flex h-11 w-11 items-center justify-center rounded-full border border-primary/10 bg-primary/5 font-headline text-lg font-bold text-primary">{{ $loop->iteration }}</span>
+                                <span class="font-body text-sm text-primary/75">{{ $stepLabel }}</span>
+                            </li>
+                        @endforeach
+                    </ol>
+                </div>
+            </section>
+        @else
+            <section>
+                <div class="flex items-center justify-between mb-8 animate-fade-up" style="animation-delay: 160ms">
+                    <h2 class="text-xl font-headline font-bold text-primary">{{ __('messages.dashboard.your_resumes') }}</h2>
+                    <div class="h-px flex-1 mx-6 bg-primary/10 hidden md:block"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    @foreach ($cvs as $cv)
+                        <div class="animate-fade-up" style="animation-delay: {{ min(220 + $loop->index * 70, 500) }}ms">
+                            <x-user.resume-card title="{{ $cv->title ?: __('messages.dashboard.untitled_resume') }}"
+                                date="{{ $cv->updated_at->diffForHumans() }}"
+                                url="{{ route('user.manuscript', ['cv_id' => $cv->id]) }}" cvId="{{ $cv->id }}" />
                         </div>
-                        <p class="font-headline text-xl text-primary mb-2">{{ $user->canCreateResume() ? __('messages.dashboard.start_new_manuscript') : __('messages.dashboard.resume_limit_reached') }}</p>
-                        <p id="dashboard-create-limit" class="text-sm text-primary/80 font-label max-w-[220px]">
-                            {{ $user->canCreateResume() ? __('messages.dashboard.start_new_manuscript_desc') : __('messages.dashboard.resume_limit_reached_desc') }}
-                        </p>
-                    </div>
-                </button>
-            </div>
-        </section>
+                    @endforeach
+                </div>
+            </section>
 
-        <section class="mt-12 md:mt-24 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 border-t border-primary/10 pt-8 md:pt-12">
+            <section class="mt-12 md:mt-24 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 border-t border-primary/10 pt-8 md:pt-12">
 
-            <x-user.insight-block icon="lightbulb" label="{{ __('messages.dashboard.daily_tip_label') }}" class="animate-fade-up" style="animation-delay: 320ms">
-                "{{ __('messages.dashboard.daily_tip') }}"
-            </x-user.insight-block>
+                <x-user.insight-block icon="lightbulb" label="{{ __('messages.dashboard.daily_tip_label') }}" class="animate-fade-up" style="animation-delay: 320ms">
+                    "{{ __('messages.dashboard.daily_tip') }}"
+                </x-user.insight-block>
 
-            <x-user.insight-block icon="query_stats" label="{{ __('messages.dashboard.ats_insight_label') }}" class="animate-fade-up" style="animation-delay: 400ms">
-                {{ __('messages.dashboard.ats_insight_prefix') }} <a href="{{ route('user.ai-assistant') }}"
-                    class="text-secondary font-bold hover:underline">{{ __('messages.dashboard.ats_insight_link') }}</a> {{ __('messages.dashboard.ats_insight_suffix') }}
-            </x-user.insight-block>
+                <x-user.insight-block icon="query_stats" label="{{ __('messages.dashboard.ats_insight_label') }}" class="animate-fade-up" style="animation-delay: 400ms">
+                    {{ __('messages.dashboard.ats_insight_prefix') }} <a href="{{ route('user.ai-assistant') }}"
+                        class="text-secondary font-bold hover:underline">{{ __('messages.dashboard.ats_insight_link') }}</a> {{ __('messages.dashboard.ats_insight_suffix') }}
+                </x-user.insight-block>
 
-        </section>
+            </section>
+        @endif
     </main>
 
     <x-user.create-resume-modal :templates="$templates" />

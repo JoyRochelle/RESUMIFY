@@ -106,6 +106,46 @@ class InterviewServiceTest extends TestCase
         ]);
     }
 
+    // ── 1b. Real token usage & cost are captured from usageMetadata ───────────
+
+    public function test_start_records_real_token_usage_and_cost(): void
+    {
+        [$user, $cv] = $this->makeUserWithCv();
+
+        // Deterministic pricing regardless of environment overrides.
+        config([
+            'services.gemini.pricing.input_per_million'  => 0.30,
+            'services.gemini.pricing.output_per_million' => 2.50,
+        ]);
+
+        // Gemini returns usageMetadata on every real response — this is what
+        // was previously discarded, making every ai_usage_logs row store 0.
+        $body = $this->geminiResponse('Selamat pagi! Ceritakan pengalaman Anda.');
+        $body['usageMetadata'] = [
+            'promptTokenCount'     => 1000,
+            'candidatesTokenCount' => 200,
+            'totalTokenCount'      => 1200,
+        ];
+
+        Http::fake([self::GEMINI_PATTERN => Http::response($body)]);
+
+        $this->actingAs($user)->postJson('/interview/start', [
+            'cv_id'      => $cv->id,
+            'job_target' => 'Backend Engineer',
+        ])->assertStatus(200);
+
+        // tokens_used must reflect the real total, not the old hardcoded 0.
+        $this->assertDatabaseHas('ai_usage_logs', [
+            'user_id'     => $user->id,
+            'action_type' => 'interview_question',
+            'tokens_used' => 1200,
+        ]);
+
+        // cost = 1000/1e6 * 0.30 + 200/1e6 * 2.50 = 0.0008 USD
+        $log = \App\Models\AiUsageLog::where('user_id', $user->id)->latest('id')->first();
+        $this->assertEqualsWithDelta(0.0008, (float) $log->cost_usd, 0.0000005);
+    }
+
     // ── 2. CV content is injected into the Gemini prompt ─────────────────────
 
     public function test_cv_sections_are_injected_into_gemini_prompt(): void
@@ -276,6 +316,28 @@ class InterviewServiceTest extends TestCase
 
         // Credit must be refunded — quota unchanged
         $this->assertEquals(0, $user->fresh()->ai_quota_used);
+    }
+
+    // ── 6b. No orphaned session is created when the AI fails on start ──────────
+
+    public function test_no_session_is_created_when_gemini_fails_on_start(): void
+    {
+        [$user, $cv] = $this->makeUserWithCv('basic');
+
+        Http::fake([self::GEMINI_PATTERN => Http::response(null, 500)]);
+
+        $response = $this->actingAs($user)->postJson('/interview/start', [
+            'cv_id'      => $cv->id,
+            'job_target' => 'Backend Engineer',
+        ]);
+
+        $response->assertStatus(500);
+
+        // The AI call failed before persistence, so no empty/orphaned session or
+        // message may remain — otherwise a failing AI could be spammed into
+        // creating unlimited hollow sessions.
+        $this->assertDatabaseCount('interview_sessions', 0);
+        $this->assertDatabaseCount('interview_messages', 0);
     }
 
     public function test_message_provider_failure_refunds_reserved_credit(): void
