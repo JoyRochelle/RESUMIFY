@@ -89,12 +89,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="hidden sm:block">
-                        <a href="{{ Route::has('admin.settings') ? route('admin.settings') : '#' }}" class="admin-icon-action" aria-label="Admin settings">
-                            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">settings</span>
-                        </a>
-                    </div>
                 </div>
 
                 <div class="hidden h-6 w-px bg-primary/20 sm:block"></div>

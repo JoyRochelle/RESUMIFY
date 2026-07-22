@@ -78,7 +78,35 @@ class TicketChatLivewireTest extends TestCase
     {
         $this->actingAs($this->owner)
             ->get(route('help.tickets.show', $this->ticket))
-            ->assertSee('wire:poll.7s', false);
+            ->assertSee('wire:poll.7s', false)
+            ->assertSee('max-w-5xl', false);
+    }
+
+    public function test_conversation_thread_has_no_message_dividers(): void
+    {
+        $this->actingAs($this->owner);
+
+        Livewire::test(TicketChat::class, ['ticket' => $this->ticket])
+            ->assertDontSeeHtml('divide-y');
+    }
+
+    public function test_conversation_thread_autoscrolls_when_messages_change(): void
+    {
+        $this->actingAs($this->owner);
+
+        Livewire::test(TicketChat::class, ['ticket' => $this->ticket])
+            ->assertSeeHtml('x-ref="thread"')
+            ->assertSeeHtml('MutationObserver')
+            ->assertSeeHtml('scrollThread');
+    }
+
+    public function test_reply_box_sends_with_enter_and_keeps_shift_enter_for_new_lines(): void
+    {
+        $this->actingAs($this->owner);
+
+        Livewire::test(TicketChat::class, ['ticket' => $this->ticket])
+            ->assertSeeHtml('x-on:keydown.enter="submitReplyFromKeyboard($event)"')
+            ->assertSeeHtml('event.shiftKey');
     }
 
     // =========================================================
@@ -108,7 +136,16 @@ class TicketChatLivewireTest extends TestCase
         Livewire::test(TicketChat::class, ['ticket' => $this->ticket])
             ->set('body', 'Any update on this?')
             ->call('sendReply')
-            ->assertSet('body', '');
+            ->assertSet('body', '')
+            ->assertDispatched('ticket-reply-sent');
+    }
+
+    public function test_reply_form_listens_for_successful_send_clear_event(): void
+    {
+        $this->actingAs($this->owner);
+
+        Livewire::test(TicketChat::class, ['ticket' => $this->ticket])
+            ->assertSeeHtml('x-on:ticket-reply-sent.window');
     }
 
     public function test_owner_reply_moves_pending_ticket_back_to_open(): void

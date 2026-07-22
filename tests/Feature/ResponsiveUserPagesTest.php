@@ -250,6 +250,7 @@ class ResponsiveUserPagesTest extends TestCase
     {
         $response = $this->actingAs($this->user)->get(route('help.tickets'));
         $response->assertOk();
+        $response->assertSee('max-w-5xl', false);
         $response->assertSee('px-4 sm:px-6 md:px-12', false);
     }
 
