@@ -1,7 +1,7 @@
 <main id="ats-panel-results"
                 role="tabpanel"
                 aria-labelledby="ats-tab-results"
-                class="w-full lg:w-[58%] lg:h-full bg-primary/[0.03] p-4 lg:p-8 lg:overflow-y-auto custom-scrollbar hidden lg:block">
+                class="w-full lg:w-[58%] lg:h-full lg:min-h-0 bg-primary/[0.03] p-4 lg:p-8 lg:overflow-y-auto custom-scrollbar hidden lg:block">
 
                 {{-- Empty state --}}
                 <div id="ats-empty-state"

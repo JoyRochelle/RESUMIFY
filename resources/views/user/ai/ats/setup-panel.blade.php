@@ -1,8 +1,8 @@
 <aside id="ats-panel-setup"
                 role="tabpanel"
                 aria-labelledby="ats-tab-setup"
-                class="w-full lg:w-[42%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
-                <div class="p-4 lg:p-6 lg:overflow-y-auto custom-scrollbar space-y-5 lg:h-full">
+                class="w-full lg:w-[42%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full lg:min-h-0">
+                <div class="p-4 lg:p-6 lg:overflow-y-auto custom-scrollbar space-y-5 lg:h-full lg:min-h-0">
 
                     {{-- Select CV --}}
                     @if (isset($cvs) && $cvs->isNotEmpty())
