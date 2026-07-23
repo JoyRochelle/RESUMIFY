@@ -33,18 +33,33 @@
 
     @if($template && $template->thumbnail_url)
         <img
+            data-template-preview-image
             src="{{ $template->thumbnail }}"
             alt="{{ $title }}"
             class="absolute inset-0 h-full w-full object-cover"
             loading="lazy"
-            decoding="async">
-    @else
+            decoding="async"
+            onload="this.closest('[data-template-preview-shell]')?.querySelector('[data-template-preview-placeholder]')?.classList.add('opacity-0')"
+            onerror="this.hidden=true; this.classList.add('hidden'); this.closest('[data-template-preview-shell]')?.querySelector('iframe[data-template-preview-src]')?.classList.remove('hidden'); window.queueTemplatePreviewFrames?.(this.closest('[data-template-preview-shell]'))">
+    @endif
+
+    @if(! $template || ! $template->thumbnail_url)
         <iframe
             data-template-preview-src="{{ $src }}"
             title="{{ $title }}"
             scrolling="no"
             style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
             class="{{ $iframeClass }} opacity-0"
+            loading="lazy"
+            tabindex="-1">
+        </iframe>
+    @else
+        <iframe
+            data-template-preview-src="{{ $src }}"
+            title="{{ $title }}"
+            scrolling="no"
+            style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
+            class="{{ $iframeClass }} hidden opacity-0"
             loading="lazy"
             tabindex="-1">
         </iframe>

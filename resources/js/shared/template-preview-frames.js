@@ -6,6 +6,10 @@ let activeLoads = 0;
 let observer = null;
 
 function isVisible(frame) {
+    if (frame.offsetWidth === 0 || frame.offsetHeight === 0) {
+        return false;
+    }
+
     const parent = frame.parentElement;
     if (!parent || parent.offsetWidth === 0 || parent.offsetHeight === 0) {
         return false;
