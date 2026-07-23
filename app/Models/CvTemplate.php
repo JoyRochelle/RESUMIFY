@@ -61,7 +61,7 @@ class CvTemplate extends Model
         }
 
         if (config('filesystems.disks.public.driver') === 'local') {
-            return '/storage/'.ltrim($this->thumbnail_url, '/');
+            return route('templates.thumbnail', $this, false);
         }
 
         return Storage::disk('public')->url($this->thumbnail_url);

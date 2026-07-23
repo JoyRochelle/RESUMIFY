@@ -38,9 +38,7 @@
             alt="{{ $title }}"
             class="absolute inset-0 h-full w-full object-cover"
             loading="lazy"
-            decoding="async"
-            onload="this.closest('[data-template-preview-shell]')?.querySelector('[data-template-preview-placeholder]')?.classList.add('opacity-0')"
-            onerror="this.hidden=true; this.classList.add('hidden'); this.closest('[data-template-preview-shell]')?.querySelector('iframe[data-template-preview-src]')?.classList.remove('hidden'); window.queueTemplatePreviewFrames?.(this.closest('[data-template-preview-shell]'))">
+            decoding="async">
     @endif
 
     @if(! $template || ! $template->thumbnail_url)

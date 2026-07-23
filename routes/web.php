@@ -12,6 +12,7 @@ use App\Http\Controllers\Billing\PaymentController;
 use App\Http\Controllers\Billing\SubscriptionController;
 use App\Http\Controllers\Public\LandingPageController;
 use App\Http\Controllers\Public\LocaleController;
+use App\Http\Controllers\Public\TemplateThumbnailController;
 use App\Http\Controllers\Support\HelpController;
 use App\Http\Controllers\User\Ai\AiResumeController;
 use App\Http\Controllers\User\Ai\AtsController;
@@ -35,6 +36,8 @@ Route::controller(LandingPageController::class)->group(function () {
 // Public Template Demo Preview (dummy data only — no user data exposed)
 Route::get('/templates/{template}/demo', [TemplateController::class, 'preview'])
     ->name('templates.demo');
+Route::get('/templates/{template}/thumbnail', TemplateThumbnailController::class)
+    ->name('templates.thumbnail');
 
 // Webhook Route
 Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');

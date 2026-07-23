@@ -9,13 +9,14 @@ use Tests\TestCase;
 
 class TemplateThumbnailServiceTest extends TestCase
 {
-    public function test_local_thumbnail_url_uses_relative_storage_path(): void
+    public function test_local_thumbnail_url_uses_relative_application_route(): void
     {
         $template = new CvTemplate([
             'thumbnail_url' => 'templates/previews/existing.png',
         ]);
+        $template->id = 'template-id';
 
-        $this->assertSame('/storage/templates/previews/existing.png', $template->thumbnail);
+        $this->assertSame('/templates/template-id/thumbnail', $template->thumbnail);
     }
 
     public function test_returns_existing_thumbnail_without_regenerating(): void
