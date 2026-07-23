@@ -316,7 +316,7 @@ return [
 
     'editor' => [
         'title_prefix' => 'Editor: ',
-        'tailor_cv' => 'Sesuaikan CV',
+        'tailor_cv' => 'Tailor',
         'preview' => 'Pratinjau',
         'download_pdf' => 'Unduh PDF',
         'premium_pdf_title' => 'Ekspor PDF premium',

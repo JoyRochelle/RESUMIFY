@@ -140,6 +140,7 @@
             modalContent.classList.remove('scale-95');
             modalContent.classList.add('scale-100');
             scaleThumbnails();
+            window.queueTemplatePreviewFrames?.(modal);
             setTimeout(() => document.getElementById('create-resume-title')?.focus(), 120);
         }
 
@@ -171,6 +172,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             scaleThumbnails();
+            window.queueTemplatePreviewFrames?.();
             @if(request('create') === 'true')
                 setTimeout(openCreateModal, 100);
             @endif

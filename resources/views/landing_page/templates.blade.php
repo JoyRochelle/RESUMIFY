@@ -42,14 +42,11 @@
                 badge="{{ $template->badge }}"
                 badgeColor="{{ $template->badge_color }}">
 
-                {{-- Live iframe preview dengan data dummy John Doe --}}
-                <iframe
+                <x-template-preview-frame
+                    :template="$template"
                     src="{{ route('templates.demo', $template) }}"
-                    class="pointer-events-none absolute top-0 left-0 template-card-iframe"
-                    style="width: 794px; height: 1123px; border: none; transform-origin: top left;"
-                    loading="lazy"
-                    tabindex="-1">
-                </iframe>
+                    title="{{ $template->name }} template preview"
+                    iframe-class="pointer-events-none absolute top-0 left-0 template-card-iframe transition-opacity duration-300" />
 
             </x-landing_page.template-card>
         </div>
@@ -143,6 +140,7 @@ function scaleCardIframes() {
             iframe.style.transform = `scale(${scale})`;
         }
     });
+    window.queueTemplatePreviewFrames?.();
 }
 
 function templateLibrary() {

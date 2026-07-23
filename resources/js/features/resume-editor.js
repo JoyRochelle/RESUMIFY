@@ -146,6 +146,7 @@
             modalContent.classList.remove('scale-95');
             modalContent.classList.add('scale-100');
             scaleThumbnails();
+            window.queueTemplatePreviewFrames?.(modal);
         }
 
         function closeTemplateModal() {
@@ -1074,4 +1075,3 @@
                 }
             });
         })();
-

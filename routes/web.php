@@ -224,7 +224,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/export/pdf', 'exportPdf')->name('.export.pdf');
             Route::get('/export/csv', 'exportCsv')->name('.export.csv');
         });
-
-        Route::get('/settings', [AdminDashboardController::class, 'settings'])->name('settings');
     });
 });

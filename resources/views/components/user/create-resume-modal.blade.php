@@ -104,13 +104,11 @@
                         <input type="hidden" name="template_id" value="{{ $template->id }}">
 
                         <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
-                            <iframe src="{{ route('templates.demo', $template) }}"
-                                    scrolling="no"
-                                    style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0;"
-                                    class="template-thumbnail-iframe pointer-events-none transition-transform duration-500 origin-top-left"
-                                    loading="lazy"
-                                    tabindex="-1">
-                            </iframe>
+                            <x-template-preview-frame
+                                :template="$template"
+                                src="{{ route('templates.demo', $template) }}"
+                                title="{{ $template->name }} template preview"
+                                iframe-class="template-thumbnail-iframe pointer-events-none transition-transform duration-500 origin-top-left" />
                             <div class="absolute inset-0 bg-transparent z-10"></div>
 
                             @if($template->is_premium)
@@ -226,7 +224,10 @@
                 }
 
                 if (typeof scaleThumbnails === 'function') {
-                    requestAnimationFrame(scaleThumbnails);
+                    requestAnimationFrame(() => {
+                        scaleThumbnails();
+                        window.queueTemplatePreviewFrames?.(document.getElementById('create-template-grid'));
+                    });
                 }
             }
         </script>

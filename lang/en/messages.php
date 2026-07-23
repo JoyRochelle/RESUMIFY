@@ -316,7 +316,7 @@ return [
 
     'editor' => [
         'title_prefix' => 'Editor: ',
-        'tailor_cv' => 'Tailor CV',
+        'tailor_cv' => 'Tailor',
         'preview' => 'Preview',
         'download_pdf' => 'Download PDF',
         'premium_pdf_title' => 'Premium PDF export',
