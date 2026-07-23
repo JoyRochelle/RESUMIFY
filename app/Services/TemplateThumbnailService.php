@@ -24,7 +24,7 @@ class TemplateThumbnailService
      */
     public function generate(CvTemplate $template, bool $force = false): string
     {
-        if ($template->thumbnail_url && ! $force) {
+        if ($template->thumbnail_url && ! $force && Storage::disk('public')->exists($template->thumbnail_url)) {
             return $template->thumbnail_url;
         }
 

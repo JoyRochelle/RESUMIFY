@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,6 +22,7 @@ class CvTemplate extends Model
     public const BLADE_PATH_PATTERN = '/^templates\.[a-z0-9\-]+$/';
 
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -51,9 +52,19 @@ class CvTemplate extends Model
     // Accessor: thumbnail URL
     public function getThumbnailAttribute(): string
     {
-        return $this->thumbnail_url
-            ? Storage::disk('public')->url($this->thumbnail_url)
-            : asset('images/template-placeholder.png');
+        if (! $this->thumbnail_url) {
+            return asset('images/template-placeholder.png');
+        }
+
+        if (preg_match('/^https?:\/\//i', $this->thumbnail_url)) {
+            return $this->thumbnail_url;
+        }
+
+        if (config('filesystems.disks.public.driver') === 'local') {
+            return route('templates.thumbnail', $this, false);
+        }
+
+        return Storage::disk('public')->url($this->thumbnail_url);
     }
 
     public function cvs(): HasMany
