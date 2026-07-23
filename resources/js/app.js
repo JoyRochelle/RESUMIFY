@@ -4,6 +4,7 @@ import collapse from "@alpinejs/collapse";
 import "./shared/ai-quota-widget";
 import "./shared/count-up";
 import "./shared/landing-anime";
+import "./shared/template-preview-frames";
 
 Alpine.plugin(collapse);
 window.Alpine = Alpine;
