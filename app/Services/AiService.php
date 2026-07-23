@@ -7,12 +7,16 @@ use App\Domain\Ai\Data\CvVersionsResponse;
 use App\Domain\Ai\Data\ResumeBulletOptionsResponse;
 use App\Exceptions\InvalidAiProviderResponseException;
 use App\Models\AiUsageLog;
+use App\Support\Concerns\TracksGeminiUsage;
+use App\Support\GeminiUsage;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Client\Pool;
 
 class AiService
 {
+    use TracksGeminiUsage;
+
     /**
      * The Gemini API endpoint (model + action).
      */
@@ -39,6 +43,7 @@ class AiService
      */
     public function refineBullet(string $text, string $jobContext = null): array
     {
+        $this->resetUsage();
         $prompt = $this->buildRefineBulletPrompt($text, $jobContext);
 
         return $this->callGeminiValidated(
@@ -67,8 +72,9 @@ class AiService
      */
     public function generateCvVersions(array $currentSections, string $jobDescription): array
     {
+        $this->resetUsage();
         $apiKey = $this->getApiKey();
-        
+
         $angles = [
             'leadership' => "Focus on team leadership, project ownership, cross-functional collaboration, and decision-making.",
             'technical' => "Focus on specific tools, technologies, methodologies, technical achievements, and certifications.",
@@ -99,6 +105,7 @@ class AiService
             $response = $responses[$angle];
             if ($response instanceof \Illuminate\Http\Client\Response && $response->ok()) {
                 $result = $response->json();
+                $this->recordUsage($result);
                 $content = $result['candidates'][0]['content']['parts'][0]['text'] ?? null;
 
                 if (!$content) {
@@ -130,6 +137,7 @@ class AiService
      */
     public function analyzeAts(string $resumeText, string $jobDescription): array
     {
+        $this->resetUsage();
         $prompt = $this->buildAtsAnalysisPrompt($resumeText, $jobDescription);
         return $this->callGeminiValidated(
             $prompt,
@@ -145,21 +153,26 @@ class AiService
      */
     public function scoreResume(string $resumeText, ?string $jobTitle = null, ?string $jobCompany = null, ?string $jobDescription = null): array
     {
+        $this->resetUsage();
         $prompt = $this->buildScorePrompt($resumeText, $jobTitle, $jobCompany, $jobDescription);
         return $this->callGeminiJson($prompt, self::scoreSchema(), 25);
     }
 
     /**
-     * Log an AI usage event to ai_usage_logs.
+     * Log an AI usage event to ai_usage_logs. When no usage is passed it falls
+     * back to the token tally captured from the most recent Gemini call on this
+     * service instance, so callers get real token counts and cost for free.
      */
-    public function logUsage(string $userId, string $actionType, ?string $resumeId = null, int $tokensUsed = 0): void
+    public function logUsage(string $userId, string $actionType, ?string $resumeId = null, ?GeminiUsage $usage = null): void
     {
+        $usage ??= $this->lastUsage();
+
         try {
             AiUsageLog::create([
                 'user_id'     => $userId,
                 'action_type' => $actionType,
-                'tokens_used' => $tokensUsed,
-                'cost_usd'    => 0,
+                'tokens_used' => $usage->totalTokens,
+                'cost_usd'    => $usage->costUsd(),
                 'resume_id'   => $resumeId,
             ]);
         } catch (\Exception $e) {
@@ -226,7 +239,10 @@ class AiService
             throw new \Exception('AI service failed with status ' . $response->status());
         }
 
-        $content = $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? null;
+        $json = $response->json();
+        $this->recordUsage($json);
+
+        $content = $json['candidates'][0]['content']['parts'][0]['text'] ?? null;
         if (!$content) {
             throw new \Exception('Empty response from AI service');
         }

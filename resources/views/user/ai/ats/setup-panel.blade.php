@@ -1,8 +1,8 @@
 <aside id="ats-panel-setup"
                 role="tabpanel"
                 aria-labelledby="ats-tab-setup"
-                class="w-full lg:w-[42%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
-                <div class="p-4 lg:p-6 lg:overflow-y-auto custom-scrollbar space-y-5 lg:h-full">
+                class="w-full lg:w-[42%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full lg:min-h-0">
+                <div class="p-4 lg:p-6 lg:overflow-y-auto custom-scrollbar space-y-5 lg:h-full lg:min-h-0">
 
                     {{-- Select CV --}}
                     @if (isset($cvs) && $cvs->isNotEmpty())
@@ -46,7 +46,7 @@
                                 <label for="jd-input" class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">{{ __('messages.editor.sections.target_job.job_description') }}</label>
                                 <textarea id="jd-input" rows="6"
                                     placeholder="{{ __('messages.editor.sections.target_job.job_description_placeholder') }}"
-                                    class="w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30"></textarea>
+                                    class="w-full bg-surface-container-low rounded-lg scroll-pad-b ring-1 ring-primary/10 focus:ring-secondary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30"></textarea>
                             </div>
                             <p class="text-xs text-primary/60 -mt-2">
                                 {{ __('messages.ats.setup.autofill_hint') }}

@@ -4,35 +4,33 @@
 
 @section('content')
 <section class="max-w-7xl mx-auto px-4 sm:px-8 pt-14 sm:pt-20 pb-8 text-center">
-    <h1 class="text-4xl sm:text-5xl md:text-6xl font-headline font-bold tracking-tighter mb-4 sm:mb-6 text-primary leading-tight">
+    <h1 class="text-4xl sm:text-5xl md:text-6xl font-headline font-bold tracking-tight mb-4 sm:mb-6 text-primary leading-tight animate-fade-up-blur">
         {!! __('messages.landing.templates.hero_title') !!}
     </h1>
-    <p class="text-base sm:text-lg text-outline leading-relaxed font-body max-w-2xl mx-auto">
+    <p class="text-base sm:text-lg text-outline leading-relaxed font-body max-w-2xl mx-auto animate-fade-up" style="animation-delay: 120ms">
         {{ __('messages.landing.templates.hero_subtitle') }}
     </p>
 </section>
 
 {{-- Category Filter Tabs + Template Grid + Preview Overlay --}}
 <section class="max-w-7xl mx-auto px-4 sm:px-8 pb-16" x-data="templateLibrary()">
-    <div class="flex flex-wrap justify-center gap-3 mb-16">
+    <div class="flex flex-wrap justify-center gap-3 mb-16 animate-fade-up" style="animation-delay: 200ms">
         <template x-for="tab in tabs" :key="tab.key">
             <button @click="activeCategory = tab.key"
-                    :class="activeCategory === tab.key ? 'bg-secondary text-white border-secondary shadow-md' : 'bg-transparent text-primary border-primary/20 hover:border-primary/40 hover:bg-primary/5'"
+                    :class="activeCategory === tab.key ? 'bg-secondary text-white border-secondary' : 'bg-transparent text-primary border-primary/20 hover:border-primary/40 hover:bg-primary/5'"
                     :aria-pressed="(activeCategory === tab.key).toString()"
-                    class="min-h-11 px-6 py-2 rounded-full text-sm font-bold font-body border transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40"
+                    class="min-h-11 px-6 py-2 rounded-full text-sm font-bold font-body border transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40"
                     x-text="tab.label">
             </button>
         </template>
     </div>
 
     {{-- Template Grid --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+    <div data-anime-grid class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
 
         @foreach($templates as $template)
         <div x-show="activeCategory === 'all' || activeCategory === '{{ $template->category }}'"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 scale-95"
-             x-transition:enter-end="opacity-100 scale-100"
+             data-anime-card
              @click="openPreview('{{ $template->id }}', '{{ $template->name }}', '{{ addslashes($template->description) }}', '{{ route('templates.demo', $template) }}', $event)"
              @keydown.enter="openPreview('{{ $template->id }}', '{{ $template->name }}', '{{ addslashes($template->description) }}', '{{ route('templates.demo', $template) }}', $event)"
              @keydown.space.prevent="openPreview('{{ $template->id }}', '{{ $template->name }}', '{{ addslashes($template->description) }}', '{{ route('templates.demo', $template) }}', $event)"
@@ -44,14 +42,11 @@
                 badge="{{ $template->badge }}"
                 badgeColor="{{ $template->badge_color }}">
 
-                {{-- Live iframe preview dengan data dummy John Doe --}}
-                <iframe
+                <x-template-preview-frame
+                    :template="$template"
                     src="{{ route('templates.demo', $template) }}"
-                    class="pointer-events-none absolute top-0 left-0 template-card-iframe"
-                    style="width: 794px; height: 1123px; border: none; transform-origin: top left;"
-                    loading="lazy"
-                    tabindex="-1">
-                </iframe>
+                    title="{{ $template->name }} template preview"
+                    iframe-class="pointer-events-none absolute top-0 left-0 template-card-iframe transition-opacity duration-300" />
 
             </x-landing_page.template-card>
         </div>
@@ -78,7 +73,7 @@
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
              x-transition:leave-end="opacity-0 translate-y-8 scale-95"
-             class="bg-surface w-full max-w-4xl my-8 mx-4 rounded-2xl shadow-2xl overflow-hidden flex flex-col outline-none">
+             class="bg-surface w-full max-w-4xl my-8 mx-4 rounded-lg border border-primary/10 shadow-2xl overflow-hidden flex flex-col outline-none">
 
             {{-- Modal Header --}}
             <div class="px-4 sm:px-6 py-4 border-b border-primary/10 bg-surface-container-low flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0">
@@ -92,7 +87,7 @@
                         <span class="hidden sm:inline">{{ __('messages.landing.templates.use_template_full') }}</span>
                         <span class="sm:hidden">{{ __('messages.landing.templates.use_template_short') }}</span>
                     </a>
-                    <button @click="closePreview()" aria-label="{{ __('messages.landing.templates.close_preview') }}" class="text-primary/60 hover:text-primary transition-colors p-1.5 rounded-full hover:bg-primary/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40">
+                    <button @click="closePreview()" aria-label="{{ __('messages.landing.templates.close_preview') }}" class="inline-flex min-h-11 min-w-11 items-center justify-center text-primary/60 hover:text-primary transition-colors rounded-full hover:bg-primary/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40">
                         <span class="material-symbols-outlined" aria-hidden="true">close</span>
                     </button>
                 </div>
@@ -118,18 +113,17 @@
 
 {{-- CTA Section: Haven't found the right fit? --}}
 <section class="max-w-5xl mx-auto px-4 sm:px-8 py-12 sm:py-16">
-    <div class="relative rounded-2xl overflow-hidden min-h-[320px] flex flex-col items-center justify-center text-center p-12 md:p-16">
-        {{-- Background gradient overlay --}}
-        <div class="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary/70"></div>
-
+    <div class="relative rounded-2xl overflow-hidden bg-primary min-h-[320px] flex flex-col items-center justify-center text-center p-12 md:p-16">
+        {{-- Decorative drifting dot grid on the dark panel --}}
+        <div class="absolute inset-0 dot-pattern" aria-hidden="true"></div>
         <div class="relative z-10 max-w-xl">
-            <h2 class="text-3xl md:text-4xl font-headline font-bold mb-4 tracking-tighter text-white leading-tight">
+            <h2 class="text-3xl md:text-4xl font-headline font-bold mb-4 tracking-tight text-white leading-tight">
                 {{ __('messages.landing.templates.cta.title') }}
             </h2>
             <p class="text-white/70 mb-8 font-body leading-relaxed text-sm md:text-base">
                 {{ __('messages.landing.templates.cta.subtitle') }}
             </p>
-            <x-landing_page.button variant="light" href="{{ route('home') }}">
+            <x-landing_page.button variant="light" href="{{ route('home') }}" class="btn-shimmer btn-shimmer-dark">
                 {{ __('messages.landing.templates.cta.button') }}
             </x-landing_page.button>
         </div>
@@ -146,11 +140,18 @@ function scaleCardIframes() {
             iframe.style.transform = `scale(${scale})`;
         }
     });
+    window.queueTemplatePreviewFrames?.();
 }
 
 function templateLibrary() {
     return {
         activeCategory: 'all',
+        init() {
+            // Let the anime.js layer restagger the grid after each filter change
+            this.$watch('activeCategory', () => this.$nextTick(() => {
+                window.dispatchEvent(new CustomEvent('templates:filtered'));
+            }));
+        },
         previewOpen: false,
         previewName: '',
         previewDescription: '',
@@ -193,9 +194,20 @@ function templateLibrary() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// wire:navigate swaps the page without ever firing DOMContentLoaded again,
+// so when this script runs with the DOM already parsed (SPA visit) the
+// iframes must be scaled immediately — waiting on the event leaves them
+// at their natural 794px width ("zoomed in") until a hard refresh.
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', scaleCardIframes);
+} else {
     scaleCardIframes();
-});
-window.addEventListener('resize', scaleCardIframes);
+}
+// This inline script re-runs on every wire:navigate visit; bind the
+// persistent listener only once.
+if (!window.__templateCardScalerBound) {
+    window.__templateCardScalerBound = true;
+    window.addEventListener('resize', scaleCardIframes);
+}
 </script>
 @endsection

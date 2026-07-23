@@ -1,7 +1,7 @@
 <main id="ats-panel-results"
                 role="tabpanel"
                 aria-labelledby="ats-tab-results"
-                class="w-full lg:w-[58%] lg:h-full bg-primary/[0.03] p-4 lg:p-8 lg:overflow-y-auto custom-scrollbar hidden lg:block">
+                class="w-full lg:w-[58%] lg:h-full lg:min-h-0 bg-primary/[0.03] p-4 lg:p-8 lg:overflow-y-auto custom-scrollbar hidden lg:block">
 
                 {{-- Empty state --}}
                 <div id="ats-empty-state"
@@ -28,6 +28,7 @@
                         class="relative w-full bg-white rounded-xl border border-primary/10 shadow-sm overflow-hidden"
                         style="aspect-ratio: 210/297;">
                         <iframe id="ats-preview-iframe"
+                            scrolling="no"
                             style="width: 794px; height: 1123px; transform-origin: top left; border: none; position: absolute; top: 0; left: 0; pointer-events: none;"
                             loading="lazy"></iframe>
                     </div>

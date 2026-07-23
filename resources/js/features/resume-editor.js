@@ -146,6 +146,7 @@
             modalContent.classList.remove('scale-95');
             modalContent.classList.add('scale-100');
             scaleThumbnails();
+            window.queueTemplatePreviewFrames?.(modal);
         }
 
         function closeTemplateModal() {
@@ -420,15 +421,33 @@
             const list = document.getElementById(listId);
             const items = list.querySelectorAll('.list-item');
             if (items.length === 0) return;
-            
+
             const lastItem = items[items.length - 1];
+
+            // Anti-spam: the previous entry must have real typed content before a
+            // new empty row may be added. Only text fields count — a lone dropdown
+            // (e.g. a skill level with no name) is not meaningful content and must
+            // not unlock another row.
+            const lastItemHasContent = [...lastItem.querySelectorAll('input, textarea')]
+                .some(el => el.value && el.value.trim() !== '');
+            if (!lastItemHasContent) {
+                showToast(t.fill_previous_entry, 'error');
+                return;
+            }
+
             const clone = lastItem.cloneNode(true);
-            
-            // Clear inputs
+
+            // Clear text fields
             clone.querySelectorAll('input, textarea').forEach(input => {
                 input.value = '';
             });
-            
+
+            // Reset dropdowns to their placeholder (first option, e.g. "Select
+            // Level") so a new row never inherits the previous row's selection.
+            clone.querySelectorAll('select').forEach(select => {
+                select.selectedIndex = 0;
+            });
+
             list.appendChild(clone);
             
             // Trigger save
@@ -1056,4 +1075,3 @@
                 }
             });
         })();
-

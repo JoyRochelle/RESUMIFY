@@ -104,12 +104,5 @@ return [
             'match' => ['admin.reports*'],
             'icon' => 'bar_chart_4_bars',
         ],
-        [
-            'label' => 'System Settings',
-            'short_label' => 'Settings',
-            'route' => 'admin.settings',
-            'match' => ['admin.settings'],
-            'icon' => 'settings',
-        ],
     ],
 ];

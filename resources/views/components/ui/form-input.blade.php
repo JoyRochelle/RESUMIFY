@@ -44,12 +44,6 @@
             x-on:input="if(error) validate($event, '{{ $type }}', {{ $required ? 'true' : 'false' }})"
             x-bind:aria-invalid="error ? 'true' : 'false'"
         />
-        {{-- Valid checkmark --}}
-        <span class="absolute right-0 top-2 text-emerald-500 text-[16px] material-symbols-outlined transition-all duration-200"
-              x-show="!error && $el.previousElementSibling.value && !focused"
-              style="display:none">
-            check_circle
-        </span>
         {{-- Error icon --}}
         <span class="absolute right-0 top-2 text-red-400 text-[16px] material-symbols-outlined transition-all duration-200"
               x-show="error"

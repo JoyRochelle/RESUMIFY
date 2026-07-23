@@ -10,9 +10,11 @@ RUN npm run build
 FROM php:8.4-cli
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        libzip-dev libpng-dev libonig-dev libcurl4-openssl-dev unzip git \
+        chromium fonts-liberation libzip-dev libpng-dev libonig-dev libcurl4-openssl-dev unzip git \
     && docker-php-ext-install pdo_mysql mbstring zip gd bcmath curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+ENV TEMPLATE_THUMBNAIL_BROWSER=/usr/bin/chromium
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 

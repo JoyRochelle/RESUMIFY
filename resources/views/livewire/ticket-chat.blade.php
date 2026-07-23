@@ -1,5 +1,42 @@
 @php $cardClass = auth()->user()->isAdmin() ? 'admin-card' : 'bg-white rounded-3xl border border-primary/5 shadow-sm'; @endphp
-<div>
+<div
+    x-data="{
+        scrollThread(smooth = true) {
+            this.$nextTick(() => {
+                if (! this.$refs.thread) {
+                    return;
+                }
+
+                this.$refs.thread.scrollTo({
+                    top: this.$refs.thread.scrollHeight,
+                    behavior: smooth ? 'smooth' : 'auto'
+                });
+            });
+        },
+        clearReplyBox() {
+            if (! this.$refs.replyBody) {
+                return;
+            }
+
+            this.$refs.replyBody.value = '';
+            this.$refs.replyBody.dispatchEvent(new Event('input', { bubbles: true }));
+            this.$refs.replyBody.focus();
+        },
+        submitReplyFromKeyboard(event) {
+            if (event.shiftKey) {
+                return;
+            }
+
+            event.preventDefault();
+            event.target.form?.requestSubmit();
+        }
+    }"
+    x-init="
+        scrollThread(false);
+        new MutationObserver(() => scrollThread()).observe($refs.thread, { childList: true, subtree: true });
+    "
+    x-on:ticket-reply-sent.window="if ($event.detail.ticketId === '{{ $ticket->id }}') { clearReplyBox(); scrollThread(); }"
+>
     {{-- Conversation --}}
     <div class="{{ $cardClass }} overflow-hidden mb-6"
          wire:poll.7s>
@@ -12,11 +49,11 @@
             </span>
         </div>
 
-        <div class="max-h-[28rem] overflow-y-auto custom-scrollbar divide-y divide-primary/5">
+        <div x-ref="thread" class="min-h-[24rem] max-h-[36rem] overflow-y-auto custom-scrollbar">
             @forelse($ticket->replies as $reply)
                 @php $isMine = $reply->user_id === auth()->id(); @endphp
                 <div class="p-6">
-                    <div class="flex items-end gap-2 max-w-[85%] md:max-w-[70%] {{ $isMine ? 'ml-auto flex-row-reverse' : '' }}">
+                    <div class="flex items-end gap-2 max-w-[92%] md:max-w-[78%] {{ $isMine ? 'ml-auto flex-row-reverse' : '' }}">
                         <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-primary/10">
                             <img src="{{ $reply->sender?->avatar_url ?? 'https://ui-avatars.com/api/?name=?&background=fcdccb&color=4f3b2f' }}"
                                  alt="{{ $reply->sender?->name }}"
@@ -80,9 +117,12 @@
 
     {{-- Reply form --}}
     @if($ticket->status !== 'closed')
-        <form wire:submit="sendReply" class="{{ $cardClass }} p-6">
+        <form
+            wire:submit="sendReply"
+            class="{{ $cardClass }} p-6"
+        >
             <label for="ticket-chat-body-{{ $ticket->id }}" class="sr-only">{{ __('messages.tickets.chat.reply_label') }}</label>
-            <textarea wire:model="body" id="ticket-chat-body-{{ $ticket->id }}" rows="3" required
+            <textarea wire:model="body" x-ref="replyBody" x-on:keydown.enter="submitReplyFromKeyboard($event)" id="ticket-chat-body-{{ $ticket->id }}" rows="3" required
                       placeholder="{{ __('messages.tickets.chat.reply_placeholder') }}"
                       aria-label="{{ __('messages.tickets.chat.reply_label') }}"
                       class="w-full bg-surface border border-primary/10 rounded-lg px-4 py-3 text-sm font-label text-primary placeholder:text-primary/40 focus:outline-none focus:border-primary/30 resize-none"></textarea>

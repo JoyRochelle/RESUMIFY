@@ -71,6 +71,7 @@ class TicketChat extends Component
 
         $this->body = '';
         $this->ticket->refresh();
+        $this->dispatch('ticket-reply-sent', ticketId: $this->ticket->id);
     }
 
     public function requestClose(): void

@@ -62,7 +62,7 @@
             </div>
         </x-user.page-header>
 
-        <main class="flex-1 bg-primary/5 overflow-y-auto custom-scrollbar p-4 lg:p-10 pb-24 md:pb-10">
+        <main class="flex-1 bg-primary/5 overflow-y-auto custom-scrollbar p-4 lg:p-10 pb-24 md:pb-10 animate-fade-up" style="animation-delay: 100ms">
 
             {{-- Flash Messages --}}
             @if (session('status') === 'avatar-updated')

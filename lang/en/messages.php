@@ -34,10 +34,15 @@ return [
         ],
 
         'marketing' => [
-            'headline' => 'One Account, One Adapted Career ✨',
+            'headline' => 'One Account, One Adapted Career',
             'subtitle' => 'Build professional resumes and boost your ATS score in minutes.',
             'ats_match' => 'ATS MATCH',
             'ai_optimization' => 'AI Optimization Active',
+            'points' => [
+                'ats_friendly' => 'ATS-friendly templates',
+                'bilingual' => 'Bahasa Indonesia & English',
+                'free' => 'Free to start',
+            ],
         ],
 
         'login' => [
@@ -155,6 +160,7 @@ return [
         'upgrade_quota' => 'Upgrade Quota',
         'language' => 'Language',
         'logout' => 'Log Out',
+        'toggle_sidebar' => 'Show or hide navigation',
         'more' => 'More',
     ],
 
@@ -174,6 +180,14 @@ return [
         'ats_insight_prefix' => 'Check how well your resume matches a job description with our',
         'ats_insight_link' => 'ATS Analyzer',
         'ats_insight_suffix' => '— get a keyword score and actionable suggestions in seconds.',
+        'onboarding' => [
+            'title' => 'Start your first manuscript',
+            'subtitle' => 'Craft your resume, check its ATS score, and rehearse your interview — all in one place.',
+            'steps_label' => 'How Resumify works',
+            'step1' => 'Compose your resume',
+            'step2' => 'Check your ATS score',
+            'step3' => 'Rehearse your interview',
+        ],
         'delete_modal' => [
             'title' => 'Delete Resume',
             'body' => 'Are you sure you want to delete this resume? This action cannot be undone.',
@@ -302,7 +316,7 @@ return [
 
     'editor' => [
         'title_prefix' => 'Editor: ',
-        'tailor_cv' => 'Tailor CV',
+        'tailor_cv' => 'Tailor',
         'preview' => 'Preview',
         'download_pdf' => 'Download PDF',
         'premium_pdf_title' => 'Premium PDF export',
@@ -355,6 +369,7 @@ return [
             'saving' => 'Saving…',
             'saved_at_prefix' => 'Saved',
             'changes_saved' => 'Changes saved!',
+            'fill_previous_entry' => 'Fill in the previous entry first before adding a new one.',
             'save_failed' => 'Failed to save — please retry.',
             'network_error_not_saved' => 'Network error — changes not saved.',
             'confirm_remove_section' => 'Are you sure you want to completely remove this section?',
@@ -811,6 +826,66 @@ return [
         ],
     ],
 
+    'upgrade_quota' => [
+        'page_title' => 'Pricing Plans',
+        'hero' => [
+            'title' => 'Choose Your Success Plan ✨',
+            'subtitle' => 'Elevate your career narrative with artificial intelligence. Let every line of your experience speak with authority.',
+        ],
+        'status' => [
+            'cancellation_scheduled' => 'Cancellation Scheduled',
+            'premium_active' => 'Premium Active',
+            'plan_name' => 'Premium PRO',
+            'active_until' => 'Your premium access remains active until :date.',
+            'billing_ends' => 'Your current billing period ends on :date.',
+            'access_active' => 'Your premium access is active.',
+            'cancel_confirm' => 'Cancel Premium PRO? Your premium access will stay active until the end of this billing period.',
+            'cancel_plan' => 'Cancel Plan',
+        ],
+        'plans' => [
+            'starter' => 'Starter',
+            'forever' => 'forever',
+            'month' => 'month',
+            'one_active_resume' => '1 Active Resume',
+            'standard_templates' => 'Standard Templates',
+            'no_ai_enhancement' => 'No AI Enhancement',
+            'premium_pro' => 'Premium PRO',
+            'unlimited_resumes' => 'Unlimited Resumes',
+            'ai_bullet_optimizer' => 'AI Bullet Point Optimizer',
+            'ai_bullet_optimizer_subtitle' => 'Optimize with high-impact keywords',
+            'realtime_ats_matcher' => 'Real-time ATS Matcher',
+            'premium_pdf_export' => 'Premium PDF Export',
+            'priority_support' => 'Priority Support',
+            'activate_premium' => 'Activate Premium Now',
+            'activate_premium_aria' => 'Activate Premium PRO plan',
+        ],
+        'payment' => [
+            'title' => 'Secure Payment Methods',
+            'credit_card' => 'Credit Card',
+            'bank_transfer' => 'Bank Transfer',
+            'ewallet' => 'Gopay / OVO',
+            'money_back' => '30-Day Money-Back Guarantee',
+            'security_note' => 'Your transactions are protected with AES-256 bit encryption. Your privacy and data security are our top priorities.',
+        ],
+        'social' => [
+            'quote' => 'Resumify Premium is not just a tool, it\'s an investment for the future. With the AI bullet optimizer, I received interview calls within 3 days.',
+            'role' => 'Senior Product Manager',
+            'careers_elevated' => 'Careers Successfully Elevated',
+            'join_community' => 'Join the professional community today.',
+        ],
+        'footer' => '© 2026 Resumify - Curated with Integrity',
+        'js' => [
+            'processing' => 'Processing...',
+            'payment_success' => 'Payment success!',
+            'payment_pending' => 'Waiting for your payment!',
+            'payment_failed' => 'Payment failed!',
+            'popup_closed' => 'You closed the popup without finishing the payment.',
+            'popup_not_ready' => 'Midtrans payment popup is not ready. Please refresh the page and try again.',
+            'init_failed' => 'Failed to initialize payment. Please try again.',
+            'generic_error' => 'An error occurred. Please try again later.',
+        ],
+    ],
+
     'landing' => [
 
         'navbar' => [
@@ -818,7 +893,7 @@ return [
             'templates' => 'Templates',
             'pricing' => 'Pricing',
             'login' => 'Login',
-            'cta_create_resume' => 'Create Free Resume ✨',
+            'cta_create_resume' => 'Create Free Resume',
             'language' => 'Language',
         ],
 
@@ -908,6 +983,8 @@ return [
                 'title' => 'Write Your Success Story',
                 'subtitle' => 'Adapt your resume to job openings with artificial intelligence.',
                 'cta' => 'Upgrade Your Resume',
+                'cta_secondary' => 'Browse Templates',
+                'reassurance' => 'Free to start — no credit card needed.',
             ],
             'preview' => [
                 'work_experience' => 'WORK EXPERIENCE',
@@ -925,6 +1002,8 @@ return [
                 'high_match' => 'High Match',
             ],
             'features' => [
+                'title' => 'Everything you need to land the job',
+                'subtitle' => 'Build your CV, check your ATS score, and rehearse the interview — one calm workflow built for the Indonesian job market.',
                 'ai_bullet' => [
                     'title' => 'AI Bullet Point Generator',
                     'desc' => 'Write your achievements instantly with data-driven suggestions that stand out to recruiters.',
@@ -936,6 +1015,24 @@ return [
                 'premium_templates' => [
                     'title' => 'Premium Templates',
                     'desc' => 'A collection of professionally curated templates for various industries and career levels.',
+                ],
+            ],
+            'how' => [
+                'title' => 'From blank page to interview-ready',
+                'subtitle' => 'One flow, three steps — each one picks up where the last left off.',
+                'steps' => [
+                    'build' => [
+                        'title' => 'Build with AI',
+                        'desc' => 'Start from a template and let AI turn your experience into recruiter-ready bullet points.',
+                    ],
+                    'scan' => [
+                        'title' => 'Scan against the job',
+                        'desc' => 'Paste the job description and get a concrete gap list — not just a score.',
+                    ],
+                    'rehearse' => [
+                        'title' => 'Rehearse with Bu Sari',
+                        'desc' => 'Practice interview questions drawn from your own CV and get structured STAR feedback.',
+                    ],
                 ],
             ],
             'cta' => [
@@ -952,6 +1049,7 @@ return [
             'use_template_full' => 'Use This Template',
             'use_template_short' => 'Use Template',
             'preview_aria' => 'Preview :title template',
+            'preview_template' => 'Preview Template',
             'close_preview' => 'Close preview',
             'cta' => [
                 'title' => 'Haven\'t found the right fit?',
@@ -979,6 +1077,9 @@ return [
                 'premium_pdf_export' => 'Premium PDF Export',
                 'priority_support' => 'Priority Support',
                 'activate_premium' => 'Activate Premium Now',
+                'most_popular' => 'Most Popular',
+                'ai_powered' => 'AI Powered',
+                'current_plan' => 'Current Plan',
             ],
             'compare' => [
                 'title' => 'Compare Our Features',

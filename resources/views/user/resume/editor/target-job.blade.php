@@ -8,7 +8,7 @@
                                 </div>
                                 <div class="relative group mt-2">
                                     <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">{{ __('messages.editor.sections.target_job.job_description') }}</label>
-                                    <textarea name="job_description" class="auto-save w-full bg-surface-container-low rounded-lg border border-primary/10 focus:border-secondary focus:ring-0 p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="6" placeholder="{{ __('messages.editor.sections.target_job.job_description_placeholder') }}">{{ $targetJobContent['job_description'] ?? '' }}</textarea>
+                                    <textarea name="job_description" class="auto-save w-full bg-surface-container-low rounded-lg scroll-pad-b ring-1 ring-primary/10 focus:ring-secondary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="6" placeholder="{{ __('messages.editor.sections.target_job.job_description_placeholder') }}">{{ $targetJobContent['job_description'] ?? '' }}</textarea>
                                 </div>
                             </div>
                         </form>

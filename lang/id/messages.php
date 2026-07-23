@@ -34,10 +34,15 @@ return [
         ],
 
         'marketing' => [
-            'headline' => 'Satu Akun, Satu Karier yang Adaptif ✨',
+            'headline' => 'Satu Akun, Satu Karier yang Adaptif',
             'subtitle' => 'Buat resume profesional dan tingkatkan skor ATS Anda dalam hitungan menit.',
             'ats_match' => 'KECOCOKAN ATS',
             'ai_optimization' => 'Optimasi AI Aktif',
+            'points' => [
+                'ats_friendly' => 'Template ramah ATS',
+                'bilingual' => 'Bahasa Indonesia & Inggris',
+                'free' => 'Gratis untuk memulai',
+            ],
         ],
 
         'login' => [
@@ -155,6 +160,7 @@ return [
         'upgrade_quota' => 'Upgrade Kuota',
         'language' => 'Bahasa',
         'logout' => 'Keluar',
+        'toggle_sidebar' => 'Tampilkan atau sembunyikan navigasi',
         'more' => 'Lainnya',
     ],
 
@@ -174,6 +180,14 @@ return [
         'ats_insight_prefix' => 'Lihat seberapa cocok resume Anda dengan deskripsi pekerjaan menggunakan',
         'ats_insight_link' => 'Analisis ATS',
         'ats_insight_suffix' => 'kami — dapatkan skor kata kunci dan saran yang bisa langsung diterapkan dalam hitungan detik.',
+        'onboarding' => [
+            'title' => 'Mulai manuskrip pertamamu',
+            'subtitle' => 'Susun resume, cek skor ATS-nya, dan latih wawancaramu — semua dalam satu tempat.',
+            'steps_label' => 'Cara kerja Resumify',
+            'step1' => 'Susun resume',
+            'step2' => 'Cek skor ATS',
+            'step3' => 'Latihan interview',
+        ],
         'delete_modal' => [
             'title' => 'Hapus Resume',
             'body' => 'Apakah Anda yakin ingin menghapus resume ini? Tindakan ini tidak dapat dibatalkan.',
@@ -302,7 +316,7 @@ return [
 
     'editor' => [
         'title_prefix' => 'Editor: ',
-        'tailor_cv' => 'Sesuaikan CV',
+        'tailor_cv' => 'Tailor',
         'preview' => 'Pratinjau',
         'download_pdf' => 'Unduh PDF',
         'premium_pdf_title' => 'Ekspor PDF premium',
@@ -355,6 +369,7 @@ return [
             'saving' => 'Menyimpan…',
             'saved_at_prefix' => 'Tersimpan',
             'changes_saved' => 'Perubahan disimpan!',
+            'fill_previous_entry' => 'Isi dulu entri sebelumnya sebelum menambahkan yang baru.',
             'save_failed' => 'Gagal menyimpan — silakan coba lagi.',
             'network_error_not_saved' => 'Kesalahan jaringan — perubahan tidak disimpan.',
             'confirm_remove_section' => 'Apakah Anda yakin ingin menghapus bagian ini sepenuhnya?',
@@ -811,6 +826,66 @@ return [
         ],
     ],
 
+    'upgrade_quota' => [
+        'page_title' => 'Paket Harga',
+        'hero' => [
+            'title' => 'Pilih Paket Suksesmu ✨',
+            'subtitle' => 'Tingkatkan narasi kariermu dengan kecerdasan buatan. Biarkan setiap baris pengalamanmu berbicara dengan penuh percaya diri.',
+        ],
+        'status' => [
+            'cancellation_scheduled' => 'Pembatalan Dijadwalkan',
+            'premium_active' => 'Premium Aktif',
+            'plan_name' => 'Premium PRO',
+            'active_until' => 'Akses premium Anda tetap aktif hingga :date.',
+            'billing_ends' => 'Periode penagihan Anda saat ini berakhir pada :date.',
+            'access_active' => 'Akses premium Anda aktif.',
+            'cancel_confirm' => 'Batalkan Premium PRO? Akses premium Anda akan tetap aktif hingga akhir periode penagihan ini.',
+            'cancel_plan' => 'Batalkan Paket',
+        ],
+        'plans' => [
+            'starter' => 'Starter',
+            'forever' => 'selamanya',
+            'month' => 'bulan',
+            'one_active_resume' => '1 Resume Aktif',
+            'standard_templates' => 'Template Standar',
+            'no_ai_enhancement' => 'Tanpa Peningkatan AI',
+            'premium_pro' => 'Premium PRO',
+            'unlimited_resumes' => 'Resume Tanpa Batas',
+            'ai_bullet_optimizer' => 'Pengoptimal Poin AI',
+            'ai_bullet_optimizer_subtitle' => 'Optimalkan dengan kata kunci berdampak tinggi',
+            'realtime_ats_matcher' => 'Pencocok ATS Real-time',
+            'premium_pdf_export' => 'Ekspor PDF Premium',
+            'priority_support' => 'Dukungan Prioritas',
+            'activate_premium' => 'Aktifkan Premium Sekarang',
+            'activate_premium_aria' => 'Aktifkan paket Premium PRO',
+        ],
+        'payment' => [
+            'title' => 'Metode Pembayaran Aman',
+            'credit_card' => 'Kartu Kredit',
+            'bank_transfer' => 'Transfer Bank',
+            'ewallet' => 'Gopay / OVO',
+            'money_back' => 'Jaminan Uang Kembali 30 Hari',
+            'security_note' => 'Transaksi Anda dilindungi dengan enkripsi AES-256 bit. Privasi dan keamanan data Anda adalah prioritas utama kami.',
+        ],
+        'social' => [
+            'quote' => 'Resumify Premium bukan sekadar alat, ini adalah investasi untuk masa depan. Dengan pengoptimal poin AI, saya mendapat panggilan wawancara dalam 3 hari.',
+            'role' => 'Senior Product Manager',
+            'careers_elevated' => 'Karier Berhasil Ditingkatkan',
+            'join_community' => 'Bergabunglah dengan komunitas profesional hari ini.',
+        ],
+        'footer' => '© 2026 Resumify - Dikurasi dengan Integritas',
+        'js' => [
+            'processing' => 'Memproses...',
+            'payment_success' => 'Pembayaran berhasil!',
+            'payment_pending' => 'Menunggu pembayaran Anda!',
+            'payment_failed' => 'Pembayaran gagal!',
+            'popup_closed' => 'Anda menutup popup tanpa menyelesaikan pembayaran.',
+            'popup_not_ready' => 'Popup pembayaran Midtrans belum siap. Silakan segarkan halaman dan coba lagi.',
+            'init_failed' => 'Gagal memulai pembayaran. Silakan coba lagi.',
+            'generic_error' => 'Terjadi kesalahan. Silakan coba lagi nanti.',
+        ],
+    ],
+
     'landing' => [
 
         'navbar' => [
@@ -818,7 +893,7 @@ return [
             'templates' => 'Template',
             'pricing' => 'Harga',
             'login' => 'Masuk',
-            'cta_create_resume' => 'Buat Resume Gratis ✨',
+            'cta_create_resume' => 'Buat Resume Gratis',
             'language' => 'Bahasa',
         ],
 
@@ -908,6 +983,8 @@ return [
                 'title' => 'Tulis Kisah Suksesmu',
                 'subtitle' => 'Sesuaikan resume Anda dengan lowongan pekerjaan menggunakan kecerdasan buatan.',
                 'cta' => 'Tingkatkan Resume Anda',
+                'cta_secondary' => 'Lihat Template',
+                'reassurance' => 'Gratis untuk memulai — tanpa kartu kredit.',
             ],
             'preview' => [
                 'work_experience' => 'PENGALAMAN KERJA',
@@ -925,6 +1002,8 @@ return [
                 'high_match' => 'Kecocokan Tinggi',
             ],
             'features' => [
+                'title' => 'Semua yang kamu butuhkan untuk dapat kerja',
+                'subtitle' => 'Buat CV, cek skor ATS, dan latihan wawancara — satu alur kerja tenang yang dibuat untuk pasar kerja Indonesia.',
                 'ai_bullet' => [
                     'title' => 'Generator Poin AI',
                     'desc' => 'Tulis pencapaian Anda secara instan dengan saran berbasis data yang menonjol di mata perekrut.',
@@ -936,6 +1015,24 @@ return [
                 'premium_templates' => [
                     'title' => 'Template Premium',
                     'desc' => 'Kumpulan template yang dikurasi secara profesional untuk berbagai industri dan tingkat karier.',
+                ],
+            ],
+            'how' => [
+                'title' => 'Dari halaman kosong sampai siap wawancara',
+                'subtitle' => 'Satu alur, tiga langkah — setiap langkah melanjutkan langkah sebelumnya.',
+                'steps' => [
+                    'build' => [
+                        'title' => 'Buat dengan AI',
+                        'desc' => 'Mulai dari template dan biarkan AI mengubah pengalamanmu menjadi poin-poin yang siap dilirik perekrut.',
+                    ],
+                    'scan' => [
+                        'title' => 'Cek dengan lowongan',
+                        'desc' => 'Tempel deskripsi pekerjaan dan dapatkan daftar kekurangan yang konkret — bukan sekadar skor.',
+                    ],
+                    'rehearse' => [
+                        'title' => 'Latihan dengan Bu Sari',
+                        'desc' => 'Latih pertanyaan wawancara dari CV-mu sendiri dan dapatkan umpan balik STAR yang terstruktur.',
+                    ],
                 ],
             ],
             'cta' => [
@@ -952,6 +1049,7 @@ return [
             'use_template_full' => 'Gunakan Template Ini',
             'use_template_short' => 'Gunakan Template',
             'preview_aria' => 'Pratinjau template :title',
+            'preview_template' => 'Pratinjau Template',
             'close_preview' => 'Tutup pratinjau',
             'cta' => [
                 'title' => 'Belum menemukan yang cocok?',
@@ -979,6 +1077,9 @@ return [
                 'premium_pdf_export' => 'Ekspor PDF Premium',
                 'priority_support' => 'Dukungan Prioritas',
                 'activate_premium' => 'Aktifkan Premium Sekarang',
+                'most_popular' => 'Paling Populer',
+                'ai_powered' => 'Didukung AI',
+                'current_plan' => 'Paket Saat Ini',
             ],
             'compare' => [
                 'title' => 'Bandingkan Fitur Kami',

@@ -3,7 +3,7 @@
 @section('title', 'Ticket #' . substr($ticket->id, -8) . ' - Support')
 
 @section('content')
-<div class="mx-auto w-full max-w-4xl space-y-8 pb-24 md:pb-12">
+<div class="mx-auto w-full max-w-6xl space-y-8 pb-24 md:pb-12">
 
     <!-- Breadcrumb -->
     <div class="flex items-center justify-between">
@@ -22,10 +22,10 @@
         </a>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
         <!-- Thread (2/3 width) -->
-        <div class="lg:col-span-2 space-y-6">
+        <div class="lg:col-span-3 space-y-6">
 
             <!-- Conversation + Reply (Livewire chat) -->
             <livewire:ticket-chat :ticket="$ticket" />

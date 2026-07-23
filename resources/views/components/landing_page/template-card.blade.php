@@ -1,6 +1,6 @@
 @props(['title', 'category', 'badge' => null, 'badgeColor' => 'secondary'])
 
-<div class="group bg-surface-container-lowest rounded-lg border border-primary/5 p-2 transition-all duration-500 hover:shadow-xl">
+<div class="group bg-surface-container-lowest rounded-lg border border-primary/5 p-2 transition-all duration-200 ease-out hover:shadow-lg hover:-translate-y-1">
 
     {{-- Preview Area: identik dengan dashboard resume-card --}}
     <div class="aspect-[210/297] bg-surface-container-low rounded-md overflow-hidden relative border border-primary/5 cursor-pointer">
@@ -8,11 +8,11 @@
         {{-- Slot: iframe langsung di sini, sama seperti dashboard --}}
         {{ $slot }}
 
-        {{-- Overlay hover --}}
-        <div class="absolute inset-0 bg-primary/60 backdrop-blur-[12px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center text-white z-20">
-            <span class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-6 py-2.5 rounded-full text-sm font-bold border border-white/30 hover:bg-white/30 transition-all">
-                <span class="material-symbols-outlined text-[18px]">visibility</span>
-                Preview Template
+        {{-- Overlay hover: same gradient + emerald pill vocabulary as the dashboard resume cards --}}
+        <div class="absolute inset-0 bg-gradient-to-t from-primary/70 via-primary/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end justify-center pb-6 z-20">
+            <span class="inline-flex items-center gap-2 bg-secondary text-white px-5 py-2 rounded-full text-sm font-bold shadow-sm">
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">visibility</span>
+                {{ __('messages.landing.templates.preview_template') }}
             </span>
         </div>
     </div>
@@ -20,7 +20,7 @@
     <div class="px-2 py-3">
         {{-- Title and Badge Row --}}
         <div class="flex items-center gap-2 mb-1">
-            <h3 class="text-lg font-headline font-bold text-primary tracking-tighter">{{ $title }}</h3>
+            <h3 class="text-lg font-headline font-bold text-primary tracking-tight">{{ $title }}</h3>
 
             @if($badge)
                 @php
