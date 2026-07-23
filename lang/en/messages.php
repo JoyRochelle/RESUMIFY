@@ -1030,7 +1030,7 @@ return [
                         'desc' => 'Paste the job description and get a concrete gap list — not just a score.',
                     ],
                     'rehearse' => [
-                        'title' => 'Rehearse with Bu Sari',
+                        'title' => 'Rehearse with Ms. Sarah',
                         'desc' => 'Practice interview questions drawn from your own CV and get structured STAR feedback.',
                     ],
                 ],

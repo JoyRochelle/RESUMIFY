@@ -291,7 +291,7 @@ class InterviewController extends Controller
     }
 
     /**
-     * Start a new interview session and return Bu Sari's opening question.
+     * Start a new interview session and return Ms. Sarah's opening question.
      * Quota: 1 credit (handled by ai.quota middleware on the route).
      */
     public function start(Request $request, StartInterviewAction $startInterview): JsonResponse
@@ -334,7 +334,7 @@ class InterviewController extends Controller
     }
 
     /**
-     * Send a user message and return Bu Sari's next question.
+     * Send a user message and return Ms. Sarah's next question.
      * Quota: 1 credit per exchange (handled by ai.quota middleware on the route).
      */
     public function message(

@@ -38,7 +38,7 @@ class InterviewService
     private const GEMINI_FEEDBACK_TIMEOUT_SECONDS = 90;
 
     /**
-     * Create an interview session and ask Bu Sari's opening question.
+     * Create an interview session and ask Ms. Sarah's opening question.
      *
      * @return array{session: InterviewSession, message: string, usage: \App\Support\GeminiUsage}
      */

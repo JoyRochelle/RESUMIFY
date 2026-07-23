@@ -1030,7 +1030,7 @@ return [
                         'desc' => 'Tempel deskripsi pekerjaan dan dapatkan daftar kekurangan yang konkret — bukan sekadar skor.',
                     ],
                     'rehearse' => [
-                        'title' => 'Latihan dengan Bu Sari',
+                        'title' => 'Latihan dengan Ms. Sarah',
                         'desc' => 'Latih pertanyaan wawancara dari CV-mu sendiri dan dapatkan umpan balik STAR yang terstruktur.',
                     ],
                 ],
