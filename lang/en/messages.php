@@ -534,6 +534,10 @@ return [
         'premium_badge' => 'Premium',
         'page_title' => 'ATS Analyzer',
         'how_it_works' => 'How It Works',
+        'trial' => [
+            'banner' => 'Free trial: :count analysis left of :limit.|Free trial: :count analyses left of :limit.',
+            'exhausted_message' => "You've used all :limit free ATS analyses. Upgrade to Premium for unlimited scans.",
+        ],
         'sections_aria_label' => 'ATS Analyzer sections',
         'tabs' => [
             'setup' => 'Setup',
@@ -591,8 +595,9 @@ return [
             'heading' => 'Mock Interview HRD',
             'greeting' => "Hello! I'm Ms. Sarah",
             'intro' => "I'll interview you based on your actual CV content — not generic questions. Choose a CV and the position you'd like to practice.",
-            'trial_used_title' => 'Your Free Trial Has Been Used',
-            'trial_used_body' => "You've used your 1 free interview session.<br>\nUpgrade to Premium for unlimited sessions.",
+            'trial_used_title' => 'Your Free Trials Have Been Used',
+            'trial_used_body' => "You've used all :limit free interview sessions.<br>\nUpgrade to Premium for unlimited sessions.",
+            'trial_exhausted_message' => "You've used all :limit free interview sessions. Upgrade to Premium for unlimited sessions.",
             'upgrade_to_premium' => 'Upgrade to Premium',
             'view_last_session' => 'View Last Session',
             'ai_credits_remaining' => 'AI Credits Remaining',
@@ -602,8 +607,8 @@ return [
             'position_applied_for' => 'Position Applied For',
             'position_placeholder' => 'e.g. Backend Engineer, Product Manager…',
             'trial_banner_before' => 'You have',
-            'trial_banner_bold' => '1 free trial session',
-            'trial_banner_after' => 'as a Basic user.',
+            'trial_banner_bold' => ':count free trial session left|:count free trial sessions left',
+            'trial_banner_after' => 'as a Basic user, out of :limit.',
             'start_interview' => 'Start Interview',
             'starting' => 'Starting…',
             'select_cv_first_error' => 'Please select a CV first.',
@@ -671,6 +676,188 @@ return [
         ],
     ],
 
+    'tour' => [
+        'ui' => [
+            'start' => 'Tutorial',
+            'start_aria' => 'Start the tutorial for this page',
+            'next' => 'Next',
+            'back' => 'Back',
+            'skip' => 'Skip tutorial',
+            'done' => 'Finish',
+            'close' => 'Close tutorial',
+            'step_label' => 'Step :current of :total',
+        ],
+
+        'dashboard' => [
+            'steps' => [
+                'welcome' => [
+                    'title' => 'Welcome to Resumify',
+                    'body' => 'This short tutorial points at the real buttons on each page. Use Next and Back to move through it, or Skip to leave — you can restart it any time from the Tutorial button.',
+                ],
+                'quota' => [
+                    'title' => 'Your plan and AI credits',
+                    'body' => 'Every AI action spends credits: 1 to polish a bullet point or run an ATS scan, 3 to generate tailored CV versions. Keep an eye on the balance here.',
+                ],
+                'create' => [
+                    'title' => 'Start a new resume here',
+                    'body' => 'Click this to name your resume and pick a template. Basic accounts include one resume and the free templates; Premium unlocks unlimited resumes and every design.',
+                ],
+                'resumes' => [
+                    'title' => 'Your resumes live here',
+                    'body' => 'Open one to keep editing it. Each card also lets you rename, duplicate or delete the resume.',
+                ],
+                'ats_nav' => [
+                    'title' => 'ATS Analyzer',
+                    'body' => 'Once a resume has content, come here to score it against a real job posting and see which keywords you are missing.',
+                ],
+                'interview_nav' => [
+                    'title' => 'Mock Interview',
+                    'body' => 'Practise with an AI interviewer that asks questions based on your own CV, then read the scored report.',
+                ],
+            ],
+        ],
+
+        'manuscripts' => [
+            'steps' => [
+                'intro' => [
+                    'title' => 'Your manuscripts',
+                    'body' => 'Every resume you build lives on this page. Open one to edit it, or create a new one for a different target job.',
+                ],
+                'quota' => [
+                    'title' => 'Plan and credits',
+                    'body' => 'Your resume limit and remaining AI credits are shown here. Basic includes one resume; Premium is unlimited.',
+                ],
+                'list' => [
+                    'title' => 'Open a resume',
+                    'body' => 'Click a card to open the editor, where you fill in each section and see the live preview next to it.',
+                ],
+                'create' => [
+                    'title' => 'Create a new resume',
+                    'body' => 'Use this card to start from scratch: give the resume a title, choose a template, and the editor opens with the sections ready to fill.',
+                ],
+            ],
+        ],
+
+        'editor' => [
+            'steps' => [
+                'intro' => [
+                    'title' => 'This is the resume editor',
+                    'body' => 'The left side holds your content, section by section, and the right side shows a live preview. Each section saves on its own as you type.',
+                ],
+                'target_job' => [
+                    'title' => '1. Target Job',
+                    'body' => 'Fill this first. Put the job title, the company, and paste the full job description from the posting. The AI reads this section to score your resume, tailor it, and set up the mock interview.',
+                ],
+                'personal_info' => [
+                    'title' => '2. Personal Info',
+                    'body' => 'Full name, professional title, email, phone, location, and a 2-4 sentence summary. Write the summary around the role you want, not the one you have. A photo is optional (JPG, PNG or WebP, max 2MB).',
+                ],
+                'work_experience' => [
+                    'title' => '3. Work Experience',
+                    'body' => 'Job title, company and dates — leave the end date blank if you still work there. Write achievements rather than duties, and attach a number where you honestly can: "Handled 120 tickets a week at a 94% resolution rate" beats "Responsible for support".',
+                ],
+                'education' => [
+                    'title' => '4. Education',
+                    'body' => 'Degree or course, school, and dates. Use Additional Info for a GPA, thesis or award — keep it short once you have work experience.',
+                ],
+                'skills' => [
+                    'title' => '5. Skills',
+                    'body' => 'Add each skill with a proficiency level. This is the easiest place to fix keywords the ATS Analyzer says are missing — but only list what is genuinely true, because the mock interview will ask about it.',
+                ],
+                'optional' => [
+                    'title' => 'Optional sections',
+                    'body' => 'Add Certifications, Projects or Languages when they strengthen your case. Projects are the strongest section for fresh graduates and career changers.',
+                ],
+                'refine' => [
+                    'title' => 'Polish the wording with AI',
+                    'body' => 'Refine rewrites your summary, experience or project text into sharper, achievement-led sentences for 1 credit. It can only rework what you wrote — it never invents an employer, a date or a number.',
+                ],
+                'ats_widget' => [
+                    'title' => 'Live ATS score',
+                    'body' => 'This is a quick read on how well the resume matches the job description in your Target Job section. For the full breakdown with missing keywords, use the ATS Analyzer page.',
+                ],
+                'tailor' => [
+                    'title' => 'Tailor CV',
+                    'body' => 'This generates three complete versions of your resume aimed at your target job, for 3 credits. Compare them, then Apply and Overwrite the one you like best. Fill the Target Job section first, otherwise the AI has nothing to aim at.',
+                ],
+                'toolbar' => [
+                    'title' => 'Layout and History',
+                    'body' => 'Layout switches the template without touching your content. History restores an earlier version of a section — handy right after applying a tailored version.',
+                ],
+                'export' => [
+                    'title' => 'Preview and export',
+                    'body' => 'Preview opens the full resume in a new tab. Download PDF gives you the file to send with applications; PDF export is a Premium feature.',
+                ],
+            ],
+        ],
+
+        'ats' => [
+            'steps' => [
+                'intro' => [
+                    'title' => 'What the ATS Analyzer does',
+                    'body' => 'Most applications are read by an Applicant Tracking System before a human sees them. This page scores your resume against a job description the same way and tells you what is missing.',
+                ],
+                'trial' => [
+                    'title' => 'Your free trial',
+                    'body' => 'Basic accounts get 3 free analyses. This banner counts down as you use them; once they are gone the button turns into an upgrade prompt. Premium is unlimited.',
+                ],
+                'select_cv' => [
+                    'title' => '1. Pick a resume',
+                    'body' => 'Choose which of your resumes to score. The job title and description below are filled in automatically from that resume\'s Target Job section.',
+                ],
+                'job' => [
+                    'title' => '2. Paste the job posting',
+                    'body' => 'Edit the job title and paste the description of the role you are actually applying to. The closer this is to the real posting, the more useful the score.',
+                ],
+                'analyze' => [
+                    'title' => '3. Run the analysis',
+                    'body' => 'Each run costs 1 credit and is limited to 5 per minute. Basic accounts have 3 free analyses in total; the banner above the button shows how many are left.',
+                ],
+                'results' => [
+                    'title' => '4. Read the result',
+                    'body' => 'You get a match score plus missing keywords, matched keywords, action verbs, a section breakdown and strategic insights. The score weighs keywords 65%, action verbs 15%, quantification 12%, and length and format 8%.',
+                ],
+                'history' => [
+                    'title' => 'Scan history',
+                    'body' => 'Every analysis is saved here. Fix your resume in the editor, run the scan again, and compare the two to see whether the changes worked.',
+                ],
+                'how' => [
+                    'title' => 'More detail any time',
+                    'body' => 'How It Works explains the scoring weights in full. Open it whenever a result surprises you.',
+                ],
+            ],
+        ],
+
+        'interview' => [
+            'steps' => [
+                'intro' => [
+                    'title' => 'Meet your interviewer',
+                    'body' => 'Ms. Sarah plays an HRD interviewer who has read your CV. Her questions come from what you actually wrote, not from a generic list.',
+                ],
+                'quota' => [
+                    'title' => 'What a session costs',
+                    'body' => 'Starting a session costs 1 credit and every answer you send costs 1 more. Basic accounts get 3 free trial sessions in total; Premium is unlimited.',
+                ],
+                'select_cv' => [
+                    'title' => '1. Choose the CV',
+                    'body' => 'Pick the resume you want to be interviewed on. The questions are built from its content, so use the one you are actually sending out.',
+                ],
+                'position' => [
+                    'title' => '2. Name the position',
+                    'body' => 'Type the role you are applying for. It is pre-filled from the resume\'s Target Job section, and you can change it for a different posting.',
+                ],
+                'start' => [
+                    'title' => '3. Start the interview',
+                    'body' => 'Answer in the chat with Enter to send, Shift+Enter for a new line. Use the STAR shape — Situation, Task, Action, Result — because that is what the report grades. When you are done, End Session, then Generate Report for 1 credit.',
+                ],
+                'history' => [
+                    'title' => 'Track your progress',
+                    'body' => 'Past sessions and their scores stay here. Open one to reread the conversation or the report, and compare scores as you practise.',
+                ],
+            ],
+        ],
+    ],
+
     'help' => [
         'hero_title' => 'Help Center',
         'hero_subtitle' => 'Find answers to common questions or reach out to our support team.',
@@ -696,7 +883,7 @@ return [
             'ai_features' => [
                 'label' => 'AI Features',
                 'items' => [
-                    ['q' => 'How do I improve my ATS score?', 'a' => 'Use the ATS Analyzer feature to check how well your resume matches a job description. Paste the job posting, and our AI will identify missing keywords and suggest improvements.'],
+                    ['q' => 'How do I improve my ATS score?', 'a' => 'Use the ATS Analyzer feature to check how well your resume matches a job description. Paste the job posting, and our AI will identify missing keywords and suggest improvements. Basic accounts get 3 free analyses; Premium is unlimited.'],
                     ['q' => 'How many AI credits do I get?', 'a' => 'Basic users receive 10 AI credits per month. Premium users get 100 credits. Each AI action (ATS analysis, bullet optimization, etc.) uses a set number of credits.'],
                     ['q' => 'What does "AI Polish" do?', 'a' => 'AI Polish rewrites your resume bullet points to be more impactful, using strong action verbs and quantifiable achievements. It uses 1 credit per bullet point.'],
                 ],

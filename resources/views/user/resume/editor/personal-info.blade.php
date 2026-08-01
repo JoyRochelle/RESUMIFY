@@ -1,5 +1,5 @@
 <!-- Personal Info -->
-                    <x-user.editor-accordion title="{{ __('messages.editor.sections.personal_info.title') }}" icon="person">
+                    <x-user.editor-accordion title="{{ __('messages.editor.sections.personal_info.title') }}" icon="person" data-tour="section-personal-info">
                         <form class="section-form" data-section-id="{{ $personal->id ?? '' }}">
                             <div class="grid grid-cols-1 gap-4">
                                 <x-ui.form-input label="{{ __('messages.editor.sections.personal_info.full_name') }}" name="name" value="{{ $personalContent['name'] ?? '' }}" class="auto-save" :required="true" placeholder="{{ __('messages.editor.sections.personal_info.full_name_placeholder') }}" />
@@ -43,7 +43,7 @@
                                 <div class="relative group mt-2">
                                     <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">{{ __('messages.editor.sections.personal_info.professional_summary') }}</label>
                                     <textarea name="summary" placeholder="{{ __('messages.editor.sections.personal_info.summary_placeholder') }}" class="auto-save w-full bg-surface-container-low rounded-lg scroll-pad-b ring-1 ring-primary/10 focus:ring-secondary p-4 text-sm text-primary leading-relaxed custom-scrollbar outline-none transition-colors duration-200 resize-none placeholder:text-primary/30" rows="5">{{ $personalContent['summary'] ?? '' }}</textarea>
-                                    <button type="button" onclick="openRefineModal(this)" class="absolute bottom-3 right-3 text-[10px] font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-2 py-1 rounded transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[12px]">auto_awesome</span>{{ __('messages.editor.sections.personal_info.refine') }}</button>
+                                    <button type="button" onclick="openRefineModal(this)" data-tour="editor-refine" class="absolute bottom-3 right-3 text-[10px] font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-2 py-1 rounded transition-colors flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[12px]">auto_awesome</span>{{ __('messages.editor.sections.personal_info.refine') }}</button>
                                 </div>
 
                                 {{-- Photo Upload: only shown when template supports show_photo --}}

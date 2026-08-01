@@ -13,11 +13,12 @@
         
         {{-- Page Header --}}
         <x-user.page-header title="{{ __('messages.editor.title_prefix') }}{{ $cv->title ?? __('messages.dashboard.untitled_resume') }}" backUrl="{{ route('dashboard') }}">
-            <x-ui.icon-button type="button" onclick="openCvVersionsModal()" icon="auto_awesome" variant="secondary" label="{{ __('messages.editor.tailor_cv') }}" class="sm:hidden" />
-            <x-ui.button type="button" onclick="openCvVersionsModal()" variant="outline" icon="auto_awesome" class="text-sm px-3 hidden sm:flex text-secondary border-secondary hover:bg-secondary/10">{{ __('messages.editor.tailor_cv') }}</x-ui.button>
-            <x-ui.button onclick="previewPdf('{{ $cv->id ?? '' }}')" variant="ghost" class="text-sm px-3 hidden sm:flex">{{ __('messages.editor.preview') }}</x-ui.button>
+            <x-user.tour-button compact class="px-2" />
+            <x-ui.icon-button type="button" onclick="openCvVersionsModal()" icon="auto_awesome" variant="secondary" label="{{ __('messages.editor.tailor_cv') }}" class="sm:hidden" data-tour="editor-tailor" />
+            <x-ui.button type="button" onclick="openCvVersionsModal()" variant="outline" icon="auto_awesome" data-tour="editor-tailor" class="text-sm px-3 hidden sm:flex text-secondary border-secondary hover:bg-secondary/10">{{ __('messages.editor.tailor_cv') }}</x-ui.button>
+            <x-ui.button onclick="previewPdf('{{ $cv->id ?? '' }}')" variant="ghost" data-tour="editor-export" class="text-sm px-3 hidden sm:flex">{{ __('messages.editor.preview') }}</x-ui.button>
             @if($user->canUsePremiumFeature('pdf_export'))
-                <x-ui.button id="download-btn" onclick="downloadPdf('{{ $cv->id ?? '' }}')" variant="primary" icon="download" iconClass="text-[18px]" class="text-sm px-3 w-full sm:w-auto justify-center">{{ __('messages.editor.download_pdf') }}</x-ui.button>
+                <x-ui.button id="download-btn" onclick="downloadPdf('{{ $cv->id ?? '' }}')" variant="primary" icon="download" iconClass="text-[18px]" data-tour="editor-export" class="text-sm px-3 w-full sm:w-auto justify-center">{{ __('messages.editor.download_pdf') }}</x-ui.button>
             @else
                 <x-user.premium-lock
                     title="{{ __('messages.editor.premium_pdf_title') }}"
@@ -45,7 +46,7 @@
 
         <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden pb-20 lg:pb-0">
 
-            <aside id="ms-panel-edit" class="w-full lg:w-[40%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
+            <aside id="ms-panel-edit" data-tour="editor-panel" class="w-full lg:w-[40%] bg-surface-container-low flex flex-col border-b lg:border-b-0 lg:border-r border-primary/10 z-20 shrink-0 lg:h-full">
                 <div class="p-4 lg:p-6 lg:overflow-y-auto custom-scrollbar space-y-6 lg:h-full">
                     
                     @php
@@ -84,7 +85,7 @@
 
                     <!-- Optional Sections Toggles -->
                     @if($cv && (!$certifications || !$projects || !$languages))
-                    <div class="mt-8 border-t border-primary/10 pt-6 px-4">
+                    <div class="mt-8 border-t border-primary/10 pt-6 px-4" data-tour="editor-optional">
                         <h4 class="text-sm font-bold text-primary tracking-wide mb-4">{{ __('messages.editor.add_optional_section') }}</h4>
                         <div class="flex flex-wrap gap-3">
                             @if(!$certifications)
@@ -234,7 +235,7 @@
                     @endif
                 </div>
 
-                <div class="sticky bottom-24 lg:bottom-10 z-40 bg-tertiary/80 backdrop-blur-md border border-primary/10 px-6 py-3 rounded-full shadow-lg flex items-center gap-6 shrink-0 mx-auto">
+                <div data-tour="editor-toolbar" class="sticky bottom-24 lg:bottom-10 z-40 bg-tertiary/80 backdrop-blur-md border border-primary/10 px-6 py-3 rounded-full shadow-lg flex items-center gap-6 shrink-0 mx-auto">
                     <x-ui.button variant="text" icon="layers" onclick="openTemplateModal()">
                         <span class="text-xs uppercase tracking-widest">{{ __('messages.editor.layout') }}</span>
                     </x-ui.button>
@@ -460,6 +461,21 @@
             </div>
         </div>
     </div>
+
+    <x-user.guided-tour tour="editor" :steps="[
+        ['key' => 'intro', 'target' => '[data-tour=\'editor-panel\']', 'placement' => 'right'],
+        ['key' => 'target_job', 'target' => '[data-tour=\'section-target-job\']', 'placement' => 'right', 'expand' => true],
+        ['key' => 'personal_info', 'target' => '[data-tour=\'section-personal-info\']', 'placement' => 'right', 'expand' => true],
+        ['key' => 'refine', 'target' => '[data-tour=\'editor-refine\']', 'placement' => 'right'],
+        ['key' => 'work_experience', 'target' => '[data-tour=\'section-work-experience\']', 'placement' => 'right', 'expand' => true],
+        ['key' => 'education', 'target' => '[data-tour=\'section-education\']', 'placement' => 'right', 'expand' => true],
+        ['key' => 'skills', 'target' => '[data-tour=\'section-skills\']', 'placement' => 'right', 'expand' => true],
+        ['key' => 'optional', 'target' => '[data-tour=\'editor-optional\']', 'placement' => 'right'],
+        ['key' => 'ats_widget', 'target' => '#ats-widget', 'placement' => 'left'],
+        ['key' => 'tailor', 'target' => '[data-tour=\'editor-tailor\']', 'placement' => 'bottom'],
+        ['key' => 'toolbar', 'target' => '[data-tour=\'editor-toolbar\']', 'placement' => 'top'],
+        ['key' => 'export', 'target' => '[data-tour=\'editor-export\']', 'placement' => 'bottom'],
+    ]" />
 
         <script>
         window.editorConfig = {

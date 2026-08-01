@@ -534,6 +534,10 @@ return [
         'premium_badge' => 'Premium',
         'page_title' => 'ATS Analyzer',
         'how_it_works' => 'Cara Kerja',
+        'trial' => [
+            'banner' => 'Uji coba gratis: sisa :count analisis dari :limit.|Uji coba gratis: sisa :count analisis dari :limit.',
+            'exhausted_message' => 'Anda telah menggunakan seluruh :limit analisis ATS gratis. Upgrade ke Premium untuk pemindaian tanpa batas.',
+        ],
         'sections_aria_label' => 'Bagian ATS Analyzer',
         'tabs' => [
             'setup' => 'Setup',
@@ -591,8 +595,9 @@ return [
             'heading' => 'Wawancara Simulasi HRD',
             'greeting' => 'Halo! Saya Ms. Sarah',
             'intro' => 'Saya akan mewawancarai Anda berdasarkan konten CV asli Anda — bukan pertanyaan umum. Pilih CV dan posisi yang ingin Anda latih.',
-            'trial_used_title' => 'Uji Coba Gratis Anda Telah Digunakan',
-            'trial_used_body' => "Anda telah menggunakan 1 sesi wawancara gratis Anda.<br>\nUpgrade ke Premium untuk sesi tanpa batas.",
+            'trial_used_title' => 'Uji Coba Gratis Anda Telah Habis',
+            'trial_used_body' => "Anda telah menggunakan seluruh :limit sesi wawancara gratis.<br>\nUpgrade ke Premium untuk sesi tanpa batas.",
+            'trial_exhausted_message' => 'Anda telah menggunakan seluruh :limit sesi wawancara gratis. Upgrade ke Premium untuk sesi tanpa batas.',
             'upgrade_to_premium' => 'Upgrade ke Premium',
             'view_last_session' => 'Lihat Sesi Terakhir',
             'ai_credits_remaining' => 'Sisa Kredit AI',
@@ -601,9 +606,9 @@ return [
             'create_cv_first' => 'Buat CV terlebih dahulu',
             'position_applied_for' => 'Posisi yang Dilamar',
             'position_placeholder' => 'cth. Backend Engineer, Product Manager…',
-            'trial_banner_before' => 'Anda memiliki',
-            'trial_banner_bold' => '1 sesi uji coba gratis',
-            'trial_banner_after' => 'sebagai pengguna Basic.',
+            'trial_banner_before' => 'Anda punya sisa',
+            'trial_banner_bold' => ':count sesi uji coba gratis|:count sesi uji coba gratis',
+            'trial_banner_after' => 'dari total :limit sebagai pengguna Basic.',
             'start_interview' => 'Mulai Wawancara',
             'starting' => 'Memulai…',
             'select_cv_first_error' => 'Silakan pilih CV terlebih dahulu.',
@@ -671,6 +676,188 @@ return [
         ],
     ],
 
+    'tour' => [
+        'ui' => [
+            'start' => 'Tutorial',
+            'start_aria' => 'Mulai tutorial untuk halaman ini',
+            'next' => 'Lanjut',
+            'back' => 'Kembali',
+            'skip' => 'Lewati tutorial',
+            'done' => 'Selesai',
+            'close' => 'Tutup tutorial',
+            'step_label' => 'Langkah :current dari :total',
+        ],
+
+        'dashboard' => [
+            'steps' => [
+                'welcome' => [
+                    'title' => 'Selamat datang di Resumify',
+                    'body' => 'Tutorial singkat ini menunjuk langsung ke tombol asli di tiap halaman. Pakai Lanjut dan Kembali untuk berpindah, atau Lewati untuk keluar — Anda bisa mengulangnya kapan saja lewat tombol Tutorial.',
+                ],
+                'quota' => [
+                    'title' => 'Paket dan kredit AI Anda',
+                    'body' => 'Setiap aksi AI memakai kredit: 1 untuk memperhalus satu poin atau menjalankan pemindaian ATS, 3 untuk membuat versi CV yang disesuaikan. Pantau sisanya di sini.',
+                ],
+                'create' => [
+                    'title' => 'Mulai resume baru di sini',
+                    'body' => 'Klik ini untuk memberi nama resume dan memilih template. Akun Basic mendapat satu resume dan template gratis; Premium membuka resume tanpa batas dan seluruh desain.',
+                ],
+                'resumes' => [
+                    'title' => 'Resume Anda tersimpan di sini',
+                    'body' => 'Buka salah satunya untuk melanjutkan penyuntingan. Tiap kartu juga bisa dipakai untuk mengganti nama, menduplikasi, atau menghapus resume.',
+                ],
+                'ats_nav' => [
+                    'title' => 'Analisis ATS',
+                    'body' => 'Setelah resume terisi, buka menu ini untuk menilainya terhadap iklan lowongan asli dan melihat kata kunci apa saja yang belum ada.',
+                ],
+                'interview_nav' => [
+                    'title' => 'Wawancara Simulasi',
+                    'body' => 'Berlatih dengan pewawancara AI yang bertanya berdasarkan isi CV Anda sendiri, lalu baca laporan penilaiannya.',
+                ],
+            ],
+        ],
+
+        'manuscripts' => [
+            'steps' => [
+                'intro' => [
+                    'title' => 'Manuskrip Anda',
+                    'body' => 'Semua resume yang Anda buat ada di halaman ini. Buka salah satunya untuk menyunting, atau buat baru untuk pekerjaan target yang berbeda.',
+                ],
+                'quota' => [
+                    'title' => 'Paket dan kredit',
+                    'body' => 'Batas resume dan sisa kredit AI ditampilkan di sini. Basic mendapat satu resume; Premium tanpa batas.',
+                ],
+                'list' => [
+                    'title' => 'Buka sebuah resume',
+                    'body' => 'Klik sebuah kartu untuk masuk ke editor, tempat Anda mengisi tiap bagian sambil melihat pratinjaunya langsung di sebelahnya.',
+                ],
+                'create' => [
+                    'title' => 'Buat resume baru',
+                    'body' => 'Gunakan kartu ini untuk memulai dari awal: beri judul resume, pilih template, lalu editor terbuka dengan bagian-bagian yang siap diisi.',
+                ],
+            ],
+        ],
+
+        'editor' => [
+            'steps' => [
+                'intro' => [
+                    'title' => 'Ini editor resume',
+                    'body' => 'Sisi kiri berisi konten Anda, bagian demi bagian, dan sisi kanan menampilkan pratinjau langsung. Tiap bagian tersimpan sendiri sambil Anda mengetik.',
+                ],
+                'target_job' => [
+                    'title' => '1. Target Job',
+                    'body' => 'Isi ini lebih dulu. Masukkan judul posisi, perusahaan, dan tempelkan deskripsi pekerjaan lengkap dari iklan lowongan. Bagian inilah yang dibaca AI untuk menilai resume, menyesuaikannya, dan menyiapkan wawancara simulasi.',
+                ],
+                'personal_info' => [
+                    'title' => '2. Informasi Pribadi',
+                    'body' => 'Nama lengkap, gelar profesional, email, telepon, lokasi, dan ringkasan 2-4 kalimat. Tulis ringkasan mengarah ke posisi yang Anda inginkan, bukan posisi sekarang. Foto bersifat opsional (JPG, PNG, atau WebP, maksimal 2MB).',
+                ],
+                'work_experience' => [
+                    'title' => '3. Pengalaman Kerja',
+                    'body' => 'Jabatan, perusahaan, dan tanggal — kosongkan tanggal selesai bila Anda masih bekerja di sana. Tulis pencapaian, bukan daftar tugas, dan sertakan angka sejauh Anda bisa jujur: "Menangani 120 tiket per minggu dengan tingkat penyelesaian 94%" jauh lebih kuat daripada "Bertanggung jawab atas dukungan pelanggan".',
+                ],
+                'education' => [
+                    'title' => '4. Pendidikan',
+                    'body' => 'Gelar atau program, sekolah, dan tanggal. Pakai Informasi Tambahan untuk IPK, skripsi, atau penghargaan — buat ringkas begitu Anda punya pengalaman kerja.',
+                ],
+                'skills' => [
+                    'title' => '5. Keahlian',
+                    'body' => 'Tambahkan tiap keahlian beserta tingkat penguasaannya. Di sinilah kata kunci yang disebut hilang oleh Analisis ATS paling mudah diperbaiki — tapi cantumkan hanya yang benar-benar Anda kuasai, karena wawancara simulasi akan menanyakannya.',
+                ],
+                'optional' => [
+                    'title' => 'Bagian opsional',
+                    'body' => 'Tambahkan Sertifikasi, Proyek, atau Bahasa bila memperkuat posisi Anda. Proyek adalah bagian terkuat bagi fresh graduate dan yang sedang beralih karier.',
+                ],
+                'refine' => [
+                    'title' => 'Perhalus kalimat dengan AI',
+                    'body' => 'Refine menulis ulang ringkasan, pengalaman, atau deskripsi proyek Anda menjadi kalimat yang lebih tajam dan berorientasi pencapaian dengan biaya 1 kredit. AI hanya mengolah apa yang Anda tulis — tidak pernah mengarang perusahaan, tanggal, atau angka.',
+                ],
+                'ats_widget' => [
+                    'title' => 'Skor ATS langsung',
+                    'body' => 'Ini gambaran cepat seberapa cocok resume Anda dengan deskripsi pekerjaan di bagian Target Job. Untuk rincian lengkap beserta kata kunci yang hilang, buka halaman Analisis ATS.',
+                ],
+                'tailor' => [
+                    'title' => 'Tailor CV',
+                    'body' => 'Fitur ini membuat tiga versi utuh resume Anda yang diarahkan ke pekerjaan target, dengan biaya 3 kredit. Bandingkan ketiganya, lalu Apply and Overwrite versi yang paling pas. Isi bagian Target Job lebih dulu, kalau tidak AI tidak punya sasaran.',
+                ],
+                'toolbar' => [
+                    'title' => 'Layout dan History',
+                    'body' => 'Layout mengganti template tanpa menyentuh isi konten. History mengembalikan versi sebelumnya dari sebuah bagian — sangat berguna tepat setelah menerapkan versi hasil penyesuaian.',
+                ],
+                'export' => [
+                    'title' => 'Pratinjau dan ekspor',
+                    'body' => 'Preview membuka resume utuh di tab baru. Download PDF memberi Anda berkas untuk dikirim bersama lamaran; ekspor PDF adalah fitur Premium.',
+                ],
+            ],
+        ],
+
+        'ats' => [
+            'steps' => [
+                'intro' => [
+                    'title' => 'Apa yang dilakukan Analisis ATS',
+                    'body' => 'Sebagian besar lamaran dibaca sistem ATS sebelum sampai ke manusia. Halaman ini menilai resume Anda terhadap deskripsi pekerjaan dengan cara yang sama dan menunjukkan apa yang kurang.',
+                ],
+                'trial' => [
+                    'title' => 'Uji coba gratis Anda',
+                    'body' => 'Akun Basic mendapat 3 analisis gratis. Banner ini menghitung mundur sisanya; setelah habis, tombolnya berubah menjadi ajakan upgrade. Premium tanpa batas.',
+                ],
+                'select_cv' => [
+                    'title' => '1. Pilih resume',
+                    'body' => 'Tentukan resume mana yang ingin dinilai. Judul posisi dan deskripsi pekerjaan di bawah akan terisi otomatis dari bagian Target Job resume tersebut.',
+                ],
+                'job' => [
+                    'title' => '2. Tempelkan iklan lowongannya',
+                    'body' => 'Sunting judul posisi dan tempelkan deskripsi pekerjaan yang benar-benar Anda lamar. Makin mirip dengan iklan aslinya, makin berguna skornya.',
+                ],
+                'analyze' => [
+                    'title' => '3. Jalankan analisisnya',
+                    'body' => 'Setiap analisis memakai 1 kredit dan dibatasi 5 kali per menit. Akun Basic punya total 3 analisis gratis; sisanya ditampilkan pada banner di atas tombol.',
+                ],
+                'results' => [
+                    'title' => '4. Baca hasilnya',
+                    'body' => 'Anda mendapat skor kecocokan plus kata kunci yang hilang, kata kunci yang cocok, kata kerja aksi, rincian per bagian, dan catatan strategis. Bobot skornya: kata kunci 65%, kata kerja aksi 15%, kuantifikasi 12%, serta panjang dan format 8%.',
+                ],
+                'history' => [
+                    'title' => 'Riwayat pemindaian',
+                    'body' => 'Setiap analisis tersimpan di sini. Perbaiki resume di editor, jalankan pemindaian lagi, lalu bandingkan keduanya untuk melihat apakah perubahannya berhasil.',
+                ],
+                'how' => [
+                    'title' => 'Penjelasan lengkap kapan saja',
+                    'body' => 'How It Works menjelaskan seluruh bobot penilaian. Buka kapan pun ada hasil yang membuat Anda bingung.',
+                ],
+            ],
+        ],
+
+        'interview' => [
+            'steps' => [
+                'intro' => [
+                    'title' => 'Kenalan dengan pewawancara Anda',
+                    'body' => 'Ms. Sarah berperan sebagai pewawancara HRD yang sudah membaca CV Anda. Pertanyaannya berangkat dari apa yang benar-benar Anda tulis, bukan daftar pertanyaan umum.',
+                ],
+                'quota' => [
+                    'title' => 'Biaya satu sesi',
+                    'body' => 'Memulai sesi memakai 1 kredit dan setiap jawaban yang Anda kirim memakai 1 kredit lagi. Akun Basic mendapat total 3 sesi uji coba gratis; Premium tanpa batas.',
+                ],
+                'select_cv' => [
+                    'title' => '1. Pilih CV-nya',
+                    'body' => 'Tentukan resume yang ingin dijadikan bahan wawancara. Pertanyaannya disusun dari isi resume itu, jadi gunakan yang benar-benar Anda kirimkan ke perusahaan.',
+                ],
+                'position' => [
+                    'title' => '2. Sebutkan posisinya',
+                    'body' => 'Ketik posisi yang Anda lamar. Kolom ini terisi otomatis dari bagian Target Job resume, dan bisa Anda ubah untuk lowongan lain.',
+                ],
+                'start' => [
+                    'title' => '3. Mulai wawancaranya',
+                    'body' => 'Jawab lewat chat, tekan Enter untuk mengirim dan Shift+Enter untuk baris baru. Pakai pola STAR — Situation, Task, Action, Result — karena itulah yang dinilai dalam laporan. Setelah selesai, klik End Session lalu Generate Report dengan biaya 1 kredit.',
+                ],
+                'history' => [
+                    'title' => 'Pantau perkembangan Anda',
+                    'body' => 'Sesi-sesi sebelumnya beserta skornya tersimpan di sini. Buka salah satunya untuk membaca ulang percakapan atau laporannya, dan bandingkan skor seiring latihan Anda.',
+                ],
+            ],
+        ],
+    ],
+
     'help' => [
         'hero_title' => 'Pusat Bantuan',
         'hero_subtitle' => 'Temukan jawaban atas pertanyaan umum atau hubungi tim dukungan kami.',
@@ -696,7 +883,7 @@ return [
             'ai_features' => [
                 'label' => 'Fitur AI',
                 'items' => [
-                    ['q' => 'Bagaimana cara meningkatkan skor ATS saya?', 'a' => 'Gunakan fitur ATS Analyzer untuk memeriksa seberapa cocok resume Anda dengan deskripsi pekerjaan. Tempelkan lowongan pekerjaan, dan AI kami akan mengidentifikasi kata kunci yang hilang serta menyarankan perbaikan.'],
+                    ['q' => 'Bagaimana cara meningkatkan skor ATS saya?', 'a' => 'Gunakan fitur ATS Analyzer untuk memeriksa seberapa cocok resume Anda dengan deskripsi pekerjaan. Tempelkan lowongan pekerjaan, dan AI kami akan mengidentifikasi kata kunci yang hilang serta menyarankan perbaikan. Akun Basic mendapat 3 analisis gratis; Premium tanpa batas.'],
                     ['q' => 'Berapa banyak kredit AI yang saya dapatkan?', 'a' => 'Pengguna Basic menerima 10 kredit AI per bulan. Pengguna Premium mendapatkan 100 kredit. Setiap aksi AI (analisis ATS, optimasi bullet, dll.) menggunakan sejumlah kredit tertentu.'],
                     ['q' => 'Apa fungsi "AI Polish"?', 'a' => 'AI Polish menulis ulang poin-poin resume Anda agar lebih berdampak, menggunakan kata kerja aksi yang kuat dan pencapaian yang terukur. Fitur ini menggunakan 1 kredit per poin.'],
                 ],

@@ -51,16 +51,19 @@ class AtsController extends Controller
 
     /**
      * Analyze resume against job description using Gemini AI.
-     * Premium feature — guarded by ai.quota middleware in routes.
+     * Premium feature with a limited free trial — credits are guarded by the
+     * ai.quota middleware in routes.
      */
     public function analyze(AnalyzeAtsRequest $request, RunAtsAnalysisAction $runAtsAnalysis): JsonResponse
     {
         $user = $request->user();
 
-        if (!$user->canUsePremiumFeature('ats_analyze')) {
+        if (!$user->canUseTrialFeature('ats_analyze')) {
             return ApiResponse::legacyError(
                 legacyCode: 'premium_required',
-                message: 'Upgrade to Premium to unlock full ATS analysis.',
+                message: __('messages.ats.trial.exhausted_message', [
+                    'limit' => $user->getTrialLimit('ats_analyze'),
+                ]),
                 status: 402,
                 legacy: ['upgrade_url' => route('user.upgrade-quota')],
                 standardCode: ApiResponse::PREMIUM_REQUIRED,

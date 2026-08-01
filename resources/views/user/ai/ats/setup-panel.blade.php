@@ -6,7 +6,7 @@
 
                     {{-- Select CV --}}
                     @if (isset($cvs) && $cvs->isNotEmpty())
-                        <div class="bg-tertiary rounded-xl p-5 border border-primary/10 shadow-sm flex flex-col gap-3">
+                        <div class="bg-tertiary rounded-xl p-5 border border-primary/10 shadow-sm flex flex-col gap-3" data-tour="ats-cv">
                             <label for="cv-selector" class="font-bold text-primary text-sm">
                                 {{ __('messages.ats.setup.select_from_resumes') }}
                             </label>
@@ -26,7 +26,7 @@
                     <input type="hidden" id="resume-input" value="">
 
                     {{-- Target Job section (accordion style, matches manuscript editor) --}}
-                    <x-user.editor-accordion title="{{ __('messages.editor.sections.target_job.title') }}" icon="target" :isOpen="true">
+                    <x-user.editor-accordion title="{{ __('messages.editor.sections.target_job.title') }}" icon="target" :isOpen="true" data-tour="ats-job">
                         <div class="grid grid-cols-1 gap-4">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <x-ui.form-input
@@ -54,9 +54,25 @@
                         </div>
                     </x-user.editor-accordion>
 
+                    @php
+                        // null once the plan is not trial-limited (Premium/admin)
+                        $atsTrialRemaining = $user->getTrialRemaining('ats_analyze');
+                    @endphp
+
+                    {{-- Trial counter for Basic users still inside their free runs --}}
+                    @if($atsTrialRemaining !== null && $atsTrialRemaining > 0)
+                        <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs" data-tour="ats-trial">
+                            <span class="material-symbols-outlined text-[16px] shrink-0" aria-hidden="true">info</span>
+                            <span>{{ trans_choice('messages.ats.trial.banner', $atsTrialRemaining, [
+                                'count' => $atsTrialRemaining,
+                                'limit' => $user->getTrialLimit('ats_analyze'),
+                            ]) }}</span>
+                        </div>
+                    @endif
+
                     {{-- Analyze Button --}}
-                    @if($user->canUsePremiumFeature('ats_analyze'))
-                        <button id="analyze-btn" type="button"
+                    @if($user->canUseTrialFeature('ats_analyze'))
+                        <button id="analyze-btn" type="button" data-tour="ats-analyze"
                             class="w-full py-4 rounded-xl font-bold text-sm tracking-wide shadow-lg bg-primary text-tertiary hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3 group focus:outline-none focus:ring-2 focus:ring-secondary/40">
                             <span id="analyze-btn-label">{{ __('messages.ats.analyze_match') }}</span>
                             <span id="analyze-spinner" style="display:none"
@@ -67,8 +83,9 @@
                     @else
                         <x-user.premium-lock
                             title="{{ __('messages.ats.setup.analyzer_title') }}"
-                            description="{{ __('messages.ats.setup.analyzer_desc') }}"
+                            :description="__('messages.ats.trial.exhausted_message', ['limit' => $user->getTrialLimit('ats_analyze')])"
                             align="left"
+                            data-tour="ats-analyze"
                             class="w-full">
                             <span class="flex w-full min-h-11 items-center justify-center gap-3 rounded-xl border border-[#A16207]/25 bg-[#A16207]/10 px-4 py-4 text-sm font-bold tracking-wide text-[#7C4A03] shadow-sm">
                                 <span class="material-symbols-outlined icon-filled text-[20px]" aria-hidden="true">lock</span>
@@ -87,7 +104,7 @@
 
                     {{-- ─── Scan History ─────────────────────────────────── --}}
                     @if (isset($history) && $history->isNotEmpty())
-                        <div class="flex flex-col gap-3">
+                        <div class="flex flex-col gap-3" data-tour="ats-history">
                             <div class="flex items-center justify-between">
                                 <h3 class="font-bold text-primary/70 text-xs uppercase tracking-widest">
                                     {{ __('messages.ats.setup.scan_history') }}

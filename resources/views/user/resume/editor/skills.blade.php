@@ -1,5 +1,5 @@
 <!-- Skills -->
-                    <x-user.editor-accordion title="{{ __('messages.editor.sections.skills.title') }}" icon="bolt">
+                    <x-user.editor-accordion data-tour="section-skills" title="{{ __('messages.editor.sections.skills.title') }}" icon="bolt">
                         <form class="section-form" data-section-id="{{ $skills->id ?? '' }}">
                             <div class="grid grid-cols-1 gap-4" id="skills-list">
                                 @forelse($skillsContent as $index => $skill)

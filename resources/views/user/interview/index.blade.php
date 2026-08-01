@@ -7,7 +7,9 @@
 @section('content')
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-        <x-user.page-header title="{{ __('messages.interview.index.heading') }}" backUrl="{{ route('dashboard') }}" />
+        <x-user.page-header title="{{ __('messages.interview.index.heading') }}" backUrl="{{ route('dashboard') }}">
+            <x-user.tour-button compact class="px-2" />
+        </x-user.page-header>
 
         {{-- Flash messages --}}
         @if (session('success'))
@@ -20,7 +22,7 @@
             <div class="max-w-xl mx-auto">
 
                 {{-- Intro card --}}
-                <div class="bg-surface-container-low rounded-2xl p-5 mb-6 border border-primary/10">
+                <div class="bg-surface-container-low rounded-2xl p-5 mb-6 border border-primary/10" data-tour="interview-intro">
                     <div class="flex items-start gap-3">
                         <div class="w-10 h-10 rounded-full bg-secondary/15 flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-secondary text-[20px]">smart_toy</span>
@@ -63,7 +65,7 @@
 
                         {{-- Quota bar --}}
                         @php $user = auth()->user(); @endphp
-                        <div class="flex items-center justify-between text-xs text-primary/50 pb-1" data-ai-quota-widget>
+                        <div class="flex items-center justify-between text-xs text-primary/50 pb-1" data-ai-quota-widget data-tour="interview-quota">
                             <span>{{ __('messages.interview.index.ai_credits_remaining') }}</span>
                             <div class="flex items-center gap-2">
                                 <div class="w-24 h-1.5 bg-primary/10 rounded-full overflow-hidden">
@@ -77,7 +79,7 @@
                         </div>
 
                         {{-- Resume selector --}}
-                        <div class="space-y-1.5">
+                        <div class="space-y-1.5" data-tour="interview-cv">
                             <label for="cv-select" class="text-sm font-medium text-primary">
                                 {{ __('messages.interview.index.select_cv') }}
                             </label>
@@ -104,7 +106,7 @@
                         </div>
 
                         {{-- Job target --}}
-                        <div class="space-y-1.5">
+                        <div class="space-y-1.5" data-tour="interview-position">
                             <label for="job-target" class="text-sm font-medium text-primary">
                                 {{ __('messages.interview.index.position_applied_for') }}
                             </label>
@@ -116,12 +118,14 @@
                         </div>
 
                         {{-- Trial info banner for basic users --}}
-                        @if (!$user->isPremium() && !$user->isAdmin())
+                        @if ($trialRemaining !== null)
                             <div
                                 class="flex items-center gap-2 px-4 py-2.5 rounded-xl
                             bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs">
                                 <span class="material-symbols-outlined text-[16px] shrink-0">info</span>
-                                <span>{{ __('messages.interview.index.trial_banner_before') }} <strong>{{ __('messages.interview.index.trial_banner_bold') }}</strong> {{ __('messages.interview.index.trial_banner_after') }}</span>
+                                <span>{{ __('messages.interview.index.trial_banner_before') }}
+                                    <strong>{{ trans_choice('messages.interview.index.trial_banner_bold', $trialRemaining, ['count' => $trialRemaining]) }}</strong>
+                                    {{ __('messages.interview.index.trial_banner_after', ['limit' => $user->getTrialLimit('interview')]) }}</span>
                             </div>
                         @endif
 
@@ -145,7 +149,7 @@
 
                 {{-- Recent History Section --}}
                 @if(isset($recentSessions) && $recentSessions->isNotEmpty())
-                    <div class="mt-8">
+                    <div class="mt-8" data-tour="interview-history">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="font-semibold text-primary">{{ __('messages.interview.index.recent_interviews') }}</h3>
                             <a href="{{ route('interview.history') }}" class="text-sm font-medium text-secondary hover:underline">
@@ -194,6 +198,15 @@
             </div>
         </div>
     </div>
+
+    <x-user.guided-tour tour="interview" :steps="[
+        ['key' => 'intro', 'target' => '[data-tour=\'interview-intro\']', 'placement' => 'bottom'],
+        ['key' => 'quota', 'target' => '[data-tour=\'interview-quota\']', 'placement' => 'bottom'],
+        ['key' => 'select_cv', 'target' => '[data-tour=\'interview-cv\']', 'placement' => 'right'],
+        ['key' => 'position', 'target' => '[data-tour=\'interview-position\']', 'placement' => 'right'],
+        ['key' => 'start', 'target' => '#start-btn', 'placement' => 'top'],
+        ['key' => 'history', 'target' => '[data-tour=\'interview-history\']', 'placement' => 'top'],
+    ]" />
 
     @push('scripts')
         <script>

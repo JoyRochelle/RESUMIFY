@@ -12,17 +12,15 @@ class InterviewTrialMiddleware
     {
         $user = $request->user();
 
-        if (!$user || $user->isPremium() || $user->isAdmin()) {
+        if (!$user || $user->hasTrialRemaining('interview')) {
             return $next($request);
         }
 
-        if ($user->interviewSessions()->exists()) {
-            return response()->json([
-                'error'   => 'trial_used',
-                'message' => 'Your free trial has been used. Upgrade to Premium for unlimited sessions.',
-            ], 402);
-        }
-
-        return $next($request);
+        return response()->json([
+            'error'   => 'trial_used',
+            'message' => __('messages.interview.index.trial_exhausted_message', [
+                'limit' => $user->getTrialLimit('interview'),
+            ]),
+        ], 402);
     }
 }
