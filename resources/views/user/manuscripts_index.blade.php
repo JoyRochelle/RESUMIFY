@@ -10,7 +10,7 @@
 
     <main class="flex-1 p-4 sm:p-6 md:p-12 max-w-7xl mx-auto w-full pb-24 md:pb-12">
         <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6 md:mb-8 animate-fade-up">
-            <div>
+            <div data-tour="manuscripts-intro">
                 <h1 class="text-3xl sm:text-4xl md:text-5xl font-headline text-primary tracking-tight leading-tight mb-2">{{ __('messages.manuscripts_page.title') }}</h1>
                 <p class="text-primary/60 font-label text-sm max-w-md">{{ __('messages.manuscripts_page.subtitle') }}</p>
                 <div class="mt-4 flex flex-wrap items-center gap-3">
@@ -21,13 +21,16 @@
                 </div>
             </div>
 
-            <x-user.btn-create />
+            <div class="flex flex-wrap items-center gap-3">
+                <x-user.tour-button />
+                <x-user.btn-create />
+            </div>
         </header>
 
-        <x-user.quota-status :user="$user" class="mb-10 md:mb-12 animate-fade-up" style="animation-delay: 100ms" />
+        <x-user.quota-status :user="$user" data-tour="manuscripts-quota" class="mb-10 md:mb-12 animate-fade-up" style="animation-delay: 100ms" />
 
         <section class="animate-fade-up" style="animation-delay: 160ms">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" data-tour="manuscripts-list">
                 @foreach($cvs as $cv)
                 <x-user.resume-card
                     title="{{ $cv->title ?: __('messages.dashboard.untitled_resume') }}"
@@ -38,6 +41,7 @@
                 @endforeach
 
                 <button type="button" onclick="{{ $user->canCreateResume() ? 'openCreateModal()' : '' }}"
+                    data-tour="manuscripts-create"
                     @unless($user->canCreateResume()) disabled aria-describedby="manuscripts-create-limit" @endunless
                     class="w-full h-full group relative bg-surface-container-low/50 rounded-lg border-2 border-dashed {{ $user->canCreateResume() ? 'border-primary/20 hover:border-primary/50 hover:bg-surface-container-low cursor-pointer' : 'border-[#A16207]/30 cursor-not-allowed' }} transition-all duration-300 overflow-hidden flex flex-col items-center justify-center min-h-[200px] sm:min-h-[400px]">
                     <div class="flex flex-col items-center text-center p-8">
@@ -54,6 +58,13 @@
     </main>
 
     <x-user.create-resume-modal :templates="$templates" />
+
+    <x-user.guided-tour tour="manuscripts" :steps="[
+        ['key' => 'intro', 'target' => '[data-tour=\'manuscripts-intro\']', 'placement' => 'bottom'],
+        ['key' => 'quota', 'target' => '[data-tour=\'manuscripts-quota\']', 'placement' => 'bottom'],
+        ['key' => 'list', 'target' => '[data-tour=\'manuscripts-list\']', 'placement' => 'top'],
+        ['key' => 'create', 'target' => '[data-tour=\'manuscripts-create\']', 'placement' => 'left'],
+    ]" />
 
     <!-- Delete Confirmation Modal -->
     <div id="delete-modal" class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4"

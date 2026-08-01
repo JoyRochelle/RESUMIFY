@@ -101,7 +101,10 @@ class InterviewTrialGateTest extends TestCase
     public function test_basic_user_is_blocked_after_using_trial(): void
     {
         [$user, $cv] = $this->makeUserWithCv('basic');
-        $this->makeSession($user, $cv);
+
+        for ($i = 0; $i < config('plans.trials.interview'); $i++) {
+            $this->makeSession($user, $cv);
+        }
 
         $response = $this->actingAs($user)->postJson('/interview/start', [
             'cv_id'      => $cv->id,
@@ -144,12 +147,15 @@ class InterviewTrialGateTest extends TestCase
     public function test_basic_user_sees_upgrade_wall_after_trial(): void
     {
         [$user, $cv] = $this->makeUserWithCv('basic');
-        $this->makeSession($user, $cv);
+
+        for ($i = 0; $i < config('plans.trials.interview'); $i++) {
+            $this->makeSession($user, $cv);
+        }
 
         $response = $this->actingAs($user)->get('/interview');
 
         $response->assertStatus(200)
-                 ->assertSee('Your Free Trial Has Been Used');
+                 ->assertSee('Your Free Trials Have Been Used');
     }
 
     // ── 5. Basic user with no sessions sees the trial info banner ────────────
@@ -161,6 +167,6 @@ class InterviewTrialGateTest extends TestCase
         $response = $this->actingAs($user)->get('/interview');
 
         $response->assertStatus(200)
-                 ->assertSee('1 free trial session');
+                 ->assertSee('3 free trial sessions left');
     }
 }

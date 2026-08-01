@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\AiUsageLog;
 use App\Models\Cv;
 use App\Models\CvSection;
 use App\Models\CvTemplate;
@@ -128,6 +129,14 @@ class FreemiumPlanTest extends TestCase
     public function test_basic_user_gets_402_for_premium_ats_analyze(): void
     {
         $user = User::factory()->create(['role' => 'basic', 'ai_quota_used' => 0]);
+
+        // Basic gets a limited free trial first — spend it before the wall applies.
+        for ($i = 0; $i < config('plans.trials.ats_analyze'); $i++) {
+            AiUsageLog::create([
+                'user_id' => $user->id,
+                'action_type' => 'ats_analyze',
+            ]);
+        }
 
         $response = $this->actingAs($user)->postJson(route('ats.analyze'), [
             'resume' => str_repeat('resume content with achievements ', 4),

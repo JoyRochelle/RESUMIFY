@@ -1,5 +1,5 @@
 <!-- Target Job (for ATS scoring) -->
-                    <x-user.editor-accordion title="{{ __('messages.editor.sections.target_job.title') }}" icon="target" :isOpen="true">
+                    <x-user.editor-accordion title="{{ __('messages.editor.sections.target_job.title') }}" icon="target" :isOpen="true" data-tour="section-target-job">
                         <form class="section-form" data-section-id="{{ $targetJob->id ?? '' }}">
                             <div class="grid grid-cols-1 gap-4">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

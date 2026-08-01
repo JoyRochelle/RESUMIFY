@@ -138,6 +138,57 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Check if the user can use a Premium feature that Basic may still try a
+     * limited number of times before the upgrade wall goes up.
+     */
+    public function canUseTrialFeature(string $feature): bool
+    {
+        return $this->canUsePremiumFeature($feature) || $this->hasTrialRemaining($feature);
+    }
+
+    /**
+     * How many free runs of a trial feature the plan allows.
+     */
+    public function getTrialLimit(string $feature): int
+    {
+        return (int) config("plans.trials.{$feature}", 0);
+    }
+
+    /**
+     * How many trial runs the user has already spent. Counted from records the
+     * user has no way to delete, so clearing history cannot reset the trial.
+     */
+    public function getTrialUsed(string $feature): int
+    {
+        return match ($feature) {
+            'ats_analyze' => $this->aiUsageLogs()->where('action_type', 'ats_analyze')->count(),
+            'interview' => $this->interviewSessions()->count(),
+            default => 0,
+        };
+    }
+
+    /**
+     * Trial runs left, or null when the plan is not trial-limited at all.
+     */
+    public function getTrialRemaining(string $feature): ?int
+    {
+        // Role, not the premium_features list: mock interview is trial-gated
+        // without ever being listed as a Premium-only feature.
+        if ($this->isPremium() || $this->isAdmin()) {
+            return null;
+        }
+
+        return max(0, $this->getTrialLimit($feature) - $this->getTrialUsed($feature));
+    }
+
+    public function hasTrialRemaining(string $feature): bool
+    {
+        $remaining = $this->getTrialRemaining($feature);
+
+        return $remaining === null || $remaining > 0;
+    }
+
+    /**
      * Prevent admin from receiving password reset emails.
      */
     public function sendPasswordResetNotification($token)

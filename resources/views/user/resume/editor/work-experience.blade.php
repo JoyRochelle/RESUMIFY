@@ -1,5 +1,5 @@
 <!-- Work Experience -->
-                    <x-user.editor-accordion title="{{ __('messages.editor.sections.work_experience.title') }}" icon="work">
+                    <x-user.editor-accordion data-tour="section-work-experience" title="{{ __('messages.editor.sections.work_experience.title') }}" icon="work">
                         <form class="section-form" data-section-id="{{ $experience->id ?? '' }}">
                             <div class="space-y-6" id="experience-list">
                                 @forelse($expContent as $index => $job)

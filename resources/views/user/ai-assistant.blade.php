@@ -12,6 +12,7 @@
 
         {{-- Page Header --}}
         <x-user.page-header title="{{ __('messages.ats.page_title') }}" backUrl="{{ route('dashboard') }}">
+            <x-user.tour-button compact class="px-2" />
             <button id="ats-instructions-btn" type="button"
                 class="flex items-center gap-2 text-sm px-4 py-2 rounded-lg border border-primary/15 text-primary/70 hover:text-primary hover:border-primary/30 transition-all duration-200">
                 <span class="material-symbols-outlined text-[16px]">info</span>
@@ -122,6 +123,17 @@
             transition: stroke-dashoffset 1s ease;
         }
     </style>
+
+    <x-user.guided-tour tour="ats" :steps="[
+        ['key' => 'intro', 'target' => '#ats-panel-setup', 'placement' => 'right'],
+        ['key' => 'trial', 'target' => '[data-tour=\'ats-trial\']', 'placement' => 'right'],
+        ['key' => 'select_cv', 'target' => '[data-tour=\'ats-cv\']', 'placement' => 'right'],
+        ['key' => 'job', 'target' => '[data-tour=\'ats-job\']', 'placement' => 'right', 'expand' => true],
+        ['key' => 'analyze', 'target' => '[data-tour=\'ats-analyze\']', 'placement' => 'right'],
+        ['key' => 'results', 'target' => '#ats-panel-results', 'placement' => 'left'],
+        ['key' => 'history', 'target' => '[data-tour=\'ats-history\']', 'placement' => 'right'],
+        ['key' => 'how', 'target' => '#ats-instructions-btn', 'placement' => 'bottom'],
+    ]" />
 
         <script>
         window.atsConfig = {

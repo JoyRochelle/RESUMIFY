@@ -10,7 +10,7 @@
 
     <main class="flex-1 p-4 sm:p-6 md:p-12 max-w-7xl mx-auto w-full pb-24 md:pb-12">
         <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6 md:mb-8 animate-fade-up">
-            <div>
+            <div data-tour="dashboard-welcome">
                 <h1 class="text-3xl sm:text-4xl md:text-6xl font-headline text-primary tracking-tight leading-tight mb-4">
                     {{ __('messages.dashboard.welcome') }} <br />{{ $user->name }}</h1>
                 <div class="flex flex-wrap items-center gap-3">
@@ -21,12 +21,15 @@
                 </div>
             </div>
 
-            @unless ($cvs->isEmpty())
-                <x-user.btn-create />
-            @endunless
+            <div class="flex flex-wrap items-center gap-3">
+                <x-user.tour-button />
+                @unless ($cvs->isEmpty())
+                    <x-user.btn-create data-tour="dashboard-create" />
+                @endunless
+            </div>
         </header>
 
-        <x-user.quota-status :user="$user" class="mb-10 md:mb-12 animate-fade-up" style="animation-delay: 100ms" />
+        <x-user.quota-status :user="$user" data-tour="dashboard-quota" class="mb-10 md:mb-12 animate-fade-up" style="animation-delay: 100ms" />
 
         @if ($cvs->isEmpty())
             {{-- Onboarding empty-state: brand-new user with no resume yet. --}}
@@ -38,7 +41,7 @@
                 <p class="mx-auto mt-3 max-w-md font-body text-primary/65">{{ __('messages.dashboard.onboarding.subtitle') }}</p>
 
                 <div class="mt-8 flex justify-center">
-                    <x-user.btn-create />
+                    <x-user.btn-create data-tour="dashboard-create" />
                 </div>
 
                 <div class="mx-auto mt-12 max-w-2xl border-t border-primary/10 pt-8">
@@ -60,7 +63,7 @@
                     <div class="h-px flex-1 mx-6 bg-primary/10 hidden md:block"></div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" data-tour="dashboard-resumes">
                     @foreach ($cvs as $cv)
                         <div class="animate-fade-up" style="animation-delay: {{ min(220 + $loop->index * 70, 500) }}ms">
                             <x-user.resume-card title="{{ $cv->title ?: __('messages.dashboard.untitled_resume') }}"
@@ -87,6 +90,15 @@
     </main>
 
     <x-user.create-resume-modal :templates="$templates" />
+
+    <x-user.guided-tour tour="dashboard" :steps="[
+        ['key' => 'welcome', 'target' => '[data-tour=\'dashboard-welcome\']', 'placement' => 'bottom'],
+        ['key' => 'quota', 'target' => '[data-tour=\'dashboard-quota\']', 'placement' => 'bottom'],
+        ['key' => 'create', 'target' => '[data-tour=\'dashboard-create\']', 'placement' => 'bottom'],
+        ['key' => 'resumes', 'target' => '[data-tour=\'dashboard-resumes\']', 'placement' => 'top'],
+        ['key' => 'ats_nav', 'target' => '[data-tour=\'nav-ats_analyzer\']', 'placement' => 'right'],
+        ['key' => 'interview_nav', 'target' => '[data-tour=\'nav-interview\']', 'placement' => 'right'],
+    ]" />
 
     <!-- Delete Confirmation Modal -->
     <div id="delete-modal"

@@ -63,6 +63,7 @@
                     };
                 @endphp
                 <a href="{{ route($item['route']) }}"
+                   data-tour="nav-{{ $item['label_key'] }}"
                    class="flex min-h-14 min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-center transition-colors focus:outline-none focus:ring-2 focus:ring-secondary/40 {{ $active ? 'text-primary bg-primary/5' : 'text-primary/50 hover:text-primary hover:bg-primary/5' }}"
                    @if($active) aria-current="page" @endif>
                     <span class="material-symbols-outlined text-[22px] {{ $active ? 'icon-filled' : '' }}" aria-hidden="true">{{ $item['icon'] }}</span>

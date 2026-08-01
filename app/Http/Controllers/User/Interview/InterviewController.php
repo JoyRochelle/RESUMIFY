@@ -41,8 +41,8 @@ class InterviewController extends Controller
     {
         $user      = auth()->user();
         $cvs       = $user->cvs()->with('sections')->latest()->get();
-        $trialUsed = !$user->isPremium() && !$user->isAdmin()
-                     && $user->interviewSessions()->exists();
+        $trialRemaining = $user->getTrialRemaining('interview');
+        $trialUsed      = !$user->hasTrialRemaining('interview');
 
         $recentSessions = $user->interviewSessions()
             ->with(['cv', 'feedback'])
@@ -50,7 +50,7 @@ class InterviewController extends Controller
             ->take(3)
             ->get();
 
-        return view('user.interview.index', compact('cvs', 'trialUsed', 'recentSessions'));
+        return view('user.interview.index', compact('cvs', 'trialUsed', 'trialRemaining', 'recentSessions'));
     }
 
     /**
