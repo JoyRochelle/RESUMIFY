@@ -5,6 +5,10 @@
 ])
 
 @php
+    // The baked-in `inline-flex` cannot be overridden by a plain `hidden`/`flex`
+    // class from the caller: Tailwind v4 emits unprefixed display utilities in
+    // alphabetical order, so `.inline-flex` lands after `.hidden` and wins.
+    // Hide a button with a breakpoint variant instead (`max-sm:hidden`, `lg:hidden`).
     $baseClasses = 'inline-flex min-h-11 items-center justify-center gap-2 font-bold transition-all duration-200 active:scale-[0.98] focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-60';
 
     $variantClasses = match($variant) {

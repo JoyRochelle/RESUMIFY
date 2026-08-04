@@ -15,8 +15,8 @@
         <x-user.page-header title="{{ __('messages.editor.title_prefix') }}{{ $cv->title ?? __('messages.dashboard.untitled_resume') }}" backUrl="{{ route('dashboard') }}">
             <x-user.tour-button compact class="px-2" />
             <x-ui.icon-button type="button" onclick="openCvVersionsModal()" icon="auto_awesome" variant="secondary" label="{{ __('messages.editor.tailor_cv') }}" class="sm:hidden" data-tour="editor-tailor" />
-            <x-ui.button type="button" onclick="openCvVersionsModal()" variant="outline" icon="auto_awesome" data-tour="editor-tailor" class="text-sm px-3 hidden sm:flex text-secondary border-secondary hover:bg-secondary/10">{{ __('messages.editor.tailor_cv') }}</x-ui.button>
-            <x-ui.button onclick="previewPdf('{{ $cv->id ?? '' }}')" variant="ghost" data-tour="editor-export" class="text-sm px-3 hidden sm:flex">{{ __('messages.editor.preview') }}</x-ui.button>
+            <x-ui.button type="button" onclick="openCvVersionsModal()" variant="outline" icon="auto_awesome" data-tour="editor-tailor" class="text-sm px-3 max-sm:hidden text-secondary border-secondary hover:bg-secondary/10">{{ __('messages.editor.tailor_cv') }}</x-ui.button>
+            <x-ui.button onclick="previewPdf('{{ $cv->id ?? '' }}')" variant="ghost" data-tour="editor-export" class="text-sm px-3 max-sm:hidden">{{ __('messages.editor.preview') }}</x-ui.button>
             @if($user->canUsePremiumFeature('pdf_export'))
                 <x-ui.button id="download-btn" onclick="downloadPdf('{{ $cv->id ?? '' }}')" variant="primary" icon="download" iconClass="text-[18px]" data-tour="editor-export" class="text-sm px-3 w-full sm:w-auto justify-center">{{ __('messages.editor.download_pdf') }}</x-ui.button>
             @else
