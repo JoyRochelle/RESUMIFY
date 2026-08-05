@@ -834,6 +834,32 @@
             window.open(`/resumes/${window.editorConfig.cvId}/pdf?adaptation_id=${id}`, '_blank');
         }
 
+        // ── Button loading state ────────────────────────────────────────
+        // A bare `disabled` leaves the button looking untouched, so on a slow
+        // connection users keep pressing and assume the app has hung.
+        function setButtonLoading(btn, loadingText) {
+            if (!btn || btn.dataset.loading === 'true') return false;
+
+            btn.dataset.loading = 'true';
+            btn.dataset.idleHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.setAttribute('aria-busy', 'true');
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            btn.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin align-middle">progress_activity</span><span class="ml-1">${loadingText}</span>`;
+            return true;
+        }
+
+        function resetButtonLoading(btn) {
+            if (!btn || btn.dataset.loading !== 'true') return;
+
+            btn.innerHTML = btn.dataset.idleHtml;
+            delete btn.dataset.idleHtml;
+            delete btn.dataset.loading;
+            btn.disabled = false;
+            btn.removeAttribute('aria-busy');
+            btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        }
+
         // ── Apply Tailored Version ──────────────────────────────────────
         let pendingApplyVersionId = null;
 
@@ -875,7 +901,11 @@
             const id = pendingApplyVersionId;
 
             const confirmBtn = document.getElementById('apply-version-confirm-btn');
-            confirmBtn.disabled = true;
+            const cancelBtn = document.getElementById('apply-version-cancel-btn');
+
+            // Already in flight — swallow the repeat press.
+            if (!setButtonLoading(confirmBtn, t.applying)) return;
+            if (cancelBtn) cancelBtn.disabled = true;
 
             fetch(`/resumes/${window.editorConfig.cvId}/ai/versions/${id}/apply`, {
                 method: 'POST',
@@ -888,16 +918,20 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
+                    // Stay in the loading state until the reload takes over, so
+                    // the button never flashes back to an idle look.
                     showToast(t.version_applied, 'success');
                     setTimeout(() => window.location.reload(), 600);
                 } else {
-                    confirmBtn.disabled = false;
+                    resetButtonLoading(confirmBtn);
+                    if (cancelBtn) cancelBtn.disabled = false;
                     showToast(data.message || t.apply_version_failed, 'error');
                 }
             })
             .catch(err => {
                 console.error(err);
-                confirmBtn.disabled = false;
+                resetButtonLoading(confirmBtn);
+                if (cancelBtn) cancelBtn.disabled = false;
                 showToast(t.version_not_applied, 'error');
             });
         }
@@ -905,6 +939,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             const confirmBtn = document.getElementById('apply-version-confirm-btn');
             if (confirmBtn) confirmBtn.addEventListener('click', confirmApplyVersion);
+
+            const restoreBtn = document.getElementById('restore-version-confirm-btn');
+            if (restoreBtn) restoreBtn.addEventListener('click', confirmRestoreSnapshot);
         });
 
         // ── CV History (snapshots) ──────────────────────────────────────
@@ -944,7 +981,7 @@
                                 <p class="font-bold text-primary text-sm">${escapeHtml(label)}</p>
                                 <p class="text-xs text-primary/60">${escapeHtml(date)}</p>
                             </div>
-                            <button onclick="restoreSnapshot('${s.id}')" class="py-2 px-4 rounded-xl bg-secondary/10 hover:bg-secondary text-secondary hover:text-white font-bold text-xs transition-colors shrink-0">${t.restore}</button>
+                            <button data-restore-btn onclick="openRestoreVersionModal('${s.id}')" class="py-2 px-4 rounded-xl bg-secondary/10 hover:bg-secondary text-secondary hover:text-white font-bold text-xs transition-colors shrink-0 disabled:cursor-not-allowed disabled:opacity-60">${t.restore}</button>
                         </div>
                     `;
                 }).join('');
@@ -964,8 +1001,44 @@
             setTimeout(() => modal.classList.add('hidden'), 300);
         }
 
-        function restoreSnapshot(id) {
-            if (!confirm(t.confirm_restore)) return;
+        // ── Restore a snapshot ──────────────────────────────────────────
+        let pendingRestoreId = null;
+
+        function openRestoreVersionModal(id) {
+            pendingRestoreId = id;
+            const modal = document.getElementById('restore-version-modal');
+            const content = document.getElementById('restore-version-modal-content');
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+            content.classList.replace('scale-95', 'scale-100');
+        }
+
+        function closeRestoreVersionModal() {
+            pendingRestoreId = null;
+            const modal = document.getElementById('restore-version-modal');
+            const content = document.getElementById('restore-version-modal-content');
+            modal.style.opacity = '0';
+            modal.style.pointerEvents = 'none';
+            content.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function confirmRestoreSnapshot() {
+            if (!pendingRestoreId) return;
+            const id = pendingRestoreId;
+
+            const confirmBtn = document.getElementById('restore-version-confirm-btn');
+            const cancelBtn = document.getElementById('restore-version-cancel-btn');
+
+            if (!setButtonLoading(confirmBtn, t.restoring)) return;
+            if (cancelBtn) cancelBtn.disabled = true;
+
+            // Every entry in the history list restores over the same CV, so lock
+            // the whole list — not just the row that opened this modal.
+            const listButtons = [...document.querySelectorAll('[data-restore-btn]')];
+            listButtons.forEach(btn => { btn.disabled = true; });
 
             fetch(`/resumes/${window.editorConfig.cvId}/history/${id}/restore`, {
                 method: 'POST',
@@ -981,11 +1054,17 @@
                     showToast(t.restored, 'success');
                     setTimeout(() => window.location.reload(), 600);
                 } else {
+                    resetButtonLoading(confirmBtn);
+                    if (cancelBtn) cancelBtn.disabled = false;
+                    listButtons.forEach(btn => { btn.disabled = false; });
                     showToast(data.message || t.restore_failed, 'error');
                 }
             })
             .catch(err => {
                 console.error(err);
+                resetButtonLoading(confirmBtn);
+                if (cancelBtn) cancelBtn.disabled = false;
+                listButtons.forEach(btn => { btn.disabled = false; });
                 showToast(t.restore_network_error, 'error');
             });
         }
@@ -1014,7 +1093,9 @@
             confirmApplyVersion,
             openHistoryModal,
             closeHistoryModal,
-            restoreSnapshot,
+            openRestoreVersionModal,
+            closeRestoreVersionModal,
+            confirmRestoreSnapshot,
         });
 
         // ── Modal accessibility: Escape-to-close, focus trap, focus restore ──
@@ -1024,8 +1105,9 @@
                 'template-modal':      closeTemplateModal,
                 'refine-modal':        closeRefineModal,
                 'cv-versions-modal':   closeCvVersionsModal,
-                'history-modal':       closeHistoryModal,
-                'apply-version-modal': closeApplyVersionModal,
+                'history-modal':         closeHistoryModal,
+                'apply-version-modal':   closeApplyVersionModal,
+                'restore-version-modal': closeRestoreVersionModal,
             };
             const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
             let restoreTarget = null;

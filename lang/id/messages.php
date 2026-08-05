@@ -360,6 +360,10 @@ return [
         'apply_version_desc' => 'Ini akan menimpa konten CV Anda saat ini. Cadangan konten Anda saat ini tersimpan di Riwayat, sehingga Anda bisa memulihkannya nanti.',
         'cancel' => 'Batal',
         'apply_and_overwrite' => 'Terapkan & Timpa',
+        'restore_version_title' => 'Pulihkan versi ini?',
+        'restore_version_desc' => 'Konten Anda saat ini disimpan sebagai snapshot terlebih dahulu, jadi pemulihan ini pun masih bisa dibatalkan.',
+        'restore_and_overwrite' => 'Pulihkan & Timpa',
+        'close_restore_confirmation' => 'Tutup konfirmasi pemulihan',
 
         'js' => [
             'photo_too_large' => 'Ukuran foto maksimal 2MB. Silakan pilih file yang lebih kecil.',
@@ -409,6 +413,8 @@ return [
             'restore' => 'Pulihkan',
             'history_load_failed' => 'Gagal memuat riwayat.',
             'confirm_restore' => 'Pulihkan versi ini? Konten Anda saat ini akan disimpan sebagai snapshot terlebih dahulu agar Anda juga bisa membatalkannya.',
+            'applying' => 'Menerapkan…',
+            'restoring' => 'Memulihkan…',
             'restored' => 'Dipulihkan! Memuat ulang...',
             'restore_failed' => 'Gagal memulihkan.',
             'restore_network_error' => 'Kesalahan jaringan — pemulihan gagal.',

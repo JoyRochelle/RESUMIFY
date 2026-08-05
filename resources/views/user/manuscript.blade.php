@@ -458,8 +458,25 @@
             <p class="text-sm text-primary/70 mb-4">{{ __('messages.editor.apply_version_desc') }}</p>
             <div id="apply-version-warning" class="hidden mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs"></div>
             <div class="flex justify-end gap-3">
-                <button type="button" onclick="closeApplyVersionModal()" class="py-2.5 px-5 rounded-xl border border-primary/20 hover:bg-primary/5 text-primary font-bold text-sm transition-colors">{{ __('messages.editor.cancel') }}</button>
+                <button type="button" id="apply-version-cancel-btn" onclick="closeApplyVersionModal()" class="py-2.5 px-5 rounded-xl border border-primary/20 hover:bg-primary/5 text-primary font-bold text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60">{{ __('messages.editor.cancel') }}</button>
                 <button type="button" id="apply-version-confirm-btn" class="py-2.5 px-5 rounded-xl bg-secondary hover:bg-secondary/90 text-white font-bold text-sm transition-colors">{{ __('messages.editor.apply_and_overwrite') }}</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Restore Confirmation Modal --}}
+    <div id="restore-version-modal" class="fixed inset-0 z-50 hidden bg-primary/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300" style="pointer-events: none;"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="restore-version-modal-title">
+        <div class="bg-surface w-full max-w-md rounded-2xl shadow-2xl p-6 mx-4 transform scale-95 transition-transform duration-300" id="restore-version-modal-content">
+            <h3 id="restore-version-modal-title" class="text-lg font-headline font-bold text-primary flex items-center gap-2 mb-3">
+                {{ __('messages.editor.restore_version_title') }}
+            </h3>
+            <p class="text-sm text-primary/70 mb-4">{{ __('messages.editor.restore_version_desc') }}</p>
+            <div class="flex justify-end gap-3">
+                <button type="button" id="restore-version-cancel-btn" onclick="closeRestoreVersionModal()" class="py-2.5 px-5 rounded-xl border border-primary/20 hover:bg-primary/5 text-primary font-bold text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60">{{ __('messages.editor.cancel') }}</button>
+                <button type="button" id="restore-version-confirm-btn" class="py-2.5 px-5 rounded-xl bg-secondary hover:bg-secondary/90 text-white font-bold text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60">{{ __('messages.editor.restore_and_overwrite') }}</button>
             </div>
         </div>
     </div>

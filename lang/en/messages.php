@@ -360,6 +360,10 @@ return [
         'apply_version_desc' => 'This will overwrite your current CV content. A backup of your current content is saved to History, so you can restore it later.',
         'cancel' => 'Cancel',
         'apply_and_overwrite' => 'Apply & Overwrite',
+        'restore_version_title' => 'Restore this version?',
+        'restore_version_desc' => 'Your current content is snapshotted first, so you can undo this restore later too.',
+        'restore_and_overwrite' => 'Restore & Overwrite',
+        'close_restore_confirmation' => 'Close restore confirmation',
 
         'js' => [
             'photo_too_large' => 'Maximum photo size is 2MB. Please choose a smaller file.',
@@ -409,6 +413,8 @@ return [
             'restore' => 'Restore',
             'history_load_failed' => 'Failed to load history.',
             'confirm_restore' => 'Restore this version? Your current content will be snapshotted first so you can undo this too.',
+            'applying' => 'Applying…',
+            'restoring' => 'Restoring…',
             'restored' => 'Restored! Reloading...',
             'restore_failed' => 'Failed to restore.',
             'restore_network_error' => 'Network error — restore failed.',
