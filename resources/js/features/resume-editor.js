@@ -77,9 +77,12 @@
                 });
 
                 if (response.status === 402) {
+                    // The block is about the premium template, and the message
+                    // says a free template also unblocks the export — so don't
+                    // yank the user off to the upgrade page as if that were the
+                    // only way out.
                     const data = await response.json();
                     showToast(data.message || t.premium_required_pdf, 'error');
-                    if (data.upgrade_url) window.location.href = data.upgrade_url;
                     return;
                 }
 

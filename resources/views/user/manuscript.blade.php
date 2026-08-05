@@ -7,6 +7,9 @@
 @section('content')
     @php
         $user = auth()->user();
+        // Exporting is free on every plan; only the premium design stays paid,
+        // which a downgraded account can still be holding on an old resume.
+        $canExportPdf = !($cv?->template?->is_premium) || $user->canUsePremiumFeature('premium_templates');
     @endphp
 
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
@@ -19,7 +22,7 @@
                  lived only in aria-label/title which a touch screen never shows. --}}
             <x-ui.button type="button" onclick="openCvVersionsModal()" variant="outline" icon="auto_awesome" data-tour="editor-tailor" class="text-sm px-3 max-sm:flex-1 text-secondary border-secondary hover:bg-secondary/10">{{ __('messages.editor.tailor_cv') }}</x-ui.button>
             <x-ui.button onclick="previewPdf('{{ $cv->id ?? '' }}')" variant="ghost" data-tour="editor-export" class="text-sm px-3 max-sm:hidden">{{ __('messages.editor.preview') }}</x-ui.button>
-            @if($user->canUsePremiumFeature('pdf_export'))
+            @if($canExportPdf)
                 <x-ui.button id="download-btn" onclick="downloadPdf('{{ $cv->id ?? '' }}')" variant="primary" icon="download" iconClass="text-[18px]" data-tour="editor-export" class="text-sm px-3 max-sm:flex-1 sm:w-auto justify-center">{{ __('messages.editor.download_pdf') }}</x-ui.button>
             @else
                 <x-user.premium-lock
