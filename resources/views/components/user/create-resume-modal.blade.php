@@ -11,14 +11,23 @@
      aria-modal="true"
      aria-labelledby="create-modal-title"
      aria-describedby="create-modal-description">
-    <div id="create-modal-content"
-         class="bg-tertiary w-full max-w-5xl max-h-[90vh] rounded-lg shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-200 ease-out">
-        <div class="p-6 border-b border-primary/10 flex justify-between items-start gap-4 bg-surface-container-low">
+    {{-- One form for the whole modal. Each template used to be its own form
+         with an invisible full-card submit button, so merely clicking a card
+         created the resume — no confirmation step and no way to guard against
+         a double click producing two resumes. --}}
+    <form id="create-modal-content"
+          action="{{ route('resumes.store') }}"
+          method="POST"
+          onsubmit="return prepareCreateResumeSubmit(event)"
+          class="bg-tertiary w-full max-w-5xl max-h-[90vh] rounded-lg shadow-2xl border border-primary/10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-200 ease-out">
+        @csrf
+
+        <div class="p-6 border-b border-primary/10 flex justify-between items-start gap-4 bg-surface-container-low shrink-0">
             <div>
                 <h3 id="create-modal-title" class="font-headline text-2xl font-bold text-primary">
                     Create New Resume
                 </h3>
-                <p id="create-modal-description" class="mt-1 text-sm text-primary/60">Name your resume first, then choose the template that fits your target role.</p>
+                <p id="create-modal-description" class="mt-1 text-sm text-primary/60">Name your resume, choose a template, then press Create.</p>
             </div>
             <button type="button"
                     onclick="closeCreateModal()"
@@ -33,6 +42,7 @@
                         Resume Name <span class="text-red-500" aria-hidden="true">*</span>
                     </label>
                     <input id="create-resume-title"
+                           name="title"
                            type="text"
                            maxlength="100"
                            required
@@ -41,9 +51,9 @@
                            placeholder="e.g. Senior Product Designer Resume"
                            aria-describedby="create-resume-title-error"
                            aria-invalid="false"
-                           oninput="clearCreateResumeTitleError()"
+                           oninput="clearCreateResumeTitleError(); updateCreateResumeSubmitState()"
                            class="w-full bg-tertiary border border-primary/15 rounded-lg px-4 py-3 text-sm font-label text-primary placeholder:text-primary/35 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20">
-                    <p id="create-resume-title-error" class="hidden mt-1 text-xs text-red-600" role="alert">Please enter a resume name before choosing a template.</p>
+                    <p id="create-resume-title-error" class="hidden mt-1 text-xs text-red-600" role="alert">Please enter a resume name before creating.</p>
                 </div>
 
                 <div>
@@ -84,24 +94,32 @@
                 </div>
             </div>
 
-            <div id="create-template-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" aria-live="polite">
+            <div id="create-template-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 @foreach($templates as $template)
                     @php
                         $access = $template->is_premium ? 'premium' : 'free';
                         $category = strtolower($template->category ?? '');
                         $isLocked = $template->is_premium && !$user->canUsePremiumFeature('premium_templates');
                     @endphp
-                    <form action="{{ route('resumes.store') }}"
-                          method="POST"
-                          onsubmit="{{ $isLocked ? 'return false' : 'return prepareCreateResumeSubmit(event)' }}"
-                          data-template-card
+
+                    {{-- A label rather than a button: the card embeds an iframe
+                         preview, which a button may not contain. Locked cards
+                         carry no radio, so their label is inert and the upgrade
+                         link inside keeps working. --}}
+                    <label data-template-card
                           data-template-name="{{ strtolower($template->name) }}"
                           data-template-category="{{ $category }}"
                           data-template-access="{{ $access }}"
-                          class="group relative border {{ $isLocked ? 'border-[#A16207]/30 bg-[#A16207]/[0.03]' : 'border-primary/10 bg-tertiary hover:border-secondary hover:shadow-lg hover:-translate-y-1' }} rounded-lg overflow-hidden transition-all duration-200 ease-out">
-                        @csrf
-                        <input type="hidden" name="title" class="js-create-resume-title-value" value="{{ old('title') }}">
-                        <input type="hidden" name="template_id" value="{{ $template->id }}">
+                          class="group relative border {{ $isLocked ? 'border-[#A16207]/30 bg-[#A16207]/[0.03]' : 'cursor-pointer border-primary/10 bg-tertiary hover:border-secondary hover:shadow-lg hover:-translate-y-1 has-[:checked]:border-secondary has-[:checked]:ring-2 has-[:checked]:ring-secondary has-[:checked]:shadow-lg focus-within:ring-2 focus-within:ring-secondary/40' }} rounded-lg overflow-hidden transition-all duration-200 ease-out">
+                        @unless($isLocked)
+                            <input type="radio"
+                                   name="template_id"
+                                   value="{{ $template->id }}"
+                                   data-template-label="{{ $template->name }}"
+                                   onchange="updateCreateResumeSubmitState()"
+                                   @checked(old('template_id') == $template->id)
+                                   class="peer sr-only">
+                        @endunless
 
                         <div class="relative w-full aspect-[210/297] bg-surface-container-low overflow-hidden border-b border-primary/5">
                             <x-template-preview-frame
@@ -134,8 +152,11 @@
                                     </div>
                                 </div>
                             @else
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-20">
-                                    <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">Use Template</span>
+                                <span class="absolute right-3 top-3 z-30 hidden h-7 w-7 items-center justify-center rounded-full bg-secondary text-white shadow peer-checked:flex" aria-hidden="true">
+                                    <span class="material-symbols-outlined text-[16px] icon-filled">check</span>
+                                </span>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 peer-checked:opacity-0 transition-opacity flex items-end justify-center pb-4 z-20">
+                                    <span class="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">{{ __('messages.resume.create.select_label') }}</span>
                                 </div>
                             @endif
                         </div>
@@ -150,13 +171,7 @@
                                 </div>
                             </div>
                         </div>
-
-                        @unless($isLocked)
-                            <button type="submit"
-                                    class="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer"
-                                    aria-label="Use {{ $template->name }} template"></button>
-                        @endunless
-                    </form>
+                    </label>
                 @endforeach
             </div>
 
@@ -165,7 +180,31 @@
                 <p class="mt-1 text-sm text-primary/60">Try clearing the search or choosing another category.</p>
             </div>
         </div>
-    </div>
+
+        <div class="shrink-0 border-t border-primary/10 bg-surface-container-low px-6 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p id="create-template-summary"
+               class="text-sm text-primary/60"
+               aria-live="polite"
+               data-empty-label="{{ __('messages.resume.create.no_template_selected') }}"
+               data-selected-prefix="{{ __('messages.resume.create.template_selected_prefix') }}">{{ __('messages.resume.create.no_template_selected') }}</p>
+
+            <div class="flex items-center gap-3">
+                <button type="button"
+                        onclick="closeCreateModal()"
+                        class="inline-flex min-h-11 items-center justify-center rounded-lg border border-primary/15 px-5 py-2.5 text-sm font-bold text-primary transition hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-secondary/40">{{ __('messages.resume.create.cancel') }}</button>
+
+                <button type="submit"
+                        id="create-resume-submit"
+                        disabled
+                        data-loading-label="{{ __('messages.resume.create.creating') }}"
+                        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-tertiary transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-secondary/40 disabled:cursor-not-allowed disabled:opacity-60">
+                    <span id="create-resume-submit-spinner" class="material-symbols-outlined animate-spin text-[18px]" style="display:none" aria-hidden="true">progress_activity</span>
+                    <span id="create-resume-submit-icon" class="material-symbols-outlined text-[18px]" aria-hidden="true">add</span>
+                    <span id="create-resume-submit-label">{{ __('messages.resume.create.submit') }}</span>
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
 
 @once
@@ -180,7 +219,40 @@
                 error.classList.add('hidden');
             }
 
+            function selectedCreateResumeTemplate() {
+                return document.querySelector('#create-template-grid input[name="template_id"]:checked');
+            }
+
+            function updateCreateResumeSubmitState() {
+                const titleInput = document.getElementById('create-resume-title');
+                const submit = document.getElementById('create-resume-submit');
+                const summary = document.getElementById('create-template-summary');
+                if (!submit) return;
+
+                // A submission already in flight must stay locked, whatever the
+                // fields say — this is the anti-spam guard.
+                if (submit.dataset.submitting === 'true') return;
+
+                const title = titleInput ? titleInput.value.trim() : '';
+                const selected = selectedCreateResumeTemplate();
+
+                submit.disabled = !title || !selected;
+
+                if (summary) {
+                    summary.textContent = selected
+                        ? `${summary.dataset.selectedPrefix} ${selected.dataset.templateLabel}`
+                        : summary.dataset.emptyLabel;
+                }
+            }
+
             function prepareCreateResumeSubmit(event) {
+                const submit = document.getElementById('create-resume-submit');
+
+                if (submit && submit.dataset.submitting === 'true') {
+                    event.preventDefault();
+                    return false;
+                }
+
                 const titleInput = document.getElementById('create-resume-title');
                 const error = document.getElementById('create-resume-title-error');
                 const title = titleInput ? titleInput.value.trim() : '';
@@ -197,7 +269,20 @@
                     return false;
                 }
 
-                event.currentTarget.querySelector('.js-create-resume-title-value').value = title;
+                if (!selectedCreateResumeTemplate()) {
+                    event.preventDefault();
+                    return false;
+                }
+
+                if (submit) {
+                    submit.dataset.submitting = 'true';
+                    submit.disabled = true;
+                    submit.setAttribute('aria-busy', 'true');
+                    document.getElementById('create-resume-submit-spinner').style.display = '';
+                    document.getElementById('create-resume-submit-icon').style.display = 'none';
+                    document.getElementById('create-resume-submit-label').textContent = submit.dataset.loadingLabel;
+                }
+
                 return true;
             }
 
@@ -219,6 +304,13 @@
                     if (visible) visibleCount++;
                 });
 
+                // Never submit a template the user can no longer see.
+                const selected = selectedCreateResumeTemplate();
+                if (selected && selected.closest('[data-template-card]')?.classList.contains('hidden')) {
+                    selected.checked = false;
+                }
+                updateCreateResumeSubmitState();
+
                 if (empty) {
                     empty.classList.toggle('hidden', visibleCount !== 0);
                 }
@@ -230,6 +322,8 @@
                     });
                 }
             }
+
+            document.addEventListener('DOMContentLoaded', updateCreateResumeSubmitState);
         </script>
     @endpush
 @endonce

@@ -279,6 +279,9 @@ return [
             'cancel' => 'Batal',
             'creating' => 'Membuat...',
             'submit' => 'Buat Resume',
+            'select_label' => 'Pilih',
+            'no_template_selected' => 'Pilih template untuk melanjutkan.',
+            'template_selected_prefix' => 'Template terpilih:',
         ],
         'edit' => [
             'title' => 'Ubah Resume',

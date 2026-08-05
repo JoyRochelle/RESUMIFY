@@ -279,6 +279,9 @@ return [
             'cancel' => 'Cancel',
             'creating' => 'Creating...',
             'submit' => 'Create Resume',
+            'select_label' => 'Select',
+            'no_template_selected' => 'Choose a template to continue.',
+            'template_selected_prefix' => 'Selected template:',
         ],
         'edit' => [
             'title' => 'Edit Resume',
