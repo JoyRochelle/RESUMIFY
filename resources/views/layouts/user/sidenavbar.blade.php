@@ -2,7 +2,7 @@
     $navItems = config('navigation.user', []);
 @endphp
 
-<aside class="hidden md:flex flex-col h-screen w-64 border-r border-primary/10 bg-nav-footer p-6 space-y-8 fixed top-0 left-0 z-40 shrink-0">
+<aside class="hidden md:flex flex-col h-screen w-64 overflow-y-auto border-r border-primary/10 bg-nav-footer p-6 space-y-8 fixed top-0 left-0 z-40 shrink-0">
     <a href="{{ route('dashboard') }}" class="flex items-center gap-3" aria-label="Resumify dashboard">
         <img src="{{ asset('images/logo.jpg') }}" alt="Resumify" class="h-10 w-10 rounded-xl object-cover shadow-sm">
         <span class="text-xl font-bold font-headline text-primary tracking-tight">Resumify</span>
@@ -25,7 +25,10 @@
         </div>
     </div>
 
-    <nav class="flex-1 flex flex-col space-y-2" aria-label="User navigation">
+    {{-- min-h-0 lets this column shrink below its content height, so a short
+         viewport scrolls the nav list instead of pushing the footer (locale
+         switcher + Log Out) off-screen where it cannot be reached. --}}
+    <nav class="flex-1 min-h-0 overflow-y-auto custom-scrollbar flex flex-col space-y-2" aria-label="User navigation">
         @foreach($navItems as $item)
             @php
                 $active = request()->routeIs(...$item['match']);
@@ -41,7 +44,7 @@
         @endforeach
     </nav>
 
-    <div class="pt-6 border-t border-primary/10 space-y-4">
+    <div class="shrink-0 pt-6 border-t border-primary/10 space-y-4">
         <x-ui.locale-switcher />
 
         <form method="POST" action="{{ route('logout') }}" class="w-full">
