@@ -11,7 +11,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <x-ui.form-input label="{{ __('messages.editor.sections.certifications.name') }}" name="name" value="{{ $cert['name'] ?? '' }}" class="auto-save" />
                                         <x-ui.form-input label="{{ __('messages.editor.sections.certifications.issuer') }}" name="issuer" value="{{ $cert['issuer'] ?? '' }}" class="auto-save" />
-                                        <x-ui.form-input label="{{ __('messages.editor.sections.certifications.date') }}" name="date" value="{{ $cert['date'] ?? '' }}" class="auto-save" type="month" />
+                                        <x-ui.month-year-input label="{{ __('messages.editor.sections.certifications.date') }}" name="date" value="{{ $cert['date'] ?? '' }}" />
                                     </div>
                                 </div>
                                 @empty
@@ -22,7 +22,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <x-ui.form-input label="{{ __('messages.editor.sections.certifications.name') }}" name="name" value="" class="auto-save" />
                                         <x-ui.form-input label="{{ __('messages.editor.sections.certifications.issuer') }}" name="issuer" value="" class="auto-save" />
-                                        <x-ui.form-input label="{{ __('messages.editor.sections.certifications.date') }}" name="date" value="" class="auto-save" type="month" />
+                                        <x-ui.month-year-input label="{{ __('messages.editor.sections.certifications.date') }}" name="date" value="" />
                                     </div>
                                 </div>
                                 @endforelse

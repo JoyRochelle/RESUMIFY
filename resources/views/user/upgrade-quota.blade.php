@@ -63,7 +63,7 @@
                     __('messages.upgrade_quota.plans.unlimited_resumes'),
                     ['title' => __('messages.upgrade_quota.plans.ai_bullet_optimizer'), 'subtitle' => __('messages.upgrade_quota.plans.ai_bullet_optimizer_subtitle')],
                     __('messages.upgrade_quota.plans.realtime_ats_matcher'),
-                    __('messages.upgrade_quota.plans.premium_pdf_export'),
+                    __('messages.upgrade_quota.plans.premium_template_library'),
                     __('messages.upgrade_quota.plans.priority_support'),
                 ]" :isPremium="true"
                     :isCurrentPlan="$isPremium"

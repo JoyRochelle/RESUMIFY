@@ -47,7 +47,7 @@
                 $premiumResumeLabel,
                 ['title' => __('messages.landing.pricing.plans.ai_bullet_optimizer'), 'subtitle' => __('messages.landing.pricing.plans.ai_bullet_optimizer_subtitle')],
                 __('messages.landing.pricing.plans.realtime_ats_matcher'),
-                __('messages.landing.pricing.plans.premium_pdf_export'),
+                __('messages.landing.pricing.plans.premium_template_library'),
                 __('messages.landing.pricing.plans.priority_support'),
             ]" :isPremium="true"
                 buttonText="{{ __('messages.landing.pricing.plans.activate_premium') }}" onclick="window.location.href='{{ route('register') }}'" />
@@ -92,7 +92,7 @@
                     </span>
                 </div>
                 <div class="grid grid-cols-3 py-6 items-center hover:bg-primary/5 rounded-lg px-6 transition-colors">
-                    <span class="text-base font-body text-primary font-medium">{{ __('messages.landing.pricing.plans.premium_pdf_export') }}</span>
+                    <span class="text-base font-body text-primary font-medium">{{ __('messages.landing.pricing.plans.premium_template_library') }}</span>
                     <span class="text-base font-body text-outline text-center">{{ __('messages.landing.pricing.compare.standard') }}</span>
                     <span class="text-base font-body font-bold text-primary text-center">{{ __('messages.landing.pricing.compare.premium') }}</span>
                 </div>
@@ -119,7 +119,7 @@
                     ['label' => __('messages.landing.pricing.plans.ai_bullet_optimizer'), 'free' => null, 'premium' => null, 'premiumCheck' => true],
                     ['label' => __('messages.landing.pricing.plans.realtime_ats_matcher'), 'free' => null, 'premium' => null, 'premiumCheck' => true],
                     [
-                        'label' => __('messages.landing.pricing.plans.premium_pdf_export'),
+                        'label' => __('messages.landing.pricing.plans.premium_template_library'),
                         'free' => __('messages.landing.pricing.compare.standard'),
                         'premium' => __('messages.landing.pricing.compare.premium'),
                         'premiumCheck' => false,

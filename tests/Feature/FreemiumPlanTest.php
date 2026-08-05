@@ -150,21 +150,20 @@ class FreemiumPlanTest extends TestCase
             ]);
     }
 
-    public function test_basic_user_gets_402_for_pdf_export(): void
+    /**
+     * PDF export moved out of premium_features: every plan may download its
+     * own resume. The gate that remains is the premium *template*, asserted in
+     * BasicPdfExportTest.
+     */
+    public function test_basic_user_can_export_pdf_on_a_free_template(): void
     {
         $user = User::factory()->create(['role' => 'basic']);
         $template = $this->template();
         $cv = $this->cv($user, $template);
 
-        $response = $this->actingAs($user)
-            ->withHeaders(['Accept' => 'application/json', 'X-Requested-With' => 'XMLHttpRequest'])
-            ->get(route('resumes.pdf', $cv));
-
-        $response->assertStatus(402)
-            ->assertJson([
-                'error' => 'premium_required',
-                'upgrade_url' => route('user.upgrade-quota'),
-            ]);
+        $this->actingAs($user)
+            ->get(route('resumes.pdf', $cv))
+            ->assertOk();
     }
 
     public function test_premium_user_can_export_pdf(): void
