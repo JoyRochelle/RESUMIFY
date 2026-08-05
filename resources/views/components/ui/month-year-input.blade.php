@@ -27,8 +27,13 @@
         rsort($years);
     }
 
+    // Month names are abbreviated: the editor panel gives each date field about
+    // 160px to split between two selects, and a full "September" is clipped at
+    // that width — worse still at 375px. The year, which is what users actually
+    // struggled to reach, keeps its full four digits.
     $months = __('messages.editor.date_picker.months');
-    $selectClasses = 'w-full border-b-2 border-primary/15 focus:border-secondary bg-transparent py-2 px-0 outline-none transition-all duration-200 focus:ring-0 text-primary text-sm';
+    // pr-5 keeps the label clear of the native dropdown arrow.
+    $selectClasses = 'w-full border-b-2 border-primary/15 focus:border-secondary bg-transparent py-2 pl-0 pr-5 outline-none transition-all duration-200 focus:ring-0 text-primary text-sm';
 @endphp
 
 <div class="relative group/input" data-month-year>

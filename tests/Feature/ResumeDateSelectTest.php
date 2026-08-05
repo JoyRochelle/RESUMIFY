@@ -152,9 +152,26 @@ class ResumeDateSelectTest extends TestCase
 
         $this->assertCount(12, $en['editor']['date_picker']['months']);
         $this->assertCount(12, $id['editor']['date_picker']['months']);
-        $this->assertSame('January', $en['editor']['date_picker']['months']['01']);
-        $this->assertSame('Januari', $id['editor']['date_picker']['months']['01']);
+        $this->assertSame('Jan', $en['editor']['date_picker']['months']['01']);
+        $this->assertSame('Mei', $id['editor']['date_picker']['months']['05']);
         $this->assertSame('Tahun', $id['editor']['date_picker']['year']);
+    }
+
+    public function test_month_labels_stay_short_enough_for_the_editor_column(): void
+    {
+        // Each date field gets ~160px in the editor panel, split between two
+        // selects — a full "September" is clipped at that width.
+        foreach (['en', 'id'] as $locale) {
+            $months = (require lang_path("{$locale}/messages.php"))['editor']['date_picker']['months'];
+
+            foreach ($months as $number => $label) {
+                $this->assertLessThanOrEqual(
+                    4,
+                    mb_strlen($label),
+                    "Month label {$locale}.{$number} ('{$label}') is too long for the editor column."
+                );
+            }
+        }
     }
 
     public function test_partial_selection_never_produces_a_half_date(): void
