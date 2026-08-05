@@ -49,20 +49,25 @@ class ResumeExportController extends Controller
     public function downloadPdf(Cv $cv): Response|RedirectResponse {
         \Illuminate\Support\Facades\Gate::authorize('view', $cv);
 
-        if (!auth()->user()->canUsePremiumFeature('pdf_export')) {
+        $cv->load(['template', 'sections']);
+
+        // Exporting a PDF is free on every plan. The premium boundary is the
+        // design: a Premium account that downgrades keeps the resumes it built
+        // on premium templates, and exporting one would hand over the paid
+        // layout for nothing.
+        if ($cv->template?->is_premium && !auth()->user()->canUsePremiumFeature('premium_templates')) {
+            $message = 'This resume uses a Premium template. Switch it to a free template, or upgrade, to export it.';
+
             if (request()->expectsJson() || request()->ajax()) {
                 return response()->json([
-                    'error' => 'premium_required',
-                    'message' => 'Upgrade to Premium to unlock PDF export.',
+                    'error' => 'premium_template_required',
+                    'message' => $message,
                     'upgrade_url' => route('user.upgrade-quota'),
                 ], 402);
             }
 
-            return redirect()->route('user.upgrade-quota')
-                ->with('error', 'Upgrade to Premium to unlock PDF export.');
+            return redirect()->route('user.upgrade-quota')->with('error', $message);
         }
-
-        $cv->load(['template', 'sections']);
 
         if (request()->has('adaptation_id')) {
             $adaptation = ChameleonAdaptation::find(request()->query('adaptation_id'));

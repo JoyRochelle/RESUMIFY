@@ -7,10 +7,14 @@ return [
         'admin' => null,
     ],
 
+    /*
+     * PDF export is deliberately absent: every plan may download its resume.
+     * What stays paid is the premium *design* — see the template check in
+     * ResumeExportController::downloadPdf().
+     */
     'premium_features' => [
         'ats_analyze',
         'premium_templates',
-        'pdf_export',
     ],
 
     /*
