@@ -12,8 +12,8 @@
                                         <x-ui.form-input label="{{ __('messages.editor.sections.education.school') }}" name="school" value="{{ $edu['school'] ?? '' }}" class="auto-save" :required="true" placeholder="{{ __('messages.editor.sections.education.school_placeholder') }}" />
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                                        <x-ui.form-input label="{{ __('messages.editor.sections.education.start_date') }}" name="start_date" type="month" value="{{ $edu['start_date'] ?? '' }}" class="auto-save" />
-                                        <x-ui.form-input label="{{ __('messages.editor.sections.education.end_date') }}" name="end_date" type="month" value="{{ $edu['end_date'] ?? '' }}" class="auto-save" hint="{{ __('messages.editor.sections.education.end_date_hint') }}" />
+                                        <x-ui.month-year-input label="{{ __('messages.editor.sections.education.start_date') }}" name="start_date" value="{{ $edu['start_date'] ?? '' }}" />
+                                        <x-ui.month-year-input label="{{ __('messages.editor.sections.education.end_date') }}" name="end_date" value="{{ $edu['end_date'] ?? '' }}" hint="{{ __('messages.editor.sections.education.end_date_hint') }}" />
                                     </div>
                                     <div class="relative mt-2">
                                         <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">{{ __('messages.editor.sections.education.additional_info') }}</label>
@@ -30,8 +30,8 @@
                                         <x-ui.form-input label="{{ __('messages.editor.sections.education.school') }}" name="school" value="" class="auto-save" />
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                                        <x-ui.form-input label="{{ __('messages.editor.sections.education.start_date') }}" name="start_date" type="month" value="" class="auto-save" />
-                                        <x-ui.form-input label="{{ __('messages.editor.sections.education.end_date') }}" name="end_date" type="month" value="" class="auto-save" hint="{{ __('messages.editor.sections.education.end_date_hint') }}" />
+                                        <x-ui.month-year-input label="{{ __('messages.editor.sections.education.start_date') }}" name="start_date" value="" />
+                                        <x-ui.month-year-input label="{{ __('messages.editor.sections.education.end_date') }}" name="end_date" value="" hint="{{ __('messages.editor.sections.education.end_date_hint') }}" />
                                     </div>
                                     <div class="relative mt-2">
                                         <label class="text-[11px] font-bold uppercase tracking-wider text-primary/60 mb-2 block">{{ __('messages.editor.sections.education.additional_info') }}</label>
