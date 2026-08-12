@@ -50,7 +50,7 @@ Submits a CV + target job description to Gemini and returns a structured, action
 
 All AI rewriting is constrained by explicit anti-fabrication rules (see `App\Services\AiService`) — the model may only rephrase facts already present in the source content; it is not allowed to invent employers, skills, or metrics.
 
-### Mock Interview ("Bu Sari")
+### Mock Interview ("Ms Sarah")
 
 A chat-based mock interview (`InterviewSession` / `InterviewMessage`) that references the user's own CV content, streams responses over SSE, and produces structured, STAR-based feedback (`InterviewFeedback`) at the end of a session. Basic-tier users get a limited trial via `InterviewTrialMiddleware`.
 
